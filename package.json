@@ -15,22 +15,31 @@
   "bugs": {
     "url": "https://github.com/twolfson/find-work-app/issues"
   },
-  "main": "lib/app",
   "engines": {
     "node": "4.4.1"
   },
   "license": "UNLICENSED",
   "scripts": {
-    "precheck": "twolfson-style precheck lib/ test/",
-    "lint": "twolfson-style lint lib/ test/",
-    "pretest": "twolfson-style install",
-    "test": "npm run precheck && mocha --reporter dot && npm run lint"
+    "build": "gulp build-clean && gulp build",
+    "develop": "gulp build-clean && gulp develop",
+    "lint": "twolfson-style lint server/ test/",
+    "postinstall": "bower install && npm run build",
+    "start": "serve -p 9000",
+    "test": "npm run lint"
   },
   "dependencies": {},
   "devDependencies": {
+    "bower": "~1.7.7",
+    "gulp": "~3.9.1",
+    "gulp-csso": "~1.1.0",
+    "gulp-livereload": "~3.8.1",
+    "gulp-sass": "~2.2.0",
+    "gulp-sizereport": "~1.1.3",
     "jscs": "~1.7.3",
     "jshint": "~2.5.10",
     "mocha": "~2.4.5",
+    "rimraf": "~2.5.2",
+    "serve": "~1.4.0",
     "twolfson-style": "~1.6.0"
   },
   "keywords": [],

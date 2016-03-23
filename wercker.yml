@@ -12,6 +12,7 @@ build:
           echo "npm version $(npm -v) running"
 
     # Install our dependencies and dev dependencies
+    # DEV: This also tests `npm run build` due to a `postinstall` hook
     - npm-install
 
     # Run our tests

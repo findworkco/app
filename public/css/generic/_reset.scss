@@ -1,0 +1,8 @@
+// Reset overzealous cursor: pointer for text inputs
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/generic/_reset.scss#L63-L73
+input[type=text],
+input[type=password],
+input[type=email],
+textarea {
+  cursor: text;
+}
