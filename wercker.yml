@@ -1,0 +1,19 @@
+# Configure our container
+box: node:4.4
+
+# Define our build steps (e.g. test steps)
+build:
+  steps:
+    # Output our Node.js and npm versions
+    - script:
+        name: echo nodejs information
+        code: |
+          echo "node version $(node -v) running"
+          echo "npm version $(npm -v) running"
+
+    # Install our dependencies and dev dependencies
+    - npm-install
+
+    # Run our tests
+    - npm-test
+
