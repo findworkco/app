@@ -1,0 +1,38 @@
+{
+  "name": "app",
+  "description": "Web application for https://findwork.co/",
+  "version": "1.0.0",
+  "homepage": "https://github.com/twolfson/find-work-app",
+  "author": {
+    "name": "Todd Wolfson",
+    "email": "todd@twolfson.com",
+    "url": "http://twolfson.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/twolfson/find-work-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/twolfson/find-work-app/issues"
+  },
+  "main": "lib/app",
+  "engines": {
+    "node": "4.4.1"
+  },
+  "license": "UNLICENSED",
+  "scripts": {
+    "precheck": "twolfson-style precheck lib/ test/",
+    "lint": "twolfson-style lint lib/ test/",
+    "pretest": "twolfson-style install",
+    "test": "npm run precheck && mocha --reporter dot && npm run lint"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jscs": "~1.7.3",
+    "jshint": "~2.5.10",
+    "mocha": "~2.4.5",
+    "twolfson-style": "~1.6.0"
+  },
+  "keywords": [],
+  "private": true
+}
