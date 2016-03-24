@@ -1,0 +1,12 @@
+// Based off of https://github.com/csswizardry/inuit.css/blob/v5.0.1/objects/_grids.scss
+//   but modified to have left/right centered padding
+// TODO: Handle nested grids
+.grid__item {
+  display: inline-block;
+  padding-left: $base-spacing-unit / 2;
+  padding-right: $base-spacing-unit / 2;
+  vertical-align: top;
+  @if ($global-border-box == false) {
+    @include vendor(box-sizing, border-box);
+  }
+}

@@ -1,0 +1,32 @@
+.nav-row:hover,
+.nav-row--selected {
+  // Calculate the offset to use to give ourselves a border
+  $nav-row-margin-width: $half-spacing-unit;
+  $nav-row-border-width: 6px;
+  $nav-row-padding-width: $nav-row-margin-width - $nav-row-border-width;
+
+  border-left: $nav-row-border-width solid $nav-row-border-color;
+  margin-left: -1 * $nav-row-margin-width;
+  padding-left: $nav-row-padding-width;
+}
+
+// DEV: Fun fact: This is a bespoke media object =D
+.nav-info {
+  display: table;
+  padding: 0.2em 0;
+}
+
+.nav-info__icon {
+  width: 2.4em;
+}
+
+.nav-info__icon,
+.nav-info__content {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.nav-link {
+  color: inherit;
+  font-weight: bold;
+}

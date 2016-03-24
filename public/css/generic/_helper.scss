@@ -1,0 +1,6 @@
+// Move to customized opacity muting
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/generic/_helper.scss#L118-L124
+.muted {
+  opacity: $muted-opacity/100!important;
+  filter: alpha(opacity = $muted-opacity)!important;
+}

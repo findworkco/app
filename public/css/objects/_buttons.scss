@@ -1,0 +1,12 @@
+.btn {
+  text-decoration: none;
+  display: inline-block;
+  padding: 9px 28px;
+  border-radius: $btn-border-radius;
+}
+
+.btn--default {
+  color: $btn--default-color;
+  border: 1px solid $btn--default-border-color;
+  background: $btn--default-bg;
+}

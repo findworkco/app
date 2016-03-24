@@ -6,3 +6,9 @@ input[type=email],
 textarea {
   cursor: text;
 }
+
+// Use our variables for small sizes
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/generic/_normalize.scss#L189-L191
+small {
+  font-size: $small-size;
+}
