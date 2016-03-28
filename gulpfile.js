@@ -2,6 +2,7 @@
 var gulp = require('gulp');
 var gulpCsso = require('gulp-csso');
 var gulpLivereload = require('gulp-livereload');
+var gulpNotify = require('gulp-notify');
 var gulpSass = require('gulp-sass');
 var gulpSizereport = require('gulp-sizereport');
 var rimraf = require('rimraf');
@@ -18,19 +19,20 @@ gulp.task('build-clean', function clean (done) {
   rimraf(__dirname + '/dist/', done);
 });
 
-gulp.task('build-css', function buildCss (done) {
+gulp.task('build-css', function buildCss () {
   // Generate a stream that compiles SCSS to CSS
   // DEV: We return the pipe'd stream so gulp knows when we exit
-  // DEV: We also have a callback handler via `error` since the pipe breaks on error
   var cssStream = gulp.src('public/css/index.scss')
     .pipe(gulpSass({
       style: 'nested'
     }));
 
-  // If we are allowing failures, then callback with them
-  // DEV: This shouldn't error out in `watch`
+  // If we are allowing failures, then log them
+  // DEV: Desktop notifications are a personal preference
+  //   If they get unwieldy, feel free to move to logging only
+  //   But be sure to continue to emit an `end` event
   if (config.allowFailures) {
-    cssStream.on('error', done);
+    cssStream.on('error', gulpNotify.onError());
   }
 
   // If we are minifying assets, then minify them
