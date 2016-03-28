@@ -2,20 +2,24 @@
 Web application for https://findwork.co/
 
 ## Getting started
-TODO: Add me
-
-## Documentation
-### Development
-Currently, we don't have any server components. To host the files locally in development, we are using `serve`.
-
-To run a development server locally, run:
+To get a local copy running, perform the following steps:
 
 ```bash
+# Clone the repository
+git clone git@github.com:twolfson/find-work-app.git
+cd find-work-app
+
+# Install our dependencies and compile assets
+# DEV: This will automatically run `npm run build` on complete
+npm install
+
+# Start our server
 npm start
 ```
 
-The files will be available at <http://localhost:9000/server/views/>
+Our development server will be running at <http://localhost:9000/>
 
+## Documentation
 ### Building files
 We offer compilation of CSS/JS via 2 means:
 
