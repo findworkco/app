@@ -18,17 +18,19 @@ gulp.task('build-clean', function clean (done) {
   rimraf(__dirname + '/dist/', done);
 });
 
-gulp.task('build-css', function buildCss () {
+gulp.task('build-css', function buildCss (done) {
   // Generate a stream that compiles SCSS to CSS
   // DEV: We return the pipe'd stream so gulp knows when we exit
+  // DEV: We also have a callback handler via `error` since the pipe breaks on error
   var cssStream = gulp.src('public/css/index.scss')
     .pipe(gulpSass({
       style: 'nested'
     }));
 
-  // If we are allowing failures, then log them
+  // If we are allowing failures, then callback with them
+  // DEV: This shouldn't error out in `watch`
   if (config.allowFailures) {
-    cssStream.on('error', console.error);
+    cssStream.on('error', done);
   }
 
   // If we are minifying assets, then minify them
