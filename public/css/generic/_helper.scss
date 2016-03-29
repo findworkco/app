@@ -4,3 +4,8 @@
   opacity: $muted-opacity/100!important;
   filter: alpha(opacity = $muted-opacity)!important;
 }
+
+// Reset text sizes
+.text--normal {
+  @include font-size($base-font-size);
+}

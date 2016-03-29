@@ -19,6 +19,12 @@ $white: #FFFFFF;
 // Rainbow (red, orange, yellow, green, blue, indigo, violet)
 // TODO: Reconsider blue color
 $blue: #3D70B7;
+$red: #E61610;
+
+// Brand specific/established colors
+$link-blue: #0000EE;
+$link-purple: #551A8B;
+$link-red: #EE0000;
 
 // One-off values
 $sixty: 60;
@@ -35,8 +41,19 @@ $brand-light: $white;
 // Button styles
 $btn--default-color: $black;
 $btn--default-border-color: $black;
-/* TODO: Explore using gradient for button colors */
+/* TODO: Explore using gradient for button backgrounds */
 $btn--default-bg: $gray-xE6;
+
+$btn--primary-color: $white;
+$btn--primary-bg: $blue;
+
+$btn--warning-color: $white;
+$btn--warning-bg: $red;
+
+// Link stytles
+$link-color: $link-blue;
+$link--visited-color: $link-purple;
+$link--active-color: $link-red;
 
 // Nav styles
 $nav-row-border-color: $brand-dark;

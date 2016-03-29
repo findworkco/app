@@ -1,4 +1,40 @@
+a,
+.text--link {
+  // Re-define default styles for consistency in `a` and `.text--link`
+  // DEV: Colors via http://stackoverflow.com/a/4774046
+  color: $link-color;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:visited {
+    color: $link--visited-color;
+  }
+
+  &:active {
+    color: $link--active-color;
+  }
+
+  &:focus {
+    outline: thin dotted;
+  }
+}
+
 .link--unstyled {
-  color: inherit;
-  text-decoration: inherit;
+  &,
+  &:visited,
+  &:active {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.text--link {
+  // Reset styles for components like buttons
+  background: inherit;
+  border: 0;
+  padding: 0;
 }

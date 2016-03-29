@@ -1,12 +1,45 @@
+// Button layout
 .btn {
   text-decoration: none;
   display: inline-block;
-  padding: 9px 28px;
+  padding: 9px 21px;
   border-radius: $btn-border-radius;
 }
 
+.btn--small {
+  padding: 5px 9px;
+}
+
+.btn--thin {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.btn--wide {
+  padding-left: 28px;
+  padding-right: 28px;
+
+  &.btn--small {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+}
+
+// Button colors
 .btn--default {
-  color: $btn--default-color;
-  border: 1px solid $btn--default-border-color;
   background: $btn--default-bg;
+  border: 1px solid $btn--default-border-color;
+  color: $btn--default-color;
+}
+
+.btn--primary {
+  background: $btn--primary-bg;
+  border: 0;
+  color: $btn--primary-color;
+}
+
+.btn--warning {
+  background: $btn--warning-bg;
+  border: 0;
+  color: $btn--warning-color;
 }

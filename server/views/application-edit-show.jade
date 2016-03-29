@@ -1,0 +1,178 @@
+//- Define mock data specific to our view
+//- DEV: Designed after https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
+-
+  var glassdoorResult = {
+    name: 'IBM',
+    website: 'www.ibm.com',
+    industry: null,
+    overall_rating: '0.0/5.0 (20 ratings)',
+    ceo_review: '0% approve, 0% disapprove (0 ratings)',
+    glassdoor_url: 'http://glassdoor.com/ibm'
+  };
+-
+  var angelListResult = {
+    name: 'AngelList',
+    website: 'http://angel.co',
+    followers: 2849,
+    locations: 'San Francisco',
+    markets: 'Startups, Venture Capital',
+    angellist_url: 'http://angel.co/angellist'
+  };
+
+h1.push--top(style="font-weight: normal") Job application
+h2(style="font-weight: normal")
+  = selectedApplication.name
+  //- TODO: Link up to autosave mechanism
+  i.text--normal.float--right.muted All changes saved
+//- DEV: We wanted to use a `p` but we can't nest forms in them
+//-   as browsers break up those block in block formations
+div.push--bottom
+  = "Status: "
+  b= selectedApplication.human_status
+  //- TODO: When we make window smaller, I think these wrap before the breakpoint
+  //-   Also, can we update line height so they wrap with padding?
+  a.btn.btn--thin.btn--default.push--left(href=selectedApplication.add_interview_url)
+    span(aria-hidden="true")= "+ "
+    | Add interview
+  //- DESIGN: On load of next page, add a confetti animation
+  //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
+  //- DESIGN: On load of next page, have indication that we preselected 7 day response reminder
+  //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
+  form.push--left(method="POST", action=selectedApplication.received_offer_url, style="display: inline")
+    //- TODO: Add CSRF to form
+    button.btn.btn--thin.btn--default(type="submit") I've received an offer
+  //- DESIGN: On click, redirect to unselected nav and add notification for "Application has been archived"
+  //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
+  form.push--left(method="POST", action=selectedApplication.archive_url, style="display: inline")
+    //- TODO: Add CSRF to form
+    button.btn.btn--thin.btn--default(type="submit") Archive application
+form.grid(method="POST", action=selectedApplication.url)
+  //- TODO: Add CSRF to form
+  .grid__item.four-ninths
+    //- TODO: Link up `follow URL` to automatically update on throttled keydown
+    .form-control
+      label(for="posting_url")
+        = "Posting URL: ("
+        a(href=selectedApplication.posting_url) follow URL
+        = ")"
+      input#posting_url.input--block(name="posting_url", type="text", value=selectedApplication.posting_url)
+    .form-control
+      label(for="name") Name:
+      input#name.input--block(name="name", type="text", value=selectedApplication.name)
+    .form-control
+      label(for="application_date")
+        = "Application date: "
+        i.fa.fa-calendar-o(style="font-size: 1.5em")
+      //- TODO: Add datepicker, date only
+      input#application_date(name="application_date", type="date", value=selectedApplication.application_date)
+    .form-control
+      //- TODO: Make sure we are consistent with "Follow-up" vs "Follow up"
+      h4.flush--bottom(style="font-weight: normal")
+        = "Follow up reminder: "
+        span.text--normal
+          i.fa.fa-reply(style="font-size: 1.5em")
+      - var hasFollowUpReminder = !!selectedApplication.follow_up_reminder;
+      div
+        input(name="follow_up_reminder_enabled", type="radio", checked=hasFollowUpReminder, value="yes")
+        = " "
+        //- TODO: Add datepicker with time and timezone
+        input#follow_up_reminder(name="follow_up_reminder", type="date", value=selectedApplication.follow_up_reminder)
+      div
+        input(name="follow_up_reminder_enabled", type="radio", checked=!hasFollowUpReminder, value="no")
+        = " No reminder"
+    div.past-interviews.landmark
+      //- TODO: Design our empty state for this...
+      h4.push-half--bottom(style="font-weight: normal")
+        = "Past interviews: "
+        a.text--normal.btn.btn--small.btn--default(href=selectedApplication.add_interview_url)
+          span(aria-hidden="true")= "+ "
+          | Add interview
+      p
+        each past_interview, i in selectedApplication.past_interviews
+          //- TODO: Use ideal date formatting
+          - var pastInterviewStr = "Fri Jan 15 at 9:00AM PST";
+          a(href=past_interview.url)= pastInterviewStr
+          if i != selectedApplication.past_interviews.length - 1
+            br
+    div.landmark
+      button.btn.btn--primary(name="submit_button", type="submit", value="save") Save changes
+    div.landmark
+      //- DEV: We don't put forms in forms since it causes them to stop early in Firefox
+      //- TODO: Add a confirm warning to delete
+      //- TODO: Verify `Ctrl+Enter` only submits save, not delete (seems to be good in Firefox)
+      button.btn.btn--warning(name="submit_button", type="submit", value="delete") Delete
+  .grid__item.five-ninths
+    .form-control
+      label(for="notes") Notes:
+      //- TODO: Add editor integration (wysiwyg.js, did it in a gist or codepen)
+      textarea.input--block#notes(name="notes", rows=7)= selectedApplication.notes
+    div.research-company
+      //- TODO: Make sure that either this mini form works
+      //-   and is accessible
+      //-   or figure out some way to get the HTML to work
+      //-   We could integrate with the bigger form buuuut we need to make sure that "Ctrl+Enter" works =X
+      //-   ... doesn't look like it...
+      //-   We could design away the need for "Ctrl+Enter" by generating a loading image
+      //-      when the user starts typing
+
+      //- Worst case scenarios:
+      //- - Absolute position form
+      //- - Embedded iframe (best idea yet, is it accessible?)
+      //-    It works buuut need to autosize content
+      //- - Redesign flow so search is elsewhere (e.g. another page)
+      h4.push-half--bottom(style="font-weight: normal") Research company:
+      .form-control
+        label(for="company_name") Name:
+        input.three-fifths#company_name(name="company_name", type="text", value=selectedApplication.company_name)
+        //- TODO: Connect to search mechanism on click
+        button.btn.btn--small.btn--wide.btn--default.push--left(name="submit_button", type="submit", value="search") Search
+      //- TODO: Make this a heading
+      //- TODO: Handle empty state (pretty sure we mocked it)
+      b Glassdoor results:
+      p
+        | Name: #{glassdoorResult.name}
+        br
+        = "Website: "
+        a(href=glassdoorResult.website)= glassdoorResult.website
+        br
+        = "Industry: "
+        if !glassdoorResult.industry
+          i Unknown
+        else
+          = glassdoorResult.industry
+        br
+        | Overall rating: #{glassdoorResult.overall_rating}
+        br
+        | CEO review: #{glassdoorResult.ceo_review}
+        br
+        a(href=glassdoorResult.glassdoor_url) View Glassdoor profile
+        br
+        //- TODO: Use logo
+        a(href="https://www.glassdoor.com/") Powered by Glassdoor
+        br
+        //- TODO: Make this submit to Google forms
+        //- TODO: Prob need to make this its own form...
+        button.text--link Bad match? Click here to let us know
+      //- TODO: Make this a heading
+      //- TODO: Handle empty state (pretty sure we mocked it)
+      b AngelList results:
+      p
+        | Name: #{angelListResult.name}
+        br
+        = "Website: "
+        a(href=angelListResult.website)= angelListResult.website
+        br
+        | Followers: #{angelListResult.followers}
+        br
+        | Locations: #{angelListResult.locations}
+        br
+        | Markets: #{angelListResult.markets}
+        br
+        a(href=angelListResult.angellist_url) View AngelList profile
+        br
+        //- TODO: Use logo
+        a(href="https://angel.co/") Powered by AngelList
+        br
+        //- TODO: Make this submit to Google forms
+        //- TODO: Prob need to make this its own form...
+        button.text--link Bad match? Click here to let us know

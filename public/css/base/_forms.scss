@@ -1,0 +1,23 @@
+input[type=text],
+input[type=email],
+input[type=password],
+textarea {
+  background: white;
+  border: 1px solid #000;
+  padding: 3px;
+}
+
+.input--block {
+  display: block;
+  width: 100%;
+}
+
+.form-control {
+  margin-bottom: $base-spacing-unit;
+}
+
+.form-control input {
+  /* DEV: This is to keep us on vertical rhythm */
+  margin-top: 3px;
+  margin-bottom: 3px;
+}

@@ -63,14 +63,30 @@ html
     -
       var waitingForResponseApplications = [{
         id: 'abcdef-sky-networks',
+        add_interview_url: '/application/abcdef-sky-networks/add-interview',
+        // Fri Jan 8
+        application_date: new Date('2016-01-08T14:00-0600'),
+        archive_url: '/application/abcdef-sky-networks/archive',
+        company_name: 'Sky Networks',
+        human_status: 'Waiting for response',
         // Tue Feb 23
         follow_up_reminder: new Date('2016-02-23T12:00-0600'),
         // Tue Feb 16
         last_contact: new Date('2016-02-16T12:00-0600'),
+        past_interviews: [{
+          id: 'abcdef-sky-networks-001',
+          // Fri Jan 15 at 9:00AM PST
+          datetime: new Date('2016-01-15T09:00-0700'),
+          url: '/interview/abcdef-sky-networks-001'
+        }],
+        posting_url: 'https://github.com/about/jobs',
         name: 'Engineer II at Sky Networks',
+        notes: '100 employees, all seem robotic',
+        status: 'waiting_for_response',
+        received_offer_url: '/application/abcdef-sky-networks/received-offer',
         url: '/application/abcdef-sky-networks'
       }];
-    - var selectedApplication = {id: 'abcdef-sky-networks'};
+    - var selectedApplication = waitingForResponseApplications[0];
 
     //- Declare common mixins
     mixin calendar-2x-with-date(date)
@@ -105,13 +121,14 @@ html
           h1.section--brand-dark(style="text-align: center; font-weight: normal; margin-left: -9px; margin-right: -9px; line-height: #{fourLines}px") Find Work
 
           p.text--center
-            a.btn.btn--default(href="/create-application")
+            a.btn.btn--wide.btn--default(href="/create-application")
               span(aria-hidden="true")= "+ "
               | Add job application
 
           //- Upcoming interviews section
           h3.flush--bottom(style="font-weight: normal") Upcoming interviews
-          .landmark
+          //- DEV: This is actually a 1.5x push due to extra padding for link border
+          .push--bottom
             if upcomingInterviews.length
               each upcomingInterview in upcomingInterviews
                 +nav-row--application(upcomingInterview.application)
@@ -193,4 +210,4 @@ html
               a(href="mailto:todd@findwork.co?subject=Find%20Work%20support%20question") Support
 
         .grid__item.three-quarters
-          p Hello World!
+          include ./application-edit-show.jade
