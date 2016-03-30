@@ -97,7 +97,15 @@ html
 
     mixin nav-row(options)
       //- DEV: We use padded half ends to give padding for the selected border
-      .nav-row.soft-half--ends(class={'nav-row--selected': options.selected})
+      - var el = options.el || 'div';
+      #{el}.nav-row.soft-half--ends(class={'nav-row--selected': options.selected})&attributes(attributes)
+        block
+
+    mixin nav-row--link(options)
+      //- Override our element as a link
+      //- DEV: We use `&attributes` and `block` to make a pass through
+      - options.el = 'a';
+      +nav-row(options).nav-link&attributes(attributes)
         block
 
     mixin nav-row--application(application)
@@ -138,7 +146,7 @@ html
                   .nav-info
                     .nav-info__icon
                       //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
-                      //- TOOD: Make sure we use the same calendar between icon and content
+                      //- TODO: Make sure we use the same calendar between icon and content
                       +calendar-2x-with-date('20')
                     .nav-info__content
                       | Wed Jan 20 at 2:00PM CST
@@ -180,13 +188,10 @@ html
           //- Nav links
           //- TODO: Make selection/highlight of `/archive` and `/settings` work
           //-   Prob compare against URLs, not application ids
-          +nav-row({selected: false})
-            //- DEV: We use a `div` separate from `a` so it's a block being linked
-            a.nav-link(href="/archive")
-              div Archived applications
-          +nav-row({selected: false})
-            a.nav-link(href="/settings")
-              div Settings
+          //- TODO: When we table on these rows, they feel weird with padding
+          //-   I feel like we should pad the nav...
+          +nav-row--link({selected: false})(href="/archive") Archived applications
+          +nav-row--link({selected: false})(href="/settings") Settings
 
           //- Nav footer
           div.push--top.text--center.muted

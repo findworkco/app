@@ -20,15 +20,12 @@ a,
 }
 
 .link--unstyled {
+  // DEV: We retain `&:focus` to have an outline for accessibility
   &,
   &:visited,
   &:active {
     color: inherit;
     text-decoration: inherit;
-  }
-
-  &:focus {
-    outline: none;
   }
 }
 

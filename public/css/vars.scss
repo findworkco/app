@@ -23,13 +23,11 @@ $white: #FFFFFF;
 
 // Rainbow (red, orange, yellow, green, blue, indigo, violet)
 $red: #DA3C37;
+$dark-red: #CD0000;
 $blue: #2579D2;
 $pale-blue: #66AFE9; // https://github.com/twbs/bootstrap/blob/v3.3.6/less/variables.less#L203
-
-// Brand specific/established colors
-$link-blue: #0000EE;
-$link-purple: #551A8B;
-$link-red: #EE0000;
+$light-blue: #0626D3;
+$vivid-purple: #4E009A;
 
 // One-off values
 $sixty: 60;
@@ -66,9 +64,9 @@ $bs-input-border-focus: $pale-blue;
 $bs-input-color-placeholder: $gray-x99; // default
 
 // Link styles
-$link-color: $link-blue;
-$link--visited-color: $link-purple;
-$link--active-color: $link-red;
+$link-color: $light-blue;
+$link--visited-color: $vivid-purple;
+$link--active-color: $dark-red;
 
 // Nav styles
 $nav-row-border-color: $brand-dark;
