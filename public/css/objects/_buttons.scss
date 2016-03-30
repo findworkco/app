@@ -4,6 +4,7 @@
   display: inline-block;
   padding: 9px 21px;
   border-radius: $btn-border-radius;
+  border: 1px solid transparent;
 }
 
 .btn--small {
@@ -25,21 +26,15 @@
   }
 }
 
-// Button colors
+// Define button colors via Bootstrap
+// https://github.com/twbs/bootstrap/blob/v3.3.6/less/buttons.less#L63-L87
 .btn--default {
-  background: $btn--default-bg;
-  border: 1px solid $btn--default-border-color;
-  color: $btn--default-color;
+  @include button-variant($btn--default-color, $btn--default-bg, $btn--default-border);
 }
-
 .btn--primary {
-  background: $btn--primary-bg;
-  border: 0;
-  color: $btn--primary-color;
+  @include button-variant($btn--primary-color, $btn--primary-bg, $btn--primary-border);
 }
-
-.btn--warning {
-  background: $btn--warning-bg;
-  border: 0;
-  color: $btn--warning-color;
+// Danger and error appear as red
+.btn--danger {
+  @include button-variant($btn--danger-color, $btn--danger-bg, $btn--danger-border);
 }

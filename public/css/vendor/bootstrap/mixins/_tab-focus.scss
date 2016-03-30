@@ -1,0 +1,10 @@
+// Modified from https://github.com/twbs/bootstrap/blob/v3.3.6/less/mixins/tab-focus.less
+// WebKit-style focus
+
+@mixin tab-focus() {
+  // Default
+  outline: thin dotted;
+  // WebKit
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}

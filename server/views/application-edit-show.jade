@@ -50,22 +50,22 @@ form.grid(method="POST", action=selectedApplication.url)
   //- TODO: Add CSRF to form
   .grid__item.four-ninths
     //- TODO: Link up `follow URL` to automatically update on throttled keydown
-    .form-control
+    .form-group
       label(for="posting_url")
         = "Posting URL: ("
         a(href=selectedApplication.posting_url) follow URL
         = ")"
-      input#posting_url.input--block(name="posting_url", type="text", value=selectedApplication.posting_url)
-    .form-control
+      input#posting_url.form-control.input--block(name="posting_url", type="text", value=selectedApplication.posting_url)
+    .form-group
       label(for="name") Name:
-      input#name.input--block(name="name", type="text", value=selectedApplication.name)
-    .form-control
+      input#name.form-control.input--block(name="name", type="text", value=selectedApplication.name)
+    .form-group
       label(for="application_date")
         = "Application date: "
         i.fa.fa-calendar-o(style="font-size: 1.5em")
       //- TODO: Add datepicker, date only
-      input#application_date(name="application_date", type="date", value=selectedApplication.application_date)
-    .form-control
+      input#application_date.form-control(name="application_date", type="date", value=selectedApplication.application_date)
+    .form-group
       //- TODO: Make sure we are consistent with "Follow-up" vs "Follow up"
       h4.flush--bottom(style="font-weight: normal")
         = "Follow up reminder: "
@@ -76,7 +76,7 @@ form.grid(method="POST", action=selectedApplication.url)
         input(name="follow_up_reminder_enabled", type="radio", checked=hasFollowUpReminder, value="yes")
         = " "
         //- TODO: Add datepicker with time and timezone
-        input#follow_up_reminder(name="follow_up_reminder", type="date", value=selectedApplication.follow_up_reminder)
+        input#follow_up_reminder.form-control(name="follow_up_reminder", type="date", value=selectedApplication.follow_up_reminder)
       div
         input(name="follow_up_reminder_enabled", type="radio", checked=!hasFollowUpReminder, value="no")
         = " No reminder"
@@ -100,12 +100,12 @@ form.grid(method="POST", action=selectedApplication.url)
       //- DEV: We don't put forms in forms since it causes them to stop early in Firefox
       //- TODO: Add a confirm warning to delete
       //- TODO: Verify `Ctrl+Enter` only submits save, not delete (seems to be good in Firefox)
-      button.btn.btn--warning(name="submit_button", type="submit", value="delete") Delete
+      button.btn.btn--danger(name="submit_button", type="submit", value="delete") Delete
   .grid__item.five-ninths
-    .form-control
+    .form-group
       label(for="notes") Notes:
       //- TODO: Add editor integration (wysiwyg.js, did it in a gist or codepen)
-      textarea.input--block#notes(name="notes", rows=7)= selectedApplication.notes
+      textarea.form-control.input--block#notes(name="notes", rows=7)= selectedApplication.notes
     div.research-company
       //- TODO: Make sure that either this mini form works
       //-   and is accessible
@@ -121,9 +121,9 @@ form.grid(method="POST", action=selectedApplication.url)
       //-    It works buuut need to autosize content
       //- - Redesign flow so search is elsewhere (e.g. another page)
       h4.push-half--bottom(style="font-weight: normal") Research company:
-      .form-control
+      .form-group
         label(for="company_name") Name:
-        input.three-fifths#company_name(name="company_name", type="text", value=selectedApplication.company_name)
+        input.form-control.three-fifths#company_name(name="company_name", type="text", value=selectedApplication.company_name)
         //- TODO: Connect to search mechanism on click
         button.btn.btn--small.btn--wide.btn--default.push--left(name="submit_button", type="submit", value="search") Search
       //- TODO: Make this a heading

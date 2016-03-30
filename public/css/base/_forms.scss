@@ -1,9 +1,4 @@
-input[type=text],
-input[type=email],
-input[type=password],
-textarea {
-  background: white;
-  border: 1px solid #000;
+.form-control {
   padding: 3px;
 }
 
@@ -12,11 +7,11 @@ textarea {
   width: 100%;
 }
 
-.form-control {
+.form-group {
   margin-bottom: $base-spacing-unit;
 }
 
-.form-control input {
+.form-control {
   /* DEV: This is to keep us on vertical rhythm */
   margin-top: 3px;
   margin-bottom: 3px;

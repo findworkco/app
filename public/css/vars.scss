@@ -13,13 +13,18 @@
 // Please base names off of https://en.wikipedia.org/wiki/Color_Naming_System
 // Grayscale from black to white
 $black: #000000;
+$gray-x22: #222222;
+$gray-x33: #333333;
+$gray-x99: #999999;
+$gray-xCC: #CCCCCC;
 $gray-xE6: #E6E6E6;
+$gray-xEE: #EEEEEE;
 $white: #FFFFFF;
 
 // Rainbow (red, orange, yellow, green, blue, indigo, violet)
-// TODO: Reconsider blue color
-$blue: #3D70B7;
-$red: #E61610;
+$red: #DA3C37;
+$blue: #2579D2;
+$pale-blue: #66AFE9; // https://github.com/twbs/bootstrap/blob/v3.3.6/less/variables.less#L203
 
 // Brand specific/established colors
 $link-blue: #0000EE;
@@ -31,26 +36,36 @@ $sixty: 60;
 
 // Phase 2: Color mappings
 // Body text color
-// TODO: Choose an off-black color for body color?
-$body-color: $black;
+$body-color: $gray-x22;
 
 // Brand colors
 $brand-dark: $blue;
 $brand-light: $white;
 
 // Button styles
-$btn--default-color: $black;
-$btn--default-border-color: $black;
-/* TODO: Explore using gradient for button backgrounds */
-$btn--default-bg: $gray-xE6;
+$btn--default-color: $gray-x33;
+$btn--default-bg: $white;
+$btn--default-border: $gray-xCC;
 
 $btn--primary-color: $white;
 $btn--primary-bg: $blue;
+$btn--primary-border: darken($btn--primary-bg, 5%);
 
-$btn--warning-color: $white;
-$btn--warning-bg: $red;
+$btn--danger-color: $white;
+$btn--danger-bg: $red;
+$btn--danger-border: darken($btn--danger-bg, 5%);
 
-// Link stytles
+// Input styles
+// https://github.com/twbs/bootstrap/blob/v3.3.6/less/variables.less#L10-L15
+// https://github.com/twbs/bootstrap/blob/v3.3.6/less/variables.less#L179-L213
+$bs-input-bg: $white; // default
+$bs-input-bg-disabled: $gray-xEE; // default
+$bs-input-color: $gray-x22; // Same as body color
+$bs-input-border: $gray-xCC; // default
+$bs-input-border-focus: $pale-blue;
+$bs-input-color-placeholder: $gray-x99; // default
+
+// Link styles
 $link-color: $link-blue;
 $link--visited-color: $link-purple;
 $link--active-color: $link-red;
@@ -65,6 +80,9 @@ $muted-opacity: $sixty; // 60 percent
 // Some reference values can be found here: https://docs.google.com/document/d/1yQJLRq2gRh6HbuProMCavvap91DJyZMG69Lj9lo2sws/edit
 // Spacing/padding
 $base-spacing-unit: 18px;
+
+// Border radius
+$bs-border-radius-base: 4px;
 
 // Responsive handling
 $large-max-width: 960px;

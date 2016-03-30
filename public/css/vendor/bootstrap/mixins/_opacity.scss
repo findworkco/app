@@ -1,0 +1,9 @@
+// https://github.com/twbs/bootstrap/blob/v3.3.6/less/mixins/opacity.less
+// Opacity
+
+@mixin opacity($opacity) {
+  opacity: $opacity;
+  // IE8 filter
+  $opacity-ie: ($opacity * 100);
+  filter: alpha(opacity=$opacity-ie);
+}
