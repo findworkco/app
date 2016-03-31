@@ -11,10 +11,18 @@ build:
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
 
+    # Configure npm and bower to allow root scripts
+    - script:
+        name: enable root/sudo for npm/bower
+        code: |
+          # https://docs.npmjs.com/misc/config#unsafe-perm
+          npm config set unsafe-perm true
+          # https://github.com/bower/bower/issues/1752#issuecomment-113455403
+          echo "{\"allow_root\": true}" > ~/.bowerrc
+
     # Install our dependencies and dev dependencies
     # DEV: This also tests `npm run build` due to a `postinstall` hook
-    - npm-install
+    - npm-install@1.1.4
 
     # Run our tests
-    - npm-test
-
+    - npm-test@0.0.3
