@@ -42,5 +42,31 @@ As a result, if you enable/install a LiveReload browser extension, then it will 
 
 http://livereload.com/extensions/
 
+### Visual testing
+We have support for running visual tests locally. These can be useful when performing CSS refactors and verifying nothing unexpectedly changes.
+
+To capture expected images, run:
+
+```bash
+# Start a Webdriver server
+npm run start-webdriver
+
+# Capture images
+npm run gemini-update
+```
+
+To validate latest images against expected images, run:
+
+```bash
+npm run gemini-test
+# On failure, an HTML report will be generated in `gemini-report`
+```
+
+To validate images via a GUI, run:
+
+```bash
+npm run gemini-gui
+```
+
 ## Copyright
 All rights reserved, Shoulders of Titans LLC

@@ -23,14 +23,22 @@
     "build": "gulp build-clean && gulp build",
     "develop": "gulp build-clean && gulp develop",
     "lint": "twolfson-style lint server/ test/",
-    "postinstall": "bower install && npm run build",
+    "gemini-gui": "gemini-gui test/visual-tests",
+    "gemini-update": "npm run verify-webdriver-running && gemini update test/visual-tests",
+    "gemini-test": "npm run verify-webdriver-running && gemini test --reporter html --reporter flat test/visual-tests",
+    "postinstall": "bower install && npm run webdriver-update && npm run build",
     "start": "serve -p 9000",
-    "test": "npm run lint && npm run test-verify-images-optimized",
-    "test-verify-images-optimized": "test/verify-images-optimized.sh"
+    "test": "npm run lint && npm run verify-images-optimized",
+    "verify-images-optimized": "test/verify-images-optimized.sh",
+    "verify-webdriver-running": "curl --silent http://localhost:4444/ > /dev/null || (echo \"Webdriver isn't running, please start it via \\`npm run webdriver-start\\`\" 1>&2 && exit 1)",
+    "webdriver-start": "webdriver-manager start",
+    "webdriver-update": "webdriver-manager update"
   },
   "dependencies": {},
   "devDependencies": {
     "bower": "~1.7.7",
+    "gemini": "~3.0.2",
+    "gemini-gui": "~3.0.0",
     "gulp": "~3.9.1",
     "gulp-csso": "~1.1.0",
     "gulp-livereload": "~3.8.1",
@@ -43,7 +51,8 @@
     "mocha": "~2.4.5",
     "rimraf": "~2.5.2",
     "serve": "~1.4.0",
-    "twolfson-style": "~1.6.0"
+    "twolfson-style": "~1.6.0",
+    "webdriver-manager": "~9.0.0"
   },
   "keywords": [],
   "private": true

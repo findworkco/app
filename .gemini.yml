@@ -1,0 +1,9 @@
+rootUrl: http://localhost:9000/server/views
+
+browsers:
+  Firefox:
+    desiredCapabilities:
+      browserName: firefox
+
+    # Restrict to 1 suite per session to prevent issues like mouse down sticking
+    suitesPerSession: 1

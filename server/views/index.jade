@@ -120,7 +120,7 @@ html
     .container
       .grid
         //- TODO: Find aria role (I think it's nav)
-        .grid__item.one-quarter
+        #nav.grid__item.one-quarter
           //- DEV: Negative margins are to extend the boundary of our blue background to the gutter
           .push--bottom.section--brand-dark(style="text-align: center; margin-left: -9px; margin-right: -9px; padding: 0 9px")
             a(href="/")
@@ -215,5 +215,5 @@ html
               //- TODO: Verify this is the email we want to use
               a(href="mailto:todd@findwork.co?subject=Find%20Work%20support%20question") Support
 
-        .grid__item.three-quarters
+        #content.grid__item.three-quarters
           include ./application-edit-show.jade

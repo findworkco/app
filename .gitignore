@@ -1,3 +1,10 @@
+# Dependencies
 bower_components/
 node_modules/
+
+# Compiled assets
 dist/
+
+# Visual test assets
+gemini/
+gemini-report/
