@@ -121,13 +121,14 @@ html
       .grid
         //- TODO: Find aria role (I think it's nav)
         .grid__item.one-quarter
-          //- TODO: Use branded logo
-          //- TODO: Add signed in state
-          //- DEV: font-weight is to reset heading boldness
           //- DEV: Negative margins are to extend the boundary of our blue background to the gutter
-          - var fourLines = 4 * 18;
-          h1.section--brand-dark(style="text-align: center; font-weight: normal; margin-left: -9px; margin-right: -9px; line-height: #{fourLines}px") Find Work
-
+          .push--bottom.section--brand-dark(style="text-align: center; margin-left: -9px; margin-right: -9px; padding: 0 9px")
+            a(href="/")
+              //- TODO: Add to sprites
+              img.push--top(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
+            p.flush--bottom.soft-half--bottom
+              //- TODO: Build signed out state
+              a.link--unstyled.muted(href="/settings") todd@findwork.co
           p.text--center
             a.btn.btn--wide.btn--default(href="/create-application")
               span(aria-hidden="true")= "+ "

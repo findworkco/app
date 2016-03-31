@@ -1,6 +1,7 @@
 // Load in our dependencies
 var gulp = require('gulp');
 var gulpCsso = require('gulp-csso');
+var gulpSvgmin = require('gulp-svgmin');
 var gulpLivereload = require('gulp-livereload');
 var gulpNotify = require('gulp-notify');
 var gulpSass = require('gulp-sass');
@@ -48,7 +49,16 @@ gulp.task('build-css', function buildCss () {
     .pipe(gulpLivereload());
 });
 
-gulp.task('build', ['build-css']);
+gulp.task('build-images-svg', function buildImagesSvg () {
+  // Optimize SVG files inline
+  return gulp.src('public/images/**/*.svg')
+    .pipe(gulpSvgmin())
+    .pipe(gulpSizereport({gzip: true}))
+    .pipe(gulp.dest('public/images'));
+});
+
+gulp.task('build-images', ['build-images-svg']);
+gulp.task('build', ['build-css', 'build-images']);
 
 // Define our development tasks
 gulp.task('livereload-update', function livereloadUpdate () {
