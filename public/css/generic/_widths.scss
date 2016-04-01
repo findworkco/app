@@ -2,3 +2,12 @@
 // https://github.com/csswizardry/inuit.css/blob/v5.0.1/generic/_widths.scss
 .four-ninths { width: 44.444%; }
 .five-ninths { width: 55.555%; }
+
+// Add our media query bindings (e.g. `medium-one-half`)
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/generic/_widths.scss#L106-L141
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/generic/_helper.scss#L176-L183
+@each $state in $responsive-states {
+  @include media-query(#{$state}) {
+    @include grid-setup('#{$state}-')
+  }
+}

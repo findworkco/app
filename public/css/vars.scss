@@ -115,8 +115,20 @@ $micro-size: 10px; // default
 // Button styles
 $btn-border-radius: 4px;
 
-// TODO: Replace inuit's responsive helpers with our sizings
-//   https://github.com/csswizardry/inuit.css/blob/v5.0.1/_defaults.scss#L68
+// ## Custom responsive breakpoints
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/_defaults.scss#L100-L105
+// DEV: We use custom names as inuit.css' scheme is confusing
+$medium-start: 481px;
+$large-start: 601px;
+
+// ## Flags
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/_defaults.scss#L20
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/_defaults.scss#L33
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/_defaults.scss#L68-L74
+$debug-mode: false; // default
+$global-border-box: true; // default
+$responsive: false; // Disabled for custom breakpoints/naming
+$responsive-extra: false; // default
 
 // ## Internal objects
 /**
