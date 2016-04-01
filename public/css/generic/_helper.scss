@@ -9,3 +9,11 @@
 .text--normal {
   @include font-size($base-font-size);
 }
+
+// Hiding elements
+.hidden { display: none; }
+@each $state in $responsive-states {
+  @include media-query(#{$state}) {
+    .#{$state}-hidden { display: none; }
+  }
+}

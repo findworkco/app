@@ -120,100 +120,124 @@ html
     .container
       .grid
         //- TODO: Find aria role (I think it's nav)
-        #nav.grid__item.one-quarter
-          //- DEV: Negative margins are to extend the boundary of our blue background to the gutter
-          .push--bottom.section--brand-dark(style="text-align: center; margin-left: -9px; margin-right: -9px; padding: 0 9px")
-            a(href="/")
-              //- TODO: Add to sprites
-              img.push--top(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
-            p.flush--bottom.soft-half--bottom
-              //- TODO: Build signed out state
-              a.link--unstyled.muted(href="/settings") todd@findwork.co
-          p.text--center
-            a.btn.btn--wide.btn--default(href="/create-application")
-              span(aria-hidden="true")= "+ "
-              | Add job application
+        #nav.grid__item.one-whole.large-one-quarter
+          header
+            //- DEV: Negative margins are to extend the boundary of our blue background to the gutter
+            .push--bottom.section--brand-dark(style="text-align: center; margin-left: -9px; margin-right: -9px; padding: 0 9px")
+              //- On large screens, always display logo in full
+              //- TODO: Document medium screen behavior
+              .small-hidden
+                a(href="/")
+                  //- TODO: Add to sprites
+                  img.push--top(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
+                p.flush--bottom.soft-half--bottom
+                  //- TODO: Build signed out state
+                  a.link--unstyled.muted(href="/settings") todd@findwork.co
+              //- On small screens, display full logo on nav OR thin bar on non-nav
+              .medium-and-up-hidden
+                //- TODO: Move to conditional for being on nav page or not
+                if true
+                  .grid.soft-half--ends
+                    .grid__item.one-quarter
+                      //- TODO: Reconsider having a "Back" button as most mobile devices have some equivalent for this
+                      //- Maybe do a full "Nav" via slide out...
+                      a.link--unstyled(href="javascript:history.go(-1);")
+                        b.fa.fa-angle-left(style="font-size: 34px")
+                        = " "
+                        span.delta(style="position: relative; top: -4px") Back
+                    //- DEV: Same line height as `.fa-angle-left`
+                    .grid__item.three-quarters.text--right(style="line-height: 34px")
+                      //- TODO: Build signed out state
+                      a.link--unstyled.muted(href="/settings") todd@findwork.co
+          .medium-and-down-hidden
+            p.text--center
+              a.btn.btn--wide.btn--default(href="/create-application")
+                span(aria-hidden="true")= "+ "
+                | Add job application
+            //- Upcoming interviews section
+            h3.flush--bottom(style="font-weight: normal") Upcoming interviews
+            //- DEV: This is actually a 1.5x push due to extra padding for link border
+            .push--bottom
+              if upcomingInterviews.length
+                each upcomingInterview in upcomingInterviews
+                  +nav-row--application(upcomingInterview.application)
+                    //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
+                    //- TODO: In Chrome, alignment of icons seemed funky
+                    //- TODO: When we have a link in our link, we get poor accessibility performance. Reconsider implementation.
+                    .nav-info
+                      .nav-info__icon
+                        //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
+                        //- TODO: Make sure we use the same calendar between icon and content
+                        +calendar-2x-with-date('20')
+                      .nav-info__content
+                        | Wed Jan 20 at 2:00PM CST
+                    .nav-info
+                      .nav-info__icon
+                        i.fa.fa-2x.fa-info-circle
+                      .nav-info__content
+                        if upcomingInterview.details
+                          != upcomingInterview.details
+                        else
+                          i Nothing provided
+              else
+                p TODO: Add placeholder text for upcoming interviews
 
-          //- Upcoming interviews section
-          h3.flush--bottom(style="font-weight: normal") Upcoming interviews
-          //- DEV: This is actually a 1.5x push due to extra padding for link border
-          .push--bottom
-            if upcomingInterviews.length
-              each upcomingInterview in upcomingInterviews
-                +nav-row--application(upcomingInterview.application)
-                  //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
-                  //- TODO: In Chrome, alignment of icons seemed funky
-                  //- TODO: When we have a link in our link, we get poor accessibility performance. Reconsider implementation.
-                  .nav-info
-                    .nav-info__icon
-                      //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
-                      //- TODO: Make sure we use the same calendar between icon and content
-                      +calendar-2x-with-date('20')
-                    .nav-info__content
-                      | Wed Jan 20 at 2:00PM CST
-                  .nav-info
-                    .nav-info__icon
-                      i.fa.fa-2x.fa-info-circle
-                    .nav-info__content
-                      if upcomingInterview.details
-                        != upcomingInterview.details
-                      else
-                        i Nothing provided
-            else
-              p TODO: Add placeholder text for upcoming interviews
+            h3.flush--bottom(style="font-weight: normal") Waiting for response
+            .landmark
+              if waitingForResponseApplications.length
+                each waitingForResponseApplication in waitingForResponseApplications
+                  +nav-row--application(waitingForResponseApplication)
+                    .nav-info
+                      .nav-info__icon
+                        i.fa.fa-2x.fa-envelope-o
+                      .nav-info__content
+                        //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
+                        - var createdAtStr = "Tue Feb 16";
+                        = "Last contact: " + createdAtStr
+                    .nav-info
+                      .nav-info__icon
+                        i.fa.fa-2x.fa-reply
+                      .nav-info__content
+                        if waitingForResponseApplication.follow_up_reminder
+                          - var followUpReminderStr = "Tue Feb 23";
+                          = "Follow-up on: " + followUpReminderStr
+                        else
+                          i TODO: Add placeholder text for no reminder set
+              else
+                p TODO: Add placeholder text for upcoming interviews
 
-          h3.flush--bottom(style="font-weight: normal") Waiting for response
-          .landmark
-            if waitingForResponseApplications.length
-              each waitingForResponseApplication in waitingForResponseApplications
-                +nav-row--application(waitingForResponseApplication)
-                  .nav-info
-                    .nav-info__icon
-                      i.fa.fa-2x.fa-envelope-o
-                    .nav-info__content
-                      //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
-                      - var createdAtStr = "Tue Feb 16";
-                      = "Last contact: " + createdAtStr
-                  .nav-info
-                    .nav-info__icon
-                      i.fa.fa-2x.fa-reply
-                    .nav-info__content
-                      if waitingForResponseApplication.follow_up_reminder
-                        - var followUpReminderStr = "Tue Feb 23";
-                        = "Follow-up on: " + followUpReminderStr
-                      else
-                        i TODO: Add placeholder text for no reminder set
-            else
-              p TODO: Add placeholder text for upcoming interviews
+            //- Nav links
+            //- TODO: Make selection/highlight of `/archive` and `/settings` work
+            //-   Prob compare against URLs, not application ids
+            //- TODO: When we table on these rows, they feel weird with padding
+            //-   I feel like we should pad the nav...
+            +nav-row--link({selected: false})(href="/archive") Archived applications
+            +nav-row--link({selected: false})(href="/settings") Settings
 
-          //- Nav links
-          //- TODO: Make selection/highlight of `/archive` and `/settings` work
-          //-   Prob compare against URLs, not application ids
-          //- TODO: When we table on these rows, they feel weird with padding
-          //-   I feel like we should pad the nav...
-          +nav-row--link({selected: false})(href="/archive") Archived applications
-          +nav-row--link({selected: false})(href="/settings") Settings
-
-          //- Nav footer
-          div.push--top.text--center.muted
-            hr.push-half--bottom
-            p.push-half--bottom
-              = "Made with "
-              span(aria-label="love")= "<3"
-              = " by"
-              br
-              | Shoulders of Titans LLC
-            p
-              //- TODO: Create about, privacy, and terms pages
-              //-  https://trello.com/c/BbhzXH5B/15-create-about-privacy-and-terms-pages
-              a(href="/about") About
-              a.push--sides(href="/privacy") Privacy
-              a(href="/terms") Terms
-              br
-              a(href="/blog") Blog
-              a.push--sides(href="http://twitter.com/findworkco") Twitter
-              //- TODO: Verify this is the email we want to use
-              a(href="mailto:todd@findwork.co?subject=Find%20Work%20support%20question") Support
+            //- Nav footer
+            //- TODO: Make footer reusable
+            div.push--top.text--center.muted
+              hr.push-half--bottom
+              p.push-half--bottom
+                = "Made with "
+                span(aria-label="love")= "<3"
+                = " by"
+                br
+                | Shoulders of Titans LLC
+              p
+                //- TODO: Create about, privacy, and terms pages
+                //-  https://trello.com/c/BbhzXH5B/15-create-about-privacy-and-terms-pages
+                a(href="/about") About
+                a.push--sides(href="/privacy") Privacy
+                a(href="/terms") Terms
+                br
+                a(href="/blog") Blog
+                a.push--sides(href="http://twitter.com/findworkco") Twitter
+                //- TODO: Verify this is the email we want to use
+                a(href="mailto:todd@findwork.co?subject=Find%20Work%20support%20question") Support
 
         #content.grid__item.three-quarters
-          include ./application-edit-show.jade
+          .medium-and-down-hidden
+            include ./application-edit-show.jade
+          .large-hidden
+            //- include ./nav-show.jade
