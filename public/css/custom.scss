@@ -1,0 +1,120 @@
+.nav__top {
+  margin-bottom: $base-spacing-unit;
+}
+
+@include media-query(small) {
+  .nav__top {
+    margin-bottom: $half-spacing-unit;
+  }
+}
+
+.content__heading {
+  margin-top: $base-spacing-unit;
+}
+
+@include media-query(small) {
+  .content__heading {
+    margin-top: 0;
+    margin-bottom: $half-spacing-unit;
+  }
+}
+
+.content__subheading {
+  margin-bottom: $base-spacing-unit;
+}
+
+@include media-query(small) {
+  .content__subheading {
+    margin-bottom: $half-spacing-unit;
+  }
+}
+
+.action-bar__info {
+  display: inline;
+}
+
+.action-bar__actions {
+  display: inline;
+}
+
+.action {
+  margin-left: $base-spacing-unit;
+}
+
+@include media-query(small) {
+  .action-bar__actions {
+    display: block;
+    margin-top: $half-spacing-unit;
+  }
+
+  .action {
+    margin-left: 0;
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+
+  //- Emulate button group
+  // https://github.com/twbs/bootstrap/blob/v3.3.6/less/button-groups.less
+  .action--first {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .action--middle {
+    border-radius: 0;
+    margin-left: -1px;
+  }
+
+  .action--last {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
+  }
+}
+
+.company-notes {
+  float: right;
+}
+
+@include media-query(small) {
+  .company-notes {
+    float: none;
+  }
+}
+
+.research-company {
+  float: right;
+}
+
+@include media-query(small) {
+  .research-company {
+    float: none;
+    margin-bottom: $half-spacing-unit;
+  }
+
+  .research-company__content {
+    // Same styles as inputs/Bootstrap well
+    border: 1px solid $well-border;
+    border-radius: $well-border-radius;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    padding-left: $base-spacing-unit;
+    padding-right: $base-spacing-unit;
+    padding-top: $half-spacing-unit;
+  }
+}
+
+.footer-link {
+  margin-left: $half-spacing-unit;
+  margin-right: $half-spacing-unit;
+}
+
+@include media-query(small) {
+  .footer-link {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .footer-link + .footer-link {
+    margin-left: $half-spacing-unit;
+  }
+}

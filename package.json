@@ -31,7 +31,7 @@
     "test": "npm run lint && npm run verify-images-optimized",
     "verify-images-optimized": "test/verify-images-optimized.sh",
     "verify-webdriver-running": "curl --silent http://localhost:4444/ > /dev/null || (echo \"Webdriver isn't running, please start it via \\`npm run webdriver-start\\`\" 1>&2 && exit 1)",
-    "webdriver-start": "webdriver-manager start",
+    "webdriver-start": "xvfb-run webdriver-manager start",
     "webdriver-update": "webdriver-manager update"
   },
   "dependencies": {},

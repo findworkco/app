@@ -9,5 +9,7 @@
 @each $state in $responsive-states {
   @include media-query(#{$state}) {
     @include grid-setup('#{$state}-')
+    .#{$state}-four-ninths { width: 44.444%; }
+    .#{$state}-five-ninths { width: 55.555%; }
   }
 }

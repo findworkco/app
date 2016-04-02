@@ -17,3 +17,9 @@
     .#{$state}-hidden { display: none; }
   }
 }
+.invisible { visibility: hidden; }
+@each $state in $responsive-states {
+  @include media-query(#{$state}) {
+    .#{$state}-invisible { visibility: hidden; }
+  }
+}

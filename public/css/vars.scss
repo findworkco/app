@@ -71,6 +71,9 @@ $link--active-color: $dark-red;
 // Nav styles
 $nav-row-border-color: $brand-dark;
 
+// Well styles
+$well-border: $bs-input-border;
+
 // Generic variables
 $muted-opacity: $sixty; // 60 percent
 
@@ -114,6 +117,9 @@ $micro-size: 10px; // default
 
 // Button styles
 $btn-border-radius: 4px;
+
+// Well styles
+$well-border-radius: $btn-border-radius;
 
 // ## Custom responsive breakpoints
 // https://github.com/csswizardry/inuit.css/blob/v5.0.1/_defaults.scss#L100-L105

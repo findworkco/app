@@ -35,7 +35,8 @@
   color: inherit;
   font-weight: bold;
 
-  &:active {
+  &:active,
+  &:visited {
     color: inherit;
   }
 }

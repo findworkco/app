@@ -53,6 +53,8 @@ npm run start-webdriver
 
 # Capture images
 npm run gemini-update
+# To filter to specific tests, use `--grep`:
+# npm run gemini-update -- --grep hello
 ```
 
 To validate latest images against expected images, run:
@@ -60,6 +62,8 @@ To validate latest images against expected images, run:
 ```bash
 npm run gemini-test
 # On failure, an HTML report will be generated in `gemini-report`
+# To filter to specific tests, use `--grep`:
+# npm run gemini-test -- --grep hello
 ```
 
 To validate images via a GUI, run:
