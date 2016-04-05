@@ -8,5 +8,6 @@ gemini.suite('application-edit-show', function (suite) {
   suite.setUrl('/application-edit-show.jade')
     .setCaptureElements('body')
     .capture('default-large', geminiUtils.resizeLarge)
+    .capture('default-medium', geminiUtils.resizeMedium)
     .capture('default-small', geminiUtils.resizeSmall);
 });

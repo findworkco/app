@@ -3,6 +3,10 @@ exports.resizeLarge = function (actions, find) {
   actions.setWindowSize(1024, 1600);
 };
 
+exports.resizeMedium = function (actions, find) {
+  actions.setWindowSize(640, 1600);
+};
+
 exports.resizeSmall = function (actions, find) {
   actions.setWindowSize(340, 1600);
 };

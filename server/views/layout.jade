@@ -127,13 +127,35 @@ html
             .nav__top.section--brand-dark(style="margin-left: -9px; margin-right: -9px; padding: 0 9px")
               //- On large screens and root page for small screens, always display logo in full
               //- TODO: Document medium screen behavior
-              .text--center(class={'small-hidden': !isRoot})
+              .medium-hidden.text--center(class={'small-hidden': !isRoot})
                 a(href="/")
                   //- TODO: Add to sprites
                   img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
                 p.flush--bottom.soft-half--bottom
                   //- TODO: Build signed out state
                   a.link--unstyled.muted(href="/settings") todd@findwork.co
+              //- On medium screens, show logo with major links
+              .small-hidden.large-hidden
+                .grid.soft--ends
+                  .grid__item
+                    a(href="/")
+                      //- TODO: Add to sprites
+                      //- TODO: Reduce size of logo
+                      img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="height: 26px")
+                  .grid__item(style="margin-top: 6px")
+                    //- TODO: Do we redirect `/` to `/schedule` or vice versa?
+                    //- TODO: Handle selection
+                    a.delta.link--unstyled(href="/schedule", style="text-decoration: underline") Schedule
+                  .grid__item(style="margin-top: 6px")
+                    a.delta.link--unstyled(href="/archive") Archive
+                  .float--right.grid__item.text--right(style="margin-top: 6px")
+                    span.delta
+                      //- TODO: Build signed out state
+                      //- DESIGN: Links in dropdown are "Settings", "Log out"
+                      //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a03ef4dcc
+                      span todd@findwork.co
+                      = " "
+                      i.fa.fa-caret-down(style="position: relative; top: 1px")
               //- On non-root small screens, display thin bar with back button
               if !isRoot
                 .medium-and-up-hidden
@@ -222,8 +244,8 @@ html
                   = "Made with "
                   span(aria-label="love")= "<3"
                   = " by"
-                  br.small-hidden
-                  span.medium-and-up-hidden= " "
+                  br.medium-and-down-hidden
+                  span.large-hidden= " "
                   | Shoulders of Titans LLC
                 p
                   //- TODO: Create about, privacy, and terms pages
@@ -231,7 +253,7 @@ html
                   a.footer-link(href="/about") About
                   a.footer-link(href="/privacy") Privacy
                   a.footer-link(href="/terms") Terms
-                  br.small-hidden
+                  br.medium-and-down-hidden
                   a.footer-link(href="/blog") Blog
                   a.footer-link(href="http://twitter.com/findworkco") Twitter
                   //- TODO: Verify this is the email we want to use
@@ -248,5 +270,5 @@ html
             - throw new Error('Unrecognized page "' + page + '". Please add it to the `if/else if` statements');
 
           //- DEV: On small screens, show a footer after our content
-          .medium-and-up-hidden
+          .large-hidden
             +footer()

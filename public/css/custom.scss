@@ -2,7 +2,7 @@
   margin-bottom: $base-spacing-unit;
 }
 
-@include media-query(small) {
+@include media-query(medium-and-down) {
   .nav__top {
     margin-bottom: $half-spacing-unit;
   }
@@ -10,6 +10,12 @@
 
 .nav__logo {
   margin-top: $base-spacing-unit;
+}
+
+@include media-query(medium) {
+  .nav__logo {
+    margin-top: 0;
+  }
 }
 
 @include media-query(small) {
@@ -22,7 +28,7 @@
   margin-top: $base-spacing-unit;
 }
 
-@include media-query(small) {
+@include media-query(medium-and-down) {
   .content__heading {
     margin-top: 0;
     margin-bottom: $half-spacing-unit;
@@ -33,7 +39,7 @@
   margin-bottom: $base-spacing-unit;
 }
 
-@include media-query(small) {
+@include media-query(medium-and-down) {
   .content__subheading {
     margin-bottom: $half-spacing-unit;
   }
@@ -51,7 +57,7 @@
   margin-left: $base-spacing-unit;
 }
 
-@include media-query(small) {
+@include media-query(medium-and-down) {
   .action-bar__actions {
     display: block;
     margin-top: $half-spacing-unit;
@@ -94,6 +100,20 @@
 
 .research-company {
   float: right;
+}
+
+@include media-query(medium) {
+  //- DEV: Due to the fuckiness of floats, we need to take up at least 51%
+  //-  in order to trigger a `float: right`.
+  //-  As a result, we need to do some float/padding hacks
+  .research-company {
+    width: 60%;
+    padding-left: 10%;
+  }
+
+  .research-company__content {
+    padding-left: $half-spacing-unit;
+  }
 }
 
 @include media-query(small) {
