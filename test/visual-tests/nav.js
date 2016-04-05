@@ -7,5 +7,6 @@ gemini.suite('nav', function (suite) {
   // DEV: We include nav to make sure we have no links selected
   suite.setUrl('/nav.jade')
     .setCaptureElements('body')
-    .capture('default-large', geminiUtils.resizeLarge);
+    .capture('default-large', geminiUtils.resizeLarge)
+    .capture('default-small', geminiUtils.resizeSmall);
 });

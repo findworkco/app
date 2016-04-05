@@ -117,6 +117,7 @@ html
           block
 
     //- Start our HTML
+    - var isRoot = url === '/';
     .container
       .grid
         //- TODO: Find aria role (I think it's nav)
@@ -124,19 +125,18 @@ html
           header
             //- DEV: Negative margins are to extend the boundary of our blue background to the gutter
             .nav__top.section--brand-dark(style="margin-left: -9px; margin-right: -9px; padding: 0 9px")
-              //- On large screens, always display logo in full
+              //- On large screens and root page for small screens, always display logo in full
               //- TODO: Document medium screen behavior
-              .small-hidden.text--center
+              .text--center(class={'small-hidden': !isRoot})
                 a(href="/")
                   //- TODO: Add to sprites
-                  img.push--top(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
+                  img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
                 p.flush--bottom.soft-half--bottom
                   //- TODO: Build signed out state
                   a.link--unstyled.muted(href="/settings") todd@findwork.co
-              //- On small screens, display full logo on nav OR thin bar on non-nav
-              .medium-and-up-hidden
-                //- TODO: Move to conditional for being on nav page or not
-                if true
+              //- On non-root small screens, display thin bar with back button
+              if !isRoot
+                .medium-and-up-hidden
                   .grid.soft-half--ends
                     .grid__item.one-quarter
                       //- TODO: Reconsider having a "Back" button as most mobile devices have some equivalent for this
@@ -149,7 +149,7 @@ html
                     .grid__item.three-quarters.text--right(style="line-height: 34px")
                       //- TODO: Build signed out state
                       a.link--unstyled.muted(href="/settings") todd@findwork.co
-          .medium-and-down-hidden
+          div(class={'medium-and-down-hidden': !isRoot})
             p.text--center
               a.btn.btn--wide.btn--default(href="/create-application")
                 span(aria-hidden="true")= "+ "
@@ -215,18 +215,15 @@ html
             +nav-row--link({selected: false})(href="/settings") Settings
 
             //- Nav footer
-            mixin footer(include_breaks)
-              //- TODO: Make footer reusable
+            mixin footer()
               div.push--top.text--center.muted
                 hr.push-half--bottom
                 p.push-half--bottom
                   = "Made with "
                   span(aria-label="love")= "<3"
                   = " by"
-                  if include_breaks
-                    br
-                  else
-                    = " "
+                  br.small-hidden
+                  span.medium-and-up-hidden= " "
                   | Shoulders of Titans LLC
                 p
                   //- TODO: Create about, privacy, and terms pages
@@ -234,15 +231,14 @@ html
                   a.footer-link(href="/about") About
                   a.footer-link(href="/privacy") Privacy
                   a.footer-link(href="/terms") Terms
-                  if include_breaks
-                    br
+                  br.small-hidden
                   a.footer-link(href="/blog") Blog
                   a.footer-link(href="http://twitter.com/findworkco") Twitter
                   //- TODO: Verify this is the email we want to use
                   a.footer-link(href="mailto:todd@findwork.co?subject=Find%20Work%20support%20question") Support
-            +footer(true)
+            +footer()
 
-        #content.grid__item.one-whole.large-three-quarters
+        #content.grid__item.one-whole.large-three-quarters(class={'medium-and-down-hidden': isRoot})
           //- DEV: Jade doesn't support variable-based includes so work around it
           if url == '/'
             include ./nav.jade
@@ -253,4 +249,4 @@ html
 
           //- DEV: On small screens, show a footer after our content
           .medium-and-up-hidden
-            +footer(false)
+            +footer()

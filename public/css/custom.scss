@@ -8,6 +8,16 @@
   }
 }
 
+.nav__logo {
+  margin-top: $base-spacing-unit;
+}
+
+@include media-query(small) {
+  .nav__logo {
+    margin-top: $half-spacing-unit;
+  }
+}
+
 .content__heading {
   margin-top: $base-spacing-unit;
 }
@@ -114,7 +124,8 @@
     margin-right: 0;
   }
 
-  .footer-link + .footer-link {
+  //- DEV: We use the general sibling selector to allow conditional br's
+  .footer-link ~ .footer-link {
     margin-left: $half-spacing-unit;
   }
 }
