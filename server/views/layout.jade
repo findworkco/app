@@ -87,7 +87,6 @@ html
         received_offer_url: '/application/abcdef-sky-networks/received-offer',
         url: '/application/abcdef-sky-networks'
       }];
-    - var selectedApplication = waitingForResponseApplications[0];
 
     //- Declare common mixins
     mixin calendar-2x-with-date(date)
@@ -110,7 +109,7 @@ html
         block
 
     mixin nav-row--application(application)
-      +nav-row({selected: application.id === selectedApplication.id})
+      +nav-row({selected: application.url === url})
         a.link--unstyled(href=application.url)
           //- TODO: Make this some heading for accessibility...
           div
@@ -244,7 +243,13 @@ html
             +footer(true)
 
         #content.grid__item.one-whole.large-three-quarters
-          include ./application-edit-show.jade
+          //- DEV: Jade doesn't support variable-based includes so work around it
+          if url == '/'
+            include ./nav.jade
+          else if url == '/application/abcdef-sky-networks'
+            include ./application-edit-show.jade
+          else
+            - throw new Error('Unrecognized page "' + page + '". Please add it to the `if/else if` statements');
 
           //- DEV: On small screens, show a footer after our content
           .medium-and-up-hidden

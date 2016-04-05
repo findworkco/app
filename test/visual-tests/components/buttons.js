@@ -2,13 +2,14 @@
 var gemini = require('gemini');
 
 // Define our visual tests
-gemini.suite('buttons', function (suite) {
+gemini.suite('components/buttons', function (suite) {
   // Navigate to a page with buttons
-  suite.setUrl('/index.jade');
+  suite.setUrl('/application-edit-show.jade');
 
   gemini.suite('button', function (child) {
     // DEV: This verifies we have a clear focus state
-    var btnSelector = '.btn.btn--default';
+    // DEV: We don't use nav since it can collapse in small screens
+    var btnSelector = '#content .btn.btn--default:not(a)';
     child
       .setCaptureElements(btnSelector)
       .capture('default')

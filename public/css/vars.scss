@@ -81,6 +81,9 @@ $muted-opacity: $sixty; // 60 percent
 // Some reference values can be found here: https://docs.google.com/document/d/1yQJLRq2gRh6HbuProMCavvap91DJyZMG69Lj9lo2sws/edit
 // Spacing/padding
 $base-spacing-unit: 18px;
+// DEV: This isn't defined by inuit.css but we use it
+$double-spacing-unit: $base-spacing-unit * 2;
+$triple-spacing-unit: $base-spacing-unit * 3;
 
 // Border radius
 $bs-border-radius-base: 4px;
