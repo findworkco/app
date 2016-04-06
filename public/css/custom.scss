@@ -1,3 +1,11 @@
+@mixin well() {
+  // Same styles as inputs/Bootstrap well
+  border: 1px solid $well-border;
+  border-radius: $well-border-radius;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+  padding: $base-spacing-unit;
+}
+
 .nav__top {
   margin-bottom: $base-spacing-unit;
 }
@@ -22,6 +30,11 @@
   .nav__logo {
     margin-top: $half-spacing-unit;
   }
+}
+
+.nav-notes {
+  @include well();
+  padding: $half-spacing-unit;
 }
 
 .content__heading {
@@ -104,13 +117,8 @@
   .research-company {
     margin-bottom: $half-spacing-unit;
 
-    // Same styles as inputs/Bootstrap well
-    border: 1px solid $well-border;
-    border-radius: $well-border-radius;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
-    padding-left: $base-spacing-unit;
-    padding-right: $base-spacing-unit;
-    padding-top: $half-spacing-unit;
+    @include well();
+    padding: $half-spacing-unit $base-spacing-unit 0;
   }
 }
 

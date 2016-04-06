@@ -49,7 +49,15 @@
   }
 }
 
-@include media-query(small) {
+@include media-query(medium) {
+  .nav-btn {
+    display: block;
+    width: 66.666%; // 8/12
+    margin: auto;
+  }
+}
+
+@include media-query(medium-and-down) {
   .nav-btn {
     padding-top: 13px;
     padding-bottom: 13px;

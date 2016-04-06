@@ -8,5 +8,6 @@ gemini.suite('nav', function (suite) {
   suite.setUrl('/nav.jade')
     .setCaptureElements('body')
     .capture('default-large', geminiUtils.resizeLarge)
+    .capture('default-medium', geminiUtils.resizeMedium)
     .capture('default-small', geminiUtils.resizeSmall);
 });

@@ -119,10 +119,21 @@ html
           //- TODO: Make this some heading for accessibility...
           div
             strong= application.name
-          block
+          .grid
+            .grid__item.one-whole.medium-one-half
+              block
+            .grid__item.small-hidden.large-hidden.medium-one-half
+              //- DESIGN: Make sure links are clickable in textarea
+              //- TODO: Limit height and force scrolling
+              div Notes:
+              div.nav-notes
+                if application.notes
+                  = application.notes
+                else
+                  i No notes recorded
           //- On small/medium screens, provide a link to the application's page
           .large-hidden
-            a.btn.btn--default.one-whole.nav-btn(href=application.url) View job application
+            a.btn.btn--default.one-whole.nav-btn(href=application.url) View/edit job application
 
     //- Start our HTML
     - var isRoot = url === '/';
