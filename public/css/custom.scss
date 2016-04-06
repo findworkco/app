@@ -88,41 +88,22 @@
   }
 }
 
-.company-notes {
+.company-notes-and-research__container {
   float: right;
+  display: block;
 }
 
 @include media-query(small) {
-  .company-notes {
+  .company-notes-and-research__container {
     float: none;
-  }
-}
-
-.research-company {
-  float: right;
-}
-
-@include media-query(medium) {
-  //- DEV: Due to the fuckiness of floats, we need to take up at least 51%
-  //-  in order to trigger a `float: right`.
-  //-  As a result, we need to do some float/padding hacks
-  .research-company {
-    width: 60%;
-    padding-left: 10%;
-  }
-
-  .research-company__content {
-    padding-left: $half-spacing-unit;
+    display: inline-block;
   }
 }
 
 @include media-query(small) {
   .research-company {
-    float: none;
     margin-bottom: $half-spacing-unit;
-  }
 
-  .research-company__content {
     // Same styles as inputs/Bootstrap well
     border: 1px solid $well-border;
     border-radius: $well-border-radius;

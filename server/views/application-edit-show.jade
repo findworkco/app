@@ -76,17 +76,12 @@ form.cf(method="POST", action=selectedApplication.url)
       .form-group
         label(for="name") Name:
         input#name.form-control.input--block(name="name", type="text", value=selectedApplication.name)
-    .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes
+    .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
       .form-group
         label(for="notes") Notes:
         //- TODO: Add editor integration (wysiwyg.js, did it in a gist or codepen)
         textarea.form-control.input--block#notes(name="notes", rows=7)= selectedApplication.notes
-  .grid
-    //- DEV: Due to the fuckiness of floats, we need to take up at least 51%
-    //-  in order to trigger a `float: right`.
-    //-  As a result, we need to do some float/padding hacks in the custom CSS
-    .grid__item.one-whole.large-five-ninths.research-company
-      .research-company__content
+      .research-company
         //- TODO: Make sure that either this mini form works
         //-   and is accessible
         //-   or figure out some way to get the HTML to work
