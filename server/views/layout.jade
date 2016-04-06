@@ -113,28 +113,6 @@ html
       +nav-row(options).nav-link&attributes(attributes)
         block
 
-    mixin nav-row--application(application)
-      +nav-row({selected: application.url === url}).nav-row--application
-        a.link--unstyled(href=application.url)
-          //- TODO: Make this some heading for accessibility...
-          div
-            strong= application.name
-          .grid
-            .grid__item.one-whole.medium-one-half
-              block
-            .grid__item.small-hidden.large-hidden.medium-one-half
-              //- DESIGN: Make sure links are clickable in textarea
-              //- TODO: Limit height and force scrolling
-              div Notes:
-              div.nav-notes
-                if application.notes
-                  = application.notes
-                else
-                  i No notes recorded
-          //- On small/medium screens, provide a link to the application's page
-          .large-hidden
-            a.btn.btn--default.one-whole.nav-btn(href=application.url) View/edit job application
-
     //- Start our HTML
     - var isRoot = url === '/';
     .container
@@ -196,55 +174,106 @@ html
               a.btn.btn--wide.btn--default.nav-btn(href="/create-application")
                 span(aria-hidden="true")= "+ "
                 | Add job application
+
+              //- Define mixins for our upcoming content
+              - var APP_TYPES = {UPCOMING_INTERVIEW: 'UPCOMING_INTERVIEW', WAITING_FOR_RESPONSE: 'WAITING_FOR_RESPONSE'}
+              mixin nav-info__icon(application)
+                .nav-info__icon&attributes(attributes)
+                  //- DEV: We set no tab index to skip redundant links
+                  a.link--unstyled(href=application.url, tabindex="-1", aria-hidden="true")
+                    block
+
+              mixin nav-info__content(application)
+                .nav-info__content&attributes(attributes)
+                  //- DEV: We set no tab index to skip redundant links
+                  a.link--unstyled(href=application.url, tabindex="-1")
+                    block
+
+              mixin nav-row--application(application, type, params)
+                +nav-row({selected: application.url === url}).nav-row--application
+                  //- TODO: Make this some heading for accessibility...
+                  div
+                    a.link--unstyled(href=application.url)
+                      strong= application.name
+                  .grid
+                    .grid__item.one-whole.medium-one-half
+                      //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
+                      //- TODO: In Chrome, alignment of icons seemed funky
+                      //- TODO: When we have a link in our link, we get poor accessibility performance. Reconsider implementation.
+                      .nav-info
+                        +nav-info__icon(application)
+                          if type == APP_TYPES.UPCOMING_INTERVIEW
+                            //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
+                            //- TODO: Make sure we use the same calendar between icon and content
+                            +calendar-2x-with-date('20')
+                          else if type == APP_TYPES.WAITING_FOR_RESPONSE
+                            i.fa.fa-2x.fa-envelope-o
+                          else
+                            - throw new Error('Unrecognized type')
+                        +nav-info__content(application)
+                          if type == APP_TYPES.UPCOMING_INTERVIEW
+                            //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
+                            | Wed Jan 20 at 2:00PM CST
+                          else if type == APP_TYPES.WAITING_FOR_RESPONSE
+                            //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
+                            - var createdAtStr = "Tue Feb 16";
+                            = "Last contact: " + createdAtStr
+                          else
+                            - throw new Error('Unrecognized type')
+
+                      .nav-info
+                        +nav-info__icon(application)
+                          if type == APP_TYPES.UPCOMING_INTERVIEW
+                            i.fa.fa-2x.fa-info-circle
+                          else if type == APP_TYPES.WAITING_FOR_RESPONSE
+                            i.fa.fa-2x.fa-reply
+                          else
+                            - throw new Error('Unrecognized type')
+                        +nav-info__content(application)
+                          if type == APP_TYPES.UPCOMING_INTERVIEW
+                            //- TODO: Be sure to sanitize details
+                            if params.interview.details
+                              != params.interview.details
+                            else
+                              i Nothing provided
+                          else if type == APP_TYPES.WAITING_FOR_RESPONSE
+                            if application.follow_up_reminder
+                              //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
+                              - var followUpReminderStr = "Tue Feb 23";
+                              = "Follow-up on: " + followUpReminderStr
+                            else
+                              i TODO: Add placeholder text for no reminder set
+                          else
+                            - throw new Error('Unrecognized type')
+                    .grid__item.small-hidden.large-hidden.medium-one-half
+                      //- DESIGN: Make sure links are clickable in textarea
+                      //- TODO: Limit height and force scrolling
+                      div Notes:
+                      div.nav-notes
+                        if application.notes
+                          = application.notes
+                        else
+                          i No notes recorded
+                  //- On small/medium screens, provide a link to the application's page
+                  .large-hidden
+                    a.btn.btn--default.one-whole.nav-btn(href=application.url) View/edit job application
+
             //- Upcoming interviews section
             h3.flush--bottom(style="font-weight: normal") Upcoming interviews
             //- DEV: This is actually a 1.5x push due to extra padding for link border
             .push--bottom
               if upcomingInterviews.length
                 each upcomingInterview in upcomingInterviews
-                  +nav-row--application(upcomingInterview.application)
-                    //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
-                    //- TODO: In Chrome, alignment of icons seemed funky
-                    //- TODO: When we have a link in our link, we get poor accessibility performance. Reconsider implementation.
-                    .nav-info
-                      .nav-info__icon
-                        //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
-                        //- TODO: Make sure we use the same calendar between icon and content
-                        +calendar-2x-with-date('20')
-                      .nav-info__content
-                        | Wed Jan 20 at 2:00PM CST
-                    .nav-info
-                      .nav-info__icon
-                        i.fa.fa-2x.fa-info-circle
-                      .nav-info__content
-                        if upcomingInterview.details
-                          != upcomingInterview.details
-                        else
-                          i Nothing provided
+                  +nav-row--application(upcomingInterview.application, APP_TYPES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
               else
                 p TODO: Add placeholder text for upcoming interviews
 
+            //- Waiting for response section
             h3.flush--bottom(style="font-weight: normal") Waiting for response
             .landmark
               if waitingForResponseApplications.length
                 each waitingForResponseApplication in waitingForResponseApplications
-                  +nav-row--application(waitingForResponseApplication)
-                    .nav-info
-                      .nav-info__icon
-                        i.fa.fa-2x.fa-envelope-o
-                      .nav-info__content
-                        //- TODO: Use `moment` for formatting. We should prob save timezone in "Edit"
-                        - var createdAtStr = "Tue Feb 16";
-                        = "Last contact: " + createdAtStr
-                    .nav-info
-                      .nav-info__icon
-                        i.fa.fa-2x.fa-reply
-                      .nav-info__content
-                        if waitingForResponseApplication.follow_up_reminder
-                          - var followUpReminderStr = "Tue Feb 23";
-                          = "Follow-up on: " + followUpReminderStr
-                        else
-                          i TODO: Add placeholder text for no reminder set
+                  +nav-row--application(waitingForResponseApplication, APP_TYPES.WAITING_FOR_RESPONSE)
               else
                 p TODO: Add placeholder text for upcoming interviews
 
