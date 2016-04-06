@@ -2,17 +2,25 @@
   display: block;
 }
 
-.nav-row:hover,
-.nav-row:focus,
-.nav-row--selected {
-  // Calculate the offset to use to give ourselves a border
-  $nav-row-margin-width: $half-spacing-unit;
-  $nav-row-border-width: 6px;
-  $nav-row-padding-width: $nav-row-margin-width - $nav-row-border-width;
+@include media-query(large) {
+  .nav-row:hover,
+  .nav-row:focus,
+  .nav-row--selected {
+    // Calculate the offset to use to give ourselves a border
+    $nav-row-margin-width: $half-spacing-unit;
+    $nav-row-border-width: 6px;
+    $nav-row-padding-width: $nav-row-margin-width - $nav-row-border-width;
 
-  border-left: $nav-row-border-width solid $nav-row-border-color;
-  margin-left: -1 * $nav-row-margin-width;
-  padding-left: $nav-row-padding-width;
+    border-left: $nav-row-border-width solid $nav-row-border-color;
+    margin-left: -1 * $nav-row-margin-width;
+    padding-left: $nav-row-padding-width;
+  }
+}
+
+@include media-query(small) {
+  .nav-row--application {
+    margin-bottom: $half-spacing-unit;
+  }
 }
 
 // DEV: Fun fact: This is a bespoke media object =D
@@ -38,5 +46,12 @@
   &:active,
   &:visited {
     color: inherit;
+  }
+}
+
+@include media-query(small) {
+  .nav-btn {
+    padding-top: 13px;
+    padding-bottom: 13px;
   }
 }

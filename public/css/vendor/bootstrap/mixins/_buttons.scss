@@ -5,7 +5,11 @@
 // and disabled options for all buttons
 
 @mixin button-variant($color, $background, $border) {
-  color: $color;
+  //- DEV: This is a custom edit to handle links
+  &,
+  &:visited {
+    color: $color;
+  }
   background-color: $background;
   border-color: $border;
 

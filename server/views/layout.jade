@@ -33,8 +33,13 @@ html
       }());
   body
     //- Declare our mock info
-    //- DEV: Designed after (large) https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
-    //- and (small) https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a541249ff
+    //- DEV: Designed after
+    //-   Large: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
+    //-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a13b4d4ec
+    //-   Small (nav 1): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/ab1c48bc9
+    //-   Small (nav 2): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/aeef2d023
+    //-   Small (non-nav): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a541249ff
+    //-
     - var user = {email: 'todd@findwork.co'};
     -
       // TODO: Be sure to sort by upcoming date
@@ -109,12 +114,15 @@ html
         block
 
     mixin nav-row--application(application)
-      +nav-row({selected: application.url === url})
+      +nav-row({selected: application.url === url}).nav-row--application
         a.link--unstyled(href=application.url)
           //- TODO: Make this some heading for accessibility...
           div
             strong= application.name
           block
+          //- On small/medium screens, provide a link to the application's page
+          .large-hidden
+            a.btn.btn--default.one-whole.nav-btn(href=application.url) View job application
 
     //- Start our HTML
     - var isRoot = url === '/';
@@ -171,9 +179,10 @@ html
                     .grid__item.three-quarters.text--right(style="line-height: 34px")
                       //- TODO: Build signed out state
                       a.link--unstyled.muted(href="/settings") todd@findwork.co
+          //- On non-root for medium/small pages, hide our schedule listing
           div(class={'medium-and-down-hidden': !isRoot})
             p.text--center
-              a.btn.btn--wide.btn--default(href="/create-application")
+              a.btn.btn--wide.btn--default.nav-btn(href="/create-application")
                 span(aria-hidden="true")= "+ "
                 | Add job application
             //- Upcoming interviews section
