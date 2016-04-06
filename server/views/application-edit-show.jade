@@ -39,9 +39,9 @@ h2.content__subheading(style="font-weight: normal")
   //- TODO: When we make window smaller, I think these wrap before the breakpoint
   //-   Also, can we update line height so they wrap with padding?
   //- TODO: When we evaluate breakpoints, decide on button group or on same row as "Status" for medium
-  .action-bar__actions
+  .action-bar__actions.btn-group
     .large-hidden Actions:
-    a.action.action--first.btn.btn--thin.btn--default(href=selectedApplication.add_interview_url)
+    a.action.btn.btn--thin.btn--default.btn--first(href=selectedApplication.add_interview_url)
       span.small-hidden(aria-hidden="true")= "+ "
       | Add interview
     //- DESIGN: On load of next page, add a confetti animation
@@ -50,14 +50,14 @@ h2.content__subheading(style="font-weight: normal")
     //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
     form(method="POST", action=selectedApplication.received_offer_url, style="display: inline")
       //- TODO: Add CSRF to form
-      button.action.action--middle.btn.btn--thin.btn--default(type="submit")
+      button.action.btn.btn--thin.btn--default.btn--middle(type="submit")
         span.small-hidden I've received an offer
         span.medium-and-up-hidden Received offer
     //- DESIGN: On click, redirect to unselected nav and add notification for "Application has been archived"
     //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
     form(method="POST", action=selectedApplication.archive_url, style="display: inline")
       //- TODO: Add CSRF to form
-      button.action.action--last.btn.btn--thin.btn--default(type="submit")
+      button.action.btn.btn--thin.btn--default.btn--last(type="submit")
         span.small-hidden Archive application
         span.medium-and-up-hidden Archive
 p.large-hidden

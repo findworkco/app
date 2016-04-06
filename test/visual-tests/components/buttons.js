@@ -9,7 +9,7 @@ gemini.suite('components/buttons', function (suite) {
   gemini.suite('button', function (child) {
     // DEV: This verifies we have a clear focus state
     // DEV: We don't use nav since it can collapse in small screens
-    var btnSelector = '#content .btn.btn--default:not(a)';
+    var btnSelector = '#content .btn.btn--default:not(a):not(.action)';
     child
       .setCaptureElements(btnSelector)
       .capture('default')

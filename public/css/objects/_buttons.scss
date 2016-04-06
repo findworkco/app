@@ -38,3 +38,23 @@
 .btn--danger {
   @include button-variant($btn--danger-color, $btn--danger-bg, $btn--danger-border);
 }
+
+// Emulate button group
+// https://github.com/twbs/bootstrap/blob/v3.3.6/less/button-groups.less
+// DEV: We have classes instead of first-child/last-child for use when our buttons are nested in forms
+.btn--first {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.btn--middle {
+  border-radius: 0;
+  margin-left: -1px;
+}
+
+.btn--last {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -1px;
+}
+

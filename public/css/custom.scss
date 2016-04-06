@@ -66,8 +66,10 @@
   display: inline;
 }
 
-.action {
-  margin-left: $base-spacing-unit;
+@include media-query(large) {
+  .action-bar__actions {
+    margin-left: $base-spacing-unit;
+  }
 }
 
 @include media-query(medium-and-down) {
@@ -77,27 +79,8 @@
   }
 
   .action {
-    margin-left: 0;
     padding-left: 11px;
     padding-right: 11px;
-  }
-
-  //- Emulate button group
-  // https://github.com/twbs/bootstrap/blob/v3.3.6/less/button-groups.less
-  .action--first {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  .action--middle {
-    border-radius: 0;
-    margin-left: -1px;
-  }
-
-  .action--last {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    margin-left: -1px;
   }
 }
 
