@@ -1,8 +1,9 @@
 doctype html
 html
   head
-    //- TODO: Make title dynamic per page
-    title Find Work
+    if typeof title == 'undefined'
+      - throw new Error('No title was specified for page');
+    title= title
     link(rel="stylesheet", href="/dist/css/index.css")
 
     //- TODO: Don't use all of FontAwesome (it's 71kb gzipped with 605 icons)
@@ -40,6 +41,8 @@ html
     //-   Small (nav 2): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/aeef2d023
     //-   Small (non-nav): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a541249ff
     //-
+    //- TODO: Replace csrfInput with real content
+    - var csrfInput = '<input type="hidden" value="abcdef"/>';
     - var user = {email: 'todd@findwork.co'};
     -
       // TODO: Be sure to sort by upcoming date
@@ -53,7 +56,6 @@ html
         // Wed Jan 20 at 2:00PM CST
         datetime: new Date('2016-01-20T14:00-0600'),
         // TODO: Be sure to sanitize details
-        // TODO: Style link colors
         details: 'Go to <a href="https://maps.google.com">1200 Lake St, Suite 303, Chicago</a>',
       }, {
         application: {
@@ -114,16 +116,15 @@ html
         block
 
     //- Start our HTML
-    - var isRoot = url === '/';
+    - var isSchedule = url === '/schedule';
     .container
       .grid
-        //- TODO: Find aria role (I think it's nav)
-        #nav.grid__item.one-whole.large-one-quarter
+        #nav.grid__item.one-whole.large-one-quarter(role="navigation")
           header
             //- DEV: Negative margins are to extend the boundary of our blue background to the gutter
             .nav__top.section--brand-dark(style="margin-left: -9px; margin-right: -9px; padding: 0 9px")
-              //- On large screens and root page for small screens, always display logo in full
-              .medium-hidden.text--center(class={'small-hidden': !isRoot})
+              //- On large screens and schedule page for small screens, always display logo in full
+              .medium-hidden.text--center(class={'small-hidden': !isSchedule})
                 a(href="/")
                   //- TODO: Add to sprites
                   img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
@@ -136,11 +137,9 @@ html
                   .grid__item
                     a(href="/")
                       //- TODO: Add to sprites
-                      //- TODO: Reduce size of logo
                       img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="height: 26px")
                   .grid__item(style="margin-top: 6px")
-                    //- TODO: Do we redirect `/` to `/schedule` or vice versa?
-                    //- TODO: Handle selection
+                    //- TODO: Handle selection styles based on URL (not hardcoded)
                     a.delta.link--unstyled(href="/schedule", style="text-decoration: underline") Schedule
                   .grid__item(style="margin-top: 6px")
                     a.delta.link--unstyled(href="/archive") Archive
@@ -152,8 +151,8 @@ html
                       span todd@findwork.co
                       = " "
                       i.fa.fa-caret-down(style="position: relative; top: 1px")
-              //- On non-root small screens, display thin bar with back button
-              if !isRoot
+              //- On non-schedule small screens, display thin bar with back button
+              if !isSchedule
                 .medium-and-up-hidden
                   .grid.soft-half--ends
                     .grid__item.one-quarter
@@ -167,8 +166,8 @@ html
                     .grid__item.three-quarters.text--right(style="line-height: 34px")
                       //- TODO: Build signed out state
                       a.link--unstyled.muted(href="/settings") todd@findwork.co
-          //- On non-root for medium/small pages, hide our schedule listing
-          div(class={'medium-and-down-hidden': !isRoot})
+          //- On non-schedule for medium/small pages, hide our schedule listing
+          div(class={'medium-and-down-hidden': !isSchedule})
             p.text--center
               a.btn.btn--wide.btn--default.nav-btn(href="/create-application")
                 span(aria-hidden="true")= "+ "
@@ -190,15 +189,13 @@ html
 
               mixin nav-row--application(application, type, params)
                 +nav-row({selected: application.url === url}).nav-row--application
-                  //- TODO: Make this some heading for accessibility...
-                  div
+                  h4.text--normal.flush--bottom
                     a.link--unstyled(href=application.url)
                       strong= application.name
                   .grid
                     .grid__item.one-whole.medium-one-half
                       //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
                       //- TODO: In Chrome, alignment of icons seemed funky
-                      //- TODO: When we have a link in our link, we get poor accessibility performance. Reconsider implementation.
                       .nav-info
                         +nav-info__icon(application)
                           if type == APP_TYPES.UPCOMING_INTERVIEW
@@ -308,10 +305,10 @@ html
                   a.footer-link(href="mailto:todd@findwork.co?subject=Find%20Work%20support%20question") Support
             +footer()
 
-        #content.grid__item.one-whole.large-three-quarters(class={'medium-and-down-hidden': isRoot})
+        #content.grid__item.one-whole.large-three-quarters(class={'medium-and-down-hidden': isSchedule})
           //- DEV: Jade doesn't support variable-based includes so work around it
-          if url == '/'
-            include ./nav.jade
+          if url == '/schedule'
+            include ./schedule.jade
           else if url == '/application/abcdef-sky-networks'
             include ./application-edit-show.jade
           else
