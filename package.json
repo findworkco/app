@@ -34,7 +34,10 @@
     "webdriver-start": "xvfb-run webdriver-manager start",
     "webdriver-update": "webdriver-manager update"
   },
-  "dependencies": {},
+  "dependencies": {
+    "moment": "~2.12.0",
+    "moment-timezone": "~0.5.3"
+  },
   "devDependencies": {
     "bower": "~1.7.7",
     "gemini": "~3.0.2",
@@ -50,7 +53,7 @@
     "jshint": "~2.5.10",
     "mocha": "~2.4.5",
     "rimraf": "~2.5.2",
-    "serve": "~1.4.0",
+    "serve": "git://github.com/twolfson/serve#f094470",
     "twolfson-style": "~1.6.0",
     "webdriver-manager": "~9.0.0"
   },

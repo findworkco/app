@@ -161,19 +161,19 @@ form.cf(method="POST", action=selectedApplication.url)
           = "Application date: "
           i.fa.fa-calendar-o(style="font-size: 1.5em")
         //- TODO: Add datepicker, date only
-        input#application_date.form-control(name="application_date", type="date", value=selectedApplication.application_date)
+        input#application_date.form-control(name="application_date", type="date", value=selectedApplication.application_date_moment)
       .form-group
         //- TODO: Make sure we are consistent with "Follow-up" vs "Follow up"
         h4.flush--bottom(style="font-weight: normal")
           = "Follow up reminder: "
           span.text--normal
             i.fa.fa-reply(style="font-size: 1.5em")
-        - var hasFollowUpReminder = !!selectedApplication.follow_up_reminder;
+        - var hasFollowUpReminder = !!selectedApplication.follow_up_reminder_moment;
         div
           input(name="follow_up_reminder_enabled", type="radio", checked=hasFollowUpReminder, value="yes")
           = " "
           //- TODO: Add datepicker with time and timezone
-          input#follow_up_reminder.form-control(name="follow_up_reminder", type="date", value=selectedApplication.follow_up_reminder)
+          input#follow_up_reminder.form-control(name="follow_up_reminder", type="date", value=selectedApplication.follow_up_reminder_moment)
         div
           input(name="follow_up_reminder_enabled", type="radio", checked=!hasFollowUpReminder, value="no")
           = " No reminder"
@@ -186,9 +186,8 @@ form.cf(method="POST", action=selectedApplication.url)
             | Add interview
         p.landmark
           each past_interview, i in selectedApplication.past_interviews
-            //- TODO: Use ideal date formatting
-            - var pastInterviewStr = "Fri Jan 15 at 9:00AM PST";
-            a(href=past_interview.url)= pastInterviewStr
+            //- Fri Jan 15 at 9:00AM PST
+            a(href=past_interview.url)= past_interview.moment.format('ddd MMM D [at] h:mmA zz')
             if i != selectedApplication.past_interviews.length - 1
               br
       p.large-hidden(style="margin-top: -18px")
