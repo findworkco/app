@@ -1,12 +1,17 @@
 // Load in our dependencies
+var browserify = require('browserify');
 var gulp = require('gulp');
+var gulpBuffer = require('gulp-buffer');
 var gulpCsso = require('gulp-csso');
 var gulpSvgmin = require('gulp-svgmin');
 var gulpLivereload = require('gulp-livereload');
 var gulpNotify = require('gulp-notify');
 var gulpSass = require('gulp-sass');
+var gulpUglify = require('gulp-uglify');
 var gulpSizereport = require('gulp-sizereport');
 var rimraf = require('rimraf');
+var vinylSourceStream = require('vinyl-source-stream');
+var watchify = require('watchify');
 
 // Set up our configuration
 var config = {
@@ -56,9 +61,40 @@ gulp.task('build-images-svg', function buildImagesSvg () {
     .pipe(gulpSizereport({gzip: true}))
     .pipe(gulp.dest('public/images'));
 });
-
 gulp.task('build-images', ['build-images-svg']);
-gulp.task('build', ['build-css', 'build-images']);
+
+// Create a browserify instance
+// https://github.com/gulpjs/gulp/blob/v3.9.1/docs/recipes/browserify-uglify-sourcemap.md
+// https://github.com/substack/watchify/tree/v3.7.0#watchifyb-opts
+var browserifyObj = browserify({cache: {}, packageCache: {}, entries: __dirname + '/public/js/index.js'});
+gulp.task('build-js', function buildJs () {
+  // Bundle browserify content
+  var jsStream = browserifyObj.bundle();
+
+  // If we are allowing failures, then log them
+  if (config.allowFailures) {
+    jsStream.on('error', gulpNotify.onError());
+  }
+
+  // Coerce browserify output into a Vinyl object with buffer content
+  jsStream = jsStream
+    .pipe(vinylSourceStream('index.js'))
+    .pipe(gulpBuffer());
+
+  // If we are minifying assets, then minify them
+  if (config.minifyAssets) {
+    jsStream = jsStream
+      .pipe(gulpUglify())
+      .pipe(gulpSizereport({gzip: true}));
+  }
+
+  // Return our stream
+  return jsStream
+    .pipe(gulp.dest('dist/js'))
+    .pipe(gulpLivereload());
+});
+
+gulp.task('build', ['build-css', 'build-images', 'build-js']);
 
 // Define our development tasks
 gulp.task('livereload-update', function livereloadUpdate () {
@@ -73,6 +109,15 @@ gulp.task('develop', ['build'], function develop () {
 
   // Start a livereload server
   gulpLivereload.listen();
+
+  // Integrate watchify on browserify
+  browserifyObj.plugin(watchify);
+  browserifyObj.on('update', function handleBUpdate () {
+    // DEV: At some point `gulp.run` will be deprecated, move to `gulp.series` when it does
+    gulp.run('build-js');
+  });
+  // DEV: Trigger a browserify build to make watchify start watching files
+  browserifyObj.bundle().on('data', function () {});
 
   // When one of our src files changes, re-run its corresponding task
   gulp.watch('public/css/**/*.scss', ['build-css']);
