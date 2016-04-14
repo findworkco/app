@@ -45,8 +45,9 @@ html
     - var csrfInput = '<input type="hidden" value="abcdef"/>';
     //- TODO: Load moment outside of view content
     - var moment = require('moment-timezone');
-    //- Fri Jan 8, 2016
-    - var datepickerFormat = 'ddd MMM D, Y';
+    //- 2016-01-08 (same as native)
+    //-   http://stackoverflow.com/a/9519493
+    - var datepickerFormat = 'Y-MM-DD';
 
     //- Declare our mock info
     //- DEV: Designed after
@@ -118,6 +119,12 @@ html
       span.fa-stack
         i.fa.fa-stack-2x.fa-calendar-o
         strong.fa-stack-1x(style="margin-top: 0.3em", aria-hidden="true")= date
+
+    mixin datepicker(moment)
+      //- DEV: We use 2020 as our cap since that's where moment stops
+      //- DEV: We use `min/max` to fix slowness bug
+      //-   http://stackoverflow.com/a/30325783
+      input(type="date", value=moment.format(datepickerFormat), min="2010-01-01", max="2020-12-31")&attributes(attributes)
 
     mixin nav-row(options)
       //- DEV: We use padded half ends to give padding for the selected border

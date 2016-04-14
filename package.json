@@ -42,6 +42,7 @@
     "bootstrap-datepicker": "~1.6.0",
     "bower": "~1.7.7",
     "browserify": "~13.0.0",
+    "browsernizr": "~2.1.0",
     "gemini": "~3.0.2",
     "gemini-gui": "~3.0.0",
     "gulp": "~3.9.1",
