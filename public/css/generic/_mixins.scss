@@ -3,24 +3,23 @@ $responsive-states: (small, medium, medium-and-up, medium-and-down, large);
 $small-end: $medium-start - 1;
 $medium-end: $large-start - 1;
 @mixin media-query($media-query) {
-  // TODO: Media queries aren't working in Android Chrome...
   @if $media-query == small {
-    @media only screen and (max-width: $small-end) { @content; }
+    @media (max-width: $small-end) { @content; }
   }
 
   @if $media-query == medium {
-    @media only screen and (min-width: $medium-start) and (max-width: $medium-end) { @content; }
+    @media (min-width: $medium-start) and (max-width: $medium-end) { @content; }
   }
 
   @if $media-query == medium-and-up {
-    @media only screen and (min-width: $medium-start) { @content; }
+    @media (min-width: $medium-start) { @content; }
   }
 
   @if $media-query == medium-and-down {
-    @media only screen and (max-width: $medium-end) { @content; }
+    @media (max-width: $medium-end) { @content; }
   }
 
   @if $media-query == large {
-    @media only screen and (min-width: $large-start) { @content; }
+    @media (min-width: $large-start) { @content; }
   }
 }

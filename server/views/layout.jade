@@ -1,11 +1,18 @@
 doctype html
 html
   head
+    //- Declare our page title
     if typeof title == 'undefined'
       - throw new Error('No title was specified for page');
     title= title
-    link(rel="stylesheet", href="/dist/css/index.css")
 
+    //- Define viewport size to trigger media query support on mobile devices
+    //-    http://stackoverflow.com/a/13554916
+    //-    https://developer.mozilla.org/en-US/docs/Mozilla/Mobile/Viewport_meta_tag
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+
+    //- Add our CSS
+    link(rel="stylesheet", href="/dist/css/index.css")
     //- TODO: Don't use all of FontAwesome (it's 71kb gzipped with 605 icons)
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
 
