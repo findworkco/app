@@ -3,6 +3,7 @@ $responsive-states: (small, medium, medium-and-up, medium-and-down, large);
 $small-end: $medium-start - 1;
 $medium-end: $large-start - 1;
 @mixin media-query($media-query) {
+  // TODO: Media queries aren't working in Android Chrome...
   @if $media-query == small {
     @media only screen and (max-width: $small-end) { @content; }
   }

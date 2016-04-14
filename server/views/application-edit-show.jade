@@ -160,8 +160,8 @@ form.cf(method="POST", action=selectedApplication.url)
           //- TODO: Is text "Applied on" or "Application date" (I think it's "Applied on" for "Add" and "Application date" for "Edit")
           = "Application date: "
           i.fa.fa-calendar-o(style="font-size: 1.5em")
-        //- TODO: Add datepicker, date only
-        input#application_date.form-control(name="application_date", type="date", value=selectedApplication.application_date_moment)
+        //- TODO: Explore using full datetime so we can capture timezone
+        input#application_date.form-control(name="application_date", type="date", value=selectedApplication.application_date_moment.format(datepickerFormat))
       .form-group
         //- TODO: Make sure we are consistent with "Follow-up" vs "Follow up"
         h4.flush--bottom(style="font-weight: normal")
@@ -173,7 +173,7 @@ form.cf(method="POST", action=selectedApplication.url)
           input(name="follow_up_reminder_enabled", type="radio", checked=hasFollowUpReminder, value="yes")
           = " "
           //- TODO: Add datepicker with time and timezone
-          input#follow_up_reminder.form-control(name="follow_up_reminder", type="date", value=selectedApplication.follow_up_reminder_moment)
+          input#follow_up_reminder.form-control(name="follow_up_reminder", type="date", value=selectedApplication.follow_up_reminder_moment.format(datepickerFormat))
         div
           input(name="follow_up_reminder_enabled", type="radio", checked=!hasFollowUpReminder, value="no")
           = " No reminder"
