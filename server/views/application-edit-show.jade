@@ -133,7 +133,6 @@ form.cf(method="POST", action=selectedApplication.url)
           br
           a(href="https://www.glassdoor.com/")
             = "Powered by "
-            //- TODO: Add to sprites
             img(alt="Glassdoor", src="/public/images/glassdoor-green.svg", style="height: 1.3em; position: relative; top: 4px")
           br
           a(target="_blank", href=glassdoorResult.badMatchUrl) Bad match? Click here to let us know
@@ -155,7 +154,6 @@ form.cf(method="POST", action=selectedApplication.url)
           br
           a(href="https://angel.co/")
             = "Powered by AngelList"
-            //- TODO: Add to sprites
             img(alt="AngelList logo", aria-hidden="true", src="/public/images/angellist.svg", style="height: 1.3em; position: relative; top: 4px; left: 2px")
           br
           a(target="_blank", href=angelListResult.badMatchUrl) Bad match? Click here to let us know
@@ -177,8 +175,10 @@ form.cf(method="POST", action=selectedApplication.url)
         div
           input(name="follow_up_reminder_enabled", type="radio", checked=hasFollowUpReminder, value="yes")
           = " "
-          //- TODO: Add timepicker and timezone select
-          +datepicker(selectedApplication.follow_up_reminder_moment)#follow_up_reminder.form-control(name="follow_up_reminder")
+          //- TODO: Add timezone select (maybe remove inline options and go for a mini form feeling?)
+          +datepicker(selectedApplication.follow_up_reminder_moment)#follow_up_reminder.form-control(name="follow_up_reminder_date")
+          = " "
+          +timepicker(selectedApplication.follow_up_reminder_moment).form-control(name="follow_up_reminder_time")
         div
           input(name="follow_up_reminder_enabled", type="radio", checked=!hasFollowUpReminder, value="no")
           = " No reminder"

@@ -2,6 +2,7 @@
 // TODO: Reduce size of jQuery as it's quite large (e.g. remove AJAX)
 var $ = require('jquery');
 void require('bootstrap-datepicker');
+void require('timepicker');
 var Modernizr = require('browsernizr');
 void require('browsernizr/test/inputtypes');
 
@@ -19,10 +20,33 @@ $(function handleReady () {
     $('input[type=date]').each(function handleDateInput () {
       var $el = $(this);
       $el.datepicker({
-        // 2016-01-08
+        // 2016-01-08 (same as native)
+        //   http://stackoverflow.com/a/9519493
         format: 'yyyy-mm-dd',
         todayBtn: 'linked',
         todayHighlight: true
+      });
+      $el.css({
+        width: '7em'
+      });
+    });
+  }
+
+  // If we don't have native support for timepicker, then use a fallback
+  if (!Modernizr.inputtypes.time) {
+    // https://github.com/jonthornton/jquery-timepicker
+    // TODO: Add component test to verify when we click a new time it changes
+    //   and when we return to the original they are the same (verifies moment + component consistency)
+    $('input[type=time]').each(function handleTimeInput () {
+      // DEV: Native will send HH:MM (e.g. 23:10) but can vary in presentation
+      //   We will use HH:MM AM/PM (e.g. 11:10PM) for user-friednliness
+      //   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
+      var $el = $(this);
+      $el.timepicker({
+        timeFormat: 'g:iA'
+      });
+      $el.css({
+        width: '6em'
       });
     });
   }

@@ -25,6 +25,9 @@ html
     //- 2016-01-08 (same as native)
     //-   http://stackoverflow.com/a/9519493
     - var datepickerFormat = 'Y-MM-DD';
+    //- 23:10 (same as native)
+    //-   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
+    - var timepickerFormat = 'HH:mm';
 
     //- Declare our mock info
     //- DEV: Designed after
@@ -103,6 +106,11 @@ html
       //-   http://stackoverflow.com/a/30325783
       input(type="date", value=moment.format(datepickerFormat), min="2010-01-01", max="2020-12-31")&attributes(attributes)
 
+    mixin timepicker(moment)
+      //- DEV: Native uses HH:MM (e.g. 23:10) so we must use that
+      //-   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
+      input(type="time", value=moment.format(timepickerFormat))&attributes(attributes)
+
     mixin nav-row(options)
       //- DEV: We use padded half ends to give padding for the selected border
       - var el = options.el || 'div';
@@ -127,7 +135,6 @@ html
               //- On large screens and schedule page for small screens, always display logo in full
               .medium-hidden.text--center(class={'small-hidden': !isSchedule})
                 a(href="/")
-                  //- TODO: Add to sprites
                   img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
                 p.flush--bottom.soft-half--bottom
                   //- TODO: Build signed out state
@@ -137,7 +144,6 @@ html
                 .grid.soft--ends
                   .grid__item
                     a(href="/")
-                      //- TODO: Add to sprites
                       img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="height: 26px")
                   .grid__item(style="margin-top: 6px")
                     //- TODO: Handle selection styles based on URL (not hardcoded)
@@ -272,8 +278,6 @@ html
             //- Nav links
             //- TODO: Make selection/highlight of `/archive` and `/settings` work
             //-   Prob compare against URLs, not application ids
-            //- TODO: When we table on these rows, they feel weird with padding
-            //-   I feel like we should pad the nav...
             +nav-row--link({selected: false})(href="/archive") Archived applications
             +nav-row--link({selected: false})(href="/settings") Settings
 
