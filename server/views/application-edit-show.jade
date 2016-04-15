@@ -6,6 +6,7 @@
 - var selectedApplication = waitingForResponseApplications[0];
 -
   var glassdoorResult = {
+    id: 12345,
     name: 'IBM',
     website: 'www.ibm.com',
     industry: null,
@@ -13,8 +14,12 @@
     ceo_review: '0% approve, 0% disapprove (0 ratings)',
     glassdoor_url: 'http://glassdoor.com/ibm'
   };
+//- Form: https://docs.google.com/a/findwork.co/forms/d/1b_pmseT_J0bG_9vK-CA7XGJTy-IOMDq0MvrXGREN4k8/edit
+//- DEV: URL resolved by taking form from email and verifying that GET works as well as POST
+- glassdoorResult.badMatchUrl = 'https://docs.google.com/a/findwork.co/forms/d/1b_pmseT_J0bG_9vK-CA7XGJTy-IOMDq0MvrXGREN4k8/formResponse?entry.1562009024=' + encodeURIComponent(selectedApplication.company_name) + '&entry.978071742=' + encodeURIComponent(glassdoorResult.id);
 -
   var angelListResult = {
+    id: 67890,
     name: 'AngelList',
     website: 'http://angel.co',
     followers: 2849,
@@ -22,6 +27,8 @@
     markets: 'Startups, Venture Capital',
     angellist_url: 'http://angel.co/angellist'
   };
+//- Form: https://docs.google.com/a/findwork.co/forms/d/1wDWEkLwGXmWOU5GMz4wMz-sKONrVNyrFLKZVnpfMrfk/edit
+- angelListResult.badMatchUrl = 'https://docs.google.com/a/findwork.co/forms/d/1wDWEkLwGXmWOU5GMz4wMz-sKONrVNyrFLKZVnpfMrfk/formResponse?entry.1562009024=' + encodeURIComponent(selectedApplication.company_name) + '&entry.978071742=' + encodeURIComponent(angelListResult.id);
 
 h1.content__heading(style="font-weight: normal") Job application
 h2.content__subheading(style="font-weight: normal")
@@ -129,9 +136,7 @@ form.cf(method="POST", action=selectedApplication.url)
             //- TODO: Add to sprites
             img(alt="Glassdoor", src="/public/images/glassdoor-green.svg", style="height: 1.3em; position: relative; top: 4px")
           br
-          //- TODO: Make this submit to Google forms
-          //- TODO: Prob need to make this its own form...
-          button.text--link Bad match? Click here to let us know
+          a(target="_blank", href=glassdoorResult.badMatchUrl) Bad match? Click here to let us know
         //- TODO: Handle empty state (pretty sure we mocked it)
         h5.text--normal.flush--bottom AngelList results:
         p
@@ -153,9 +158,7 @@ form.cf(method="POST", action=selectedApplication.url)
             //- TODO: Add to sprites
             img(alt="AngelList logo", aria-hidden="true", src="/public/images/angellist.svg", style="height: 1.3em; position: relative; top: 4px; left: 2px")
           br
-          //- TODO: Make this submit to Google forms
-          //- TODO: Prob need to make this its own form...
-          button.text--link Bad match? Click here to let us know
+          a(target="_blank", href=angelListResult.badMatchUrl) Bad match? Click here to let us know
     .grid__item.one-whole.medium-one-half.large-four-ninths
       .form-group
         label(for="application_date")
