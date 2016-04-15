@@ -12,33 +12,10 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1")
 
     //- Add our CSS
+    //- TODO: Remove all inline styles
     link(rel="stylesheet", href="/dist/css/index.css")
     //- TODO: Don't use all of FontAwesome (it's 71kb gzipped with 605 icons)
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
-
-    //- TODO: Remove all inline styles
-
-    //- If we are on a page with a `?grid` query parameter, then render a grid
-    //- TODO: Relocate this into `server` JS
-    script.
-      (function () {
-        // TODO: Move to query string (currently breaks serve)
-        if (window.location.hash === '#grid') {
-          // Define our overrides
-          // https://github.com/peol/960gridder/blob/master/releases/1.3.1/960.gridder.src.js#L42-L61
-          window.gOverride = {
-            gColumns: 12,
-            gWidth: 9,
-            pHeight: 18
-          };
-
-          // Load our grid
-          var scriptEl = document.createElement('script');
-          var headEl = document.querySelector('head');
-          scriptEl.src = 'https://rawgit.com/peol/960gridder/master/releases/1.3.1/960.gridder.src.js';
-          headEl.appendChild(scriptEl);
-        }
-      }());
   body
     //- Define server level locals
     //- TODO: Replace csrfInput with real content
@@ -83,7 +60,7 @@ html
         },
         // Mon Mar 14 at 2:00PM CST
         moment: moment.tz('2016-03-14T14:00', 'America/Chicago'),
-        // TODO: Consider renaming `details` to `instructions`
+        // DEV: Alternative names for `details` are `instructions`, `info`, and `information`
         details: ''
       }];
     -
@@ -219,7 +196,6 @@ html
                   .grid
                     .grid__item.one-whole.medium-one-half
                       //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
-                      //- TODO: In Chrome, alignment of icons seemed funky
                       .nav-info
                         +nav-info__icon(application)
                           if type == APP_TYPES.UPCOMING_INTERVIEW
@@ -231,8 +207,6 @@ html
                         +nav-info__content(application)
                           if type == APP_TYPES.UPCOMING_INTERVIEW
                             //- Mon Mar 14 at 2:00PM CST
-                            //- TODO: Format on load? (use `data` attr and strip out unnecessary things like same timezone)
-                            //-   span(data-time=moment.toISOString())
                             = params.interview.moment.format('ddd MMM D [at] h:mmA zz')
                           else if type == APP_TYPES.WAITING_FOR_RESPONSE
                             //- Tue Feb 16
@@ -323,7 +297,6 @@ html
                   br.medium-and-down-hidden
                   a.footer-link(href="/blog") Blog
                   a.footer-link(href="http://twitter.com/findworkco") Twitter
-                  //- TODO: Verify this is the email we want to use
                   a.footer-link(href="mailto:todd@findwork.co?subject=Find%20Work%20support%20question") Support
             +footer()
 
