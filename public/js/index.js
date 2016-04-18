@@ -3,6 +3,9 @@
 var $ = require('jquery');
 void require('bootstrap-datepicker');
 void require('timepicker');
+// DEV: Add in `window.jQuery` for Bootstrap
+window.jQuery = $;
+void require('bootstrap/js/modal');
 var Modernizr = require('browsernizr');
 void require('browsernizr/test/inputtypes');
 

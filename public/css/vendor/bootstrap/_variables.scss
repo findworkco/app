@@ -50,7 +50,7 @@ $bs-gray-lighter:           lighten($bs-gray-base, 93.5%)!default; // #eee
 // @font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace;
 // @font-family-base:        @font-family-sans-serif;
 
-// @font-size-base:          14px;
+$bs-font-size-base:          14px;
 // @font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
 // @font-size-small:         ceil((@font-size-base * 0.85)); // ~12px
 
@@ -62,7 +62,7 @@ $bs-gray-lighter:           lighten($bs-gray-base, 93.5%)!default; // #eee
 // @font-size-h6:            ceil((@font-size-base * 0.85)); // ~12px
 
 // //** Unit-less `line-height` for use in components like buttons.
-// @line-height-base:        1.428571429; // 20/14
+$bs-line-height-base:        1.428571429; // 20/14
 // //** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
 // @line-height-computed:    floor((@font-size-base * @line-height-base)); // ~20px
 
@@ -105,7 +105,7 @@ $bs-gray-lighter:           lighten($bs-gray-base, 93.5%)!default; // #eee
 // @line-height-small:         1.5;
 
 $bs-border-radius-base:        4px!default;
-// $bs-border-radius-large:       6px!default;
+$bs-border-radius-large:       6px!default;
 // $bs-border-radius-small:       3px!default;
 
 // //** Global color for active items (e.g., navs or dropdowns).
@@ -276,8 +276,8 @@ $bs-cursor-disabled:                not-allowed!default;
 // @zindex-popover:           1060;
 // @zindex-tooltip:           1070;
 // @zindex-navbar-fixed:      1030;
-// @zindex-modal-background:  1040;
-// @zindex-modal:             1050;
+$bs-zindex-modal-background:  1040;
+$bs-zindex-modal:             1050;
 
 
 // //== Media queries breakpoints
@@ -292,19 +292,19 @@ $bs-cursor-disabled:                not-allowed!default;
 // //** Deprecated `@screen-phone` as of v3.0.1
 // @screen-phone:               @screen-xs-min;
 
-// // Small screen / tablet
-// //** Deprecated `@screen-sm` as of v3.0.1
-// @screen-sm:                  768px;
-// @screen-sm-min:              @screen-sm;
-// //** Deprecated `@screen-tablet` as of v3.0.1
-// @screen-tablet:              @screen-sm-min;
+// Small screen / tablet
+//** Deprecated `@screen-sm` as of v3.0.1
+$bs-screen-sm:                  768px;
+$bs-screen-sm-min:              $bs-screen-sm;
+//** Deprecated `$bs-screen-tablet` as of v3.0.1
+$bs-screen-tablet:              $bs-screen-sm-min;
 
-// // Medium screen / desktop
-// //** Deprecated `@screen-md` as of v3.0.1
-// @screen-md:                  992px;
-// @screen-md-min:              @screen-md;
-// //** Deprecated `@screen-desktop` as of v3.0.1
-// @screen-desktop:             @screen-md-min;
+// Medium screen / desktop
+//** Deprecated `$bs-screen-md` as of v3.0.1
+$bs-screen-md:                  992px;
+$bs-screen-md-min:              $bs-screen-md;
+//** Deprecated `$bs-screen-desktop` as of v3.0.1
+$bs-screen-desktop:             $bs-screen-md-min;
 
 // // Large screen / wide desktop
 // //** Deprecated `@screen-lg` as of v3.0.1
@@ -589,33 +589,33 @@ $bs-cursor-disabled:                not-allowed!default;
 // //
 // //##
 
-// //** Padding applied to the modal body
-// @modal-inner-padding:         15px;
+//** Padding applied to the modal body
+$bs-modal-inner-padding:         15px;
 
-// //** Padding applied to the modal title
-// @modal-title-padding:         15px;
-// //** Modal title line-height
-// @modal-title-line-height:     @line-height-base;
+//** Padding applied to the modal title
+$bs-modal-title-padding:         15px;
+//** Modal title line-height
+$bs-modal-title-line-height:     $bs-line-height-base;
 
-// //** Background color of modal content area
-// @modal-content-bg:                             #fff;
-// //** Modal content border color
-// @modal-content-border-color:                   rgba(0,0,0,.2);
-// //** Modal content border color **for IE8**
-// @modal-content-fallback-border-color:          #999;
+//** Background color of modal content area
+$bs-modal-content-bg:                             #fff;
+//** Modal content border color
+$bs-modal-content-border-color:                   rgba(0,0,0,.2);
+//** Modal content border color **for IE8**
+$bs-modal-content-fallback-border-color:          #999;
 
-// //** Modal backdrop background color
-// @modal-backdrop-bg:           #000;
-// //** Modal backdrop opacity
-// @modal-backdrop-opacity:      .5;
-// //** Modal header border color
-// @modal-header-border-color:   #e5e5e5;
-// //** Modal footer border color
-// @modal-footer-border-color:   @modal-header-border-color;
+//** Modal backdrop background color
+$bs-modal-backdrop-bg:           #000;
+//** Modal backdrop opacity
+$bs-modal-backdrop-opacity:      .5;
+//** Modal header border color
+$bs-modal-header-border-color:   #e5e5e5;
+//** Modal footer border color
+$bs-modal-footer-border-color:   $bs-modal-header-border-color;
 
-// @modal-lg:                    900px;
-// @modal-md:                    600px;
-// @modal-sm:                    300px;
+$bs-modal-lg:                    900px;
+$bs-modal-md:                    600px;
+$bs-modal-sm:                    300px;
 
 
 // //== Alerts
@@ -818,13 +818,13 @@ $bs-cursor-disabled:                not-allowed!default;
 // @carousel-caption-color:                      #fff;
 
 
-// //== Close
-// //
-// //##
+//== Close
+//
+//##
 
-// @close-font-weight:           bold;
-// @close-color:                 #000;
-// @close-text-shadow:           0 1px 0 #fff;
+$bs-close-font-weight:           bold;
+$bs-close-color:                 #000;
+$bs-close-text-shadow:           0 1px 0 #fff;
 
 
 // //== Code

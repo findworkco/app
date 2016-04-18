@@ -179,6 +179,8 @@ form.cf(method="POST", action=selectedApplication.url)
           +datepicker(selectedApplication.follow_up_reminder_moment)#follow_up_reminder.form-control(name="follow_up_reminder_date")
           = " "
           +timepicker(selectedApplication.follow_up_reminder_moment).form-control(name="follow_up_reminder_time")
+          = " "
+          button.text--link(type="button", data-toggle="modal", data-target="#timeZoneModal") Time zone
         div
           input(name="follow_up_reminder_enabled", type="radio", checked=!hasFollowUpReminder, value="no")
           = " No reminder"
@@ -206,3 +208,18 @@ form.cf(method="POST", action=selectedApplication.url)
         //- DEV: Another alternative is a modal that has its own form
         //- TODO: Add test that verifies form doesn't submit on confirm rejection
         button.btn.btn--danger(name="submit_button", type="submit", value="delete", onclick="javascript:return confirm('Are you sure you want to delete #{selectedApplication.name}?')") Delete
+
+//- TODO: Make this a block that overrides in layout (prob want modals on body)
+//- http://getbootstrap.com/javascript/#modals
+#timeZoneModal.modal.fade(tabindex="-1", role="dialog")
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(data-dismiss="modal", aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title Select a time zone
+      .modal-body
+        p Pick a time zone, any time zone.
+      .modal-footer
+        button.btn.btn--default(type="button", data-dismiss="modal") Close
+        button.btn.btn--primary(type="button") Save time zone

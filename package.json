@@ -39,6 +39,7 @@
     "moment-timezone": "~0.5.3"
   },
   "devDependencies": {
+    "bootstrap": "~3.3.6",
     "bootstrap-datepicker": "~1.6.0",
     "bower": "~1.7.7",
     "browserify": "~13.0.0",

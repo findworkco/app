@@ -1,0 +1,36 @@
+// Modified from https://github.com/twbs/bootstrap/blob/v3.3.6/less/close.less
+//
+// Close icons
+// --------------------------------------------------
+
+
+.close {
+  float: right;
+  font-size: ($bs-font-size-base * 1.5);
+  font-weight: $bs-close-font-weight;
+  line-height: 1;
+  color: $bs-close-color;
+  text-shadow: $bs-close-text-shadow;
+  @include opacity(.2);
+
+  &:hover,
+  &:focus {
+    color: $bs-close-color;
+    text-decoration: none;
+    cursor: pointer;
+    @include opacity(.5);
+  }
+}
+
+  // Additional properties for button version
+  // iOS requires the button element instead of an anchor tag.
+  // If you want the anchor version, it requires `href="#"`.
+  // See https://developer.mozilla.org/en-US/docs/Web/Events/click#Safari_Mobile
+  // DEV: Due to SASS, we need to break this out of the original selector
+  button.close {
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+  }
