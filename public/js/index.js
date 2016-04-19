@@ -3,11 +3,10 @@
 var $ = require('jquery');
 void require('bootstrap-datepicker');
 void require('timepicker');
-// DEV: Add in `window.jQuery` for Bootstrap
-window.jQuery = $;
-void require('bootstrap/js/modal');
 var Modernizr = require('browsernizr');
 void require('browsernizr/test/inputtypes');
+// DEV: Add in `window.jQuery` for Chosen
+window.jQuery = $;
 void require('../../bower_components/chosen/chosen.jquery.js');
 
 // TODO: Construct an autosave mechanism for `data-autosave`
