@@ -8,6 +8,7 @@ window.jQuery = $;
 void require('bootstrap/js/modal');
 var Modernizr = require('browsernizr');
 void require('browsernizr/test/inputtypes');
+void require('../../bower_components/chosen/chosen.jquery.js');
 
 // TODO: Construct an autosave mechanism for `data-autosave`
 
@@ -53,6 +54,9 @@ $(function handleReady () {
       });
     });
   }
+
+  // Find all Chosen inputs and bind them
+  $('[data-chosen]').chosen();
 
   // If we are on a page with a `?grid` query parameter, then render a grid
   // TODO: Move to query string (currently breaks serve)

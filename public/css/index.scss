@@ -3,6 +3,8 @@
 // Include vars, inuit.css, select Bootstrap styles, and vendor CSS
 @import "vars";
 @import "../../bower_components/inuit.css/inuit";
+// TODO: Properly host Chosen sprites
+@import "../../bower_components/chosen-bootstrap/chosen.bootstrap.css";
 @import "vendor/bootstrap/bootstrap";
 @import "../../node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.standalone.min.css";
 @import "../../node_modules/timepicker/jquery.timepicker.css";

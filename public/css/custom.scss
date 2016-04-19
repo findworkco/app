@@ -121,3 +121,12 @@
     margin-left: $half-spacing-unit;
   }
 }
+
+// Override styles for Chosen bootstrap
+.chosen-container .chosen-results li em {
+    background: #FAFCAB;
+}
+
+.chosen-container .chosen-results li.group-result {
+    color: #666;
+}
