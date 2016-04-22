@@ -26,6 +26,11 @@
   }
 }
 
+.btn--hero {
+  padding: 22px 70px;
+  font-size: $h4-size;
+}
+
 // Define button colors via Bootstrap
 // https://github.com/twbs/bootstrap/blob/v3.3.6/less/buttons.less#L63-L87
 .btn--default {
@@ -37,6 +42,11 @@
 // Danger and error appear as red
 .btn--danger {
   @include button-variant($btn--danger-color, $btn--danger-bg, $btn--danger-border);
+}
+
+// Custom brand colors
+.btn--brand-dark {
+  @include button-variant($brand-light, $brand-dark, $brand-light);
 }
 
 // Emulate button group

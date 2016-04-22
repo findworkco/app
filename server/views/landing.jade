@@ -1,0 +1,94 @@
+header.section--brand-dark.text--center.cf
+  .container
+    .grid
+      .grid__item.one-whole
+        //- TODO: Add missing "Sign up/Log in" button in upper right
+        //- TODO: Make all headings not bold by default
+        a.link--unstyled(href="/")
+          h1(style="font-weight: normal").soft-half--ends.flush--bottom
+            img(alt="Find Work", src="/public/images/white-logo.svg", style="width: 308px")
+        h2(style="font-weight: normal") Manage job leads and applications
+        //- TODO: Try out other phrases like "Try it now, it's free!"
+        //- TODO: How do people get started...?
+        p
+          a.btn.btn--hero.btn--brand-dark(href="/schedule") Get started. It's free!
+section.soft--ends
+  .container
+    .grid
+      .grid__item.one-whole
+        .landmark
+          //- TODO: Probably document notes via `visuallyhidden` class
+          //-   Or maybe make an SVG here which uses the screenshot
+          //- TODO: Need browser window and annotations
+          //- TODO: Prob best to trim excess whitespace from screenshots (i.e. screenshot at exactly 960px)
+          //- TODO: Prob can cut off at delete with a vvvvvv border
+          //- DESIGN: When our UI is fully built, explore doing magnified screenshots
+          //- TODO: Use better dummy info for landing screenshot
+          img(alt="Annotated screenshot", src="/public/images/screenshot.png", style="width: 560px; margin: 0 auto; display: block;")
+        p.text--center
+          a.btn.btn--hero.btn--brand-dark(href="/schedule") Get started. It's free!
+section.section--brand-dark.soft--ends
+  .container
+    .grid
+      .grid__item.one-whole
+        h3.beta.text--center(style="font-weight: normal") Workflow
+    .grid
+      .grid__item.one-quarter &nbsp;
+      .grid__item.one-half
+        p Find Work is a tool to track and manage your job applications. We are profession and role agnostic (e.g. good for full-time and contractors). We consider there to be 4 stages of finding work.
+    .grid
+      .grid__item.one-quarter.text--right
+        img(alt="Find a job listing illustration", src="/public/images/magnifying-glass-white.svg", style="height: 3em")
+      .grid__item.one-half
+        p
+          strong 1. Find a job listing
+          br
+          | Whether through a job board or word of mouth, you have found a listing. You can save it in our system and get a reminder to apply later.
+    .grid
+      .grid__item.one-quarter.text--right
+        img(alt="Waiting for response illustration", src="/public/images/clock-white.svg", style="height: 3em")
+      .grid__item.one-half
+        p
+          strong 2. Waiting for response
+          br
+          | You have submitted your application. We'll send you a reminder to follow up to make sure you don't fall through the cracks.
+    .grid
+      .grid__item.one-quarter.text--right
+        //- TODO: Purchase icons if we haven't yet
+        img(alt="Interview scheduled illustration", src="/public/images/conversation-white.svg", style="height: 3em")
+      .grid__item.one-half
+        p
+          strong 3. Interview scheduled
+          br
+          | You have gotten your foot in the door. We'll help you ace that interview with company research tools (demonstrating interesting) and pre/post interview reminders to help take diligent notes.
+          br
+          em We repeat steps 2 and 3 until we get to step 4.
+    .grid
+      .grid__item.one-quarter.text--right
+        img(alt="Received an offer illustration", src="/public/images/salary-white.svg", style="height: 3em")
+      .grid__item.one-half
+        p
+          strong 4. Received an offer
+          br
+          | Congratulations! You got a job offer! We'll help make sure you got good terms with our company research tools and remind you to reply (in case you are having a busy week).
+    .grid
+      .grid__item.one-whole
+        p.push--top.landmark.text--center
+          a.btn.btn--hero.btn--brand-dark(href="/schedule") Get started. It's free!
+    .grid
+      .grid__item.one-whole
+        h3.beta.text--center(style="font-weight: normal") Built by former employees of
+    .grid
+      .grid__item.one-whole
+        p
+          a(href="https://www.behance.net/", target="_blank")
+            img.behance-logo(alt="Behance", src="/public/images/behance-white.svg")
+          a(href="https://www.uber.com/", target="_blank")
+            img.uber-logo(alt="Uber", src="/public/images/uber-white.svg")
+          a(href="https://underdog.io/", target="_blank")
+            //- TODO: Move to SVG variant when Underdog.io completes their switch
+            img.underdogio-logo(alt="Underdog.io", src="/public/images/underdogio-purple.png")
+.container
+  .grid
+    .grid__item.one-whole
+      +footer({largeWide: true})

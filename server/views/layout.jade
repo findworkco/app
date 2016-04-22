@@ -1,328 +1,270 @@
-doctype html
-html
-  head
-    //- Declare our content as UTF-8
-    //- DEV: This is necessary to render i18n strings like Afghanistan
-    meta(charset="utf-8")
+extends layout-base
 
-    //- Declare our page title
-    if typeof title == 'undefined'
-      - throw new Error('No title was specified for page');
-    title= title
+block layout-content
+  //- Declare our mock info
+  //- DEV: Designed after
+  //-   Large: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
+  //-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a13b4d4ec
+  //-   Small (nav 1): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/ab1c48bc9
+  //-   Small (nav 2): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/aeef2d023
+  //-   Small (non-nav): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a541249ff
+  //-
+  - var user = {email: 'todd@findwork.co'};
+  -
+    // TODO: Be sure to sort by upcoming date
+    // TODO: Warn ourselves if we see a date that was before today
+    var upcomingInterviews = [{
+      application: {
+        id: 'abcdef-umbrella-corp',
+        name: 'Senior Software Engineer at Umbrella Corporation',
+        url: '/application/abcdef-umbrella-corp'
+      },
+      // Wed Jan 20 at 2:00PM CST
+      // DEV: We should also populate `datetime` and `timzone` properties
+      // DEV: When datetime is saved to the database, a moment instance that give us the offset
+      //   Also, note that we have no numeric offset for `moment.tz`
+      //   allowing it to set the appropriate one from the IANA timezone
+      moment: moment.tz('2016-01-20T14:00', 'America/Chicago'),
+      // TODO: Be sure to sanitize details
+      details: 'Go to <a href="https://maps.google.com">1200 Lake St, Suite 303, Chicago</a>',
+    }, {
+      application: {
+        id: 'abcdef-globo-gym',
+        name: 'Globo Gym',
+        url: '/application/abcdef-globo-gym'
+      },
+      // Mon Mar 14 at 2:00PM CST
+      moment: moment.tz('2016-03-14T14:00', 'America/Chicago'),
+      // DEV: Alternative names for `details` are `instructions`, `info`, and `information`
+      details: ''
+    }];
+  -
+    var waitingForResponseApplications = [{
+      id: 'abcdef-sky-networks',
+      add_interview_url: '/application/abcdef-sky-networks/add-interview',
+      // Fri Jan 8
+      application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
+      archive_url: '/application/abcdef-sky-networks/archive',
+      company_name: 'Sky Networks',
+      human_status: 'Waiting for response',
+      // Tue Feb 23
+      follow_up_reminder_moment: moment('2016-02-23T12:00').tz('America/Chicago'),
+      // Tue Feb 16
+      last_contact_moment: moment('2016-02-16T12:00').tz('America/Chicago'),
+      past_interviews: [{
+        id: 'abcdef-sky-networks-001',
+        // Fri Jan 15 at 9:00AM PST
+        moment: moment('2016-01-15T09:00').tz('America/Los_Angeles'),
+        url: '/interview/abcdef-sky-networks-001'
+      }],
+      posting_url: 'https://github.com/about/jobs',
+      name: 'Engineer II at Sky Networks',
+      notes: '100 employees, all seem robotic',
+      status: 'waiting_for_response',
+      received_offer_url: '/application/abcdef-sky-networks/received-offer',
+      url: '/application/abcdef-sky-networks'
+    }];
 
-    //- Define viewport size to trigger media query support on mobile devices
-    //-    http://stackoverflow.com/a/13554916
-    //-    https://developer.mozilla.org/en-US/docs/Mozilla/Mobile/Viewport_meta_tag
-    meta(name="viewport", content="width=device-width, initial-scale=1")
+  //- Declare common mixins
+  mixin calendar-2x-with-date(date)
+    //- Font stacking via: http://blog.fontawesome.io/2014/05/19/stacking-text-and-icons/
+    span.fa-stack
+      i.fa.fa-stack-2x.fa-calendar-o
+      strong.fa-stack-1x(style="margin-top: 0.3em", aria-hidden="true")= date
 
-    //- Add our CSS
-    //- TODO: Remove all inline styles
-    link(rel="stylesheet", href="/dist/css/index.css")
-    //- TODO: Don't use all of FontAwesome (it's 71kb gzipped with 605 icons)
-    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
-  body
-    //- Define server level locals
-    //- TODO: Replace csrfInput with real content
-    - var csrfInput = '<input type="hidden" value="abcdef"/>';
-    //- TODO: Load moment outside of view content
-    - var moment = require('moment-timezone');
-    - var countryData = require('country-data');
-    - var timezonesByCountryCode = require(process.cwd() + '/vendor/tz-locales.json');
-    - var timezoneAbbrs = require(process.cwd() + '/server/utils/timezone-abbrs.js');
-    //- 2016-01-08 (same as native)
-    //-   http://stackoverflow.com/a/9519493
-    - var datepickerFormat = 'Y-MM-DD';
-    //- 23:10 (same as native)
+  mixin datepicker(moment)
+    //- DEV: We use 2020 as our cap since that's where moment stops
+    //- DEV: We use `min/max` to fix slowness bug
+    //-   http://stackoverflow.com/a/30325783
+    input(type="date", value=moment.format(datepickerFormat), min="2010-01-01", max="2020-12-31")&attributes(attributes)
+
+  mixin timepicker(moment)
+    //- DEV: Native uses HH:MM (e.g. 23:10) so we must use that
     //-   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
-    - var timepickerFormat = 'HH:mm';
+    input(type="time", value=moment.format(timepickerFormat))&attributes(attributes)
 
-    //- Declare our mock info
-    //- DEV: Designed after
-    //-   Large: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
-    //-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a13b4d4ec
-    //-   Small (nav 1): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/ab1c48bc9
-    //-   Small (nav 2): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/aeef2d023
-    //-   Small (non-nav): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a541249ff
-    //-
-    - var user = {email: 'todd@findwork.co'};
-    -
-      // TODO: Be sure to sort by upcoming date
-      // TODO: Warn ourselves if we see a date that was before today
-      var upcomingInterviews = [{
-        application: {
-          id: 'abcdef-umbrella-corp',
-          name: 'Senior Software Engineer at Umbrella Corporation',
-          url: '/application/abcdef-umbrella-corp'
-        },
-        // Wed Jan 20 at 2:00PM CST
-        // DEV: We should also populate `datetime` and `timzone` properties
-        // DEV: When datetime is saved to the database, a moment instance that give us the offset
-        //   Also, note that we have no numeric offset for `moment.tz`
-        //   allowing it to set the appropriate one from the IANA timezone
-        moment: moment.tz('2016-01-20T14:00', 'America/Chicago'),
-        // TODO: Be sure to sanitize details
-        details: 'Go to <a href="https://maps.google.com">1200 Lake St, Suite 303, Chicago</a>',
-      }, {
-        application: {
-          id: 'abcdef-globo-gym',
-          name: 'Globo Gym',
-          url: '/application/abcdef-globo-gym'
-        },
-        // Mon Mar 14 at 2:00PM CST
-        moment: moment.tz('2016-03-14T14:00', 'America/Chicago'),
-        // DEV: Alternative names for `details` are `instructions`, `info`, and `information`
-        details: ''
-      }];
-    -
-      var waitingForResponseApplications = [{
-        id: 'abcdef-sky-networks',
-        add_interview_url: '/application/abcdef-sky-networks/add-interview',
-        // Fri Jan 8
-        application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
-        archive_url: '/application/abcdef-sky-networks/archive',
-        company_name: 'Sky Networks',
-        human_status: 'Waiting for response',
-        // Tue Feb 23
-        follow_up_reminder_moment: moment('2016-02-23T12:00').tz('America/Chicago'),
-        // Tue Feb 16
-        last_contact_moment: moment('2016-02-16T12:00').tz('America/Chicago'),
-        past_interviews: [{
-          id: 'abcdef-sky-networks-001',
-          // Fri Jan 15 at 9:00AM PST
-          moment: moment('2016-01-15T09:00').tz('America/Los_Angeles'),
-          url: '/interview/abcdef-sky-networks-001'
-        }],
-        posting_url: 'https://github.com/about/jobs',
-        name: 'Engineer II at Sky Networks',
-        notes: '100 employees, all seem robotic',
-        status: 'waiting_for_response',
-        received_offer_url: '/application/abcdef-sky-networks/received-offer',
-        url: '/application/abcdef-sky-networks'
-      }];
+  mixin nav-row(options)
+    //- DEV: We use padded half ends to give padding for the selected border
+    - var el = options.el || 'div';
+    #{el}.nav-row.soft-half--ends(class={'nav-row--selected': options.selected})&attributes(attributes)
+      block
 
-    //- Declare common mixins
-    mixin calendar-2x-with-date(date)
-      //- Font stacking via: http://blog.fontawesome.io/2014/05/19/stacking-text-and-icons/
-      span.fa-stack
-        i.fa.fa-stack-2x.fa-calendar-o
-        strong.fa-stack-1x(style="margin-top: 0.3em", aria-hidden="true")= date
+  mixin nav-row--link(options)
+    //- Override our element as a link
+    //- DEV: We use `&attributes` and `block` to make a pass through
+    - options.el = 'a';
+    +nav-row(options).nav-link&attributes(attributes)
+      block
 
-    mixin datepicker(moment)
-      //- DEV: We use 2020 as our cap since that's where moment stops
-      //- DEV: We use `min/max` to fix slowness bug
-      //-   http://stackoverflow.com/a/30325783
-      input(type="date", value=moment.format(datepickerFormat), min="2010-01-01", max="2020-12-31")&attributes(attributes)
-
-    mixin timepicker(moment)
-      //- DEV: Native uses HH:MM (e.g. 23:10) so we must use that
-      //-   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
-      input(type="time", value=moment.format(timepickerFormat))&attributes(attributes)
-
-    mixin nav-row(options)
-      //- DEV: We use padded half ends to give padding for the selected border
-      - var el = options.el || 'div';
-      #{el}.nav-row.soft-half--ends(class={'nav-row--selected': options.selected})&attributes(attributes)
-        block
-
-    mixin nav-row--link(options)
-      //- Override our element as a link
-      //- DEV: We use `&attributes` and `block` to make a pass through
-      - options.el = 'a';
-      +nav-row(options).nav-link&attributes(attributes)
-        block
-
-    //- Start our HTML
-    - var isSchedule = url === '/schedule';
-    .container
-      .grid
-        #nav.grid__item.one-whole.large-one-quarter(role="navigation")
-          header
-            //- DEV: Negative margins are to extend the boundary of our blue background to the gutter
-            .nav__top.section--brand-dark(style="margin-left: -9px; margin-right: -9px; padding: 0 9px")
-              //- On large screens and schedule page for small screens, always display logo in full
-              .medium-hidden.text--center(class={'small-hidden': !isSchedule})
-                a(href="/")
-                  img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
-                p.flush--bottom.soft-half--bottom
-                  //- TODO: Build signed out state
-                  a.link--unstyled.muted(href="/settings") todd@findwork.co
-              //- On medium screens, show logo with major links
-              .small-hidden.large-hidden
-                .grid.soft--ends
-                  .grid__item
-                    a(href="/")
-                      img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="height: 26px")
-                  .grid__item(style="margin-top: 6px")
-                    //- TODO: Handle selection styles based on URL (not hardcoded)
-                    a.delta.link--unstyled(href="/schedule", style="text-decoration: underline") Schedule
-                  .grid__item(style="margin-top: 6px")
-                    a.delta.link--unstyled(href="/archive") Archive
-                  .float--right.grid__item.text--right(style="margin-top: 6px")
-                    span.delta
-                      //- TODO: Build signed out state
-                      //- DESIGN: Links in dropdown are "Settings", "Log out"
-                      //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a03ef4dcc
-                      span todd@findwork.co
+  //- Start our HTML
+  - var isSchedule = url === '/schedule';
+  .container
+    .grid
+      #nav.grid__item.one-whole.large-one-quarter(role="navigation")
+        header
+          //- DEV: Negative margins are to extend the boundary of our blue background to the gutter
+          .nav__top.section--brand-dark(style="margin-left: -9px; margin-right: -9px; padding: 0 9px")
+            //- On large screens and schedule page for small screens, always display logo in full
+            .medium-hidden.text--center(class={'small-hidden': !isSchedule})
+              a(href="/")
+                img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
+              p.flush--bottom.soft-half--bottom
+                //- TODO: Build signed out state
+                a.link--unstyled.muted(href="/settings") todd@findwork.co
+            //- On medium screens, show logo with major links
+            .small-hidden.large-hidden
+              .grid.soft--ends
+                .grid__item
+                  a(href="/")
+                    img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="height: 26px")
+                .grid__item(style="margin-top: 6px")
+                  //- TODO: Handle selection styles based on URL (not hardcoded)
+                  a.delta.link--unstyled(href="/schedule", style="text-decoration: underline") Schedule
+                .grid__item(style="margin-top: 6px")
+                  a.delta.link--unstyled(href="/archive") Archive
+                .float--right.grid__item.text--right(style="margin-top: 6px")
+                  span.delta
+                    //- TODO: Build signed out state
+                    //- DESIGN: Links in dropdown are "Settings", "Log out"
+                    //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a03ef4dcc
+                    span todd@findwork.co
+                    = " "
+                    i.fa.fa-caret-down(style="position: relative; top: 1px")
+            //- On non-schedule small screens, display thin bar with back button
+            if !isSchedule
+              .medium-and-up-hidden
+                .grid.soft-half--ends
+                  .grid__item.one-quarter
+                    //- TODO: Reconsider having a "Back" button as most mobile devices have some equivalent for this
+                    //- Maybe do a full "Nav" via slide out...
+                    a.link--unstyled(href="javascript:history.go(-1);")
+                      b.fa.fa-angle-left(style="font-size: 34px")
                       = " "
-                      i.fa.fa-caret-down(style="position: relative; top: 1px")
-              //- On non-schedule small screens, display thin bar with back button
-              if !isSchedule
-                .medium-and-up-hidden
-                  .grid.soft-half--ends
-                    .grid__item.one-quarter
-                      //- TODO: Reconsider having a "Back" button as most mobile devices have some equivalent for this
-                      //- Maybe do a full "Nav" via slide out...
-                      a.link--unstyled(href="javascript:history.go(-1);")
-                        b.fa.fa-angle-left(style="font-size: 34px")
-                        = " "
-                        span.delta(style="position: relative; top: -4px") Back
-                    //- DEV: Same line height as `.fa-angle-left`
-                    .grid__item.three-quarters.text--right(style="line-height: 34px")
-                      //- TODO: Build signed out state
-                      a.link--unstyled.muted(href="/settings") todd@findwork.co
-          //- On non-schedule for medium/small pages, hide our schedule listing
-          div(class={'medium-and-down-hidden': !isSchedule})
-            p.text--center
-              a.btn.btn--wide.btn--default.nav-btn(href="/create-application")
-                span(aria-hidden="true")= "+ "
-                | Add job application
+                      span.delta(style="position: relative; top: -4px") Back
+                  //- DEV: Same line height as `.fa-angle-left`
+                  .grid__item.three-quarters.text--right(style="line-height: 34px")
+                    //- TODO: Build signed out state
+                    a.link--unstyled.muted(href="/settings") todd@findwork.co
+        //- On non-schedule for medium/small pages, hide our schedule listing
+        div(class={'medium-and-down-hidden': !isSchedule})
+          p.text--center
+            a.btn.btn--wide.btn--default.nav-btn(href="/create-application")
+              span(aria-hidden="true")= "+ "
+              | Add job application
 
-              //- Define mixins for our upcoming content
-              - var APP_TYPES = {UPCOMING_INTERVIEW: 'UPCOMING_INTERVIEW', WAITING_FOR_RESPONSE: 'WAITING_FOR_RESPONSE'}
-              mixin nav-info__icon(application)
-                .nav-info__icon&attributes(attributes)
-                  //- DEV: We set no tab index to skip redundant links
-                  a.link--unstyled(href=application.url, tabindex="-1", aria-hidden="true")
-                    block
+            //- Define mixins for our upcoming content
+            - var APP_TYPES = {UPCOMING_INTERVIEW: 'UPCOMING_INTERVIEW', WAITING_FOR_RESPONSE: 'WAITING_FOR_RESPONSE'}
+            mixin nav-info__icon(application)
+              .nav-info__icon&attributes(attributes)
+                //- DEV: We set no tab index to skip redundant links
+                a.link--unstyled(href=application.url, tabindex="-1", aria-hidden="true")
+                  block
 
-              mixin nav-info__content(application)
-                .nav-info__content&attributes(attributes)
-                  //- DEV: We set no tab index to skip redundant links
-                  a.link--unstyled(href=application.url, tabindex="-1")
-                    block
+            mixin nav-info__content(application)
+              .nav-info__content&attributes(attributes)
+                //- DEV: We set no tab index to skip redundant links
+                a.link--unstyled(href=application.url, tabindex="-1")
+                  block
 
-              mixin nav-row--application(application, type, params)
-                +nav-row({selected: application.url === url}).nav-row--application
-                  h4.text--normal.flush--bottom
-                    a.link--unstyled(href=application.url)
-                      strong= application.name
-                  .grid
-                    .grid__item.one-whole.medium-one-half
-                      //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
-                      .nav-info
-                        +nav-info__icon(application)
-                          if type == APP_TYPES.UPCOMING_INTERVIEW
-                            +calendar-2x-with-date(params.interview.moment.format('D'))
-                          else if type == APP_TYPES.WAITING_FOR_RESPONSE
-                            i.fa.fa-2x.fa-envelope-o
-                          else
-                            - throw new Error('Unrecognized type')
-                        +nav-info__content(application)
-                          if type == APP_TYPES.UPCOMING_INTERVIEW
-                            //- Mon Mar 14 at 2:00PM CST
-                            = params.interview.moment.format('ddd MMM D [at] h:mmA zz')
-                          else if type == APP_TYPES.WAITING_FOR_RESPONSE
-                            //- Tue Feb 16
-                            = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
-                          else
-                            - throw new Error('Unrecognized type')
-
-                      .nav-info
-                        +nav-info__icon(application)
-                          if type == APP_TYPES.UPCOMING_INTERVIEW
-                            i.fa.fa-2x.fa-info-circle
-                          else if type == APP_TYPES.WAITING_FOR_RESPONSE
-                            i.fa.fa-2x.fa-reply
-                          else
-                            - throw new Error('Unrecognized type')
-                        +nav-info__content(application)
-                          if type == APP_TYPES.UPCOMING_INTERVIEW
-                            //- TODO: Be sure to sanitize details
-                            if params.interview.details
-                              != params.interview.details
-                            else
-                              i Nothing provided
-                          else if type == APP_TYPES.WAITING_FOR_RESPONSE
-                            if application.follow_up_reminder_moment
-                              //- Tue Feb 23
-                              = "Follow-up on: " + application.follow_up_reminder_moment.format('ddd MMM D')
-                            else
-                              i TODO: Add placeholder text for no reminder set
-                          else
-                            - throw new Error('Unrecognized type')
-                    .grid__item.small-hidden.large-hidden.medium-one-half
-                      //- DESIGN: Make sure links are clickable in textarea
-                      //- TODO: Limit height and force scrolling
-                      div Notes:
-                      div.nav-notes
-                        if application.notes
-                          = application.notes
+            mixin nav-row--application(application, type, params)
+              +nav-row({selected: application.url === url}).nav-row--application
+                h4.text--normal.flush--bottom
+                  a.link--unstyled(href=application.url)
+                    strong= application.name
+                .grid
+                  .grid__item.one-whole.medium-one-half
+                    //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
+                    .nav-info
+                      +nav-info__icon(application)
+                        if type == APP_TYPES.UPCOMING_INTERVIEW
+                          +calendar-2x-with-date(params.interview.moment.format('D'))
+                        else if type == APP_TYPES.WAITING_FOR_RESPONSE
+                          i.fa.fa-2x.fa-envelope-o
                         else
-                          i No notes recorded
-                  //- On small/medium screens, provide a link to the application's page
-                  .large-hidden
-                    a.btn.btn--default.one-whole.nav-btn(href=application.url) View/edit job application
+                          - throw new Error('Unrecognized type')
+                      +nav-info__content(application)
+                        if type == APP_TYPES.UPCOMING_INTERVIEW
+                          //- Mon Mar 14 at 2:00PM CST
+                          = params.interview.moment.format('ddd MMM D [at] h:mmA zz')
+                        else if type == APP_TYPES.WAITING_FOR_RESPONSE
+                          //- Tue Feb 16
+                          = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
+                        else
+                          - throw new Error('Unrecognized type')
 
-            //- Upcoming interviews section
-            h3.flush--bottom(style="font-weight: normal") Upcoming interviews
-            //- DEV: This is actually a 1.5x push due to extra padding for link border
-            .push--bottom
-              if upcomingInterviews.length
-                each upcomingInterview in upcomingInterviews
-                  +nav-row--application(upcomingInterview.application, APP_TYPES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
-              else
-                p TODO: Add placeholder text for upcoming interviews
+                    .nav-info
+                      +nav-info__icon(application)
+                        if type == APP_TYPES.UPCOMING_INTERVIEW
+                          i.fa.fa-2x.fa-info-circle
+                        else if type == APP_TYPES.WAITING_FOR_RESPONSE
+                          i.fa.fa-2x.fa-reply
+                        else
+                          - throw new Error('Unrecognized type')
+                      +nav-info__content(application)
+                        if type == APP_TYPES.UPCOMING_INTERVIEW
+                          //- TODO: Be sure to sanitize details
+                          if params.interview.details
+                            != params.interview.details
+                          else
+                            i Nothing provided
+                        else if type == APP_TYPES.WAITING_FOR_RESPONSE
+                          if application.follow_up_reminder_moment
+                            //- Tue Feb 23
+                            = "Follow-up on: " + application.follow_up_reminder_moment.format('ddd MMM D')
+                          else
+                            i TODO: Add placeholder text for no reminder set
+                        else
+                          - throw new Error('Unrecognized type')
+                  .grid__item.small-hidden.large-hidden.medium-one-half
+                    //- DESIGN: Make sure links are clickable in textarea
+                    //- TODO: Limit height and force scrolling
+                    div Notes:
+                    div.nav-notes
+                      if application.notes
+                        = application.notes
+                      else
+                        i No notes recorded
+                //- On small/medium screens, provide a link to the application's page
+                .large-hidden
+                  a.btn.btn--default.one-whole.nav-btn(href=application.url) View/edit job application
 
-            //- Waiting for response section
-            h3.flush--bottom(style="font-weight: normal") Waiting for response
-            .landmark
-              if waitingForResponseApplications.length
-                each waitingForResponseApplication in waitingForResponseApplications
-                  +nav-row--application(waitingForResponseApplication, APP_TYPES.WAITING_FOR_RESPONSE)
-              else
-                p TODO: Add placeholder text for upcoming interviews
+          //- Upcoming interviews section
+          h3.flush--bottom(style="font-weight: normal") Upcoming interviews
+          //- DEV: This is actually a 1.5x push due to extra padding for link border
+          .push--bottom
+            if upcomingInterviews.length
+              each upcomingInterview in upcomingInterviews
+                +nav-row--application(upcomingInterview.application, APP_TYPES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
+            else
+              p TODO: Add placeholder text for upcoming interviews
 
-            //- Nav links
-            //- TODO: Make selection/highlight of `/archive` and `/settings` work
-            //-   Prob compare against URLs, not application ids
-            +nav-row--link({selected: false})(href="/archive") Archived applications
-            +nav-row--link({selected: false})(href="/settings") Settings
+          //- Waiting for response section
+          h3.flush--bottom(style="font-weight: normal") Waiting for response
+          .landmark
+            if waitingForResponseApplications.length
+              each waitingForResponseApplication in waitingForResponseApplications
+                +nav-row--application(waitingForResponseApplication, APP_TYPES.WAITING_FOR_RESPONSE)
+            else
+              p TODO: Add placeholder text for upcoming interviews
 
-            //- Nav footer
-            mixin footer()
-              div.push--top.text--center.muted
-                hr.push-half--bottom
-                p.push-half--bottom
-                  = "Made with "
-                  span(aria-label="love")= "<3"
-                  = " by"
-                  br.medium-and-down-hidden
-                  span.large-hidden= " "
-                  | Shoulders of Titans LLC
-                p
-                  //- TODO: Create about, privacy, and terms pages
-                  //-  https://trello.com/c/BbhzXH5B/15-create-about-privacy-and-terms-pages
-                  a.footer-link(href="/about") About
-                  a.footer-link(href="/privacy") Privacy
-                  a.footer-link(href="/terms") Terms
-                  br.medium-and-down-hidden
-                  a.footer-link(href="/blog") Blog
-                  a.footer-link(href="http://twitter.com/findworkco") Twitter
-                  a.footer-link(href="mailto:todd@findwork.co?subject=Find%20Work%20support%20question") Support
-            +footer()
+          //- Nav links
+          //- TODO: Make selection/highlight of `/archive` and `/settings` work
+          //-   Prob compare against URLs, not application ids
+          +nav-row--link({selected: false})(href="/archive") Archived applications
+          +nav-row--link({selected: false})(href="/settings") Settings
 
-        #content.grid__item.one-whole.large-three-quarters(class={'medium-and-down-hidden': isSchedule})
-          //- DEV: Jade doesn't support variable-based includes so work around it
-          if url == '/schedule'
-            include ./schedule.jade
-          else if url == '/application/abcdef-sky-networks'
-            include ./application-edit-show.jade
-          else
-            - throw new Error('Unrecognized page "' + page + '". Please add it to the `if/else if` statements');
+          //- Footer
+          +footer({largeWide: false})
 
-          //- DEV: On small screens, show a footer after our content
-          .large-hidden
-            +footer()
+      #content.grid__item.one-whole.large-three-quarters(class={'medium-and-down-hidden': isSchedule})
+        //- DEV: Jade doesn't support variable-based includes so work around it
+        if url == '/schedule'
+          include ./schedule.jade
+        else if url == '/application/abcdef-sky-networks'
+          include ./application-edit-show.jade
+        else
+          - throw new Error('Unrecognized page "' + page + '". Please add it to the `if/else if` statements');
 
-    //- Load scripts after body
-    script(src="/dist/js/index.js")
+        //- DEV: On small screens, show a footer after our content
+        .large-hidden
+          +footer({largeWide: false})

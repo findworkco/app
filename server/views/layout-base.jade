@@ -1,0 +1,70 @@
+doctype html
+html
+  head
+    //- Declare our content as UTF-8
+    //- DEV: This is necessary to render i18n strings like Afghanistan
+    meta(charset="utf-8")
+
+    //- Declare our page title
+    if typeof title == 'undefined'
+      - throw new Error('No title was specified for page');
+    title= title
+
+    //- Define viewport size to trigger media query support on mobile devices
+    //-    http://stackoverflow.com/a/13554916
+    //-    https://developer.mozilla.org/en-US/docs/Mozilla/Mobile/Viewport_meta_tag
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+
+    //- Add our CSS
+    //- TODO: Remove all inline styles
+    link(rel="stylesheet", href="/dist/css/index.css")
+    //- TODO: Don't use all of FontAwesome (it's 71kb gzipped with 605 icons)
+    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
+  body
+    //- Define server level locals
+    //- TODO: Replace csrfInput with real content
+    - var csrfInput = '<input type="hidden" value="abcdef"/>';
+    //- TODO: Load moment outside of view content
+    - var moment = require('moment-timezone');
+    - var countryData = require('country-data');
+    - var timezonesByCountryCode = require(process.cwd() + '/vendor/tz-locales.json');
+    - var timezoneAbbrs = require(process.cwd() + '/server/utils/timezone-abbrs.js');
+    //- 2016-01-08 (same as native)
+    //-   http://stackoverflow.com/a/9519493
+    - var datepickerFormat = 'Y-MM-DD';
+    //- 23:10 (same as native)
+    //-   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
+    - var timepickerFormat = 'HH:mm';
+
+    //- Define footer for all pages
+    mixin footer(options)
+      div.push--top.text--center.muted
+        hr.push-half--bottom
+        p.push-half--bottom
+          = "Made with "
+          span(aria-label="love")= "<3"
+          = " by"
+          br(class=options.largeWide ? "hidden" : "medium-and-down-hidden")
+          span(class=options.largeWide ? "" : "large-hidden")= " "
+          | Shoulders of Titans LLC
+        p
+          //- TODO: Create about, privacy, and terms pages
+          //-  https://trello.com/c/BbhzXH5B/15-create-about-privacy-and-terms-pages
+          a.footer-link(href="/about") About
+          a.footer-link(href="/privacy") Privacy
+          a.footer-link(href="/terms") Terms
+          br(class=options.largeWide ? "hidden" : "medium-and-down-hidden")
+          a.footer-link(href="/blog") Blog
+          a.footer-link(href="http://twitter.com/findworkco") Twitter
+          a.footer-link(href="mailto:todd@findwork.co?subject=Find%20Work%20support%20question") Support
+
+    //- Define a block for lower level layouts
+    block layout-content
+      //- DEV: Jade doesn't support variable-based includes so work around it
+      if url == '/landing'
+        include ./landing.jade
+      else
+        - throw new Error('Unrecognized page "' + page + '". Please add it to the `if/else if` statements');
+
+    //- Load scripts after body
+    script(src="/dist/js/index.js")

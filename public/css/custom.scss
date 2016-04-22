@@ -130,3 +130,30 @@
 .chosen-container .chosen-results li.group-result {
     color: #666;
 }
+
+// Logos on nav page
+$large-behance-logo-left: 31px;
+$large-behance-logo-width: 243px;
+$large-behance-logo-right: $large-behance-logo-left + $large-behance-logo-width;
+$large-uber-logo-left: 379px;
+$large-uber-logo-width: 215px;
+$large-uber-logo-right: $large-uber-logo-left + $large-uber-logo-width;
+$large-underdogio-logo-left: 671px;
+$large-underdogio-logo-width: 240px;
+$large-underdogio-logo-right: $large-underdogio-logo-left + $large-underdogio-logo-width;
+.behance-logo {
+  position: relative;
+  top: -10px;
+  width: $large-behance-logo-width;
+  margin-left: $large-behance-logo-left;
+  margin-right: $large-uber-logo-left - $large-behance-logo-right;
+}
+.uber-logo {
+  position: relative;
+  top: -10px;
+  width: $large-uber-logo-width;
+  margin-right: $large-underdogio-logo-left - $large-uber-logo-right;
+}
+.underdogio-logo {
+  width: $large-underdogio-logo-width;
+}

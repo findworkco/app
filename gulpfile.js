@@ -3,6 +3,7 @@ var browserify = require('browserify');
 var gulp = require('gulp');
 var gulpBuffer = require('gulp-buffer');
 var gulpCsso = require('gulp-csso');
+var gulpImagemin = require('gulp-imagemin');
 var gulpSvgmin = require('gulp-svgmin');
 var gulpLivereload = require('gulp-livereload');
 var gulpNotify = require('gulp-notify');
@@ -61,7 +62,14 @@ gulp.task('build-images-svg', function buildImagesSvg () {
     .pipe(gulpSizereport({gzip: true}))
     .pipe(gulp.dest('public/images'));
 });
-gulp.task('build-images', ['build-images-svg']);
+gulp.task('build-images-non-svg', function buildImagesNonSvg () {
+  // Optimize PNG/JPG files inline
+  return gulp.src(['public/images/**/*', '!public/images/**/*.svg'])
+    .pipe(gulpImagemin())
+    .pipe(gulpSizereport({gzip: true}))
+    .pipe(gulp.dest('public/images'));
+});
+gulp.task('build-images', ['build-images-svg', 'build-images-non-svg']);
 
 // Create a browserify instance
 // https://github.com/gulpjs/gulp/blob/v3.9.1/docs/recipes/browserify-uglify-sourcemap.md
