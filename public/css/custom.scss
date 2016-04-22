@@ -157,3 +157,41 @@ $large-underdogio-logo-right: $large-underdogio-logo-left + $large-underdogio-lo
 .underdogio-logo {
   width: $large-underdogio-logo-width;
 }
+
+.screenshot-highlight--interviews,
+.screenshot-highlight--reminders,
+.screenshot-highlight--notes,
+.screenshot-highlight--research {
+  position: absolute;
+  background: $screenshot-highlight-bg;
+  border: $arrow-border solid $screenshot-highlight-border-color;
+  padding: $base-spacing-unit;
+  border-radius: $btn-border-radius;
+  min-height: 40px;
+  text-align: center;
+}
+
+.screenshot-highlight--interviews {
+  top: 135px;
+  left: 10px;
+  width: 180px;
+  @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+}
+.screenshot-highlight--reminders {
+  top: 255px;
+  left: 10px;
+  width: 315px;
+  @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+}
+.screenshot-highlight--notes {
+  top: 135px;
+  right: 0px;
+  width: 200px;
+  @include arrow(left, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+}
+.screenshot-highlight--research {
+  top: 260px;
+  right: 0px;
+  width: 220px;
+  @include arrow(left, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+}

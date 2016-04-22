@@ -15,6 +15,7 @@
 $black: #000000;
 $gray-x22: #222222;
 $gray-x33: #333333;
+$gray-x66: #666666;
 $gray-x99: #999999;
 $gray-xCC: #CCCCCC;
 $gray-xE6: #E6E6E6;
@@ -67,6 +68,10 @@ $bs-input-color-placeholder: $gray-x99; // default
 $link-color: $light-blue;
 $link--visited-color: $vivid-purple;
 $link--active-color: $dark-red;
+
+// Landing styles
+$screenshot-highlight-bg: $white;
+$screenshot-highlight-border-color: $gray-x66;
 
 // Nav styles
 $nav-row-border-color: $brand-dark;
@@ -123,6 +128,14 @@ $btn-border-radius: 4px;
 // Well styles
 $well-border-radius: $btn-border-radius;
 
+//- Arrow styles
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/objects/_arrows.scss
+$arrow-size: 10px; // default: $half-spacing-unit
+$arrow-border: 1px; // default: 1
+
+// Landing styles
+$arrow-border-radius: $btn-border-radius;
+
 // ## Custom responsive breakpoints
 // https://github.com/csswizardry/inuit.css/blob/v5.0.1/_defaults.scss#L100-L105
 // DEV: We use custom names as inuit.css' scheme is confusing
@@ -161,7 +174,7 @@ $use-split:         false;
 $use-this-or-this:  false;
 $use-link-complex:  false;
 $use-flyout:        false;
-$use-arrows:        false;
+$use-arrows:        true;
 $use-sprite:        false;
 $use-icon-text:     false;
 $use-beautons:      false;
