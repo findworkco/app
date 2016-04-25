@@ -5,10 +5,12 @@ node_modules/
 # Compiled assets
 dist/
 
+# Temporary assets
+public/images/screenshots/*.jpg
+
 # Visual test assets
 gemini/
 gemini-report/
 
 # Common project errors
 npm-debug.log
-public/images/screenshot.jpg

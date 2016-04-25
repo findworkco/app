@@ -101,7 +101,7 @@
     margin-bottom: $half-spacing-unit;
 
     @include well();
-    padding: $half-spacing-unit $base-spacing-unit 0;
+    padding: $half-spacing-unit $half-spacing-unit 0;
   }
 }
 
@@ -131,67 +131,151 @@
     color: #666;
 }
 
-// Logos on nav page
-$large-behance-logo-left: 31px;
-$large-behance-logo-width: 243px;
-$large-behance-logo-right: $large-behance-logo-left + $large-behance-logo-width;
-$large-uber-logo-left: 379px;
-$large-uber-logo-width: 215px;
-$large-uber-logo-right: $large-uber-logo-left + $large-uber-logo-width;
-$large-underdogio-logo-left: 671px;
-$large-underdogio-logo-width: 240px;
-$large-underdogio-logo-right: $large-underdogio-logo-left + $large-underdogio-logo-width;
-.behance-logo {
+// Landing page
+.landing__logo {
+  width: 308px;
+}
+
+@include media-query(small) {
+  width: 279px;
+}
+
+@include media-query(large) {
+  .workflow-heading,
+  .logos-heading {
+    @include font-size($h2-size);
+  }
+}
+
+// Logos on landing page
+$large-logos__behance-left: 31px;
+$large-logos__behance-width: 243px;
+$large-logos__behance-right: $large-logos__behance-left + $large-logos__behance-width;
+$large-logos__uber-left: 356px;
+$large-logos__uber-width: 215px;
+$large-logos__uber-right: $large-logos__uber-left + $large-logos__uber-width;
+$large-logos__underdogio-left: 671px;
+$large-logos__underdogio-width: 240px;
+$large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__underdogio-width;
+.logos {
+  margin-bottom: $base-spacing-unit;
+}
+.logos__behance {
   position: relative;
   top: -10px;
-  width: $large-behance-logo-width;
-  margin-left: $large-behance-logo-left;
-  margin-right: $large-uber-logo-left - $large-behance-logo-right;
+  width: $large-logos__behance-width;
+  margin-left: $large-logos__behance-left;
+  margin-right: $large-logos__uber-left - $large-logos__behance-right;
 }
-.uber-logo {
+.logos__uber {
   position: relative;
   top: -10px;
-  width: $large-uber-logo-width;
-  margin-right: $large-underdogio-logo-left - $large-uber-logo-right;
+  width: $large-logos__uber-width;
+  margin-right: $large-logos__underdogio-left - $large-logos__uber-right;
 }
-.underdogio-logo {
-  width: $large-underdogio-logo-width;
+.logos__underdogio {
+  width: $large-logos__underdogio-width;
+}
+@include media-query(small) {
+  .logos {
+    margin-bottom: 0;
+  }
+
+  .logos__behance,
+  .logos__uber,
+  .logos__underdogio {
+    top: 0;
+    margin: 0;
+    left: 0;
+  }
+
+  .logos__behance {
+    width: 202px;
+    margin-bottom: 18px;
+  }
+  .logos__uber {
+    width: 170px;
+    margin-bottom: 11px;
+  }
+  .logos__underdogio {
+    width: 216px;
+    margin-right: 20px;
+  }
 }
 
 .screenshot-highlight--interviews,
 .screenshot-highlight--reminders,
 .screenshot-highlight--notes,
 .screenshot-highlight--research {
-  position: absolute;
   background: $screenshot-highlight-bg;
   border: $arrow-border solid $screenshot-highlight-border-color;
   padding: $base-spacing-unit;
   border-radius: $btn-border-radius;
   min-height: 40px;
   text-align: center;
+
+  @include media-query(small) {
+    padding: $half-spacing-unit;
+  }
+}
+@include media-query(large) {
+  .screenshot-highlight--interviews {
+    @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 135px;
+    left: 10px;
+    width: 180px;
+  }
+  .screenshot-highlight--reminders {
+    @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 255px;
+    left: 10px;
+    width: 315px;
+  }
+  .screenshot-highlight--notes {
+    @include arrow(left, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 135px;
+    right: 0px;
+    width: 200px;
+  }
+  .screenshot-highlight--research {
+    @include arrow(left, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 260px;
+    right: 0px;
+    width: 220px;
+  }
 }
 
-.screenshot-highlight--interviews {
-  top: 135px;
-  left: 10px;
-  width: 180px;
-  @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
-}
-.screenshot-highlight--reminders {
-  top: 255px;
-  left: 10px;
-  width: 315px;
-  @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
-}
-.screenshot-highlight--notes {
-  top: 135px;
-  right: 0px;
-  width: 200px;
-  @include arrow(left, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
-}
-.screenshot-highlight--research {
-  top: 260px;
-  right: 0px;
-  width: 220px;
-  @include arrow(left, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+@include media-query(small) {
+  .screenshot-highlight--interviews {
+    @include arrow(right, center, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 50px;
+    left: 0px;
+    width: 150px;
+  }
+  .screenshot-highlight--notes {
+    @include arrow(right, center, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 252px;
+    left: 0px;
+    width: 150px;
+  }
+  .screenshot-highlight--research {
+    @include arrow(right, center, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 340px;
+    left: 0px;
+    width: 150px;
+  }
+  .screenshot-highlight--reminders {
+    @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 474px;
+    left: 0;
+    width: 150px;
+  }
 }

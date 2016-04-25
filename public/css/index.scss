@@ -22,6 +22,7 @@
 @import "base/forms";
 
 // Object styles
+@import "objects/arrows"; // Patched arrows mixin to allow for media queries
 @import "objects/buttons";
 @import "objects/grids";
 @import "objects/links";

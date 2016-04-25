@@ -2,29 +2,42 @@ header.section--brand-dark.text--center.cf
   - var callToActionStr = "Get started. It's free!";
   .container
     .grid
-      .grid__item.one-twelfth &nbsp;
-      .grid__item.five-sixths
+      .grid__item.one-twelfth.small-hidden &nbsp;
+      .grid__item.five-sixths.small-one-whole
         //- TODO: Make all headings not bold by default
         a.link--unstyled(href="/")
           h1(style="font-weight: normal").soft-half--ends.flush--bottom
-            img(alt="Find Work", src="/public/images/white-logo.svg", style="width: 308px")
+            img.landing__logo(alt="Find Work", src="/public/images/white-logo.svg")
         h2(style="font-weight: normal") Manage job leads and applications
         p
           a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
-      .grid__item.one-twelfth
+      .grid__item.one-twelfth.small-hidden
         .float--right.soft-half--ends
           a.btn.btn--default(href="/login") Sign up/Log In
+    .medium-and-up-hidden
+      .grid
+        .grid__item.one-whole
+          p
+            a(href="/login", style="color: white") Already have an account? Log in here
 section.soft--ends
   .container
     .grid
       .grid__item.one-whole
-        .landmark(style="position: relative;")
-          //- TODO: Use better dummy info for landing screenshot (e.g. better notes, company, search results)
+        div(style="position: relative;")
+          //- TODO: Use better dummy info for all screenshots (e.g. better notes, company (schedule, name, search), search results)
           //- TODO: Update screenshot when we have WYSIWYG
-          //- TODO: Make highlights tolerant to resizing windows
+          //- TODO: Make highlights tolerant to resizing windows (large, small)
           //- TODO: Make sure image is retina-proof or generate one via Electron screenshot -> 2x image -> SVG
           //- DESIGN: When our UI is fully built, explore doing magnified screenshots
-          img(alt="Annotated screenshot", src="/public/images/screenshot.svg", style="margin: 0 auto; display: block;")
+          .small-hidden
+            p
+              img(alt="Annotated application screenshot", src="/public/images/screenshots/large.svg", style="margin: 0 auto; display: block;")
+          .medium-and-up-hidden
+            .text--right
+              p
+                img(alt="Annotated schedule screenshot", src="/public/images/screenshots/small-1.svg")
+              p
+                img(alt="Annotated application screenshot", src="/public/images/screenshots/small-2.svg")
           .screenshot-highlight--interviews Upcoming interviews and reminders at a glance
           .screenshot-highlight--reminders Reminders at every stage (application, follow-up, pre-interview, post-interview)
           .screenshot-highlight--notes Record notes about the company and their interviews
@@ -39,32 +52,31 @@ section.section--brand-dark.soft--ends
   .container
     .grid
       .grid__item.one-whole
-        h3.beta.text--center(style="font-weight: normal") Workflow
+        h3.workflow-heading.text--center(style="font-weight: normal") Workflow
     .grid
-      .grid__item.one-quarter &nbsp;
-      .grid__item.one-half
+      .grid__item.one-quarter.small-hidden &nbsp;
+      .grid__item.one-half.small-one-whole
         p Find Work is a tool to track and manage your job applications. We are profession and role agnostic (e.g. good for full-time and contractors). We consider there to be 4 stages of finding work.
     .grid
-      .grid__item.one-quarter.text--right
+      .grid__item.one-quarter.small-hidden.text--right
         img(alt="Find a job listing illustration", src="/public/images/magnifying-glass-white.svg", style="height: 3em")
-      .grid__item.one-half
+      .grid__item.one-half.small-one-whole
         p
           strong 1. Find a job listing
           br
           | Whether through a job board or word of mouth, you have found a listing. You can save it in our system and get a reminder to apply later.
     .grid
-      .grid__item.one-quarter.text--right
+      .grid__item.one-quarter.small-hidden.text--right
         img(alt="Waiting for response illustration", src="/public/images/clock-white.svg", style="height: 3em")
-      .grid__item.one-half
+      .grid__item.one-half.small-one-whole
         p
           strong 2. Waiting for response
           br
           | You have submitted your application. We'll send you a reminder to follow up to make sure you don't fall through the cracks.
     .grid
-      .grid__item.one-quarter.text--right
-        //- TODO: Purchase icons if we haven't yet
+      .grid__item.one-quarter.small-hidden.text--right
         img(alt="Interview scheduled illustration", src="/public/images/conversation-white.svg", style="height: 3em")
-      .grid__item.one-half
+      .grid__item.one-half.small-one-whole
         p
           strong 3. Interview scheduled
           br
@@ -72,9 +84,9 @@ section.section--brand-dark.soft--ends
           br
           em We repeat steps 2 and 3 until we get to step 4.
     .grid
-      .grid__item.one-quarter.text--right
+      .grid__item.one-quarter.small-hidden.text--right
         img(alt="Received an offer illustration", src="/public/images/salary-white.svg", style="height: 3em")
-      .grid__item.one-half
+      .grid__item.one-half.small-one-whole
         p
           strong 4. Received an offer
           br
@@ -85,17 +97,17 @@ section.section--brand-dark.soft--ends
           a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
     .grid
       .grid__item.one-whole
-        h3.beta.text--center(style="font-weight: normal") Built by former employees of
+        h3.logos-heading.text--center(style="font-weight: normal") Built by former employees of
     .grid
       .grid__item.one-whole
-        p
+        .logos.text--center
           a(href="https://www.behance.net/", target="_blank")
-            img.behance-logo(alt="Behance", src="/public/images/behance-white.svg")
+            img.logos__behance(alt="Behance", src="/public/images/behance-white.svg")
           a(href="https://www.uber.com/", target="_blank")
-            img.uber-logo(alt="Uber", src="/public/images/uber-white.svg")
+            img.logos__uber(alt="Uber", src="/public/images/uber-white.svg")
           a(href="https://underdog.io/", target="_blank")
             //- TODO: Move to SVG variant when Underdog.io completes their switch
-            img.underdogio-logo(alt="Underdog.io", src="/public/images/underdogio-purple.png")
+            img.logos__underdogio(alt="Underdog.io", src="/public/images/underdogio-purple.png")
 .container
   .grid
     .grid__item.one-whole

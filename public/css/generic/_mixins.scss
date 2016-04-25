@@ -23,3 +23,83 @@ $medium-end: $large-start - 1;
     @media (min-width: $large-start) { @content; }
   }
 }
+
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/generic/_mixins.scss#L117-L258
+// DEV: We override the arrow mixin to tolerate media queries
+@mixin arrow($arrow-edge, $arrow-location, $arrow-color, $border-color: $arrow-color) {
+  @if $arrow-edge == top {
+    @include arrow--top();
+    &:before{
+      border-bottom-color:$border-color!important;
+    }
+    &:after{
+      border-bottom-color:$arrow-color!important;
+    }
+    @if $arrow-location == left {
+      @include arrow--left();
+    }
+    @if $arrow-location == center {
+      @include arrow--center();
+    }
+    @if $arrow-location == right {
+      @include arrow--right();
+    }
+  }
+
+  @if $arrow-edge == right {
+    @include arrow--far();
+    &:before{
+      border-left-color:$border-color!important;
+    }
+    &:after{
+      border-left-color:$arrow-color!important;
+    }
+    @if $arrow-location == top {
+      @include arrow--upper();
+    }
+    @if $arrow-location == center {
+      @include arrow--middle();
+    }
+    @if $arrow-location == bottom {
+      @include arrow--lower();
+    }
+  }
+
+  @if $arrow-edge == bottom {
+    @include arrow--bottom();
+    &:before{
+      border-top-color:$border-color!important;
+    }
+    &:after{
+      border-top-color:$arrow-color!important;
+    }
+    @if $arrow-location == left {
+      @include arrow--left();
+    }
+    @if $arrow-location == center {
+      @include arrow--center();
+    }
+    @if $arrow-location == right {
+      @include arrow--right();
+    }
+  }
+
+  @if $arrow-edge == left {
+    @include arrow--near();
+    &:before{
+      border-right-color:$border-color!important;
+    }
+    &:after{
+      border-right-color:$arrow-color!important;
+    }
+    @if $arrow-location == top {
+      @include arrow--upper();
+    }
+    @if $arrow-location == center {
+      @include arrow--middle();
+    }
+    @if $arrow-location == bottom {
+      @include arrow--lower();
+    }
+  }
+}

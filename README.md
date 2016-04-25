@@ -72,5 +72,22 @@ To validate images via a GUI, run:
 npm run gemini-gui
 ```
 
+### Landing page screenshots
+We automate generation of our screenshots for the landing page. To update the screenshots, run:
+
+```bash
+# Capture latest images
+npm run gemini-update
+
+# Compile our screenshots
+bin/build-screenshot.sh
+```
+
+If we have manually edited the SVG, then update its template via:
+
+```bash
+bin/build-screenshot-template.sh
+```
+
 ## Copyright
 All rights reserved, Shoulders of Titans LLC
