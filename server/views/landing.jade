@@ -29,9 +29,15 @@ section.soft--ends
           //- TODO: Make highlights tolerant to resizing windows (large, small)
           //- TODO: Make sure image is retina-proof or generate one via Electron screenshot -> 2x image -> SVG
           //- DESIGN: When our UI is fully built, explore doing magnified screenshots
-          .small-hidden
+          .medium-and-down-hidden
             p
               img(alt="Annotated application screenshot", src="/public/images/screenshots/large.svg", style="margin: 0 auto; display: block;")
+          .large-hidden.small-hidden
+            .text--center
+              p
+                img(alt="Annotated schedule screenshot", src="/public/images/screenshots/medium-1.svg")
+              p
+                img(alt="Annotated application screenshot", src="/public/images/screenshots/medium-2.svg")
           .medium-and-up-hidden
             .text--right
               p
@@ -46,7 +52,7 @@ section.soft--ends
             a(href="https://.screenshot-highlight--research", target="_blank") Glassdoor
             = " and "
             a(href="https://angel.co/", target="_blank") AngelList
-        p.text--center
+        p.text--center.flush--bottom
           a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
 section.section--brand-dark.soft--ends
   .container
@@ -54,29 +60,29 @@ section.section--brand-dark.soft--ends
       .grid__item.one-whole
         h3.workflow-heading.text--center(style="font-weight: normal") Workflow
     .grid
-      .grid__item.one-quarter.small-hidden &nbsp;
-      .grid__item.one-half.small-one-whole
+      .grid__item.one-quarter.medium-one-sixth.small-hidden &nbsp;
+      .grid__item.one-half.medium-two-thirds.small-one-whole
         p Find Work is a tool to track and manage your job applications. We are profession and role agnostic (e.g. good for full-time and contractors). We consider there to be 4 stages of finding work.
     .grid
-      .grid__item.one-quarter.small-hidden.text--right
+      .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
         img(alt="Find a job listing illustration", src="/public/images/magnifying-glass-white.svg", style="height: 3em")
-      .grid__item.one-half.small-one-whole
+      .grid__item.one-half.medium-two-thirds.small-one-whole
         p
           strong 1. Find a job listing
           br
           | Whether through a job board or word of mouth, you have found a listing. You can save it in our system and get a reminder to apply later.
     .grid
-      .grid__item.one-quarter.small-hidden.text--right
+      .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
         img(alt="Waiting for response illustration", src="/public/images/clock-white.svg", style="height: 3em")
-      .grid__item.one-half.small-one-whole
+      .grid__item.one-half.medium-two-thirds.small-one-whole
         p
           strong 2. Waiting for response
           br
           | You have submitted your application. We'll send you a reminder to follow up to make sure you don't fall through the cracks.
     .grid
-      .grid__item.one-quarter.small-hidden.text--right
+      .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
         img(alt="Interview scheduled illustration", src="/public/images/conversation-white.svg", style="height: 3em")
-      .grid__item.one-half.small-one-whole
+      .grid__item.one-half.medium-two-thirds.small-one-whole
         p
           strong 3. Interview scheduled
           br
@@ -84,9 +90,9 @@ section.section--brand-dark.soft--ends
           br
           em We repeat steps 2 and 3 until we get to step 4.
     .grid
-      .grid__item.one-quarter.small-hidden.text--right
+      .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
         img(alt="Received an offer illustration", src="/public/images/salary-white.svg", style="height: 3em")
-      .grid__item.one-half.small-one-whole
+      .grid__item.one-half.medium-two-thirds.small-one-whole
         p
           strong 4. Received an offer
           br

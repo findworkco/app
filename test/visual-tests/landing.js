@@ -7,5 +7,6 @@ gemini.suite('landing', function (suite) {
   suite.setUrl('/landing.jade')
     .setCaptureElements('body')
     .capture('default-large', geminiUtils.resizeLarge)
+    .capture('default-medium', geminiUtils.resizeMedium)
     .capture('default-small', geminiUtils.resizeSmall);
 });

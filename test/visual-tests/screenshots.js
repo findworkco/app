@@ -12,8 +12,20 @@ gemini.suite('screenshots', function (suite) {
       .capture('large', geminiUtils.resizeLarge);
   });
 
-  // Capture small screenshots with minor alterations
+  // Capture medium screenshots
   // DEV: We must use multiple suites since `setUrl` seems to apply all captures
+  gemini.suite('medium-1', function (suite) {
+    suite.setUrl('/schedule.jade')
+      .setCaptureElements('body')
+      .capture('medium-1', geminiUtils.resizeMedium);
+  });
+  gemini.suite('medium-2', function (suite) {
+    suite.setUrl('/application-edit-show.jade')
+      .setCaptureElements('body')
+      .capture('medium-2', geminiUtils.resizeMedium);
+  });
+
+  // Capture small screenshots with minor alterations
   gemini.suite('small-1', function (suite) {
     suite.setUrl('/schedule.jade')
       .setCaptureElements('body')

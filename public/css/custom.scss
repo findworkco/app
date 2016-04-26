@@ -135,9 +135,15 @@
 .landing__logo {
   width: 308px;
 }
-
+@include media-query(medium) {
+  .landing__logo {
+    width: 271px;
+  }
+}
 @include media-query(small) {
-  width: 279px;
+  .landing__logo {
+    width: 279px;
+  }
 }
 
 @include media-query(large) {
@@ -175,6 +181,38 @@ $large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__un
 }
 .logos__underdogio {
   width: $large-logos__underdogio-width;
+}
+@include media-query(medium) {
+  // TODO: Make left/right spacing fluid
+  //   breakpoint issues on small (at big end) and big (at small end)
+  $medium-logos__behance-left: 0;
+  $medium-logos__behance-width: 163px;
+  $medium-logos__behance-right: $medium-logos__behance-left + $medium-logos__behance-width;
+  $medium-logos__uber-left: 192px;
+  $medium-logos__uber-width: 134px;
+  $medium-logos__uber-right: $medium-logos__uber-left + $medium-logos__uber-width;
+  $medium-logos__underdogio-left: 350px;
+  $medium-logos__underdogio-width: 174px;
+  $medium-logos__underdogio-right: $medium-logos__underdogio-left + $medium-logos__underdogio-width;
+  .logos {
+    margin-bottom: $base-spacing-unit;
+  }
+  .logos__behance {
+    position: relative;
+    top: -10px;
+    width: $medium-logos__behance-width;
+    margin-left: $medium-logos__behance-left;
+    margin-right: $medium-logos__uber-left - $medium-logos__behance-right;
+  }
+  .logos__uber {
+    position: relative;
+    top: -10px;
+    width: $medium-logos__uber-width;
+    margin-right: $medium-logos__underdogio-left - $medium-logos__uber-right;
+  }
+  .logos__underdogio {
+    width: $medium-logos__underdogio-width;
+  }
 }
 @include media-query(small) {
   .logos {
@@ -214,7 +252,7 @@ $large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__un
   min-height: 40px;
   text-align: center;
 
-  @include media-query(small) {
+  @include media-query(medium-and-down) {
     padding: $half-spacing-unit;
   }
 }
@@ -223,14 +261,14 @@ $large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__un
     @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
     position: absolute;
     top: 135px;
-    left: 10px;
+    left: 0px;
     width: 180px;
   }
   .screenshot-highlight--reminders {
     @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
     position: absolute;
     top: 255px;
-    left: 10px;
+    left: 0px;
     width: 315px;
   }
   .screenshot-highlight--notes {
@@ -246,6 +284,37 @@ $large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__un
     top: 260px;
     right: 0px;
     width: 220px;
+  }
+}
+
+@include media-query(medium) {
+  .screenshot-highlight--interviews {
+    @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 50px;
+    left: 0px;
+    width: 140px;
+  }
+  .screenshot-highlight--reminders {
+    @include arrow(right, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 355px;
+    left: 0px;
+    width: 140px;
+  }
+  .screenshot-highlight--notes {
+    @include arrow(left, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 260px;
+    right: 0px;
+    width: 140px;
+  }
+  .screenshot-highlight--research {
+    @include arrow(left, top, $screenshot-highlight-bg, $screenshot-highlight-border-color);
+    position: absolute;
+    top: 360px;
+    right: 0px;
+    width: 140px;
   }
 }
 

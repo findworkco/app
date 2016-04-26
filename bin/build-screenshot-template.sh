@@ -15,6 +15,14 @@ read_file () {
 # Replace the base64 encoded image with variable
 read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/g" > "$target_file"
 
+# Repeat for medium SVGs
+src_file="public/images/screenshots/medium-1.svg"
+target_file="public/images/screenshots/medium-1.template.svg"
+read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/"  > "$target_file"
+src_file="public/images/screenshots/medium-2.svg"
+target_file="public/images/screenshots/medium-2.template.svg"
+read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/"  > "$target_file"
+
 # Repeat for small SVGs
 src_file="public/images/screenshots/small-1.svg"
 target_file="public/images/screenshots/small-1.template.svg"

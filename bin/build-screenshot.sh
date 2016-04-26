@@ -33,6 +33,28 @@ target_template="$(cat public/images/screenshots/large.template.svg)"
 target_file="public/images/screenshots/large.svg"
 echo -n "${target_template/\{\{base64-image\}\}/$screenshot_base64}" > "$target_file"
 
+# Repeat steps for medium screenshots
+medium_width="307"
+medium_1_height="167"
+medium_1_offset="67"
+medium_2_height="270"
+medium_2_offset="144"
+src_medium_1_file="gemini/screens/screenshots/medium-1/medium-1/Firefox.png"
+screenshot_medium_1_file="public/images/screenshots/medium-1.jpg"
+convert "$src_medium_1_file" -resize "$medium_width"x -gravity NorthWest -crop x"$medium_1_height"+0+"$medium_1_offset" jpg:- | imagemin > "$screenshot_medium_1_file"
+src_medium_2_file="gemini/screens/screenshots/medium-2/medium-2/Firefox.png"
+screenshot_medium_2_file="public/images/screenshots/medium-2.jpg"
+convert "$src_medium_2_file" -resize "$medium_width"x -gravity NorthWest -crop x"$medium_2_height"+0+"$medium_2_offset" jpg:- | imagemin > "$screenshot_medium_2_file"
+
+screenshot_base64="$(base64 --wrap 0 "$screenshot_medium_1_file")"
+target_template="$(cat public/images/screenshots/small-1.template.svg)"
+target_file="public/images/screenshots/small-1.svg"
+echo -n "${target_template/\{\{base64-image\}\}/$screenshot_base64}" > "$target_file"
+screenshot_base64="$(base64 --wrap 0 "$screenshot_medium_2_file")"
+target_template="$(cat public/images/screenshots/small-2.template.svg)"
+target_file="public/images/screenshots/small-2.svg"
+echo -n "${target_template/\{\{base64-image\}\}/$screenshot_base64}" > "$target_file"
+
 # Repeat steps for small screenshots
 small_width="175"
 small_1_height="115"
