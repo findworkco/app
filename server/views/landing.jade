@@ -20,40 +20,42 @@ header.section--brand-dark.text--center.cf
           p
             a(href="/login", style="color: white") Already have an account? Log in here
 section.soft--ends
-  .container
-    .grid
-      .grid__item.one-whole
-        div(style="position: relative;")
-          //- TODO: Use better dummy info for all screenshots (e.g. better notes, company (schedule, name, search), search results)
-          //- TODO: Update screenshot when we have WYSIWYG
-          //- TODO: Make highlights tolerant to resizing windows (large, small)
-          //- TODO: Make sure image is retina-proof or generate one via Electron screenshot -> 2x image -> SVG
-          //- DESIGN: When our UI is fully built, explore doing magnified screenshots
-          .medium-and-down-hidden
+  .grid
+    .grid__item.one-whole
+      .screenshots
+        //- TODO: Use better dummy info for all screenshots (e.g. better notes, company (schedule, name, search), search results)
+        //- TODO: Update screenshot when we have WYSIWYG
+        //- TODO: Make sure image is retina-proof or generate one via Electron screenshot -> 2x image -> SVG
+        //- DESIGN: When our UI is fully built, explore doing magnified screenshots
+        .medium-and-down-hidden
+          p
+            img(alt="Annotated application screenshot", src="/public/images/screenshots/large.svg", style="margin: 0 auto; display: block;")
+        .large-hidden.small-hidden
+          .text--center
             p
-              img(alt="Annotated application screenshot", src="/public/images/screenshots/large.svg", style="margin: 0 auto; display: block;")
-          .large-hidden.small-hidden
-            .text--center
-              p
-                img(alt="Annotated schedule screenshot", src="/public/images/screenshots/medium-1.svg")
-              p
-                img(alt="Annotated application screenshot", src="/public/images/screenshots/medium-2.svg")
-          .medium-and-up-hidden
-            .text--right
-              p
-                img(alt="Annotated schedule screenshot", src="/public/images/screenshots/small-1.svg")
-              p
-                img(alt="Annotated application screenshot", src="/public/images/screenshots/small-2.svg")
+              img(alt="Annotated schedule screenshot", src="/public/images/screenshots/medium-1.svg")
+            p
+              img(alt="Annotated application screenshot", src="/public/images/screenshots/medium-2.svg")
+        .medium-and-up-hidden
+          .text--right
+            p
+              img(alt="Annotated schedule screenshot", src="/public/images/screenshots/small-1.svg")
+            p
+              img(alt="Annotated application screenshot", src="/public/images/screenshots/small-2.svg")
+        .screenshot-highlight--interviews__container
           .screenshot-highlight--interviews Upcoming interviews and reminders at a glance
+        .screenshot-highlight--reminders__container
           .screenshot-highlight--reminders Reminders at every stage (application, follow-up, pre-interview, post-interview)
+        .screenshot-highlight--notes__container
           .screenshot-highlight--notes Record notes about the company and their interviews
+        .screenshot-highlight--research__container
           .screenshot-highlight--research
             = "Research companies before you apply via "
             a(href="https://.screenshot-highlight--research", target="_blank") Glassdoor
             = " and "
             a(href="https://angel.co/", target="_blank") AngelList
-        p.text--center.flush--bottom
-          a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
+      p.text--center.flush--bottom
+        a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
 section.section--brand-dark.soft--ends
   .container
     .grid
@@ -107,13 +109,16 @@ section.section--brand-dark.soft--ends
     .grid
       .grid__item.one-whole
         .logos.text--center
-          a(href="https://www.behance.net/", target="_blank")
-            img.logos__behance(alt="Behance", src="/public/images/behance-white.svg")
-          a(href="https://www.uber.com/", target="_blank")
-            img.logos__uber(alt="Uber", src="/public/images/uber-white.svg")
-          a(href="https://underdog.io/", target="_blank")
-            //- TODO: Move to SVG variant when Underdog.io completes their switch
-            img.logos__underdogio(alt="Underdog.io", src="/public/images/underdogio-purple.png")
+          .logos__behance
+            a(href="https://www.behance.net/", target="_blank")
+              img(alt="Behance", src="/public/images/behance-white.svg")
+          .logos__uber
+            a(href="https://www.uber.com/", target="_blank")
+              img(alt="Uber", src="/public/images/uber-white.svg")
+          .logos__underdogio
+            a(href="https://underdog.io/", target="_blank")
+              //- TODO: Move to SVG variant when Underdog.io completes their switch
+              img(alt="Underdog.io", src="/public/images/underdogio-purple.png")
 .container
   .grid
     .grid__item.one-whole

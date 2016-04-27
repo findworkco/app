@@ -7,20 +7,24 @@ $medium-end: $large-start - 1;
     @media (max-width: $small-end) { @content; }
   }
 
-  @if $media-query == medium {
+  @elseif $media-query == medium {
     @media (min-width: $medium-start) and (max-width: $medium-end) { @content; }
   }
 
-  @if $media-query == medium-and-up {
+  @elseif $media-query == medium-and-up {
     @media (min-width: $medium-start) { @content; }
   }
 
-  @if $media-query == medium-and-down {
+  @elseif $media-query == medium-and-down {
     @media (max-width: $medium-end) { @content; }
   }
 
-  @if $media-query == large {
+  @elseif $media-query == large {
     @media (min-width: $large-start) { @content; }
+  }
+
+  @else {
+    @error "media-query \"#{$media-query}\" wasn't recognized. Please use `small`, `medium`, `large`, `medium-and-down`, or `medium-and-up`";
   }
 }
 
