@@ -25,9 +25,10 @@ $white: #FFFFFF;
 // Rainbow (red, orange, yellow, green, blue, indigo, violet)
 $red: #DA3C37;
 $dark-red: #CD0000;
+$dark-blue: #0626D3;
 $blue: #2579D2;
+$light-blue: #339CF1;
 $pale-blue: #66AFE9; // https://github.com/twbs/bootstrap/blob/v3.3.6/less/variables.less#L203
-$light-blue: #0626D3;
 $vivid-purple: #4E009A;
 
 // One-off values
@@ -65,7 +66,7 @@ $bs-input-border-focus: $pale-blue;
 $bs-input-color-placeholder: $gray-x99; // default
 
 // Link styles
-$link-color: $light-blue;
+$link-color: $dark-blue;
 $link--visited-color: $vivid-purple;
 $link--active-color: $dark-red;
 
@@ -78,6 +79,10 @@ $nav-row-border-color: $brand-dark;
 
 // Well styles
 $well-border: $bs-input-border;
+
+// Section styles
+$section--info-bg: $light-blue;
+$section--info-color: $white;
 
 // Generic variables
 $muted-opacity: $sixty; // 60 percent

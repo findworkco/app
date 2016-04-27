@@ -300,10 +300,9 @@ block layout-content
               p TODO: Add placeholder text for upcoming interviews
 
           //- Nav links
-          //- TODO: Make selection/highlight of `/archive` and `/settings` work
-          //-   Prob compare against URLs, not application ids
-          +nav-row--link({selected: false})(href="/archive") Archived applications
-          +nav-row--link({selected: false})(href="/settings") Settings
+          //- TODO: Tolerate viewing applications or interviews in archive
+          +nav-row--link({selected: url === '/archive'})(href="/archive") Archived applications
+          +nav-row--link({selected: url === '/settings'})(href="/settings") Settings
 
           //- Footer
           +footer({largeWide: false})
@@ -312,6 +311,8 @@ block layout-content
         //- DEV: Jade doesn't support variable-based includes so work around it
         if url == '/schedule'
           include ./schedule.jade
+        else if url == '/settings'
+          include ./settings.jade
         else if url == '/application/abcdef-sky-networks-uuid'
           include ./application-edit-show.jade
         else if url == '/interview/abcdef-sky-networks-interview-uuid'
