@@ -1,7 +1,7 @@
 .grid
-  .grid__item.one-third &nbsp;
-  .grid__item.one-third
-    h1.content__heading.text--center(style="font-weight: normal") Settings
+  .grid__item.one-third.medium-one-quarter.small-one-sixth &nbsp;
+  .grid__item.one-third.medium-one-half.small-two-thirds
+    h1.content__heading.text--center.push--bottom(style="font-weight: normal") Settings
     form.cf(method="POST", action="/settings")
       //- DEV: When not disabled, this will be a link or a button for OAuth
       //- TODO: Use Google branding for button
@@ -12,7 +12,7 @@
       .form-group.push-double--bottom
         //- DESIGN: When we add back email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
         label(for="email") Email (from Google):
-        input#email.form-control.input--block(name="email", disabled, value=user.email)
+        input#email.form-control.input--block(name="email", disabled, value=user.email, style="max-width: 220px")
     p.push-double--bottom
       a(href="/logout") Log out
     //- TODO: Use a modal with confirmation of email address for deletion

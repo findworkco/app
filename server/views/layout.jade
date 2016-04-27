@@ -170,9 +170,10 @@ block layout-content
                   a(href="/")
                     img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="height: 26px")
                 .grid__item(style="margin-top: 6px")
-                  //- TODO: Handle selection styles based on URL (not hardcoded)
-                  a.delta.link--unstyled(href="/schedule", style="text-decoration: underline") Schedule
+                  - var isSelected = url === '/schedule' || locals.selectedApplication !== undefined;
+                  a.delta.link--unstyled(href="/schedule", style=isSelected ? "text-decoration: underline" : "") Schedule
                 .grid__item(style="margin-top: 6px")
+                  //- TODO: Handle selection of archive
                   a.delta.link--unstyled(href="/archive") Archive
                 .float--right.grid__item.text--right(style="margin-top: 6px")
                   span.delta
