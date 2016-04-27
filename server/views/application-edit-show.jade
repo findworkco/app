@@ -171,45 +171,8 @@ form.cf(method="POST", action=selectedApplication.url)
           = "Follow up reminder: "
           span.text--normal
             i.fa.fa-reply(style="font-size: 1.5em")
-        - var hasFollowUpReminder = !!selectedApplication.follow_up_reminder_moment;
-        div(style="display: table")
-          div(style="display: table-cell; vertical-align: middle")
-            input(name="follow_up_reminder_enabled", type="radio", checked=hasFollowUpReminder, value="yes")
-            | &nbsp;
-          div(style="display: table-cell; vertical-align: middle; padding: 3px")
-            div
-              +datepicker(selectedApplication.follow_up_reminder_moment)#follow_up_reminder.form-control(name="follow_up_reminder_date")
-              = " "
-              +timepicker(selectedApplication.follow_up_reminder_moment).form-control(name="follow_up_reminder_time")
-            div
-              //- TODO: When we save this to the server, verify we have the codes in `vendor`
-              //-   When saving in the db, preserve as an object for easy queries
-              //- TODO: Find best match based on IP as a fallback
-              //-   Then, fallback to US Pacific TIme
-              //- DEV: We were initially going to use a modal similar to Google Calendar
-              //-   However, we realized that (1) the terms are different than CST/CDT abbreviations and (2) modals are a complex interaction
-              //- TODO: Sort countries by their name, not code; UAE should be next to USA
-              //-   Maybe create a new data structure `[{name: United States, code: US, timezones: [{locale: America/Chicago, abbrs: []}]`
-              - var selectedTimezone = selectedApplication.follow_up_reminder_moment.tz();
-              select.form-control(name="follow_up_reminder_timezone", data-chosen)
-                //- {US: {America/Chicago: 'Central Standard Time'}}; timezones = {America/Chicago}, countryCode = US
-                each timezones, countryCode in timezonesByCountryCode
-                  //- United States
-                  - var countryName = countryData.countries[countryCode].name;
-                  optgroup(label=countryName)
-                    //- timezoneName = Central Standard Time, timezoneLocale = America/Chicago
-                    //- TODO: Compute pre-emptively
-                    - var timezoneLocales = Object.keys(timezones);
-                    - timezoneLocales.sort(function (a, b) { return timezoneAbbrs[a].join('/') > timezoneAbbrs[b].join('/') });
-                    each timezoneLocale in timezoneLocales
-                      - var abbrs = timezoneAbbrs[timezoneLocale].join('/');
-                      option(selected=selectedTimezone == timezoneLocale, value=countryCode + '-' + timezoneLocale)= abbrs
-        div(style="display: table")
-          div(style="display: table-cell; vertical-align: middle")
-            input(name="follow_up_reminder_enabled", type="radio", checked=!hasFollowUpReminder, value="no")
-            | &nbsp;
-          div(style="display: table-cell; vertical-align: middle; padding: 3px")
-            = "No reminder"
+        //- TODO: Handle default moment
+        +reminderpicker("follow_up_reminder", selectedApplication.follow_up_reminder_moment)
       div.past-interviews
         //- TODO: Design our empty state for this...
         h4.push-half--bottom(style="font-weight: normal")

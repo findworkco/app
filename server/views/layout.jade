@@ -15,9 +15,9 @@ block layout-content
     // TODO: Warn ourselves if we see a date that was before today
     var upcomingInterviews = [{
       application: {
-        id: 'abcdef-umbrella-corp',
+        id: 'abcdef-umbrella-corp-uuid',
         name: 'Senior Software Engineer at Umbrella Corporation',
-        url: '/application/abcdef-umbrella-corp'
+        url: '/application/abcdef-umbrella-corp-uuid'
       },
       // Wed Jan 20 at 2:00PM CST
       // DEV: We should also populate `datetime` and `timzone` properties
@@ -29,9 +29,9 @@ block layout-content
       details: 'Go to <a href="https://maps.google.com">1200 Lake St, Suite 303, Chicago</a>',
     }, {
       application: {
-        id: 'abcdef-globo-gym',
+        id: 'abcdef-globo-gym-uuid',
         name: 'Globo Gym',
-        url: '/application/abcdef-globo-gym'
+        url: '/application/abcdef-globo-gym-uuid'
       },
       // Mon Mar 14 at 2:00PM CST
       moment: moment.tz('2016-03-14T14:00', 'America/Chicago'),
@@ -40,11 +40,11 @@ block layout-content
     }];
   -
     var waitingForResponseApplications = [{
-      id: 'abcdef-sky-networks',
-      add_interview_url: '/application/abcdef-sky-networks/add-interview',
+      id: 'abcdef-sky-networks-uuid',
+      add_interview_url: '/application/abcdef-sky-networks-uuid/add-interview',
       // Fri Jan 8
       application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
-      archive_url: '/application/abcdef-sky-networks/archive',
+      archive_url: '/application/abcdef-sky-networks-uuid/archive',
       company_name: 'Sky Networks',
       human_status: 'Waiting for response',
       // Tue Feb 23
@@ -52,17 +52,20 @@ block layout-content
       // Tue Feb 16
       last_contact_moment: moment('2016-02-16T12:00').tz('America/Chicago'),
       past_interviews: [{
-        id: 'abcdef-sky-networks-001',
+        id: 'abcdef-sky-networks-interview-uuid',
+        details: 'Call 555-123-4567',
         // Fri Jan 15 at 9:00AM PST
         moment: moment('2016-01-15T09:00').tz('America/Los_Angeles'),
-        url: '/interview/abcdef-sky-networks-001'
+        pre_interview_reminder_moment: moment('2016-01-15T08:00').tz('America/Los_Angeles'),
+        post_interview_reminder_moment: moment('2016-01-15T11:00').tz('America/Los_Angeles'),
+        url: '/interview/abcdef-sky-networks-interview-uuid'
       }],
       posting_url: 'https://github.com/about/jobs',
       name: 'Engineer II at Sky Networks',
       notes: '100 employees, all seem robotic',
       status: 'waiting_for_response',
-      received_offer_url: '/application/abcdef-sky-networks/received-offer',
-      url: '/application/abcdef-sky-networks'
+      received_offer_url: '/application/abcdef-sky-networks-uuid/received-offer',
+      url: '/application/abcdef-sky-networks-uuid'
     }];
 
   //- Declare common mixins
@@ -82,6 +85,55 @@ block layout-content
     //- DEV: Native uses HH:MM (e.g. 23:10) so we must use that
     //-   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
     input(type="time", value=moment.format(timepickerFormat))&attributes(attributes)
+
+  mixin timezonepicker(moment)
+    //- TODO: When we save this to the server, verify we have the codes in `vendor`
+    //-   When saving in the db, preserve as an object for easy queries
+    //- TODO: Find best match based on IP as a fallback
+    //-   Then, fallback to US Pacific TIme
+    //- DEV: We were initially going to use a modal similar to Google Calendar
+    //-   However, we realized that (1) the terms are different than CST/CDT abbreviations and (2) modals are a complex interaction
+    //- TODO: Sort countries by their name, not code; UAE should be next to USA
+    //-   Maybe create a new data structure `[{name: United States, code: US, timezones: [{locale: America/Chicago, abbrs: []}]`
+    - var selectedTimezone = moment.tz();
+    select(data-chosen)&attributes(attributes)
+      //- {US: {America/Chicago: 'Central Standard Time'}}; timezones = {America/Chicago}, countryCode = US
+      each timezones, countryCode in timezonesByCountryCode
+        //- United States
+        - var countryName = countryData.countries[countryCode].name;
+        optgroup(label=countryName)
+          //- timezoneName = Central Standard Time, timezoneLocale = America/Chicago
+          //- TODO: Compute pre-emptively
+          - var timezoneLocales = Object.keys(timezones);
+          - timezoneLocales.sort(function (a, b) { return timezoneAbbrs[a].join('/') > timezoneAbbrs[b].join('/') });
+          each timezoneLocale in timezoneLocales
+            - var abbrs = timezoneAbbrs[timezoneLocale].join('/');
+            option(selected=selectedTimezone == timezoneLocale, value=countryCode + '-' + timezoneLocale)= abbrs
+
+  mixin datetimepicker(name, moment, options)
+    - options = options || {};
+    - var delimiter = options.delimiter !== undefined ? options.delimiter : '_';
+    div
+      +datepicker(moment).form-control(name="#{name}#{delimiter}date")&attributes(attributes)
+      = " "
+      +timepicker(moment).form-control(name="#{name}#{delimiter}time")
+    div
+      +timezonepicker(moment).form-control(name="#{name}#{delimiter}timezone")
+
+  mixin reminderpicker(name, moment)
+    - var hasReminder = !!moment;
+    div(style="display: table")
+      div(style="display: table-cell; vertical-align: middle")
+        input(name="#{name}_enabled", type="radio", checked=hasReminder, value="yes")
+        | &nbsp;
+      div(style="display: table-cell; vertical-align: middle; padding: 3px")
+        +datetimepicker(name, moment)(id=name)
+    div(style="display: table")
+      div(style="display: table-cell; vertical-align: middle")
+        input(name="#{name}_enabled", type="radio", checked=!hasReminder, value="no")
+        | &nbsp;
+      div(style="display: table-cell; vertical-align: middle; padding: 3px")
+        = "No reminder"
 
   mixin nav-row(options)
     //- DEV: We use padded half ends to give padding for the selected border
@@ -167,7 +219,7 @@ block layout-content
                   block
 
             mixin nav-row--application(application, type, params)
-              +nav-row({selected: application.url === url}).nav-row--application
+              +nav-row({selected: application.url === url || (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application
                 h4.text--normal.flush--bottom
                   a.link--unstyled(href=application.url)
                     strong= application.name
@@ -260,8 +312,10 @@ block layout-content
         //- DEV: Jade doesn't support variable-based includes so work around it
         if url == '/schedule'
           include ./schedule.jade
-        else if url == '/application/abcdef-sky-networks'
+        else if url == '/application/abcdef-sky-networks-uuid'
           include ./application-edit-show.jade
+        else if url == '/interview/abcdef-sky-networks-interview-uuid'
+          include ./interview-edit-show.jade
         else
           - throw new Error('Unrecognized page "' + page + '". Please add it to the `if/else if` statements');
 
