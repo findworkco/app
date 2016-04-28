@@ -8,5 +8,7 @@ gemini.suite('login', function (suite) {
   // TODO: We should not have a logged in state in the nav for the login page
   suite.setUrl('/login.jade')
     .setCaptureElements('body')
-    .capture('default-large', geminiUtils.resizeLarge);
+    .capture('default-large', geminiUtils.resizeLarge)
+    .capture('default-medium', geminiUtils.resizeMedium)
+    .capture('default-small', geminiUtils.resizeSmall);
 });

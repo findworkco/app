@@ -1,6 +1,5 @@
 .grid
-  .grid__item.large-hidden.medium-one-quarter.small-one-sixth &nbsp;
-  .grid__item.one-whole.medium-one-half.small-two-thirds
+  .grid__item.one-whole
     h1.content__heading.text--center.push--bottom(style="font-weight: normal") Sign up/Log in
     //- TODO: Determine if this is a button or a link...
     //- TODO: Use Google branding for button
@@ -23,11 +22,12 @@
     form.landmark(method="POST", action="https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/formResponse", target="_blank")
       p.text--center.push-half--bottom
         | We are in the process of adding email/password login.
-        br
+        br.small-hidden
+        span.medium-and-up-hidden= " "
         | To get notified when we complete support, submit your email below.
       .grid
-        .grid__item.one-third &nbsp;
-        .grid__item.one-third
+        .grid__item.one-third.medium-one-quarter.small-one-sixth &nbsp;
+        .grid__item.one-third.medium-one-half.small-two-thirds
           .form-group.push-half--bottom
             //- Field name pulled from https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/viewform
             label(for="email") Email:
