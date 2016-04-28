@@ -1,0 +1,41 @@
+.grid
+  .grid__item.large-hidden.medium-one-quarter.small-one-sixth &nbsp;
+  .grid__item.one-whole.medium-one-half.small-two-thirds
+    h1.content__heading.text--center.push--bottom(style="font-weight: normal") Sign up/Log in
+    //- TODO: Determine if this is a button or a link...
+    //- TODO: Use Google branding for button
+    //- DESIGN: If we get AngelList support, build Sign up/Log in with AngelList
+    p.text--center.landmark
+      //- https://developers.google.com/identity/branding-guidelines
+      span.btn.btn--primary
+        strong G+
+        = " Sign up/Log in with Google"
+      br
+      em
+        small
+          //- TODO: Make sure this is valid legalese speak
+          = "By signing up for Find Work, you hereby consent to our "
+          a(href="/privacy") Privacy Policy
+          = " and "
+          a(href="/terms") Terms of Use
+          = "."
+    //- https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/edit
+    form.landmark(method="POST", action="https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/formResponse", target="_blank")
+      p.text--center.push-half--bottom
+        | We are in the process of adding email/password login.
+        br
+        | To get notified when we complete support, submit your email below.
+      .grid
+        .grid__item.one-third &nbsp;
+        .grid__item.one-third
+          .form-group.push-half--bottom
+            //- Field name pulled from https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/viewform
+            label(for="email") Email:
+            input#email.form-control.input--block(name="entry.1063922439", type="email", placeholder="todd@findwork.co", required="true")
+          button.btn.btn--default.one-whole(type="submit") Notify me
+    p.text--center
+      = "Having issues signing up? Contact us at "
+      a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Find Work support question')) todd@findwork.co
+    p.text--center
+      = "Want to log in with a different service (e.g. Twitter)? Tell us at "
+      a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Login service support request')) todd@findwork.co

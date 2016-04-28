@@ -310,14 +310,16 @@ block layout-content
 
       #content.grid__item.one-whole.large-three-quarters(class={'medium-and-down-hidden': isSchedule})
         //- DEV: Jade doesn't support variable-based includes so work around it
-        if url == '/schedule'
-          include ./schedule.jade
-        else if url == '/settings'
-          include ./settings.jade
-        else if url == '/application/abcdef-sky-networks-uuid'
+        if url == '/application/abcdef-sky-networks-uuid'
           include ./application-edit-show.jade
         else if url == '/interview/abcdef-sky-networks-interview-uuid'
           include ./interview-edit-show.jade
+        else if url == '/login'
+          include ./login.jade
+        else if url == '/schedule'
+          include ./schedule.jade
+        else if url == '/settings'
+          include ./settings.jade
         else
           - throw new Error('Unrecognized page "' + page + '". Please add it to the `if/else if` statements');
 

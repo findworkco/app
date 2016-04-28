@@ -57,7 +57,7 @@ html
           br(class=options.largeWide ? "hidden" : "medium-and-down-hidden")
           a.footer-link(href="/blog") Blog
           a.footer-link(href="http://twitter.com/findworkco") Twitter
-          a.footer-link(href="mailto:todd@findwork.co?subject=Find%20Work%20support%20question") Support
+          a.footer-link(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Find Work support question')) Support
 
     //- Define a block for lower level layouts
     block layout-content
