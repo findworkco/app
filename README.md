@@ -42,6 +42,21 @@ As a result, if you enable/install a LiveReload browser extension, then it will 
 
 http://livereload.com/extensions/
 
+### Testing
+To run our entire test suite (excluding visual tests), run the following:
+
+```bash
+npm test
+```
+
+To run smaller parts, see our `package.json` or type `npm run` to get a listing of scripts:
+
+```bash
+npm run
+# npm run lint
+# npm run test-server
+```
+
 ### Visual testing
 We have support for running visual tests locally. These can be useful when performing CSS refactors and verifying nothing unexpectedly changes.
 

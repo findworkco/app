@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+// Load in our dependencies
+var url = require('url');
+var server = require('../server/index.js');
+
+// Start our server's listener
+server.listen();
+
+// Notify the user that the server is running
+var serverUrl = url.format(server.config.url.external) + '/';
+console.log('Server running at ' + serverUrl);
