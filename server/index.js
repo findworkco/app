@@ -1,6 +1,13 @@
 // Load in our dependencies
 var assert = require('assert');
+var _ = require('underscore');
 var express = require('express');
+var appLocals = {
+  countryData: require('country-data'),
+  moment: require('moment-timezone'),
+  timezoneAbbrs: require('./utils/timezone-abbrs.js'),
+  timezonesByCountryCode: require('../vendor/tz-locales.json')
+};
 
 // DEV: Historically I (@twolfson) have built Node.js servers that aren't singleton based
 //   This means a controller would receive a `app` or `config` and return a function
@@ -20,7 +27,20 @@ function Server(config) {
   this.config = config;
 
   // Create a new server
-  this.app = express();
+  var app = this.app = express();
+
+  // Host our static files
+  app.use('/dist', express.static(__dirname + '/../dist'));
+
+  // Configure our views
+  // http://expressjs.com/en/guide/using-template-engines.html
+  app.use(function bindResponseLocals (req, res, next) {
+    res.locals.urlPath = req.path;
+    next();
+  });
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  app.locals = _.defaults(app.locals, appLocals);
 
   // TODO: Add uncaught exception handler binding
 }
@@ -46,6 +66,8 @@ module.exports = new Server({
       protocol: 'http',
       hostname: 'localhost',
       port: 9000
+
+      // TODO: Use different port in testing
     },
     external: {
       protocol: 'http',

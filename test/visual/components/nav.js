@@ -3,7 +3,7 @@ var gemini = require('gemini');
 
 // Define our visual tests
 gemini.suite('components/nav', function (suite) {
-  suite.setUrl('/application-edit-show.jade');
+  suite.setUrl('/application/abcdef-sky-networks-uuid');
 
   gemini.suite('selected-nav-row', function (child) {
     // DEV: This verifies we add a left border to selected nav rows

@@ -1,59 +1,62 @@
-//- Define mock data specific to our view
-- var selectedApplication = waitingForResponseApplications[0];
-- var selectedInterview = selectedApplication.past_interviews[0];
+extends layout
 
-h1.content__heading(style="font-weight: normal") Interview
-h2.content__subheading(style="font-weight: normal")
-  = selectedApplication.name
-p.medium-and-up-hidden
-  a.btn.btn--default.btn--thin(href=selectedApplication.url) Back to application
-  = " "
-  //- TODO: If we ever introduce a better menu which has schedule in it, then ditch this button
-  a.btn.btn--default.btn--thin(href="/schedule") Return to schedule
-p.large-hidden.push-half--bottom
-  //- DEV: On small/medium screens, display "All changes saved" close to content
-  i.muted(data-autosave) All changes saved
-form.cf(method="POST", action=selectedInterview.url)
-  != csrfInput
-  .grid
-    .grid__item.one-whole.medium-one-half.large-four-ninths
-      .form-group
-        //- DEV: We use table/table-cell for consistent sizing with pre-interview reminder
-        div(style="display: table")
-          div(style="display: table-cell")
-            label(for="date")
-              = "Date/Time: "
-              i.fa.fa-calendar-o(style="font-size: 1.5em")
-            //- Keys for inputs will be `date`, `time`, and `timezone`
-            +datetimepicker("", selectedInterview.moment, {delimiter: ''})
-      .form-group
-        label(for="details")
-          = "Details: "
-          i.fa.fa-info-circle(style="font-size: 1.5em")
-        //- TODO: Add placeholder details
-        input#details.form-control.input--block(name="details", type="text", value=selectedInterview.details)
-      .form-group
-        //- DESIGN: If date/time of interview shifts, then shift pre/post reminders as well
-        h4.flush--bottom(style="font-weight: normal") Pre-interview reminder:
-        +reminderpicker("pre_interview_reminder", selectedInterview.pre_interview_reminder_moment)
-      .form-group
-        h4.flush--bottom(style="font-weight: normal") Post-interview reminder:
-        +reminderpicker("post_interview_reminder", selectedInterview.post_interview_reminder_moment)
-      p.large-hidden
-        //- DEV: On small/medium screens, display "All changes saved" close to content
-        i.muted(data-autosave) All changes saved
-      .landmark
-        button.btn.btn--primary(name="submit_button", type="submit", value="save") Save changes
-      div
-        //- DEV: We don't put forms in forms since it causes them to stop early in Firefox
-        //- DEV: We have verified in Firefox that `Ctrl+Enter` only submits save, not delete (due to being first submit button)
-        //- DEV: Another alternative is a modal that has its own form
-        //- TODO: Add test that verifies form doesn't submit on confirm rejection
-        button.btn.btn--danger(name="submit_button", type="submit", value="delete", onclick="javascript:return confirm('Are you sure you want to delete this interview for #{selectedApplication.name}?')") Delete
-    .grid__item.one-whole.medium-one-half.large-five-ninths
-      //- DEV: We use 1.5x line height to match our calendar icon
-      .medium-and-down-hidden.text--right(style="line-height: 1.5em")
-        //- DEV: On large screens, display "All changes saved" on right side of content
-        i.muted(data-autosave) All changes saved
-      div.small-hidden
-        a.btn.btn--default.one-whole(href=selectedApplication.url) Back to job application
+block title
+  //- TODO: Be sure to test title interpolation as visual tests won't cover it
+  title Interview - #{selectedApplication.name} - Find Work
+
+block content
+  h1.content__heading(style="font-weight: normal") Interview
+  h2.content__subheading(style="font-weight: normal")
+    = selectedApplication.name
+  p.medium-and-up-hidden
+    a.btn.btn--default.btn--thin(href=selectedApplication.url) Back to application
+    = " "
+    //- TODO: If we ever introduce a better menu which has schedule in it, then ditch this button
+    a.btn.btn--default.btn--thin(href="/schedule") Return to schedule
+  p.large-hidden.push-half--bottom
+    //- DEV: On small/medium screens, display "All changes saved" close to content
+    i.muted(data-autosave) All changes saved
+  form.cf(method="POST", action=selectedInterview.url)
+    != csrfInput
+    .grid
+      .grid__item.one-whole.medium-one-half.large-four-ninths
+        .form-group
+          //- DEV: We use table/table-cell for consistent sizing with pre-interview reminder
+          div(style="display: table")
+            div(style="display: table-cell")
+              label(for="date")
+                = "Date/Time: "
+                i.fa.fa-calendar-o(style="font-size: 1.5em")
+              //- Keys for inputs will be `date`, `time`, and `timezone`
+              +datetimepicker("", selectedInterview.moment, {delimiter: ''})
+        .form-group
+          label(for="details")
+            = "Details: "
+            i.fa.fa-info-circle(style="font-size: 1.5em")
+          //- TODO: Add placeholder details
+          input#details.form-control.input--block(name="details", type="text", value=selectedInterview.details)
+        .form-group
+          //- DESIGN: If date/time of interview shifts, then shift pre/post reminders as well
+          h4.flush--bottom(style="font-weight: normal") Pre-interview reminder:
+          +reminderpicker("pre_interview_reminder", selectedInterview.pre_interview_reminder_moment)
+        .form-group
+          h4.flush--bottom(style="font-weight: normal") Post-interview reminder:
+          +reminderpicker("post_interview_reminder", selectedInterview.post_interview_reminder_moment)
+        p.large-hidden
+          //- DEV: On small/medium screens, display "All changes saved" close to content
+          i.muted(data-autosave) All changes saved
+        .landmark
+          button.btn.btn--primary(name="submit_button", type="submit", value="save") Save changes
+        div
+          //- DEV: We don't put forms in forms since it causes them to stop early in Firefox
+          //- DEV: We have verified in Firefox that `Ctrl+Enter` only submits save, not delete (due to being first submit button)
+          //- DEV: Another alternative is a modal that has its own form
+          //- TODO: Add test that verifies form doesn't submit on confirm rejection
+          button.btn.btn--danger(name="submit_button", type="submit", value="delete", onclick="javascript:return confirm('Are you sure you want to delete this interview for #{selectedApplication.name}?')") Delete
+      .grid__item.one-whole.medium-one-half.large-five-ninths
+        //- DEV: We use 1.5x line height to match our calendar icon
+        .medium-and-down-hidden.text--right(style="line-height: 1.5em")
+          //- DEV: On large screens, display "All changes saved" on right side of content
+          i.muted(data-autosave) All changes saved
+        div.small-hidden
+          a.btn.btn--default.one-whole(href=selectedApplication.url) Back to job application

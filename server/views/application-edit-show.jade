@@ -1,199 +1,178 @@
-//- Define mock data specific to our view
 //- DEV: Designed after:
 //-   Large: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
 //-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a03ef4dcc
 //-   Small: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a541249ff
-- var selectedApplication = waitingForResponseApplications[0];
--
-  var glassdoorResult = {
-    id: 12345,
-    name: 'IBM',
-    website: 'www.ibm.com',
-    industry: null,
-    overall_rating: '0.0/5.0 (20 ratings)',
-    ceo_review: '0% approve, 0% disapprove (0 ratings)',
-    glassdoor_url: 'http://glassdoor.com/ibm'
-  };
-//- Form: https://docs.google.com/a/findwork.co/forms/d/1b_pmseT_J0bG_9vK-CA7XGJTy-IOMDq0MvrXGREN4k8/edit
-//- DEV: URL resolved by taking form from email and verifying that GET works as well as POST
-- glassdoorResult.badMatchUrl = 'https://docs.google.com/a/findwork.co/forms/d/1b_pmseT_J0bG_9vK-CA7XGJTy-IOMDq0MvrXGREN4k8/formResponse?entry.1562009024=' + encodeURIComponent(selectedApplication.company_name) + '&entry.978071742=' + encodeURIComponent(glassdoorResult.id);
--
-  var angelListResult = {
-    id: 67890,
-    name: 'AngelList',
-    website: 'http://angel.co',
-    followers: 2849,
-    locations: 'San Francisco',
-    markets: 'Startups, Venture Capital',
-    angellist_url: 'http://angel.co/angellist'
-  };
-//- Form: https://docs.google.com/a/findwork.co/forms/d/1wDWEkLwGXmWOU5GMz4wMz-sKONrVNyrFLKZVnpfMrfk/edit
-- angelListResult.badMatchUrl = 'https://docs.google.com/a/findwork.co/forms/d/1wDWEkLwGXmWOU5GMz4wMz-sKONrVNyrFLKZVnpfMrfk/formResponse?entry.1562009024=' + encodeURIComponent(selectedApplication.company_name) + '&entry.978071742=' + encodeURIComponent(angelListResult.id);
+extends layout
 
-h1.content__heading(style="font-weight: normal") Job application
-h2.content__subheading(style="font-weight: normal")
-  = selectedApplication.name
-  //- DEV: On large screens, display "All changes saved" away from content
-  i.text--normal.float--right.muted.medium-and-down-hidden(data-autosave) All changes saved
-//- DEV: We wanted to use a `p` but we can't nest forms in them
-//-   as browsers break up those block in block formations
-.action-bar.push--bottom
-  .action-bar__info
-    = "Status: "
-    b= selectedApplication.human_status
-  .action-bar__actions.btn-group
-    .large-hidden Actions:
-    a.action.btn.btn--thin.btn--default.btn--first(href=selectedApplication.add_interview_url)
-      span.small-hidden(aria-hidden="true")= "+ "
-      | Add interview
-    //- DESIGN: On load of next page, add a confetti animation
-    //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
-    //- DESIGN: On load of next page, have indication that we preselected 7 day response reminder
-    //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
-    form(method="POST", action=selectedApplication.received_offer_url, style="display: inline")
-      != csrfInput
-      button.action.btn.btn--thin.btn--default.btn--middle(type="submit")
-        span.small-hidden I've received an offer
-        span.medium-and-up-hidden Received offer
-    //- DESIGN: On click, redirect to unselected nav and add notification for "Application has been archived"
-    //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
-    form(method="POST", action=selectedApplication.archive_url, style="display: inline")
-      != csrfInput
-      button.action.btn.btn--thin.btn--default.btn--last(type="submit")
-        span.small-hidden Archive application
-        span.medium-and-up-hidden Archive
-p.large-hidden
-  //- DEV: On small screens, display "All changes saved" close to content
-  i.muted(data-autosave) All changes saved
-form.cf(method="POST", action=selectedApplication.url)
-  != csrfInput
-  .grid
-    .grid__item.one-whole.medium-one-half.large-four-ninths
-      //- TODO: Link up `follow URL` to automatically update on throttled keydown
-      .form-group
-        label(for="posting_url")
-          = "Posting URL: ("
-          a(href=selectedApplication.posting_url) follow URL
-          = ")"
-        input#posting_url.form-control.input--block(name="posting_url", type="text", value=selectedApplication.posting_url)
-      .form-group
-        label(for="name") Name:
-        input#name.form-control.input--block(name="name", type="text", value=selectedApplication.name)
-    .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
-      .form-group
-        label(for="notes") Notes:
-        //- TODO: Add editor integration (wysiwyg.js, did it in a gist or codepen)
-        textarea.form-control.input--block#notes(name="notes", rows=7)= selectedApplication.notes
-      .research-company
-        //- TODO: Make sure that either this mini form works
-        //-   and is accessible
-        //-   or figure out some way to get the HTML to work
-        //-   We could integrate with the bigger form buuuut we need to make sure that "Ctrl+Enter" works =X
-        //-   ... doesn't look like it...
-        //-   We could design away the need for "Ctrl+Enter" by generating a loading image
-        //-      when the user starts typing
+block title
+  //- TODO: Be sure to test title interpolation as visual tests won't cover it
+  title Application - #{selectedApplication.name} - Find Work
 
-        //- Worst case scenarios:
-        //- - Absolute position form
-        //- - Embedded iframe (best idea yet, is it accessible?)
-        //-    It works buuut need to autosize content
-        //- - Redesign flow so search is elsewhere (e.g. another page)
-        h4.push-half--bottom(style="font-weight: normal")
-          span.small-hidden Research company:
-          span.medium-and-up-hidden
-            = "Research company "
-            span.text--normal
-              = "("
-              button.text--link expand section
-              = ")"
+block content
+  h1.content__heading(style="font-weight: normal") Job application
+  h2.content__subheading(style="font-weight: normal")
+    = selectedApplication.name
+    //- DEV: On large screens, display "All changes saved" away from content
+    i.text--normal.float--right.muted.medium-and-down-hidden(data-autosave) All changes saved
+  //- DEV: We wanted to use a `p` but we can't nest forms in them
+  //-   as browsers break up those block in block formations
+  .action-bar.push--bottom
+    .action-bar__info
+      = "Status: "
+      b= selectedApplication.human_status
+    .action-bar__actions.btn-group
+      .large-hidden Actions:
+      a.action.btn.btn--thin.btn--default.btn--first(href=selectedApplication.add_interview_url)
+        span.small-hidden(aria-hidden="true")= "+ "
+        | Add interview
+      //- DESIGN: On load of next page, add a confetti animation
+      //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
+      //- DESIGN: On load of next page, have indication that we preselected 7 day response reminder
+      //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
+      form(method="POST", action=selectedApplication.received_offer_url, style="display: inline")
+        != csrfInput
+        button.action.btn.btn--thin.btn--default.btn--middle(type="submit")
+          span.small-hidden I've received an offer
+          span.medium-and-up-hidden Received offer
+      //- DESIGN: On click, redirect to unselected nav and add notification for "Application has been archived"
+      //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
+      form(method="POST", action=selectedApplication.archive_url, style="display: inline")
+        != csrfInput
+        button.action.btn.btn--thin.btn--default.btn--last(type="submit")
+          span.small-hidden Archive application
+          span.medium-and-up-hidden Archive
+  p.large-hidden
+    //- DEV: On small screens, display "All changes saved" close to content
+    i.muted(data-autosave) All changes saved
+  form.cf(method="POST", action=selectedApplication.url)
+    != csrfInput
+    .grid
+      .grid__item.one-whole.medium-one-half.large-four-ninths
+        //- TODO: Link up `follow URL` to automatically update on throttled keydown
         .form-group
-          label(for="company_name") Name:
-          input.form-control.three-fifths#company_name(name="company_name", type="text", value=selectedApplication.company_name)
-          //- TODO: Connect to search mechanism on click
-          button.btn.btn--small.btn--wide.btn--default.push--left(name="submit_button", type="submit", value="search") Search
-        //- TODO: Handle empty state (pretty sure we mocked it)
-        h5.text--normal.flush--bottom Glassdoor results:
-        p
-          | Name: #{glassdoorResult.name}
-          br
-          = "Website: "
-          a(href=glassdoorResult.website)= glassdoorResult.website
-          br
-          = "Industry: "
-          if !glassdoorResult.industry
-            i Unknown
-          else
-            = glassdoorResult.industry
-          br
-          | Overall rating: #{glassdoorResult.overall_rating}
-          br
-          | CEO review: #{glassdoorResult.ceo_review}
-          br
-          a(href=glassdoorResult.glassdoor_url) View Glassdoor profile
-          br
-          a(href="https://www.glassdoor.com/")
-            = "Powered by "
-            img(alt="Glassdoor", src="/public/images/glassdoor-green.svg", style="height: 1.3em; position: relative; top: 4px")
-          br
-          a(target="_blank", href=glassdoorResult.badMatchUrl) Bad match? Click here to let us know
-        //- TODO: Handle empty state (pretty sure we mocked it)
-        h5.text--normal.flush--bottom AngelList results:
-        p
-          | Name: #{angelListResult.name}
-          br
-          = "Website: "
-          a(href=angelListResult.website)= angelListResult.website
-          br
-          | Followers: #{angelListResult.followers}
-          br
-          | Locations: #{angelListResult.locations}
-          br
-          | Markets: #{angelListResult.markets}
-          br
-          a(href=angelListResult.angellist_url) View AngelList profile
-          br
-          a(href="https://angel.co/")
-            = "Powered by AngelList"
-            img(alt="AngelList logo", aria-hidden="true", src="/public/images/angellist.svg", style="height: 1.3em; position: relative; top: 4px; left: 2px")
-          br
-          a(target="_blank", href=angelListResult.badMatchUrl) Bad match? Click here to let us know
-    .grid__item.one-whole.medium-one-half.large-four-ninths
-      .form-group
-        label(for="application_date")
-          //- TODO: Is text "Applied on" or "Application date" (I think it's "Applied on" for "Add" and "Application date" for "Edit")
-          = "Application date: "
-          i.fa.fa-calendar-o(style="font-size: 1.5em")
-        //- TODO: Explore using full datetime so we can capture timezone
-        +datepicker(selectedApplication.application_date_moment)#application_date.form-control(name="application_date")
-      .form-group
-        //- TODO: Make sure we are consistent with "Follow-up" vs "Follow up"
-        h4.flush--bottom(style="font-weight: normal")
-          = "Follow up reminder: "
-          span.text--normal
-            i.fa.fa-reply(style="font-size: 1.5em")
-        //- TODO: Handle default moment
-        +reminderpicker("follow_up_reminder", selectedApplication.follow_up_reminder_moment)
-      div.past-interviews
-        //- TODO: Design our empty state for this...
-        h4.push-half--bottom(style="font-weight: normal")
-          = "Past interviews: "
-          a.text--normal.btn.btn--small.btn--default(href=selectedApplication.add_interview_url)
-            span(aria-hidden="true")= "+ "
-            | Add interview
-        p.landmark
-          each past_interview, i in selectedApplication.past_interviews
-            //- Fri Jan 15 at 9:00AM PST
-            a(href=past_interview.url)= past_interview.moment.format('ddd MMM D [at] h:mmA zz')
-            if i != selectedApplication.past_interviews.length - 1
-              br
-      p.large-hidden(style="margin-top: -18px")
-        //- DEV: On small screens, display "All changes saved" close to content
-        i.muted(data-autosave) All changes saved
-      div.landmark
-        button.btn.btn--primary(name="submit_button", type="submit", value="save") Save changes
-      div.landmark
-        //- DEV: We don't put forms in forms since it causes them to stop early in Firefox
-        //- DEV: We have verified in Firefox that `Ctrl+Enter` only submits save, not delete (due to being first submit button)
-        //- DEV: Another alternative is a modal that has its own form
-        //- TODO: Add test that verifies form doesn't submit on confirm rejection
-        button.btn.btn--danger(name="submit_button", type="submit", value="delete", onclick="javascript:return confirm('Are you sure you want to delete #{selectedApplication.name}?')") Delete
+          label(for="posting_url")
+            = "Posting URL: ("
+            a(href=selectedApplication.posting_url) follow URL
+            = ")"
+          input#posting_url.form-control.input--block(name="posting_url", type="text", value=selectedApplication.posting_url)
+        .form-group
+          label(for="name") Name:
+          input#name.form-control.input--block(name="name", type="text", value=selectedApplication.name)
+      .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
+        .form-group
+          label(for="notes") Notes:
+          //- TODO: Add editor integration (wysiwyg.js, did it in a gist or codepen)
+          textarea.form-control.input--block#notes(name="notes", rows=7)= selectedApplication.notes
+        .research-company
+          //- TODO: Make sure that either this mini form works
+          //-   and is accessible
+          //-   or figure out some way to get the HTML to work
+          //-   We could integrate with the bigger form buuuut we need to make sure that "Ctrl+Enter" works =X
+          //-   ... doesn't look like it...
+          //-   We could design away the need for "Ctrl+Enter" by generating a loading image
+          //-      when the user starts typing
+
+          //- Worst case scenarios:
+          //- - Absolute position form
+          //- - Embedded iframe (best idea yet, is it accessible?)
+          //-    It works buuut need to autosize content
+          //- - Redesign flow so search is elsewhere (e.g. another page)
+          h4.push-half--bottom(style="font-weight: normal")
+            span.small-hidden Research company:
+            span.medium-and-up-hidden
+              = "Research company "
+              span.text--normal
+                = "("
+                button.text--link expand section
+                = ")"
+          .form-group
+            label(for="company_name") Name:
+            input.form-control.three-fifths#company_name(name="company_name", type="text", value=selectedApplication.company_name)
+            //- TODO: Connect to search mechanism on click
+            button.btn.btn--small.btn--wide.btn--default.push--left(name="submit_button", type="submit", value="search") Search
+          //- TODO: Handle empty state (pretty sure we mocked it)
+          h5.text--normal.flush--bottom Glassdoor results:
+          p
+            | Name: #{glassdoorResult.name}
+            br
+            = "Website: "
+            a(href=glassdoorResult.website)= glassdoorResult.website
+            br
+            = "Industry: "
+            if !glassdoorResult.industry
+              i Unknown
+            else
+              = glassdoorResult.industry
+            br
+            | Overall rating: #{glassdoorResult.overall_rating}
+            br
+            | CEO review: #{glassdoorResult.ceo_review}
+            br
+            a(href=glassdoorResult.glassdoor_url) View Glassdoor profile
+            br
+            a(href="https://www.glassdoor.com/")
+              = "Powered by "
+              img(alt="Glassdoor", src="/dist/images/glassdoor-green.svg", style="height: 1.3em; position: relative; top: 4px")
+            br
+            a(target="_blank", href=glassdoorResult.badMatchUrl) Bad match? Click here to let us know
+          //- TODO: Handle empty state (pretty sure we mocked it)
+          h5.text--normal.flush--bottom AngelList results:
+          p
+            | Name: #{angelListResult.name}
+            br
+            = "Website: "
+            a(href=angelListResult.website)= angelListResult.website
+            br
+            | Followers: #{angelListResult.followers}
+            br
+            | Locations: #{angelListResult.locations}
+            br
+            | Markets: #{angelListResult.markets}
+            br
+            a(href=angelListResult.angellist_url) View AngelList profile
+            br
+            a(href="https://angel.co/")
+              = "Powered by AngelList"
+              img(alt="AngelList logo", aria-hidden="true", src="/dist/images/angellist.svg", style="height: 1.3em; position: relative; top: 4px; left: 2px")
+            br
+            a(target="_blank", href=angelListResult.badMatchUrl) Bad match? Click here to let us know
+      .grid__item.one-whole.medium-one-half.large-four-ninths
+        .form-group
+          label(for="application_date")
+            //- TODO: Is text "Applied on" or "Application date" (I think it's "Applied on" for "Add" and "Application date" for "Edit")
+            = "Application date: "
+            i.fa.fa-calendar-o(style="font-size: 1.5em")
+          //- TODO: Explore using full datetime so we can capture timezone
+          +datepicker(selectedApplication.application_date_moment)#application_date.form-control(name="application_date")
+        .form-group
+          //- TODO: Make sure we are consistent with "Follow-up" vs "Follow up"
+          h4.flush--bottom(style="font-weight: normal")
+            = "Follow up reminder: "
+            span.text--normal
+              i.fa.fa-reply(style="font-size: 1.5em")
+          //- TODO: Handle default moment
+          +reminderpicker("follow_up_reminder", selectedApplication.follow_up_reminder_moment)
+        div.past-interviews
+          //- TODO: Design our empty state for this...
+          h4.push-half--bottom(style="font-weight: normal")
+            = "Past interviews: "
+            a.text--normal.btn.btn--small.btn--default(href=selectedApplication.add_interview_url)
+              span(aria-hidden="true")= "+ "
+              | Add interview
+          p.landmark
+            each past_interview, i in selectedApplication.past_interviews
+              //- Fri Jan 15 at 9:00AM PST
+              a(href=past_interview.url)= past_interview.moment.format('ddd MMM D [at] h:mmA zz')
+              if i != selectedApplication.past_interviews.length - 1
+                br
+        p.large-hidden(style="margin-top: -18px")
+          //- DEV: On small screens, display "All changes saved" close to content
+          i.muted(data-autosave) All changes saved
+        div.landmark
+          button.btn.btn--primary(name="submit_button", type="submit", value="save") Save changes
+        div.landmark
+          //- DEV: We don't put forms in forms since it causes them to stop early in Firefox
+          //- DEV: We have verified in Firefox that `Ctrl+Enter` only submits save, not delete (due to being first submit button)
+          //- DEV: Another alternative is a modal that has its own form
+          //- TODO: Add test that verifies form doesn't submit on confirm rejection
+          button.btn.btn--danger(name="submit_button", type="submit", value="delete", onclick="javascript:return confirm('Are you sure you want to delete #{selectedApplication.name}?')") Delete

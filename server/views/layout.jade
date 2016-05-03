@@ -1,73 +1,12 @@
+//- DEV: Designed after
+//-   Large: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
+//-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a13b4d4ec
+//-   Small (nav 1): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/ab1c48bc9
+//-   Small (nav 2): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/aeef2d023
+//-   Small (non-nav): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a541249ff
 extends layout-base
 
-block layout-content
-  //- Declare our mock info
-  //- DEV: Designed after
-  //-   Large: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
-  //-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a13b4d4ec
-  //-   Small (nav 1): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/ab1c48bc9
-  //-   Small (nav 2): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/aeef2d023
-  //-   Small (non-nav): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a541249ff
-  //-
-  - var user = {email: 'todd@findwork.co'};
-  -
-    // TODO: Be sure to sort by upcoming date
-    // TODO: Warn ourselves if we see a date that was before today
-    var upcomingInterviews = [{
-      application: {
-        id: 'abcdef-umbrella-corp-uuid',
-        name: 'Senior Software Engineer at Umbrella Corporation',
-        url: '/application/abcdef-umbrella-corp-uuid'
-      },
-      // Wed Jan 20 at 2:00PM CST
-      // DEV: We should also populate `datetime` and `timzone` properties
-      // DEV: When datetime is saved to the database, a moment instance that give us the offset
-      //   Also, note that we have no numeric offset for `moment.tz`
-      //   allowing it to set the appropriate one from the IANA timezone
-      moment: moment.tz('2016-01-20T14:00', 'America/Chicago'),
-      // TODO: Be sure to sanitize details
-      details: 'Go to <a href="https://maps.google.com">1200 Lake St, Suite 303, Chicago</a>',
-    }, {
-      application: {
-        id: 'abcdef-globo-gym-uuid',
-        name: 'Globo Gym',
-        url: '/application/abcdef-globo-gym-uuid'
-      },
-      // Mon Mar 14 at 2:00PM CST
-      moment: moment.tz('2016-03-14T14:00', 'America/Chicago'),
-      // DEV: Alternative names for `details` are `instructions`, `info`, and `information`
-      details: ''
-    }];
-  -
-    var waitingForResponseApplications = [{
-      id: 'abcdef-sky-networks-uuid',
-      add_interview_url: '/application/abcdef-sky-networks-uuid/add-interview',
-      // Fri Jan 8
-      application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
-      archive_url: '/application/abcdef-sky-networks-uuid/archive',
-      company_name: 'Sky Networks',
-      human_status: 'Waiting for response',
-      // Tue Feb 23
-      follow_up_reminder_moment: moment('2016-02-23T12:00').tz('America/Chicago'),
-      // Tue Feb 16
-      last_contact_moment: moment('2016-02-16T12:00').tz('America/Chicago'),
-      past_interviews: [{
-        id: 'abcdef-sky-networks-interview-uuid',
-        details: 'Call 555-123-4567',
-        // Fri Jan 15 at 9:00AM PST
-        moment: moment('2016-01-15T09:00').tz('America/Los_Angeles'),
-        pre_interview_reminder_moment: moment('2016-01-15T08:00').tz('America/Los_Angeles'),
-        post_interview_reminder_moment: moment('2016-01-15T11:00').tz('America/Los_Angeles'),
-        url: '/interview/abcdef-sky-networks-interview-uuid'
-      }],
-      posting_url: 'https://github.com/about/jobs',
-      name: 'Engineer II at Sky Networks',
-      notes: '100 employees, all seem robotic',
-      status: 'waiting_for_response',
-      received_offer_url: '/application/abcdef-sky-networks-uuid/received-offer',
-      url: '/application/abcdef-sky-networks-uuid'
-    }];
-
+block base-content
   //- Declare common mixins
   mixin calendar-2x-with-date(date)
     //- Font stacking via: http://blog.fontawesome.io/2014/05/19/stacking-text-and-icons/
@@ -149,7 +88,7 @@ block layout-content
       block
 
   //- Start our HTML
-  - var isSchedule = url === '/schedule';
+  - var isSchedule = urlPath === '/schedule';
   .container
     .grid
       #nav.grid__item.one-whole.large-one-quarter(role="navigation")
@@ -158,8 +97,8 @@ block layout-content
           .nav__top.section--brand-dark(style="margin-left: -9px; margin-right: -9px; padding: 0 9px")
             //- On large screens and schedule page for small screens, always display logo in full
             .medium-hidden.text--center(class={'small-hidden': !isSchedule})
-              a(href="/")
-                img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="width: 198px")
+              a(href="/schedule")
+                img.nav__logo(alt="Find Work logo", src="/dist/images/white-logo.svg", style="width: 198px")
               p.flush--bottom.soft-half--bottom
                 //- TODO: Build signed out state
                 a.link--unstyled.muted(href="/settings") todd@findwork.co
@@ -167,10 +106,10 @@ block layout-content
             .small-hidden.large-hidden
               .grid.soft--ends
                 .grid__item
-                  a(href="/")
-                    img.nav__logo(alt="Find Work logo", src="/public/images/white-logo.svg", style="height: 26px")
+                  a(href="/schedule")
+                    img.nav__logo(alt="Find Work logo", src="/dist/images/white-logo.svg", style="height: 26px")
                 .grid__item(style="margin-top: 6px")
-                  - var isSelected = url === '/schedule' || locals.selectedApplication !== undefined;
+                  - var isSelected = urlPath === '/schedule' || locals.selectedApplication !== undefined;
                   a.delta.link--unstyled(href="/schedule", style=isSelected ? "text-decoration: underline" : "") Schedule
                 .grid__item(style="margin-top: 6px")
                   //- TODO: Handle selection of archive
@@ -220,7 +159,7 @@ block layout-content
                   block
 
             mixin nav-row--application(application, type, params)
-              +nav-row({selected: application.url === url || (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application
+              +nav-row({selected: application.url === urlPath || (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application
                 h4.text--normal.flush--bottom
                   a.link--unstyled(href=application.url)
                     strong= application.name
@@ -302,26 +241,14 @@ block layout-content
 
           //- Nav links
           //- TODO: Tolerate viewing applications or interviews in archive
-          +nav-row--link({selected: url === '/archive'})(href="/archive") Archived applications
-          +nav-row--link({selected: url === '/settings'})(href="/settings") Settings
+          +nav-row--link({selected: urlPath === '/archive'})(href="/archive") Archived applications
+          +nav-row--link({selected: urlPath === '/settings'})(href="/settings") Settings
 
           //- Footer
           +footer({largeWide: false})
 
       #content.grid__item.one-whole.large-three-quarters(class={'medium-and-down-hidden': isSchedule})
-        //- DEV: Jade doesn't support variable-based includes so work around it
-        if url == '/application/abcdef-sky-networks-uuid'
-          include ./application-edit-show.jade
-        else if url == '/interview/abcdef-sky-networks-interview-uuid'
-          include ./interview-edit-show.jade
-        else if url == '/login'
-          include ./login.jade
-        else if url == '/schedule'
-          include ./schedule.jade
-        else if url == '/settings'
-          include ./settings.jade
-        else
-          - throw new Error('Unrecognized page "' + page + '". Please add it to the `if/else if` statements');
+        block content
 
         //- DEV: On small screens, show a footer after our content
         .large-hidden

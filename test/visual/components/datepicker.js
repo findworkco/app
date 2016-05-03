@@ -5,7 +5,7 @@ var geminiUtils = require('../utils/gemini');
 // Define our visual tests
 gemini.suite('components/datepicker', function (suite) {
   // Navigate to a page with datepicker
-  suite.setUrl('/application-edit-show.jade');
+  suite.setUrl('/application/abcdef-sky-networks-uuid');
 
   gemini.suite('datepicker', function (child) {
     // Verify we can see the datepicker popover on click

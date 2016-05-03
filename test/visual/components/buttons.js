@@ -4,7 +4,7 @@ var gemini = require('gemini');
 // Define our visual tests
 gemini.suite('components/buttons', function (suite) {
   // Navigate to a page with buttons
-  suite.setUrl('/application-edit-show.jade');
+  suite.setUrl('/application/abcdef-sky-networks-uuid');
 
   gemini.suite('button', function (child) {
     // DEV: This verifies we have a clear focus state

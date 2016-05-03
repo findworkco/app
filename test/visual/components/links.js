@@ -5,7 +5,7 @@ var gemini = require('gemini');
 gemini.suite('components/links', function (suite) {
   // Navigate to a page with links
   var linkSelector = '#content a[href]:not(.btn)';
-  suite.setUrl('/application-edit-show.jade')
+  suite.setUrl('/application/abcdef-sky-networks-uuid')
     .setCaptureElements(linkSelector)
     .capture('default')
     // DEV: This verifies we add an outline on focus

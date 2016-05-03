@@ -60,16 +60,28 @@ gulp.task('build-images-svg', function buildImagesSvg () {
   return gulp.src('public/images/**/*.svg')
     .pipe(gulpSvgmin())
     .pipe(gulpSizereport({gzip: true}))
-    .pipe(gulp.dest('public/images'));
+    .pipe(gulp.dest('public/images'))
+    .pipe(gulp.dest('dist/images'))
+    .pipe(gulpLivereload());
 });
 gulp.task('build-images-non-svg', function buildImagesNonSvg () {
   // Optimize PNG/JPG files inline
   return gulp.src(['public/images/**/*', '!public/images/**/*.svg'])
     .pipe(gulpImagemin())
     .pipe(gulpSizereport({gzip: true}))
-    .pipe(gulp.dest('public/images'));
+    .pipe(gulp.dest('public/images'))
+    .pipe(gulp.dest('dist/images'))
+    .pipe(gulpLivereload());
 });
-gulp.task('build-images', ['build-images-svg', 'build-images-non-svg']);
+gulp.task('build-images-vendor', function buildImagesVendor () {
+  // Optimize vendor images and place them in the CSS folder
+  return gulp.src(['bower_components/chosen-bootstrap/chosen-sprite*'])
+    .pipe(gulpImagemin())
+    .pipe(gulpSizereport({gzip: true}))
+    .pipe(gulp.dest('dist/css'))
+    .pipe(gulpLivereload());
+});
+gulp.task('build-images', ['build-images-svg', 'build-images-non-svg', 'build-images-vendor']);
 
 // Create a browserify instance
 // https://github.com/gulpjs/gulp/blob/v3.9.1/docs/recipes/browserify-uglify-sourcemap.md
@@ -129,5 +141,6 @@ gulp.task('develop', ['build'], function develop () {
 
   // When one of our src files changes, re-run its corresponding task
   gulp.watch('public/css/**/*.scss', ['build-css']);
+  gulp.watch('public/images/**/*', ['build-images']);
   gulp.watch('server/**/*', ['livereload-update']);
 });

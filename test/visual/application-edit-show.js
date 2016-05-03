@@ -5,7 +5,7 @@ var geminiUtils = require('./utils/gemini');
 // Define our visual tests
 gemini.suite('application-edit-show', function (suite) {
   // DEV: We include nav to make sure we have selected the proper link
-  suite.setUrl('/application-edit-show.jade')
+  suite.setUrl('/application/abcdef-sky-networks-uuid')
     .setCaptureElements('body')
     .capture('default-large', geminiUtils.resizeLarge)
     .capture('default-medium', geminiUtils.resizeMedium)

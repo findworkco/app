@@ -1,125 +1,132 @@
-header.section--brand-dark.text--center.cf
-  - var callToActionStr = "Get started. It's free!";
-  .container
+//- TODO: Should landing page be in its own application?
+extends layout-base
+
+block title
+  title Find Work - Manage job leads and applications
+
+block base-content
+  header.section--brand-dark.text--center.cf
+    - var callToActionStr = "Get started. It's free!";
+    .container
+      .grid
+        .grid__item.one-twelfth.small-hidden &nbsp;
+        .grid__item.five-sixths.small-one-whole
+          //- TODO: Make all headings not bold by default
+          a.link--unstyled(href="/")
+            h1(style="font-weight: normal").soft-half--ends.flush--bottom
+              img.landing__logo(alt="Find Work", src="/dist/images/white-logo.svg")
+          h2(style="font-weight: normal") Manage job leads and applications
+          p
+            a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
+        .grid__item.one-twelfth.small-hidden
+          .float--right.soft-half--ends
+            a.btn.btn--default(href="/login") Sign up/Log In
+      .medium-and-up-hidden
+        .grid
+          .grid__item.one-whole
+            p
+              a(href="/login", style="color: white") Already have an account? Log in here
+  section.soft--ends
     .grid
-      .grid__item.one-twelfth.small-hidden &nbsp;
-      .grid__item.five-sixths.small-one-whole
-        //- TODO: Make all headings not bold by default
-        a.link--unstyled(href="/")
-          h1(style="font-weight: normal").soft-half--ends.flush--bottom
-            img.landing__logo(alt="Find Work", src="/public/images/white-logo.svg")
-        h2(style="font-weight: normal") Manage job leads and applications
-        p
+      .grid__item.one-whole
+        .screenshots
+          //- TODO: Use better dummy info for all screenshots (e.g. better notes, company (schedule, name, search), search results)
+          //- TODO: Update screenshot when we have WYSIWYG
+          //- TODO: Make sure image is retina-proof or generate one via Electron screenshot -> 2x image -> SVG
+          //- DESIGN: When our UI is fully built, explore doing magnified screenshots
+          .medium-and-down-hidden
+            p
+              img(alt="Annotated application screenshot", src="/dist/images/screenshots/large.svg", style="margin: 0 auto; display: block;")
+          .large-hidden.small-hidden
+            .text--center
+              p
+                img(alt="Annotated schedule screenshot", src="/dist/images/screenshots/medium-1.svg")
+              p
+                img(alt="Annotated application screenshot", src="/dist/images/screenshots/medium-2.svg")
+          .medium-and-up-hidden
+            .text--right
+              p
+                img(alt="Annotated schedule screenshot", src="/dist/images/screenshots/small-1.svg")
+              p
+                img(alt="Annotated application screenshot", src="/dist/images/screenshots/small-2.svg")
+          .screenshot-highlight--interviews__container
+            .screenshot-highlight--interviews Upcoming interviews and reminders at a glance
+          .screenshot-highlight--reminders__container
+            .screenshot-highlight--reminders Reminders at every stage (application, follow-up, pre-interview, post-interview)
+          .screenshot-highlight--notes__container
+            .screenshot-highlight--notes Record notes about the company and their interviews
+          .screenshot-highlight--research__container
+            .screenshot-highlight--research
+              = "Research companies before you apply via "
+              a(href="https://.screenshot-highlight--research", target="_blank") Glassdoor
+              = " and "
+              a(href="https://angel.co/", target="_blank") AngelList
+        p.text--center.flush--bottom
           a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
-      .grid__item.one-twelfth.small-hidden
-        .float--right.soft-half--ends
-          a.btn.btn--default(href="/login") Sign up/Log In
-    .medium-and-up-hidden
+  section.section--brand-dark.soft--ends
+    .container
       .grid
         .grid__item.one-whole
+          h3.workflow-heading.text--center(style="font-weight: normal") Workflow
+      .grid
+        .grid__item.one-quarter.medium-one-sixth.small-hidden &nbsp;
+        .grid__item.one-half.medium-two-thirds.small-one-whole
+          p Find Work is a tool to track and manage your job applications. We are profession and role agnostic (e.g. good for full-time and contractors). We consider there to be 4 stages of finding work.
+      .grid
+        .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
+          img(alt="Find a job listing illustration", src="/dist/images/magnifying-glass-white.svg", style="height: 3em")
+        .grid__item.one-half.medium-two-thirds.small-one-whole
           p
-            a(href="/login", style="color: white") Already have an account? Log in here
-section.soft--ends
-  .grid
-    .grid__item.one-whole
-      .screenshots
-        //- TODO: Use better dummy info for all screenshots (e.g. better notes, company (schedule, name, search), search results)
-        //- TODO: Update screenshot when we have WYSIWYG
-        //- TODO: Make sure image is retina-proof or generate one via Electron screenshot -> 2x image -> SVG
-        //- DESIGN: When our UI is fully built, explore doing magnified screenshots
-        .medium-and-down-hidden
+            strong 1. Find a job listing
+            br
+            | Whether through a job board or word of mouth, you have found a listing. You can save it in our system and get a reminder to apply later.
+      .grid
+        .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
+          img(alt="Waiting for response illustration", src="/dist/images/clock-white.svg", style="height: 3em")
+        .grid__item.one-half.medium-two-thirds.small-one-whole
           p
-            img(alt="Annotated application screenshot", src="/public/images/screenshots/large.svg", style="margin: 0 auto; display: block;")
-        .large-hidden.small-hidden
-          .text--center
-            p
-              img(alt="Annotated schedule screenshot", src="/public/images/screenshots/medium-1.svg")
-            p
-              img(alt="Annotated application screenshot", src="/public/images/screenshots/medium-2.svg")
-        .medium-and-up-hidden
-          .text--right
-            p
-              img(alt="Annotated schedule screenshot", src="/public/images/screenshots/small-1.svg")
-            p
-              img(alt="Annotated application screenshot", src="/public/images/screenshots/small-2.svg")
-        .screenshot-highlight--interviews__container
-          .screenshot-highlight--interviews Upcoming interviews and reminders at a glance
-        .screenshot-highlight--reminders__container
-          .screenshot-highlight--reminders Reminders at every stage (application, follow-up, pre-interview, post-interview)
-        .screenshot-highlight--notes__container
-          .screenshot-highlight--notes Record notes about the company and their interviews
-        .screenshot-highlight--research__container
-          .screenshot-highlight--research
-            = "Research companies before you apply via "
-            a(href="https://.screenshot-highlight--research", target="_blank") Glassdoor
-            = " and "
-            a(href="https://angel.co/", target="_blank") AngelList
-      p.text--center.flush--bottom
-        a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
-section.section--brand-dark.soft--ends
+            strong 2. Waiting for response
+            br
+            | You have submitted your application. We'll send you a reminder to follow up to make sure you don't fall through the cracks.
+      .grid
+        .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
+          img(alt="Interview scheduled illustration", src="/dist/images/conversation-white.svg", style="height: 3em")
+        .grid__item.one-half.medium-two-thirds.small-one-whole
+          p
+            strong 3. Interview scheduled
+            br
+            | You have gotten your foot in the door. We'll help you ace that interview with company research tools (demonstrating interesting) and pre/post interview reminders to help take diligent notes.
+            br
+            em We repeat steps 2 and 3 until we get to step 4.
+      .grid
+        .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
+          img(alt="Received an offer illustration", src="/dist/images/salary-white.svg", style="height: 3em")
+        .grid__item.one-half.medium-two-thirds.small-one-whole
+          p
+            strong 4. Received an offer
+            br
+            | Congratulations! You got a job offer! We'll help make sure you got good terms with our company research tools and remind you to reply (in case you are having a busy week).
+      .grid
+        .grid__item.one-whole
+          p.push--top.landmark.text--center
+            a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
+      .grid
+        .grid__item.one-whole
+          h3.logos-heading.text--center(style="font-weight: normal") Built by former employees of
+      .grid
+        .grid__item.one-whole
+          .logos.text--center
+            .logos__behance
+              a(href="https://www.behance.net/", target="_blank")
+                img(alt="Behance", src="/dist/images/behance-white.svg")
+            .logos__uber
+              a(href="https://www.uber.com/", target="_blank")
+                img(alt="Uber", src="/dist/images/uber-white.svg")
+            .logos__underdogio
+              a(href="https://underdog.io/", target="_blank")
+                //- TODO: Move to SVG variant when Underdog.io completes their switch
+                img(alt="Underdog.io", src="/dist/images/underdogio-purple.png")
   .container
     .grid
       .grid__item.one-whole
-        h3.workflow-heading.text--center(style="font-weight: normal") Workflow
-    .grid
-      .grid__item.one-quarter.medium-one-sixth.small-hidden &nbsp;
-      .grid__item.one-half.medium-two-thirds.small-one-whole
-        p Find Work is a tool to track and manage your job applications. We are profession and role agnostic (e.g. good for full-time and contractors). We consider there to be 4 stages of finding work.
-    .grid
-      .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
-        img(alt="Find a job listing illustration", src="/public/images/magnifying-glass-white.svg", style="height: 3em")
-      .grid__item.one-half.medium-two-thirds.small-one-whole
-        p
-          strong 1. Find a job listing
-          br
-          | Whether through a job board or word of mouth, you have found a listing. You can save it in our system and get a reminder to apply later.
-    .grid
-      .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
-        img(alt="Waiting for response illustration", src="/public/images/clock-white.svg", style="height: 3em")
-      .grid__item.one-half.medium-two-thirds.small-one-whole
-        p
-          strong 2. Waiting for response
-          br
-          | You have submitted your application. We'll send you a reminder to follow up to make sure you don't fall through the cracks.
-    .grid
-      .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
-        img(alt="Interview scheduled illustration", src="/public/images/conversation-white.svg", style="height: 3em")
-      .grid__item.one-half.medium-two-thirds.small-one-whole
-        p
-          strong 3. Interview scheduled
-          br
-          | You have gotten your foot in the door. We'll help you ace that interview with company research tools (demonstrating interesting) and pre/post interview reminders to help take diligent notes.
-          br
-          em We repeat steps 2 and 3 until we get to step 4.
-    .grid
-      .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
-        img(alt="Received an offer illustration", src="/public/images/salary-white.svg", style="height: 3em")
-      .grid__item.one-half.medium-two-thirds.small-one-whole
-        p
-          strong 4. Received an offer
-          br
-          | Congratulations! You got a job offer! We'll help make sure you got good terms with our company research tools and remind you to reply (in case you are having a busy week).
-    .grid
-      .grid__item.one-whole
-        p.push--top.landmark.text--center
-          a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
-    .grid
-      .grid__item.one-whole
-        h3.logos-heading.text--center(style="font-weight: normal") Built by former employees of
-    .grid
-      .grid__item.one-whole
-        .logos.text--center
-          .logos__behance
-            a(href="https://www.behance.net/", target="_blank")
-              img(alt="Behance", src="/public/images/behance-white.svg")
-          .logos__uber
-            a(href="https://www.uber.com/", target="_blank")
-              img(alt="Uber", src="/public/images/uber-white.svg")
-          .logos__underdogio
-            a(href="https://underdog.io/", target="_blank")
-              //- TODO: Move to SVG variant when Underdog.io completes their switch
-              img(alt="Underdog.io", src="/public/images/underdogio-purple.png")
-.container
-  .grid
-    .grid__item.one-whole
-      +footer({largeWide: true})
+        +footer({largeWide: true})

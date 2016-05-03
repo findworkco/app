@@ -1,4 +1,4 @@
-rootUrl: http://localhost:9000/server
+rootUrl: http://localhost:9000
 
 browsers:
   Firefox:

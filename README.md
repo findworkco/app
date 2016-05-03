@@ -42,6 +42,13 @@ As a result, if you enable/install a LiveReload browser extension, then it will 
 
 http://livereload.com/extensions/
 
+### Automated restart
+We integrate with `nodemon` to allow for automated restarting of the server when a file changes. To start the server with automated restarts, run:
+
+```bash
+npm run start-develop
+```
+
 ### Testing
 To run our entire test suite (excluding visual tests), run the following:
 

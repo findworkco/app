@@ -1,20 +1,26 @@
-.grid
-  .grid__item.one-third.medium-one-quarter.small-one-sixth &nbsp;
-  .grid__item.one-third.medium-one-half.small-two-thirds
-    h1.content__heading.text--center.push--bottom(style="font-weight: normal") Settings
-    form.cf(method="POST", action="/settings")
-      //- DEV: When not disabled, this will be a link or a button for OAuth
-      //- TODO: Use Google branding for button
-      p
-        span.btn.btn--primary
-          strong G+
-          = " Connected via Google"
-      .form-group.push-double--bottom
-        //- DESIGN: When we add back email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
-        label(for="email") Email (from Google):
-        input#email.form-control.input--block(name="email", disabled, value=user.email, style="max-width: 220px")
-    p.push-double--bottom
-      a(href="/logout") Log out
-    //- TODO: Use a modal with confirmation of email address for deletion
-    form(method="POST", action="/delete-account", onsubmit="javascript:return confirm('Are you sure you would like to delete the \"#{user.email}\" Find Work account?')")
-      button.btn.btn--danger(type="submit") Delete
+extends layout
+
+block title
+  title Settings - Find Work
+
+block content
+  .grid
+    .grid__item.one-third.medium-one-quarter.small-one-sixth &nbsp;
+    .grid__item.one-third.medium-one-half.small-two-thirds
+      h1.content__heading.text--center.push--bottom(style="font-weight: normal") Settings
+      form.cf(method="POST", action="/settings")
+        //- DEV: When not disabled, this will be a link or a button for OAuth
+        //- TODO: Use Google branding for button
+        p
+          span.btn.btn--primary
+            strong G+
+            = " Connected via Google"
+        .form-group.push-double--bottom
+          //- DESIGN: When we add back email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
+          label(for="email") Email (from Google):
+          input#email.form-control.input--block(name="email", disabled, value=user.email, style="max-width: 220px")
+      p.push-double--bottom
+        a(href="/logout") Log out
+      //- TODO: Use a modal with confirmation of email address for deletion
+      form(method="POST", action="/delete-account", onsubmit="javascript:return confirm('Are you sure you would like to delete the \"#{user.email}\" Find Work account?')")
+        button.btn.btn--danger(type="submit") Delete

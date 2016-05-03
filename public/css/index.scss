@@ -1,14 +1,14 @@
 @charset "UTF-8";
 
 // Include vars, inuit.css, select Bootstrap styles, and vendor CSS
-// TODO: CSS imports are being inlined instead of processed
+// DEV: Never mention `.css` for CSS imports, it causes them to be loaded via `@import url`
+//   https://github.com/sass/libsass/pull/754
 @import "vars";
 @import "../../bower_components/inuit.css/inuit";
-// TODO: Properly host Chosen sprites
-@import "../../bower_components/chosen-bootstrap/chosen.bootstrap.css";
+@import "../../bower_components/chosen-bootstrap/chosen.bootstrap";
 @import "vendor/bootstrap/bootstrap";
-@import "../../node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.standalone.min.css";
-@import "../../node_modules/timepicker/jquery.timepicker.css";
+@import "../../node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.standalone.min";
+@import "../../node_modules/timepicker/jquery.timepicker";
 
 // Load our imports in a similar fashion to inuit.css
 // https://github.com/csswizardry/inuit.css/blob/v5.0.1/_inuit.scss#L138-L213

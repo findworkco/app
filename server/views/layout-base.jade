@@ -7,9 +7,8 @@ html
     meta(charset="utf-8")
 
     //- Declare our page title
-    if typeof title == 'undefined'
+    block title
       - throw new Error('No title was specified for page');
-    title= title
 
     //- Define viewport size to trigger media query support on mobile devices
     //-    http://stackoverflow.com/a/13554916
@@ -25,11 +24,6 @@ html
     //- Define server level locals
     //- TODO: Replace csrfInput with real content
     - var csrfInput = '<input type="hidden" value="abcdef"/>';
-    //- TODO: Load moment outside of view content
-    - var moment = require('moment-timezone');
-    - var countryData = require('country-data');
-    - var timezonesByCountryCode = require(process.cwd() + '/vendor/tz-locales.json');
-    - var timezoneAbbrs = require(process.cwd() + '/server/utils/timezone-abbrs.js');
     //- 2016-01-08 (same as native)
     //-   http://stackoverflow.com/a/9519493
     - var datepickerFormat = 'Y-MM-DD';
@@ -60,12 +54,7 @@ html
           a.footer-link(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Find Work support question')) Support
 
     //- Define a block for lower level layouts
-    block layout-content
-      //- DEV: Jade doesn't support variable-based includes so work around it
-      if url == '/landing'
-        include ./landing.jade
-      else
-        - throw new Error('Unrecognized page "' + page + '". Please add it to the `if/else if` statements');
+    block base-content
 
     //- Load scripts after body
     script(src="/dist/js/index.js")
