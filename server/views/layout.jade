@@ -223,7 +223,7 @@ block base-content
           //- Upcoming interviews section
           h3.flush--bottom(style="font-weight: normal") Upcoming interviews
           //- DEV: This is actually a 1.5x push due to extra padding for link border
-          .push--bottom
+          #nav__upcoming-interviews.push--bottom
             if upcomingInterviews.length
               each upcomingInterview in upcomingInterviews
                 +nav-row--application(upcomingInterview.application, APP_TYPES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
@@ -232,7 +232,7 @@ block base-content
 
           //- Waiting for response section
           h3.flush--bottom(style="font-weight: normal") Waiting for response
-          .landmark
+          #nav__waiting-for-response.landmark
             if waitingForResponseApplications.length
               each waitingForResponseApplication in waitingForResponseApplications
                 +nav-row--application(waitingForResponseApplication, APP_TYPES.WAITING_FOR_RESPONSE)

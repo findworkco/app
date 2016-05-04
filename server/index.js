@@ -56,23 +56,24 @@ Server.prototype.close = function (cb) {
 
 // Export a new server
 // TODO: When we move to Vagrant, update `host` to be `0.0.0.0` so we can access it
+var port = process.env.NODE_ENV === 'test' ? 9001 : 9000;
 module.exports = new Server({
   // Listener bindings
   host: '127.0.0.1',
-  port: 9000,
+  port: port,
 
   url: {
     internal: {
       protocol: 'http',
       hostname: 'localhost',
-      port: 9000
+      port: port
 
       // TODO: Use different port in testing
     },
     external: {
       protocol: 'http',
       hostname: 'localhost',
-      port: 9000
+      port: port
 
       // Production
       // protocol: 'https'
