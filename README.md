@@ -14,7 +14,7 @@ cd find-work-app
 npm install
 
 # Start our server
-npm start
+npm run start-develop
 ```
 
 Our development server will be running at <http://localhost:9000/>

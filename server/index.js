@@ -15,11 +15,8 @@ var appLocals = {
 //   However, I have concluded that dodging singletons yields little benefit with high maintenance costs
 //   As a result, we are moving with a more Flask-like architecture (i.e. singleton)
 
-// TODO: Set up configuration (including NODE_ENV coercion)
-// TODO: Add view caching to test environment: https://gist.github.com/twolfson/f81a4861d834929abcf3
-// TODO: Add winston logger
-// TODO: Set up Sentry (browser and server)
-// TODO: Set up SOPS
+// Load our config
+var config = require('../config').getConfig();
 
 // Define our server constructor
 function Server(config) {
@@ -40,13 +37,16 @@ function Server(config) {
   });
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.locals = _.defaults(app.locals, appLocals);
+  // DEV: We set view cache to true during testing for performance
+  //   https://gist.github.com/twolfson/f81a4861d834929abcf3
+  app.set('view cache', config.viewCache);
 
-  // TODO: Add uncaught exception handler binding
+  // Define our application locals
+  app.locals = _.defaults(app.locals, appLocals);
 }
 Server.prototype.listen = function () {
   assert.strictEqual(this._app, undefined, 'A server is already listening to a port. Please `close` first');
-  this._app = this.app.listen(this.config.port);
+  this._app = this.app.listen(this.config.port, this.config.hostname);
 };
 Server.prototype.close = function (cb) {
   assert.notEqual(this._app, undefined, 'No server was found to `close`');
@@ -55,32 +55,7 @@ Server.prototype.close = function (cb) {
 };
 
 // Export a new server
-// TODO: When we move to Vagrant, update `host` to be `0.0.0.0` so we can access it
-var port = process.env.NODE_ENV === 'test' ? 9001 : 9000;
-module.exports = new Server({
-  // Listener bindings
-  host: '127.0.0.1',
-  port: port,
-
-  url: {
-    internal: {
-      protocol: 'http',
-      hostname: 'localhost',
-      port: port
-
-      // TODO: Use different port in testing
-    },
-    external: {
-      protocol: 'http',
-      hostname: 'localhost',
-      port: port
-
-      // Production
-      // protocol: 'https'
-      // hostname: 'findwork.co'
-    }
-  }
-});
+module.exports = new Server(config);
 
 // Load our controller bindings
 void require('./controllers/index.js');

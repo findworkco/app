@@ -9,3 +9,11 @@ server.listen();
 // Notify the user that the server is running
 var serverUrl = url.format(server.config.url.external) + '/';
 console.log('Server running at ' + serverUrl);
+
+// When we encounter and uncaught exception, log it
+// TODO: When we have load balanced servers and can tolerate dropped connections
+//   then hard fail this server in production so it can reboot fresh
+process.on('uncaughtException', function handleUncaughtException (err) {
+  // TODO: Move to Winston or Sentry for logging
+  console.error(err);
+});

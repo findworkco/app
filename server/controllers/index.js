@@ -16,6 +16,7 @@ app.get('/', function rootShow (req, res, next) {
 // TODO: Build stateful pages POST /login?, GET/POST /logout, POST /settings,
 //   POST /create-application, POST /application/:id,
 //   POST /application/:id/create-interview, POST /interview/:id
+// TODO: Build error handlers/pages (e.g. 404, 500)
 
 app.get('/login', function loginShow (req, res, next) {
   res.render('login.jade', layoutMockData);
