@@ -2,15 +2,15 @@
 exports.common = {
 };
 
-// TODO: When we move to Vagrant, update `hostname` to be `0.0.0.0` so we can access it
 exports.development = {
-  hostname: 'localhost',
+  // DEV: We use 0.0.0.0 for allow access from Vagrant's host machine
+  hostname: '0.0.0.0',
   port: 9000
 };
 exports.development.url = {
   internal: {
     protocol: 'http',
-    hostname: exports.development.hostname,
+    hostname: 'localhost',
     port: exports.development.port
   },
   external: {

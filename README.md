@@ -1,13 +1,15 @@
 # app [![wercker status](https://app.wercker.com/status/11dd669e8306e37c6bfbc982316d9267/s/master)](https://app.wercker.com/project/bykey/11dd669e8306e37c6bfbc982316d9267)
 Web application for https://findwork.co/
 
-## Getting started
-To get a local copy running, perform the following steps:
+## Getting Started
+To get a local copy running, run the following within the [scripts][] repo:
 
 ```bash
-# Clone the repository
-git clone git@github.com:twolfson/find-work-app.git
-cd find-work-app
+# Log into the Vagrant machine
+vagrant ssh
+
+# Navigate to our directory
+cd /vagrant/app
 
 # Install our dependencies and compile assets
 # DEV: This will automatically run `npm run build` on complete
@@ -15,9 +17,15 @@ npm install
 
 # Start our server
 npm run start-develop
+
+# On future runs, the server can be started quickly via:
+# vagrant ssh; . quick-start-app.sh
+# `. quick-start-app.sh` is shorthand for `cd /vagrant/app; ./start.sh`
 ```
 
 Our development server will be running at <http://localhost:9000/>
+
+[scripts]: https://github.com/twolfson/find-work-scripts
 
 ## Documentation
 ### Building files
