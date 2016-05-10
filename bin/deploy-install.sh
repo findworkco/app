@@ -3,4 +3,4 @@
 set -e
 
 # Install our Node.js dependencies
-npm install --production
+npm install --production --loglevel http
