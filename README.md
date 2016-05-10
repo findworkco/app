@@ -28,6 +28,13 @@ Our development server will be running at <http://localhost:9000/>
 [scripts]: https://github.com/twolfson/find-work-scripts
 
 ## Documentation
+### Dependencies
+To minimize build size, we keep development and testing dependencies separate. Here's our breakdown in `package.json`:
+
+- `dependencies` - Packages required to run server
+- `optionalDependencies` - Packages to compile browser files (e.g. images, JS)
+- `devDependencies` - Packages for testing and development (e.g. `gemini`, `nodemon`)
+
 ### Building files
 We offer compilation of CSS/JS via 2 means:
 
