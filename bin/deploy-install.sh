@@ -3,4 +3,4 @@
 set -e
 
 # Install our Node.js dependencies
-npm install
+npm install --production
