@@ -26,7 +26,7 @@
     "gemini-gui": "gemini-gui test/visual",
     "gemini-update": "npm run verify-webdriver-running && gemini update test/visual",
     "gemini-test": "npm run verify-webdriver-running && gemini test --reporter html --reporter flat test/visual",
-    "postinstall": "bower install && npm run webdriver-update && npm run build",
+    "postinstall": "bower install && (npm run webdriver-update || true) && npm run build",
     "start": "node bin/find-work",
     "start-develop": "ENV=development nodemon -x bin/find-work",
     "test": "npm run lint && npm run test-server && npm run verify-images-optimized",
