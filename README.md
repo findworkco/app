@@ -20,7 +20,7 @@ npm run start-develop
 
 # On future runs, the server can be started quickly via:
 # vagrant ssh; . quick-start-app.sh
-# `. quick-start-app.sh` is shorthand for `cd /vagrant/app; ./start.sh`
+# `. quick-start-app.sh` is shorthand for `cd /vagrant/app; bin/quick-start.sh`
 ```
 
 Our development server will be running at <http://localhost:9000/>
