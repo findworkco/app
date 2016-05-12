@@ -11,6 +11,10 @@ app.get('/', function rootShow (req, res, next) {
   res.render('landing.jade');
 });
 
+app.get('/archive', function archiveShow (req, res, next) {
+  res.render('archive.jade', layoutMockData);
+});
+
 // TODO: Build static pages /create-application, /application/:id/create-interview, /archived
 //   (/application/:id will be used for both active and archived applications)
 // TODO: Build stateful pages POST /login?, GET/POST /logout, POST /settings,

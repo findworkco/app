@@ -61,3 +61,35 @@ exports.waitingForResponseApplications = [{
   received_offer_url: '/application/abcdef-sky-networks-uuid/received-offer',
   url: '/application/abcdef-sky-networks-uuid'
 }];
+
+exports.archivedApplications = [{
+  id: 'abcdef-monstromart-uuid',
+  add_interview_url: '/application/abcdef-monstromart-uuid/add-interview',
+  // Fri Jan 8
+  application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
+  // Mon Jan 18 at 3:00PM CST
+  archived_at_moment: moment.tz('2016-01-18T15:00', 'America/Chicago'),
+  archive_url: '/application/abcdef-monstromart-uuid/archive',
+  company_name: 'Monstromart',
+  human_status: 'Waiting for response',
+  // Tue Feb 23
+  follow_up_reminder_moment: moment.tz('2016-02-23T12:00', 'America/Chicago'),
+  // Tue Feb 16
+  last_contact_moment: moment.tz('2016-02-16T12:00', 'America/Chicago'),
+  past_interviews: [{
+    id: 'abcdef-monstromart-interview-uuid',
+    application_id: 'abcdef-monstromart-uuid',
+    details: 'Call 555-123-4567',
+    // Fri Jan 15 at 9:00AM PST
+    moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
+    pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
+    post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles'),
+    url: '/interview/abcdef-monstromart-interview-uuid'
+  }],
+  posting_url: 'https://github.com/about/jobs',
+  name: 'Senior Manager at Monstromart',
+  notes: '100 employees, all seem robotic',
+  status: 'waiting_for_response',
+  received_offer_url: '/application/abcdef-monstromart-uuid/received-offer',
+  url: '/application/abcdef-monstromart-uuid'
+}];

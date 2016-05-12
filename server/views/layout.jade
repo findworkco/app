@@ -91,7 +91,8 @@ block base-content
   //- TODO: Remove `APPLICATION_URL_OVERRIDE` by either add missing mock data for applications
   //-   or waiting until we have actual data
   - var isSchedule = urlPath === '/schedule';
-  - var APPLICATION_URL_OVERRIDE = '/application/abcdef-sky-networks-uuid';
+  - var useArchiveSchedule = urlPath === '/archive' || (locals.selectedApplication && locals.selectedApplication.archived_at_moment);
+  - var APPLICATION_URL_OVERRIDE = !useArchiveSchedule ? '/application/abcdef-sky-networks-uuid' : '/application/abcdef-monstromart-uuid';
   .container
     .grid
       #nav.grid__item.one-whole.large-one-quarter(role="navigation")
@@ -142,51 +143,61 @@ block base-content
                     a.link--unstyled.muted(href="/settings") todd@findwork.co
         //- On non-schedule for medium/small pages, hide our schedule listing
         div(class={'medium-and-down-hidden': !isSchedule})
-          p.text--center
-            a.btn.btn--wide.btn--default.nav-btn(href="/create-application")
-              span(aria-hidden="true")= "+ "
-              | Add job application
+          if !useArchiveSchedule
+            p.text--center
+              a.btn.btn--wide.btn--default.nav-btn(href="/create-application")
+                span(aria-hidden="true")= "+ "
+                | Add job application
+          else
+            +nav-row--link({selected: false})(href="/schedule") Back to active applications
 
-            //- Define mixins for our upcoming content
-            - var APP_TYPES = {UPCOMING_INTERVIEW: 'UPCOMING_INTERVIEW', WAITING_FOR_RESPONSE: 'WAITING_FOR_RESPONSE'}
-            mixin nav-info__icon(application)
-              .nav-info__icon&attributes(attributes)
-                //- DEV: We set no tab index to skip redundant links
-                a.link--unstyled(href=APPLICATION_URL_OVERRIDE || application.url, tabindex="-1", aria-hidden="true")
-                  block
+          //- Define mixins for our upcoming content
+          - var APP_TYPES = {ARCHIVED: 'ARCHIVED', UPCOMING_INTERVIEW: 'UPCOMING_INTERVIEW', WAITING_FOR_RESPONSE: 'WAITING_FOR_RESPONSE'};
+          mixin nav-info__icon(application)
+            .nav-info__icon&attributes(attributes)
+              //- DEV: We set no tab index to skip redundant links
+              a.link--unstyled(href=APPLICATION_URL_OVERRIDE || application.url, tabindex="-1", aria-hidden="true")
+                block
 
-            mixin nav-info__content(application)
-              .nav-info__content&attributes(attributes)
-                //- DEV: We set no tab index to skip redundant links
-                a.link--unstyled(href=APPLICATION_URL_OVERRIDE || application.url, tabindex="-1")
-                  block
+          mixin nav-info__content(application)
+            .nav-info__content&attributes(attributes)
+              //- DEV: We set no tab index to skip redundant links
+              a.link--unstyled(href=APPLICATION_URL_OVERRIDE || application.url, tabindex="-1")
+                block
 
-            mixin nav-row--application(application, type, params)
-              +nav-row({selected: application.url === urlPath || (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application
-                h4.text--normal.flush--bottom
-                  a.link--unstyled(href=APPLICATION_URL_OVERRIDE || application.url)
-                    strong= application.name
-                .grid
-                  .grid__item.one-whole.medium-one-half
-                    //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
-                    .nav-info
-                      +nav-info__icon(application)
-                        if type == APP_TYPES.UPCOMING_INTERVIEW
-                          +calendar-2x-with-date(params.interview.moment.format('D'))
-                        else if type == APP_TYPES.WAITING_FOR_RESPONSE
-                          i.fa.fa-2x.fa-envelope-o
-                        else
-                          - throw new Error('Unrecognized type')
-                      +nav-info__content(application)
-                        if type == APP_TYPES.UPCOMING_INTERVIEW
-                          //- Mon Mar 14 at 2:00PM CST
-                          = params.interview.moment.format('ddd MMM D [at] h:mmA zz')
-                        else if type == APP_TYPES.WAITING_FOR_RESPONSE
-                          //- Tue Feb 16
-                          = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
-                        else
-                          - throw new Error('Unrecognized type')
+          mixin nav-row--application(application, type, params)
+            +nav-row({selected: application.url === urlPath || (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application
+              h4.text--normal.flush--bottom
+                a.link--unstyled(href=APPLICATION_URL_OVERRIDE || application.url)
+                  strong= application.name
+              .grid
+                .grid__item.one-whole.medium-one-half
+                  //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
+                  .nav-info
+                    +nav-info__icon(application)
+                      if type == APP_TYPES.UPCOMING_INTERVIEW
+                        +calendar-2x-with-date(params.interview.moment.format('D'))
+                      else if type == APP_TYPES.WAITING_FOR_RESPONSE
+                        i.fa.fa-2x.fa-envelope-o
+                      else if type == APP_TYPES.ARCHIVED
+                        i.fa.fa-2x.fa-calendar-o
+                      else
+                        - throw new Error('Unrecognized application type')
+                    +nav-info__content(application)
+                      if type == APP_TYPES.UPCOMING_INTERVIEW
+                        //- Mon Mar 14 at 2:00PM CST
+                        = params.interview.moment.format('ddd MMM D [at] h:mmA zz')
+                      else if type == APP_TYPES.WAITING_FOR_RESPONSE
+                        //- Tue Feb 16
+                        = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
+                      else if type == APP_TYPES.ARCHIVED
+                        //- Archived on: Mon Mar 14
+                        = "Archived on: "
+                        = application.archived_at_moment.format('ddd MMM D')
+                      else
+                        - throw new Error('Unrecognized application type')
 
+                  if type != APP_TYPES.ARCHIVED
                     .nav-info
                       +nav-info__icon(application)
                         if type == APP_TYPES.UPCOMING_INTERVIEW
@@ -194,7 +205,7 @@ block base-content
                         else if type == APP_TYPES.WAITING_FOR_RESPONSE
                           i.fa.fa-2x.fa-reply
                         else
-                          - throw new Error('Unrecognized type')
+                          - throw new Error('Unrecognized application type')
                       +nav-info__content(application)
                         if type == APP_TYPES.UPCOMING_INTERVIEW
                           //- TODO: Be sure to sanitize details
@@ -209,42 +220,54 @@ block base-content
                           else
                             i TODO: Add placeholder text for no reminder set
                         else
-                          - throw new Error('Unrecognized type')
-                  .grid__item.small-hidden.large-hidden.medium-one-half
-                    //- DESIGN: Make sure links are clickable in textarea
-                    //- TODO: Limit height and force scrolling
-                    div Notes:
-                    div.nav-notes
-                      if application.notes
-                        = application.notes
-                      else
-                        i No notes recorded
-                //- On small/medium screens, provide a link to the application's page
-                .large-hidden
-                  a.btn.btn--default.one-whole.nav-btn(href=APPLICATION_URL_OVERRIDE || application.url) View/edit job application
+                          - throw new Error('Unrecognized application type')
+                .grid__item.small-hidden.large-hidden.medium-one-half
+                  //- DESIGN: Make sure links are clickable in textarea
+                  //- TODO: Limit height and force scrolling
+                  div Notes:
+                  div.nav-notes
+                    if application.notes
+                      = application.notes
+                    else
+                      i No notes recorded
+              //- On small/medium screens, provide a link to the application's page
+              .large-hidden
+                a.btn.btn--default.one-whole.nav-btn(href=APPLICATION_URL_OVERRIDE || application.url) View/edit job application
 
-          //- Upcoming interviews section
-          h3.flush--bottom(style="font-weight: normal") Upcoming interviews
-          //- DEV: This is actually a 1.5x push due to extra padding for link border
-          #nav__upcoming-interviews.push--bottom
-            if upcomingInterviews.length
-              each upcomingInterview in upcomingInterviews
-                +nav-row--application(upcomingInterview.application, APP_TYPES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
-            else
-              p TODO: Add placeholder text for upcoming interviews
+          //- If we aren't on an archive page, then display normal schedule
+          if !useArchiveSchedule
+            //- Upcoming interviews section
+            h3.flush--bottom(style="font-weight: normal") Upcoming interviews
+            //- DEV: This is actually a 1.5x push due to extra padding for link border
+            #nav__upcoming-interviews.push--bottom
+              if upcomingInterviews.length
+                each upcomingInterview in upcomingInterviews
+                  +nav-row--application(upcomingInterview.application, APP_TYPES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
+              else
+                p TODO: Add placeholder text for upcoming interviews
 
-          //- Waiting for response section
-          h3.flush--bottom(style="font-weight: normal") Waiting for response
-          #nav__waiting-for-response.landmark
-            if waitingForResponseApplications.length
-              each waitingForResponseApplication in waitingForResponseApplications
-                +nav-row--application(waitingForResponseApplication, APP_TYPES.WAITING_FOR_RESPONSE)
-            else
-              p TODO: Add placeholder text for upcoming interviews
+            //- Waiting for response section
+            h3.flush--bottom(style="font-weight: normal") Waiting for response
+            #nav__waiting-for-response.landmark
+              if waitingForResponseApplications.length
+                each waitingForResponseApplication in waitingForResponseApplications
+                  +nav-row--application(waitingForResponseApplication, APP_TYPES.WAITING_FOR_RESPONSE)
+              else
+                p TODO: Add placeholder text for upcoming interviews
+          else
+            //- Otherwise, display archived applications
+            h3.flush--bottom(style="font-weight: normal") Archived applications
+            #nav__archived.push--bottom
+              if archivedApplications.length
+                each archivedApplication in archivedApplications
+                  +nav-row--application(archivedApplication, APP_TYPES.ARCHIVED)
+              else
+                p TODO: Add placeholder text for archived applications
 
           //- Nav links
           //- TODO: Tolerate viewing applications or interviews in archive
-          +nav-row--link({selected: urlPath === '/archive'})(href="/archive") Archived applications
+          if !useArchiveSchedule
+            +nav-row--link({selected: urlPath === '/archive'})(href="/archive") Archived applications
           +nav-row--link({selected: urlPath === '/settings'})(href="/settings") Settings
 
           //- Footer

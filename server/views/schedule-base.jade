@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  //- TODO: Only display this text when there are no active applications
+  //- TODO: Consider listing the schedule from medium here instead
+  //-   it will be more empathetic
+  p.alpha.text--center.push-triple--ends(style="line-height: 1.3")
+    | No job application is selected.
+    br
+    | Please select one from the navigation.
+  p.gamma.muted.text--center
+    i.fa.fa-arrow-left
+    = " "
+    | Navigation is located on the left

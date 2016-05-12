@@ -6,7 +6,8 @@ var layoutMockData = require('./layout-mock-data');
 var applicationsById = {};
 var applications = []
   .concat(_.pluck(layoutMockData.upcomingInterviews, 'application'))
-  .concat(layoutMockData.waitingForResponseApplications);
+  .concat(layoutMockData.waitingForResponseApplications)
+  .concat(layoutMockData.archivedApplications);
 applications.forEach(function saveApplicationById (application) {
   applicationsById[application.id] = application;
 });
