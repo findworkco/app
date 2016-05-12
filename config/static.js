@@ -26,7 +26,7 @@ exports.production = {
 };
 
 // Merge in grouped settings
-var configFiles = ['./static-url'];
+var configFiles = ['./static-analytics', './static-url'];
 configFiles.forEach(function mergeConfigFile (configFile) {
   // Assert that the new config has no repeated keys
   var mainConfig = exports;

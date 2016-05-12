@@ -18,6 +18,10 @@ var appLocals = {
 // Load our config
 var config = require('../config').getConfig();
 
+// Save configuration based locals
+appLocals.serveAnalytics = config.serveAnalytics;
+appLocals.googleAnalyticsId = config.googleAnalyticsId;
+
 // Define our server constructor
 function Server(config) {
   // Save our configuration for later

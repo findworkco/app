@@ -12,6 +12,7 @@ exports.run = function () {
   after(function cleanup (done) {
     server.close(done);
   });
+  return server;
 };
 
 /**
