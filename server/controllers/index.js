@@ -1,8 +1,8 @@
 // Load in our dependencies
-var _ = require('underscore');
 var app = require('../index.js').app;
-var layoutMockData = require('./layout-mock-data');
 var applicationMockData = require('./application-mock-data');
+var interviewMockData = require('./interview-mock-data');
+var layoutMockData = require('./layout-mock-data');
 
 // Bind our controllers
 app.get('/', function rootShow (req, res, next) {
@@ -34,11 +34,11 @@ app.get('/schedule', function scheduleShow (req, res, next) {
 // TODO: Add smoke tests for these and skeletons for form testing but not content
 //   We want some flexibility still
 app.get('/application/:id', function applicationEditShow (req, res, next) {
-  res.render('application-edit-show.jade', applicationMockData);
+  var mockData = applicationMockData.getById(req.params.id);
+  res.render('application-edit-show.jade', mockData);
 });
 
 app.get('/interview/:id', function interviewEditShow (req, res, next) {
-  res.render('interview-edit-show.jade', _.defaults({
-    selectedInterview: applicationMockData.selectedApplication.past_interviews[0]
-  }, applicationMockData));
+  var mockData = interviewMockData.getById(req.params.id);
+  res.render('interview-edit-show.jade', mockData);
 });

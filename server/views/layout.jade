@@ -88,7 +88,10 @@ block base-content
       block
 
   //- Start our HTML
+  //- TODO: Remove `APPLICATION_URL_OVERRIDE` by either add missing mock data for applications
+  //-   or waiting until we have actual data
   - var isSchedule = urlPath === '/schedule';
+  - var APPLICATION_URL_OVERRIDE = '/application/abcdef-sky-networks-uuid';
   .container
     .grid
       #nav.grid__item.one-whole.large-one-quarter(role="navigation")
@@ -149,19 +152,19 @@ block base-content
             mixin nav-info__icon(application)
               .nav-info__icon&attributes(attributes)
                 //- DEV: We set no tab index to skip redundant links
-                a.link--unstyled(href=application.url, tabindex="-1", aria-hidden="true")
+                a.link--unstyled(href=APPLICATION_URL_OVERRIDE || application.url, tabindex="-1", aria-hidden="true")
                   block
 
             mixin nav-info__content(application)
               .nav-info__content&attributes(attributes)
                 //- DEV: We set no tab index to skip redundant links
-                a.link--unstyled(href=application.url, tabindex="-1")
+                a.link--unstyled(href=APPLICATION_URL_OVERRIDE || application.url, tabindex="-1")
                   block
 
             mixin nav-row--application(application, type, params)
               +nav-row({selected: application.url === urlPath || (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application
                 h4.text--normal.flush--bottom
-                  a.link--unstyled(href=application.url)
+                  a.link--unstyled(href=APPLICATION_URL_OVERRIDE || application.url)
                     strong= application.name
                 .grid
                   .grid__item.one-whole.medium-one-half
@@ -218,7 +221,7 @@ block base-content
                         i No notes recorded
                 //- On small/medium screens, provide a link to the application's page
                 .large-hidden
-                  a.btn.btn--default.one-whole.nav-btn(href=application.url) View/edit job application
+                  a.btn.btn--default.one-whole.nav-btn(href=APPLICATION_URL_OVERRIDE || application.url) View/edit job application
 
           //- Upcoming interviews section
           h3.flush--bottom(style="font-weight: normal") Upcoming interviews

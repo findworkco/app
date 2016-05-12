@@ -2,34 +2,53 @@
 var _ = require('underscore');
 var layoutMockData = require('./layout-mock-data');
 
-// Export our new mock data
-_.extend(exports, layoutMockData);
-exports.selectedApplication = layoutMockData.waitingForResponseApplications[0];
-exports.glassdoorResult = {
-  id: 12345,
-  name: 'IBM',
-  website: 'www.ibm.com',
-  industry: null,
-  overall_rating: '0.0/5.0 (20 ratings)',
-  ceo_review: '0% approve, 0% disapprove (0 ratings)',
-  glassdoor_url: 'http://glassdoor.com/ibm'
-};
-// Form: https://docs.google.com/a/findwork.co/forms/d/1b_pmseT_J0bG_9vK-CA7XGJTy-IOMDq0MvrXGREN4k8/edit
-// DEV: URL resolved by taking form from email and verifying that GET works as well as POST
-// jscs:disable maximumLineLength
-exports.glassdoorResult.badMatchUrl = 'https://docs.google.com/a/findwork.co/forms/d/1b_pmseT_J0bG_9vK-CA7XGJTy-IOMDq0MvrXGREN4k8/formResponse?entry.1562009024=' + encodeURIComponent(exports.selectedApplication.company_name) + '&entry.978071742=' + encodeURIComponent(exports.glassdoorResult.id);
-// jscs:enable maximumLineLength
+// Generate application map by ids
+var applicationsById = {};
+var applications = []
+  .concat(_.pluck(layoutMockData.upcomingInterviews, 'application'))
+  .concat(layoutMockData.waitingForResponseApplications);
+applications.forEach(function saveApplicationById (application) {
+  applicationsById[application.id] = application;
+});
 
-exports.angelListResult = {
-  id: 67890,
-  name: 'AngelList',
-  website: 'http://angel.co',
-  followers: 2849,
-  locations: 'San Francisco',
-  markets: 'Startups, Venture Capital',
-  angellist_url: 'http://angel.co/angellist'
+// Export application mock data resolver
+exports.getById = function (id) {
+  // Find and save our application
+  var retVal = _.clone(layoutMockData);
+  retVal.selectedApplication = applicationsById[id];
+
+  // Save application specific info
+  retVal.glassdoorResult = {
+    id: 12345,
+    name: 'IBM',
+    website: 'www.ibm.com',
+    industry: null,
+    overall_rating: '0.0/5.0 (20 ratings)',
+    ceo_review: '0% approve, 0% disapprove (0 ratings)',
+    glassdoor_url: 'http://glassdoor.com/ibm'
+  };
+  // Form: https://docs.google.com/a/findwork.co/forms/d/1b_pmseT_J0bG_9vK-CA7XGJTy-IOMDq0MvrXGREN4k8/edit
+  // DEV: URL resolved by taking form from email and verifying that GET works as well as POST
+  retVal.glassdoorResult.badMatchUrl = 'https://docs.google.com/' +
+    'a/findwork.co/forms/d/1b_pmseT_J0bG_9vK-CA7XGJTy-IOMDq0MvrXGREN4k8/formResponse' +
+    '?entry.1562009024=' + encodeURIComponent(retVal.company_name) +
+    '&entry.978071742=' + encodeURIComponent(retVal.glassdoorResult.id);
+
+  retVal.angelListResult = {
+    id: 67890,
+    name: 'AngelList',
+    website: 'http://angel.co',
+    followers: 2849,
+    locations: 'San Francisco',
+    markets: 'Startups, Venture Capital',
+    angellist_url: 'http://angel.co/angellist'
+  };
+  // Form: https://docs.google.com/a/findwork.co/forms/d/1wDWEkLwGXmWOU5GMz4wMz-sKONrVNyrFLKZVnpfMrfk/edit
+  retVal.angelListResult.badMatchUrl = 'https://docs.google.com/' +
+    'a/findwork.co/forms/d/1wDWEkLwGXmWOU5GMz4wMz-sKONrVNyrFLKZVnpfMrfk/formResponse' +
+    '?entry.1562009024=' + encodeURIComponent(retVal.company_name) +
+    '&entry.978071742=' + encodeURIComponent(retVal.angelListResult.id);
+
+  // Return our generated mock data
+  return retVal;
 };
-// Form: https://docs.google.com/a/findwork.co/forms/d/1wDWEkLwGXmWOU5GMz4wMz-sKONrVNyrFLKZVnpfMrfk/edit
-// jscs:disable maximumLineLength
-exports.angelListResult.badMatchUrl = 'https://docs.google.com/a/findwork.co/forms/d/1wDWEkLwGXmWOU5GMz4wMz-sKONrVNyrFLKZVnpfMrfk/formResponse?entry.1562009024=' + encodeURIComponent(exports.selectedApplication.company_name) + '&entry.978071742=' + encodeURIComponent(exports.angelListResult.id);
-// jscs:enable maximumLineLength

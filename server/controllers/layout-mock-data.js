@@ -46,6 +46,7 @@ exports.waitingForResponseApplications = [{
   last_contact_moment: moment.tz('2016-02-16T12:00', 'America/Chicago'),
   past_interviews: [{
     id: 'abcdef-sky-networks-interview-uuid',
+    application_id: 'abcdef-sky-networks-uuid',
     details: 'Call 555-123-4567',
     // Fri Jan 15 at 9:00AM PST
     moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),

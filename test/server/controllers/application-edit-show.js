@@ -6,7 +6,7 @@ var serverUtils = require('../utils/server');
 // Start our tests
 describe('A request to /application/:id from the owner user', function () {
   // Start our server, log in (need to do), and make our request
-  var applicationId = 'abcdef-uuid';
+  var applicationId = 'abcdef-sky-networks-uuid';
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/application/' + applicationId));
 
