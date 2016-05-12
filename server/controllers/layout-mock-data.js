@@ -41,16 +41,16 @@ exports.waitingForResponseApplications = [{
   company_name: 'Sky Networks',
   human_status: 'Waiting for response',
   // Tue Feb 23
-  follow_up_reminder_moment: moment('2016-02-23T12:00').tz('America/Chicago'),
+  follow_up_reminder_moment: moment.tz('2016-02-23T12:00', 'America/Chicago'),
   // Tue Feb 16
-  last_contact_moment: moment('2016-02-16T12:00').tz('America/Chicago'),
+  last_contact_moment: moment.tz('2016-02-16T12:00', 'America/Chicago'),
   past_interviews: [{
     id: 'abcdef-sky-networks-interview-uuid',
     details: 'Call 555-123-4567',
     // Fri Jan 15 at 9:00AM PST
-    moment: moment('2016-01-15T09:00').tz('America/Los_Angeles'),
-    pre_interview_reminder_moment: moment('2016-01-15T08:00').tz('America/Los_Angeles'),
-    post_interview_reminder_moment: moment('2016-01-15T11:00').tz('America/Los_Angeles'),
+    moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
+    pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
+    post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles'),
     url: '/interview/abcdef-sky-networks-interview-uuid'
   }],
   posting_url: 'https://github.com/about/jobs',
