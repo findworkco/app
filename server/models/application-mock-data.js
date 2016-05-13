@@ -1,13 +1,13 @@
 // Load in our dependencies
 var _ = require('underscore');
-var layoutMockData = require('./layout-mock-data');
+var genericMockData = require('./generic-mock-data');
 
 // Generate application map by ids
 var applicationsById = {};
 var applications = []
-  .concat(_.pluck(layoutMockData.upcomingInterviews, 'application'))
-  .concat(layoutMockData.waitingForResponseApplications)
-  .concat(layoutMockData.archivedApplications);
+  .concat(_.pluck(genericMockData.upcomingInterviews, 'application'))
+  .concat(genericMockData.waitingForResponseApplications)
+  .concat(genericMockData.archivedApplications);
 applications.forEach(function saveApplicationById (application) {
   applicationsById[application.id] = application;
 });
@@ -15,7 +15,7 @@ applications.forEach(function saveApplicationById (application) {
 // Export application mock data resolver
 exports.getById = function (id) {
   // Find and save our application
-  var retVal = _.clone(layoutMockData);
+  var retVal = _.clone(genericMockData);
   retVal.selectedApplication = applicationsById[id];
 
   // Save application specific info

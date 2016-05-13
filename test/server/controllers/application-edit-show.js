@@ -31,6 +31,19 @@ describe('A request to /application/:id from the owner user', function () {
   });
 });
 
+describe('A request to an archived /application/:id', function () {
+  // Start our server, log in (need to do), and make our request
+  var applicationId = 'abcdef-monstromart-uuid';
+  serverUtils.run();
+  httpUtils.session.init().save(serverUtils.getUrl('/application/' + applicationId));
+
+  it('shows archive date', function () {
+    expect(this.err).to.equal(null);
+    expect(this.res.statusCode).to.equal(200);
+    expect(this.$('.archive-date').text()).to.contain('Mon Jan 18 at 3:00PM CST');
+  });
+});
+
 describe.skip('A request to /application/:id from a non-owner user', function () {
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-uuid';

@@ -4,13 +4,27 @@ var moment = require('moment-timezone');
 // Declare and export our mock info
 exports.user = {email: 'todd@findwork.co'};
 
+// Define constants for our applications
+exports.APPLICATION_STATUSES = {
+  ARCHIVED: 'archived',
+  UPCOMING_INTERVIEW: 'upcoming_interview',
+  WAITING_FOR_RESPONSE: 'waiting_for_response'
+};
+exports.APPLICATION_HUMAN_STATUSES = {
+  ARCHIVED: 'Archived',
+  UPCOMING_INTERVIEW: 'Upcoming interview',
+  WAITING_FOR_RESPONSE: 'Waiting for response'
+};
+
 // TODO: Be sure to sort by upcoming date
 // TODO: Warn ourselves if we see a date that was before today
 exports.upcomingInterviews = [{
   application: {
     id: 'abcdef-umbrella-corp-uuid',
     name: 'Senior Software Engineer at Umbrella Corporation',
-    url: '/application/abcdef-umbrella-corp-uuid'
+    url: '/application/abcdef-umbrella-corp-uuid',
+    human_status: exports.APPLICATION_HUMAN_STATUSES.UPCOMING_INTERVIEW,
+    status: exports.APPLICATION_STATUSES.UPCOMING_INTERVIEW
   },
   // Wed Jan 20 at 2:00PM CST
   // DEV: We should also populate `datetime` and `timzone` properties
@@ -24,7 +38,9 @@ exports.upcomingInterviews = [{
   application: {
     id: 'abcdef-globo-gym-uuid',
     name: 'Globo Gym',
-    url: '/application/abcdef-globo-gym-uuid'
+    url: '/application/abcdef-globo-gym-uuid',
+    human_status: exports.APPLICATION_HUMAN_STATUSES.UPCOMING_INTERVIEW,
+    status: exports.APPLICATION_STATUSES.UPCOMING_INTERVIEW
   },
   // Mon Mar 14 at 2:00PM CST
   moment: moment.tz('2016-03-14T14:00', 'America/Chicago'),
@@ -38,8 +54,10 @@ exports.waitingForResponseApplications = [{
   // Fri Jan 8
   application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
   archive_url: '/application/abcdef-sky-networks-uuid/archive',
+  archived_at_moment: null,
   company_name: 'Sky Networks',
-  human_status: 'Waiting for response',
+  human_status: exports.APPLICATION_HUMAN_STATUSES.WAITING_FOR_RESPONSE,
+  status: exports.APPLICATION_STATUSES.WAITING_FOR_RESPONSE,
   // Tue Feb 23
   follow_up_reminder_moment: moment.tz('2016-02-23T12:00', 'America/Chicago'),
   // Tue Feb 16
@@ -57,7 +75,6 @@ exports.waitingForResponseApplications = [{
   posting_url: 'https://github.com/about/jobs',
   name: 'Engineer II at Sky Networks',
   notes: '100 employees, all seem robotic',
-  status: 'waiting_for_response',
   received_offer_url: '/application/abcdef-sky-networks-uuid/received-offer',
   url: '/application/abcdef-sky-networks-uuid'
 }];
@@ -70,8 +87,10 @@ exports.archivedApplications = [{
   // Mon Jan 18 at 3:00PM CST
   archived_at_moment: moment.tz('2016-01-18T15:00', 'America/Chicago'),
   archive_url: '/application/abcdef-monstromart-uuid/archive',
+  computed_status: 'archived', // = archived_at_moment ? 'archived' : status
   company_name: 'Monstromart',
-  human_status: 'Waiting for response',
+  human_status: exports.APPLICATION_HUMAN_STATUSES.ARCHIVED,
+  status: exports.APPLICATION_STATUSES.ARCHIVED,
   // Tue Feb 23
   follow_up_reminder_moment: moment.tz('2016-02-23T12:00', 'America/Chicago'),
   // Tue Feb 16
@@ -89,7 +108,6 @@ exports.archivedApplications = [{
   posting_url: 'https://github.com/about/jobs',
   name: 'Senior Manager at Monstromart',
   notes: '100 employees, all seem robotic',
-  status: 'waiting_for_response',
   received_offer_url: '/application/abcdef-monstromart-uuid/received-offer',
   url: '/application/abcdef-monstromart-uuid'
 }];

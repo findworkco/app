@@ -1,8 +1,8 @@
 // Load in our dependencies
 var app = require('../index.js').app;
-var applicationMockData = require('./application-mock-data');
-var interviewMockData = require('./interview-mock-data');
-var layoutMockData = require('./layout-mock-data');
+var applicationMockData = require('../models/application-mock-data');
+var interviewMockData = require('../models/interview-mock-data');
+var genericMockData = require('../models/generic-mock-data');
 
 // Bind our controllers
 app.get('/', function rootShow (req, res, next) {
@@ -12,7 +12,7 @@ app.get('/', function rootShow (req, res, next) {
 });
 
 app.get('/archive', function archiveShow (req, res, next) {
-  res.render('archive.jade', layoutMockData);
+  res.render('archive.jade', genericMockData);
 });
 
 // TODO: Build static pages /create-application, /application/:id/create-interview, /archived
@@ -23,16 +23,16 @@ app.get('/archive', function archiveShow (req, res, next) {
 // TODO: Build error handlers/pages (e.g. 404, 500)
 
 app.get('/login', function loginShow (req, res, next) {
-  res.render('login.jade', layoutMockData);
+  res.render('login.jade', genericMockData);
 });
 
 app.get('/settings', function settingsShow (req, res, next) {
   // TODO: Require login for this page
-  res.render('settings.jade', layoutMockData);
+  res.render('settings.jade', genericMockData);
 });
 
 app.get('/schedule', function scheduleShow (req, res, next) {
-  res.render('schedule.jade', layoutMockData);
+  res.render('schedule.jade', genericMockData);
 });
 
 // TODO: Add smoke tests for these and skeletons for form testing but not content
