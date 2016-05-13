@@ -4,6 +4,8 @@ browsers:
   Firefox:
     desiredCapabilities:
       browserName: firefox
+      # DEV: We hardcode this filepath due to Firefox binary annoyancs on our host machine
+      firefox_binary: /home/find-work/Downloads/firefox/firefox-46.0.1/firefox
 
     # Default to large screen as our window size
     windowSize: 1024x1600

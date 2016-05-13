@@ -78,7 +78,7 @@
     "nodemon": "~1.9.2",
     "request": "~2.72.0",
     "twolfson-style": "~1.6.0",
-    "webdriver-manager": "~9.0.0"
+    "webdriver-manager": "~10.0.1"
   },
   "keywords": [],
   "private": true
