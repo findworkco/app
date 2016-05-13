@@ -91,6 +91,7 @@ block base-content
   //- TODO: Remove `APPLICATION_URL_OVERRIDE` by either add missing mock data for applications
   //-   or waiting until we have actual data
   - var isSchedule = urlPath === '/schedule';
+  - var isArchive = urlPath === '/archive';
   - var useArchiveSchedule = urlPath === '/archive' || (locals.selectedApplication && locals.selectedApplication.archived_at_moment);
   - var APPLICATION_URL_OVERRIDE = !useArchiveSchedule ? '/application/abcdef-sky-networks-uuid' : '/application/abcdef-monstromart-uuid';
   .container
@@ -113,11 +114,11 @@ block base-content
                   a(href="/schedule")
                     img.nav__logo(alt="Find Work logo", src="/dist/images/white-logo.svg", style="height: 26px")
                 .grid__item(style="margin-top: 6px")
-                  - var isSelected = urlPath === '/schedule' || locals.selectedApplication !== undefined;
+                  - var isSelected = urlPath === '/schedule' || (locals.selectedApplication && !useArchiveSchedule);
                   a.delta.link--unstyled(href="/schedule", style=isSelected ? "text-decoration: underline" : "") Schedule
                 .grid__item(style="margin-top: 6px")
-                  //- TODO: Handle selection of archive
-                  a.delta.link--unstyled(href="/archive") Archive
+                  - var isSelected = urlPath === '/archive' || (locals.selectedApplication && useArchiveSchedule);
+                  a.delta.link--unstyled(href="/archive", style=isSelected ? "text-decoration: underline" : "") Archive
                 .float--right.grid__item.text--right(style="margin-top: 6px")
                   span.delta
                     //- TODO: Build signed out state
@@ -142,14 +143,14 @@ block base-content
                     //- TODO: Build signed out state
                     a.link--unstyled.muted(href="/settings") todd@findwork.co
         //- On non-schedule for medium/small pages, hide our schedule listing
-        div(class={'medium-and-down-hidden': !isSchedule})
+        div(class={'medium-and-down-hidden': !(isSchedule || isArchive)})
           if !useArchiveSchedule
             p.text--center
               a.btn.btn--wide.btn--default.nav-btn(href="/create-application")
                 span(aria-hidden="true")= "+ "
                 | Add job application
           else
-            +nav-row--link({selected: false})(href="/schedule") Back to active applications
+            +nav-row--link({selected: false}).medium-and-down-hidden(href="/schedule") Back to active applications
 
           //- Define mixins for our upcoming content
           - var APP_TYPES = {ARCHIVED: 'ARCHIVED', UPCOMING_INTERVIEW: 'UPCOMING_INTERVIEW', WAITING_FOR_RESPONSE: 'WAITING_FOR_RESPONSE'};
@@ -225,7 +226,7 @@ block base-content
                   //- DESIGN: Make sure links are clickable in textarea
                   //- TODO: Limit height and force scrolling
                   div Notes:
-                  div.nav-notes
+                  div.nav-notes.push-half--bottom
                     if application.notes
                       = application.notes
                     else
@@ -265,15 +266,15 @@ block base-content
                 p TODO: Add placeholder text for archived applications
 
           //- Nav links
-          //- TODO: Tolerate viewing applications or interviews in archive
           if !useArchiveSchedule
             +nav-row--link({selected: urlPath === '/archive'})(href="/archive") Archived applications
-          +nav-row--link({selected: urlPath === '/settings'})(href="/settings") Settings
+          +nav-row--link({selected: urlPath === '/settings'})(href="/settings",
+            class={'medium-and-down-hidden': useArchiveSchedule}) Settings
 
           //- Footer
           +footer({largeWide: false})
 
-      #content.grid__item.one-whole.large-three-quarters(class={'medium-and-down-hidden': isSchedule})
+      #content.grid__item.one-whole.large-three-quarters(class={'medium-and-down-hidden': isSchedule || isArchive})
         block content
 
         //- DEV: On small screens, show a footer after our content
