@@ -3,6 +3,7 @@
 //-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a03ef4dcc
 //-   Small: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a541249ff
 extends layout
+include application-mixins
 
 block title
   title Application - #{selectedApplication.name} - Find Work
@@ -55,94 +56,9 @@ block content
     != csrfInput
     .grid
       .grid__item.one-whole.medium-one-half.large-four-ninths
-        //- TODO: Link up `follow URL` to automatically update on throttled keydown
-        .form-group
-          label(for="posting_url")
-            = "Posting URL: ("
-            a(href=selectedApplication.posting_url) follow URL
-            = ")"
-          input#posting_url.form-control.input--block(name="posting_url", type="text", value=selectedApplication.posting_url)
-        .form-group
-          label(for="name") Name:
-          input#name.form-control.input--block(name="name", type="text", value=selectedApplication.name)
+        +posting-url-and-name(selectedApplication)
       .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
-        .form-group
-          label(for="notes") Notes:
-          //- TODO: Add editor integration (wysiwyg.js, did it in a gist or codepen)
-          textarea.form-control.input--block#notes(name="notes", rows=7)= selectedApplication.notes
-        .research-company
-          //- TODO: Make sure that either this mini form works
-          //-   and is accessible
-          //-   or figure out some way to get the HTML to work
-          //-   We could integrate with the bigger form buuuut we need to make sure that "Ctrl+Enter" works =X
-          //-   ... doesn't look like it...
-          //-   We could design away the need for "Ctrl+Enter" by generating a loading image
-          //-      when the user starts typing
-
-          //- Worst case scenarios:
-          //- - Absolute position form
-          //- - Embedded iframe (best idea yet, is it accessible?)
-          //-    It works buuut need to autosize content
-          //- - Redesign flow so search is elsewhere (e.g. another page)
-          h4.push-half--bottom(style="font-weight: normal")
-            span.small-hidden Research company:
-            span.medium-and-up-hidden
-              = "Research company "
-              span.text--normal
-                = "("
-                button.text--link expand section
-                = ")"
-          .form-group
-            label(for="company_name") Name:
-            input.form-control.three-fifths#company_name(name="company_name", type="text", value=selectedApplication.company_name)
-            //- TODO: Connect to search mechanism on click
-            button.btn.btn--small.btn--wide.btn--default.push--left(name="submit_button", type="submit", value="search") Search
-          //- TODO: Handle empty state (pretty sure we mocked it)
-          h5.text--normal.flush--bottom Glassdoor results:
-          p
-            | Name: #{glassdoorResult.name}
-            br
-            = "Website: "
-            a(href=glassdoorResult.website)= glassdoorResult.website
-            br
-            = "Industry: "
-            if !glassdoorResult.industry
-              i Unknown
-            else
-              = glassdoorResult.industry
-            br
-            | Overall rating: #{glassdoorResult.overall_rating}
-            br
-            | CEO review: #{glassdoorResult.ceo_review}
-            br
-            a(href=glassdoorResult.glassdoor_url) View Glassdoor profile
-            br
-            a(href="https://www.glassdoor.com/")
-              = "Powered by "
-              img(alt="Glassdoor", src="/dist/images/glassdoor-green.svg", style="height: 1.3em; position: relative; top: 4px")
-            br
-            a(target="_blank", href=glassdoorResult.badMatchUrl) Bad match? Click here to let us know
-          //- TODO: Handle empty state (pretty sure we mocked it)
-          h5.text--normal.flush--bottom AngelList results:
-          p
-            | Name: #{angelListResult.name}
-            br
-            = "Website: "
-            a(href=angelListResult.website)= angelListResult.website
-            br
-            | Followers: #{angelListResult.followers}
-            br
-            | Locations: #{angelListResult.locations}
-            br
-            | Markets: #{angelListResult.markets}
-            br
-            a(href=angelListResult.angellist_url) View AngelList profile
-            br
-            a(href="https://angel.co/")
-              = "Powered by AngelList"
-              img(alt="AngelList logo", aria-hidden="true", src="/dist/images/angellist.svg", style="height: 1.3em; position: relative; top: 4px; left: 2px")
-            br
-            a(target="_blank", href=angelListResult.badMatchUrl) Bad match? Click here to let us know
+        +company-notes-and-research(selectedApplication)
       .grid__item.one-whole.medium-one-half.large-four-ninths
         .form-group
           label(for="application_date")

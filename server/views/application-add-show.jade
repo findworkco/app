@@ -1,0 +1,58 @@
+extends layout
+include application-mixins
+
+block title
+  title Add job application - Find Work
+
+block content
+  h1.content__heading(style="font-weight: normal") Add job application
+  - var submissionData = {};
+  //- Fallback submission data for initial renders
+  - submissionData.status = submissionData.status || APPLICATION_STATUSES.HAVE_NOT_APPLIED;
+  form.cf(method="POST", action="/add-application")
+    != csrfInput
+    .grid
+      .grid__item.one-whole.medium-one-half.large-four-ninths
+        +posting-url-and-name(submissionData)
+      .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
+        +company-notes-and-research(submissionData)
+      .grid__item.one-whole.medium-one-half.large-four-ninths
+        .form-group
+          label Status:
+          div(style="display: table")
+            div(style="display: table-cell; vertical-align: middle")
+              input(name="status", type="radio", checked=submissionData.status == APPLICATION_STATUSES.HAVE_NOT_APPLIED, value=APPLICATION_STATUSES.HAVE_NOT_APPLIED)
+              | &nbsp;
+            div(style="display: table-cell; vertical-align: middle; padding: 3px")
+              | Have not applied
+          div(style="display: table")
+            div(style="display: table-cell; vertical-align: middle")
+              input(name="status", type="radio", checked=submissionData.status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE, value=APPLICATION_STATUSES.WAITING_FOR_RESPONSE)
+              | &nbsp;
+            div(style="display: table-cell; vertical-align: middle; padding: 3px")
+              | Applied, waiting for response
+          div(style="display: table")
+            div(style="display: table-cell; vertical-align: middle")
+              input(name="status", type="radio", checked=submissionData.status == APPLICATION_STATUSES.UPCOMING_INTERVIEW, value=APPLICATION_STATUSES.UPCOMING_INTERVIEW)
+              | &nbsp;
+            div(style="display: table-cell; vertical-align: middle; padding: 3px")
+              | Applied, have an upcoming interview
+          div(style="display: table")
+            div(style="display: table-cell; vertical-align: middle")
+              input(name="status", type="radio", checked=submissionData.status == APPLICATION_STATUSES.RECEIVED_OFFER, value=APPLICATION_STATUSES.RECEIVED_OFFER)
+              | &nbsp;
+            div(style="display: table-cell; vertical-align: middle; padding: 3px")
+              | Applied, received offer
+        .form-group
+          h4.flush--bottom(style="font-weight: normal")
+            = "Application reminder: "
+            span.text--normal
+              i.fa.fa-reply(style="font-size: 1.5em")
+          //- TODO: Only show info if someone has never saved a "Have not applied" application before
+          .section--info.push-half--ends We will send you a reminder email to apply to this posting
+          //- If there is no application reminder, then default to 1 week from today (raised to nearest hour)
+          //- TODO: Guess user's timezone for `tz`
+          - var applicationReminderMoment = submissionData.application_reminder || moment().tz('America/Chicago').startOf('hour').add({weeks: 1, hours: 1});
+          +reminderpicker("application_reminder", applicationReminderMoment)
+        p
+          button.btn.btn--primary(name="submit_button", type="submit", value="save") Save job application

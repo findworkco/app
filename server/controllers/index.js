@@ -15,11 +15,11 @@ app.get('/archive', function archiveShow (req, res, next) {
   res.render('archive.jade', genericMockData);
 });
 
-// TODO: Build static pages /create-application, /application/:id/create-interview, /archived
+// TODO: Build static pages /add-application, /application/:id/add-interview, /archived
 //   (/application/:id will be used for both active and archived applications)
 // TODO: Build stateful pages POST /login?, GET/POST /logout, POST /settings,
-//   POST /create-application, POST /application/:id,
-//   POST /application/:id/create-interview, POST /interview/:id
+//   POST /add-application, POST /application/:id,
+//   POST /application/:id/add-interview, POST /interview/:id
 // TODO: Build error handlers/pages (e.g. 404, 500)
 
 app.get('/login', function loginShow (req, res, next) {
@@ -37,6 +37,9 @@ app.get('/schedule', function scheduleShow (req, res, next) {
 
 // TODO: Add smoke tests for these and skeletons for form testing but not content
 //   We want some flexibility still
+app.get('/add-application', function applicationAddShow (req, res, next) {
+  res.render('application-add-show.jade', genericMockData);
+});
 app.get('/application/:id', function applicationEditShow (req, res, next) {
   var mockData = applicationMockData.getById(req.params.id);
   res.render('application-edit-show.jade', mockData);

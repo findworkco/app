@@ -6,14 +6,18 @@ exports.user = {email: 'todd@findwork.co'};
 
 // Define constants for our applications
 exports.APPLICATION_STATUSES = {
-  ARCHIVED: 'archived',
+  HAVE_NOT_APPLIED: 'have_not_applied',
+  WAITING_FOR_RESPONSE: 'waiting_for_response',
   UPCOMING_INTERVIEW: 'upcoming_interview',
-  WAITING_FOR_RESPONSE: 'waiting_for_response'
+  RECEIVED_OFFER: 'received_offer',
+  ARCHIVED: 'archived'
 };
 exports.APPLICATION_HUMAN_STATUSES = {
-  ARCHIVED: 'Archived',
+  HAVE_NOT_APPLIED: 'Have not applied',
+  WAITING_FOR_RESPONSE: 'Waiting for response',
   UPCOMING_INTERVIEW: 'Upcoming interview',
-  WAITING_FOR_RESPONSE: 'Waiting for response'
+  RECEIVED_OFFER: 'Received offer',
+  ARCHIVED: 'Archived'
 };
 
 // TODO: Be sure to sort by upcoming date
