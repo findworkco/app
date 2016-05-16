@@ -70,6 +70,7 @@
   "devDependencies": {
     "chai": "~3.5.0",
     "cheerio": "~0.20.0",
+    "extract-values": "~0.1.2",
     "gemini": "~3.0.2",
     "gemini-gui": "~3.0.0",
     "jscs": "~1.7.3",
