@@ -45,6 +45,10 @@ app.get('/application/:id', function applicationEditShow (req, res, next) {
   res.render('application-edit-show.jade', mockData);
 });
 
+app.get('/application/:id/add-interview', function interviewAddShow (req, res, next) {
+  var mockData = applicationMockData.getById(req.params.id);
+  res.render('interview-add-show.jade', mockData);
+});
 app.get('/interview/:id', function interviewEditShow (req, res, next) {
   var mockData = interviewMockData.getById(req.params.id);
   res.render('interview-edit-show.jade', mockData);

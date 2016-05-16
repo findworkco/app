@@ -1,4 +1,5 @@
 extends layout
+include interview-mixins
 
 block title
   title Interview - #{selectedApplication.name} - Find Work
@@ -19,28 +20,7 @@ block content
     != csrfInput
     .grid
       .grid__item.one-whole.medium-one-half.large-four-ninths
-        .form-group
-          //- DEV: We use table/table-cell for consistent sizing with pre-interview reminder
-          div(style="display: table")
-            div(style="display: table-cell")
-              label(for="date")
-                = "Date/Time: "
-                i.fa.fa-calendar-o(style="font-size: 1.5em")
-              //- Keys for inputs will be `date`, `time`, and `timezone`
-              +datetimepicker("", selectedInterview.moment, {delimiter: ''})
-        .form-group
-          label(for="details")
-            = "Details: "
-            i.fa.fa-info-circle(style="font-size: 1.5em")
-          //- TODO: Add placeholder details
-          input#details.form-control.input--block(name="details", type="text", value=selectedInterview.details)
-        .form-group
-          //- DESIGN: If date/time of interview shifts, then shift pre/post reminders as well
-          h4.flush--bottom(style="font-weight: normal") Pre-interview reminder:
-          +reminderpicker("pre_interview_reminder", selectedInterview.pre_interview_reminder_moment)
-        .form-group
-          h4.flush--bottom(style="font-weight: normal") Post-interview reminder:
-          +reminderpicker("post_interview_reminder", selectedInterview.post_interview_reminder_moment)
+        +interview-fields(selectedInterview, {showInfo: false})
         p.large-hidden
           //- DEV: On small/medium screens, display "All changes saved" close to content
           i.muted(data-autosave) All changes saved

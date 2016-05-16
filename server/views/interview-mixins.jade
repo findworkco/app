@@ -1,0 +1,27 @@
+mixin interview-fields(values, options)
+  .form-group
+    //- DEV: We use table/table-cell for consistent sizing with pre-interview reminder
+    div(style="display: table")
+      div(style="display: table-cell")
+        label(for="date")
+          = "Date/Time: "
+          i.fa.fa-calendar-o(style="font-size: 1.5em")
+        //- Keys for inputs will be `date`, `time`, and `timezone`
+        +datetimepicker("", values.moment, {delimiter: ''})
+  .form-group
+    label(for="details")
+      = "Details: "
+      i.fa.fa-info-circle(style="font-size: 1.5em")
+    input#details.form-control.input--block(name="details", type="text", value=values.details, placeholder="Instructions (e.g. Call 555-123-4567)")
+  .form-group
+    //- DESIGN: If date/time of interview shifts, then shift pre/post reminders as well
+    h4.flush--bottom(style="font-weight: normal") Pre-interview reminder:
+    //- TODO: Hide reminders when people have seen them before
+    if options.showInfo
+      .section--info We will send you a reminder email to review your notes before the interview
+    +reminderpicker("pre_interview_reminder", values.pre_interview_reminder_moment)
+  .form-group
+    h4.flush--bottom(style="font-weight: normal") Post-interview reminder:
+    if options.showInfo
+      .section--info We will send you a reminder email to update your notes after the interview
+    +reminderpicker("post_interview_reminder", values.post_interview_reminder_moment)
