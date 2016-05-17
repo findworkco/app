@@ -2,6 +2,9 @@
 var assert = require('assert');
 var _ = require('underscore');
 var express = require('express');
+var expressSession = require('express-session');
+var RedisSessionStore = require('connect-redis')(expressSession);
+var redis = require('redis');
 var appLocals = {
   countryData: require('country-data'),
   moment: require('moment-timezone'),
@@ -47,6 +50,25 @@ function Server(config) {
 
   // Define our application locals
   app.locals = _.defaults(app.locals, appLocals);
+
+  // Create a Redis client
+  app.redisClient = redis.createClient(config.redisUrl);
+
+  // Integrate session middleware
+  // https://github.com/tj/connect-redis/tree/3.0.2#faq
+  app.use(expressSession(_.defaults({
+    store: new RedisSessionStore({client: app.redisClient})
+  }, config.session)));
+  app.use(function handleDroppedSession (req, res, next) {
+    // If we dropped our Redis connection, then error out this request
+    // TODO: When we scale to multiple servers, crash server on Redis loss
+    //   as we could have requests in unpredictable state
+    // TODO: Log error to Sentry about no session
+    if (!req.session) {
+      return next(new Error('Request session could not be found/created'));
+    }
+    next();
+  });
 }
 Server.prototype.listen = function () {
   assert.strictEqual(this._app, undefined, 'A server is already listening to a port. Please `close` first');

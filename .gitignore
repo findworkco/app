@@ -8,6 +8,9 @@ dist/
 # Temporary assets
 public/images/screenshots/*.jpg
 
+# Server test assets
+test-redis.pid
+
 # Visual test assets
 gemini/
 gemini-report/

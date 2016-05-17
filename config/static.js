@@ -11,6 +11,7 @@ var _ = require('underscore');
 
 // Define generic settings
 exports.common = {
+  redisUrl: 'redis://127.0.0.1:6400'
 };
 
 exports.development = {
@@ -18,6 +19,7 @@ exports.development = {
 };
 
 exports.test = {
+  redisUrl: 'redis://127.0.0.1:6401',
   viewCache: true
 };
 
@@ -26,7 +28,7 @@ exports.production = {
 };
 
 // Merge in grouped settings
-var configFiles = ['./static-analytics', './static-url'];
+var configFiles = ['./static-analytics', './static-session', './static-url'];
 configFiles.forEach(function mergeConfigFile (configFile) {
   // Assert that the new config has no repeated keys
   var mainConfig = exports;

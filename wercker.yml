@@ -4,6 +4,13 @@ box: node:4.4
 # Define our build steps (e.g. test steps)
 build:
   steps:
+    # Install service dependencies
+    - script:
+        name: install service dependencies
+        code: |
+          sudo apt-get update
+          sudo apt-get install -y redis-server
+
     # Output our Node.js and npm versions
     - script:
         name: echo nodejs information
