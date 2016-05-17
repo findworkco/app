@@ -5,7 +5,7 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe.only('A request to /application/:id/add-interview from the owner user', function () {
+describe('A request to /application/:id/add-interview from the owner user', function () {
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-sky-networks-uuid';
   serverUtils.run();

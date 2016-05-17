@@ -55,4 +55,4 @@ block content
           - var applicationReminderMoment = submissionData.application_reminder || moment().tz('America/Chicago').startOf('hour').add({weeks: 1, hours: 1});
           +reminderpicker("application_reminder", applicationReminderMoment)
         p
-          button.btn.btn--primary(name="submit_button", type="submit", value="save") Save job application
+          button.btn.btn--primary(type="submit") Save job application

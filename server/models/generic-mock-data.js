@@ -60,6 +60,7 @@ exports.waitingForResponseApplications = [{
   archive_url: '/application/abcdef-sky-networks-uuid/archive',
   archived_at_moment: null,
   company_name: 'Sky Networks',
+  delete_url: '/application/abcdef-sky-networks-uuid/delete',
   human_status: exports.APPLICATION_HUMAN_STATUSES.WAITING_FOR_RESPONSE,
   status: exports.APPLICATION_STATUSES.WAITING_FOR_RESPONSE,
   // Tue Feb 23
@@ -70,6 +71,7 @@ exports.waitingForResponseApplications = [{
     id: 'abcdef-sky-networks-interview-uuid',
     application_id: 'abcdef-sky-networks-uuid',
     details: 'Call 555-123-4567',
+    delete_url: '/interview/abcdef-sky-networks-interview-uuid/delete',
     // Fri Jan 15 at 9:00AM PST
     moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
     pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),

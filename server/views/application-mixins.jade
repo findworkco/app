@@ -41,7 +41,10 @@ mixin company-notes-and-research(values)
       label(for="company_name") Name:
       input.form-control.three-fifths#company_name(name="company_name", type="text", value=values.company_name, placeholder="Company name (e.g. Google)")
       //- TODO: Connect to search mechanism on click
-      button.btn.btn--small.btn--wide.btn--default.push--left(name="submit_button", type="submit", value="search") Search
+      //- TODO: Alter button to link and link to standalone page
+      //-   but allow JS to switch back to button for inline form
+      //-   so we can save `company_name` as part of application
+      button.btn.btn--small.btn--wide.btn--default.push--left(type="button") Search
     h5.text--normal.flush--bottom Glassdoor results:
     p
       if values.company_name
