@@ -25,6 +25,7 @@ $white: #FFFFFF;
 // Rainbow (red, orange, yellow, green, blue, indigo, violet)
 $red: #DA3C37;
 $dark-red: #CD0000;
+$green: #43B34A;
 $dark-blue: #0626D3;
 $blue: #2579D2;
 $light-blue: #339CF1;
@@ -84,6 +85,14 @@ $well-border: $bs-input-border;
 $section--info-bg: $light-blue;
 $section--info-color: $white;
 
+// Notification styles
+// https://github.com/alertifyjs/alertify.js/blob/v1.0.11/src/css/alertify.css#L6-L11
+$notification-color: $white; // Default
+$notification-dismiss-focus-color: darken($notification-color, 12%); // Same ratio as Bootstrap buttons
+$notification-default-background: $black; // Default-ish
+$notification-error-background: $red;
+$notification-success-background: $green;
+
 // Generic variables
 $muted-opacity: $sixty; // 60 percent
 
@@ -132,6 +141,9 @@ $btn-border-radius: 4px;
 
 // Well styles
 $well-border-radius: $btn-border-radius;
+
+// Notification styles
+$notification-border-radius: $btn-border-radius;
 
 //- Arrow styles
 // https://github.com/csswizardry/inuit.css/blob/v5.0.1/objects/_arrows.scss

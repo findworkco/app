@@ -1,0 +1,45 @@
+// Define custom container setup
+#notification-container {
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+}
+
+.alertify-logs.custom {
+  @extend .container;
+  position: static;
+}
+
+.alertify-logs > .show {
+  float: right;
+  margin-right: $half-spacing-unit;
+}
+
+// Override predefined colors
+// https://github.com/alertifyjs/alertify.js/blob/v1.0.11/src/css/alertify.css#L6-L11
+.alertify-logs > * {
+  color: $notification-color;
+  border-radius: $notification-border-radius;
+}
+.alertify-logs > *, .alertify-logs > .default {
+  background: $notification-default-background;
+}
+.alertify-logs > .error {
+  background: $notification-error-background;
+}
+.alertify-logs > .success {
+  background: $notification-success-background;
+}
+
+// Define styles for dismiss button
+.alertify-dismiss {
+  display: inline;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+.alertify-dismiss:hover,
+.alertify-dismiss:focus {
+  color: $notification-dismiss-focus-color;
+}

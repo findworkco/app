@@ -28,7 +28,7 @@
     "gemini-test": "npm run verify-webdriver-running && gemini test --reporter html --reporter flat test/visual",
     "postinstall": "bower install && (npm run webdriver-update || true) && npm run build",
     "start": "node bin/find-work",
-    "start-develop": "ENV=development nodemon -x bin/find-work",
+    "start-develop": "ENV=development nodemon --exec bin/find-work --ignore dist --ignore public",
     "start-test-redis": "bin/start-test-redis.sh",
     "test": "npm run lint && npm run start-test-redis && npm run test-server && npm run verify-images-optimized",
     "test-server": "ENV=test mocha --recursive test/server",
@@ -38,6 +38,7 @@
     "webdriver-update": "webdriver-manager update"
   },
   "dependencies": {
+    "alertify.js": "~1.0.11",
     "connect-redis": "~3.0.2",
     "country-data": "0.0.24",
     "express": "~4.13.4",
