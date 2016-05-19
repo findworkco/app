@@ -15,15 +15,18 @@ exports.common = {
 };
 
 exports.development = {
+  loadDevelopmentRoutes: true,
   viewCache: false
 };
 
 exports.test = {
+  loadDevelopmentRoutes: true,
   redisUrl: 'redis://127.0.0.1:6401',
   viewCache: true
 };
 
 exports.production = {
+  loadDevelopmentRoutes: false,
   viewCache: true
 };
 

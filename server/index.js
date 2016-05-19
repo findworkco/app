@@ -2,10 +2,12 @@
 var assert = require('assert');
 var _ = require('underscore');
 var express = require('express');
+var connectFlash = require('connect-flash');
 var expressSession = require('express-session');
 var RedisSessionStore = require('connect-redis')(expressSession);
 var redis = require('redis');
 var appLocals = {
+  ACCEPTABLE_NOTIFICATION_TYPES: require('./utils/notifications').ACCEPTABLE_TYPES,
   countryData: require('country-data'),
   moment: require('moment-timezone'),
   timezoneAbbrs: require('./utils/timezone-abbrs.js'),
@@ -69,6 +71,15 @@ function Server(config) {
     }
     next();
   });
+
+  // Integrate flash notifications (depends on session middleware)
+  app.use(connectFlash());
+
+  // Load existing flash notifications before routing
+  app.use(function loadExistingFlashNotifications (req, res, next) {
+    res.locals.notifications = req.flash();
+    next();
+  });
 }
 Server.prototype.listen = function () {
   assert.strictEqual(this._app, undefined, 'A server is already listening to a port. Please `close` first');
@@ -85,3 +96,6 @@ module.exports = new Server(config);
 
 // Load our controller bindings
 void require('./controllers/index.js');
+if (config.loadDevelopmentRoutes) {
+  void require('./controllers/development.js');
+}

@@ -35,4 +35,14 @@ exports.init = function () {
     var logEl = this.parentNode;
     alertify._$$alertify.close(logEl, -1);
   });
+
+  // Find notifications and render them
+  // DEV: Test via http://localhost:9000/_dev/notification?message=hi
+  $('#notification-content > [data-notification]').each(function iterateNotifications (i, el) {
+    // DEV: Our content has already been sanitized by the server
+    //   If that has been compromised, then we have larger issues to worry about
+    var $el = $(el);
+    var notificationType = $el.data('notification');
+    alertify[notificationType]({html: $el.text()});
+  });
 };
