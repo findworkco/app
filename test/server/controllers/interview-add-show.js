@@ -5,7 +5,7 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to /application/:id/add-interview from the owner user', function () {
+describe('A request to GET /application/:id/add-interview from the owner user', function () {
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-sky-networks-uuid';
   serverUtils.run();
@@ -58,7 +58,7 @@ describe('A request to /application/:id/add-interview from the owner user', func
   });
 });
 
-describe.skip('A request to /application/:id/add-interview from a non-owner user', function () {
+describe.skip('A request to GET /application/:id/add-interview from a non-owner user', function () {
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-uuid';
   serverUtils.run();
@@ -70,7 +70,7 @@ describe.skip('A request to /application/:id/add-interview from a non-owner user
   });
 });
 
-describe.skip('A request to /application/:id/add-interview for an application that doesn\'t exist', function () {
+describe.skip('A request to GET /application/:id/add-interview for an application that doesn\'t exist', function () {
   // Start our server, log in (need to do), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/application/does-not-exist/add-interview'));
@@ -81,7 +81,7 @@ describe.skip('A request to /application/:id/add-interview for an application th
   });
 });
 
-describe.skip('A request to /application/:id/add-interview from a logged out user', function () {
+describe.skip('A request to GET /application/:id/add-interview from a logged out user', function () {
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({

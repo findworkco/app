@@ -4,7 +4,7 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to /interview/:id from the owner user', function () {
+describe('A request to GET /interview/:id from the owner user', function () {
   // Start our server, log in (need to do), and make our request
   var interviewId = 'abcdef-sky-networks-interview-uuid';
   serverUtils.run();
@@ -31,7 +31,7 @@ describe('A request to /interview/:id from the owner user', function () {
   });
 });
 
-describe.skip('A request to /interview/:id from a non-owner user', function () {
+describe.skip('A request to GET /interview/:id from a non-owner user', function () {
   // Start our server, log in (need to do), and make our request
   var interviewId = 'abcdef-uuid';
   serverUtils.run();
@@ -43,7 +43,7 @@ describe.skip('A request to /interview/:id from a non-owner user', function () {
   });
 });
 
-describe.skip('A request to /interview/:id from a user that ' +
+describe.skip('A request to GET /interview/:id from a user that ' +
     'owns the interview yet doesn\'t own the application', function () {
   // TODO: Enforce interview must have the same owner as application via DB restrictions
   // Start our server, log in (need to do), and make our request
@@ -58,7 +58,7 @@ describe.skip('A request to /interview/:id from a user that ' +
   });
 });
 
-describe.skip('A request to /interview/:id that doesn\'t exist', function () {
+describe.skip('A request to GET /interview/:id that doesn\'t exist', function () {
   // Start our server, log in (need to do), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/interview/does-not-exist'));
@@ -69,7 +69,7 @@ describe.skip('A request to /interview/:id that doesn\'t exist', function () {
   });
 });
 
-describe.skip('A request to /interview/:id from a logged out user', function () {
+describe.skip('A request to GET /interview/:id from a logged out user', function () {
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({

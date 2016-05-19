@@ -4,7 +4,7 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe.skip('A request to /schedule from a logged out user', function () {
+describe.skip('A request to GET /schedule from a logged out user', function () {
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
@@ -22,7 +22,7 @@ describe.skip('A request to /schedule from a logged out user', function () {
   });
 });
 
-describe('A request to /schedule from a logged in user with no applications', function () {
+describe('A request to GET /schedule from a logged in user with no applications', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
@@ -49,7 +49,7 @@ describe('A request to /schedule from a logged in user with no applications', fu
   });
 });
 
-describe.skip('A request to /schedule from a logged in user with an offer received application', function () {
+describe.skip('A request to GET /schedule from a logged in user with an offer received application', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
@@ -62,7 +62,7 @@ describe.skip('A request to /schedule from a logged in user with an offer receiv
 });
 
 // DEV: We are skipping these for now to allow prototyping flexibility
-describe.skip('A request to /schedule from a logged in user with an upcoming interview application', function () {
+describe.skip('A request to GET /schedule from a logged in user with an upcoming interview application', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
@@ -77,7 +77,7 @@ describe.skip('A request to /schedule from a logged in user with an upcoming int
 });
 
 // DEV: We are skipping these for now to allow prototyping flexibility
-describe.skip('A request to /schedule from a logged in user with a waiting for response application', function () {
+describe.skip('A request to GET /schedule from a logged in user with a waiting for response application', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
@@ -90,7 +90,7 @@ describe.skip('A request to /schedule from a logged in user with a waiting for r
   });
 });
 
-describe.skip('A request to /schedule from a logged in user with a have not applied application', function () {
+describe.skip('A request to GET /schedule from a logged in user with a have not applied application', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
@@ -102,7 +102,7 @@ describe.skip('A request to /schedule from a logged in user with a have not appl
   });
 });
 
-describe.skip('A request to /schedule from a logged in user with an application in another account', function () {
+describe.skip('A request to GET /schedule from a logged in user with an application in another account', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
@@ -114,7 +114,7 @@ describe.skip('A request to /schedule from a logged in user with an application 
   });
 });
 
-describe.skip('A request to /schedule from a logged in user with an archived application', function () {
+describe.skip('A request to GET /schedule from a logged in user with an archived application', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/schedule'));

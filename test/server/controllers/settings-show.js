@@ -4,7 +4,7 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to /settings from a logged in user', function () {
+describe('A request to GET /settings from a logged in user', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/settings'));
@@ -19,7 +19,7 @@ describe('A request to /settings from a logged in user', function () {
   });
 });
 
-describe.skip('A request to /settings from a logged out user', function () {
+describe.skip('A request to GET /settings from a logged out user', function () {
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
