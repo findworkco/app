@@ -34,14 +34,6 @@ gemini.suite('screenshots', function (suite) {
   gemini.suite('small-2', function (suite) {
     suite.setUrl('/application/abcdef-sky-networks-uuid')
       .setCaptureElements('body')
-      .capture('small-2', function handleSmall2Screenshot (actions, find) {
-        // Resize our window
-        geminiUtils.resizeSmall(actions, find);
-
-        // Shorten the textarea
-        actions.executeJS(function handleExecuteJS () {
-          document.getElementById('notes').rows = '2';
-        });
-      });
+      .capture('small-2', geminiUtils.resizeSmall);
   });
 });

@@ -48,6 +48,7 @@
     "moment": "~2.12.0",
     "moment-timezone": "~0.5.3",
     "redis": "~2.6.0-2",
+    "sanitize-html": "~1.11.4",
     "shallow-settings": "~0.1.0",
     "underscore": "~1.8.3"
   },
@@ -71,7 +72,8 @@
     "timepicker": "~1.8.11",
     "vinyl-buffer": "~1.0.0",
     "vinyl-source-stream": "~1.1.0",
-    "watchify": "~3.7.0"
+    "watchify": "~3.7.0",
+    "wysiwyg.js": "git://github.com/twolfson/wysiwyg.js.git#9658fc4"
   },
   "devDependencies": {
     "chai": "~3.5.0",

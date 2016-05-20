@@ -80,7 +80,8 @@ exports.waitingForResponseApplications = [{
   }],
   posting_url: 'https://github.com/about/jobs',
   name: 'Engineer II at Sky Networks',
-  notes: '100 employees, all seem robotic',
+  notes: 'Phone screen (John): 100 employees, focused on AI<br/>' +
+    'Website: <a href="https://sky.net/">https://sky.net/</a>',
   received_offer_url: '/application/abcdef-sky-networks-uuid/received-offer',
   url: '/application/abcdef-sky-networks-uuid'
 }];

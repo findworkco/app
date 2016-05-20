@@ -5,10 +5,11 @@ void require('bootstrap-datepicker');
 void require('timepicker');
 var Modernizr = require('browsernizr');
 void require('browsernizr/test/inputtypes');
-// DEV: Add in `window.jQuery` for Chosen
+// DEV: Add in `window.jQuery` for Chosen and wysiwyg.js
 window.jQuery = $;
 void require('../../bower_components/chosen/chosen.jquery.js');
 var notifications = require('./notifications');
+var wysiwyg = require('./wysiwyg');
 
 // TODO: Construct an autosave mechanism for `data-autosave`
 
@@ -58,8 +59,9 @@ $(function handleReady () {
   // Find all Chosen inputs and bind them
   $('[data-chosen]').chosen();
 
-  // Bind our notifications plugin
+  // Bind our external plugins
   notifications.init();
+  wysiwyg.init();
 
   // If we are on a page with a `?grid` query parameter, then render a grid
   // TODO: Move to query string (currently breaks serve)

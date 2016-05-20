@@ -14,7 +14,8 @@ mixin company-notes-and-research(values)
   .form-group
     label(for="notes") Notes:
     //- TODO: Add editor integration (wysiwyg.js, did it in a gist or codepen)
-    textarea.form-control.input--block#notes(name="notes", rows=7, placeholder="Notes about company (e.g. 40 employees, 10 engineers)")= values.notes
+    //- DEV: We use `data-wysiwyg-input` as `wysiwyg.js` wants to use `data-wysiwyg` for itself
+    textarea.form-control.input--block#notes(name="notes", data-wysiwyg-input, rows=3, placeholder="Notes about company (e.g. 40 employees, 10 engineers)")= values.notes
   .research-company
     //- TODO: Make sure that either this mini form works
     //-   and is accessible

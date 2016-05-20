@@ -10,6 +10,7 @@ var appLocals = {
   ACCEPTABLE_NOTIFICATION_TYPES: require('./utils/notifications').ACCEPTABLE_TYPES,
   countryData: require('country-data'),
   moment: require('moment-timezone'),
+  sanitizeHtml: require('sanitize-html'),
   timezoneAbbrs: require('./utils/timezone-abbrs.js'),
   timezonesByCountryCode: require('../vendor/tz-locales.json')
 };

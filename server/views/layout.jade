@@ -160,7 +160,7 @@ block base-content
                   div Notes:
                   div.nav-notes.push-half--bottom
                     if application.notes
-                      = application.notes
+                      != sanitizeHtml(application.notes)
                     else
                       i No notes recorded
               //- On small/medium screens, provide a link to the application's page

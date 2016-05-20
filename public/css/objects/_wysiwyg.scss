@@ -1,0 +1,10 @@
+// Override text sizes for wysiwyg.js
+.wysiwyg-toolbar-icon {
+  font-size: $base-font-size;
+  padding: 6px 10px 4px;
+}
+
+// Guarantee 3 minimum row via `min-height`
+.wysiwyg-editor {
+  min-height: 4.5em;
+}
