@@ -4,7 +4,7 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to /application/:id from the owner user', function () {
+describe('A request to GET /application/:id from the owner user', function () {
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-sky-networks-uuid';
   serverUtils.run();
@@ -31,7 +31,7 @@ describe('A request to /application/:id from the owner user', function () {
   });
 });
 
-describe('A request to an archived /application/:id', function () {
+describe('A request to an archived GET /application/:id', function () {
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-monstromart-uuid';
   serverUtils.run();
@@ -44,7 +44,7 @@ describe('A request to an archived /application/:id', function () {
   });
 });
 
-describe.skip('A request to /application/:id from a non-owner user', function () {
+describe.skip('A request to GET /application/:id from a non-owner user', function () {
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-uuid';
   serverUtils.run();
@@ -56,7 +56,7 @@ describe.skip('A request to /application/:id from a non-owner user', function ()
   });
 });
 
-describe.skip('A request to /application/:id that doesn\'t exist', function () {
+describe.skip('A request to GET /application/:id that doesn\'t exist', function () {
   // Start our server, log in (need to do), and make our request
   serverUtils.run();
   httpUtils.session.init().save(serverUtils.getUrl('/application/does-not-exist'));
@@ -67,7 +67,7 @@ describe.skip('A request to /application/:id that doesn\'t exist', function () {
   });
 });
 
-describe.skip('A request to /application/:id from a logged out user', function () {
+describe.skip('A request to GET /application/:id from a logged out user', function () {
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({

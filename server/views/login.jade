@@ -7,13 +7,13 @@ block content
   .grid
     .grid__item.one-whole
       h1.content__heading.text--center.push--bottom(style="font-weight: normal") Sign up/Log in
-      //- TODO: Determine if this is a button or a link...
-      //- TODO: Use Google branding for button
       //- DESIGN: If we get AngelList support, build Sign up/Log in with AngelList
       p.text--center.landmark
         //- https://developers.google.com/identity/branding-guidelines
         //- DEV: `id` is for testing purposes only
-        span#login_with_google.btn.btn--primary
+        //- TODO: Link to Google sign in
+        //- TODO: Use Google branding for button
+        a#login_with_google.btn.btn--primary(href="/schedule")
           strong G+
           = " Sign up/Log in with Google"
         br

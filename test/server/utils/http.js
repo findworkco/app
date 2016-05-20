@@ -78,6 +78,7 @@ exports.session = {
   save: function (options) {
     before(exports.session._save(options));
     after(exports._saveCleanup(options));
+    return this;
   },
   init: function () {
     before(function initFn () {
