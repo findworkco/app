@@ -38,6 +38,7 @@ function Server(config) {
 
   // Host our static files
   app.use('/dist', express.static(__dirname + '/../dist'));
+  app.use('/favicon.ico', express.static(__dirname + '/../dist/images/favicon.ico'));
 
   // Configure our views
   // http://expressjs.com/en/guide/using-template-engines.html
