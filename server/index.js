@@ -2,10 +2,12 @@
 var assert = require('assert');
 var _ = require('underscore');
 var express = require('express');
+var bodyParserMultiDict = require('body-parser-multidict');
 var connectFlash = require('connect-flash');
 var expressSession = require('express-session');
 var RedisSessionStore = require('connect-redis')(expressSession);
 var redis = require('redis');
+var qsMultiDict = require('querystring-multidict');
 var appLocals = {
   ACCEPTABLE_NOTIFICATION_TYPES: require('./utils/notifications').ACCEPTABLE_TYPES,
   countryData: require('country-data'),
@@ -73,6 +75,13 @@ function Server(config) {
     }
     next();
   });
+
+  // Add MultiDict based query string/body handling
+  app.use(function overrideQueryString (req, res, next) {
+    req.query = qsMultiDict.parse(req._parsedOriginalUrl.query);
+    next();
+  });
+  app.use(bodyParserMultiDict.urlencoded());
 
   // Integrate flash notifications (depends on session middleware)
   app.use(connectFlash());

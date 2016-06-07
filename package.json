@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "alertify.js": "~1.0.11",
+    "body-parser-multidict": "~1.0.1",
     "connect-flash": "~0.1.1",
     "connect-redis": "~3.0.2",
     "country-data": "0.0.24",
@@ -47,6 +48,7 @@
     "jade": "~1.11.0",
     "moment": "~2.12.0",
     "moment-timezone": "~0.5.3",
+    "querystring-multidict": "~1.0.0",
     "redis": "~2.6.0-2",
     "sanitize-html": "~1.11.4",
     "shallow-settings": "~0.1.0",
