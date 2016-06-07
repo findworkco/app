@@ -24,8 +24,8 @@ block content
     //- TODO: If we ever introduce a better menu which has schedule in it, then ditch this button
     a.btn.btn--default.btn--thin(href="/schedule") Return to schedule
 
-  form.cf(method="POST", action=selectedApplication.addInterviewUrl)
-    != csrfInput
+  form.cf(method="POST", action=selectedApplication.add_interview_url)
+    +csrf-input()
     .grid
       .grid__item.one-whole.medium-one-half.large-four-ninths
         +interview-fields(submissionData, {showInfo: true})

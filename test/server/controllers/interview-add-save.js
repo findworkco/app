@@ -14,6 +14,7 @@ describe('A request to POST /application/:id/add-interview from the owner user',
     .save({
       method: 'POST',
       url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+      htmlForm: true,
       followRedirect: false
     });
 
@@ -70,6 +71,7 @@ describe.skip('A request to POST /application/:id/add-interview for an upcoming 
     .save({
       method: 'POST',
       url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+      htmlForm: true,
       followRedirect: false
     });
 
@@ -87,6 +89,7 @@ describe.skip('A request to POST /application/:id/add-interview from a non-owner
     .save({
       method: 'POST',
       url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+      htmlForm: true,
       followRedirect: false
     });
 
@@ -104,6 +107,7 @@ describe.skip('A request to POST /application/:id/add-interview for an applicati
     .save({
       method: 'POST',
       url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
+      htmlForm: true,
       followRedirect: false
     });
 
@@ -118,6 +122,7 @@ describe.skip('A request to POST /application/:id/add-interview from a logged ou
   serverUtils.run();
   httpUtils.session.init().save({
     method: 'POST',
+    htmlForm: true,
     followRedirect: false,
     url: serverUtils.getUrl('/application/does-not-exist/add-interview')
   });

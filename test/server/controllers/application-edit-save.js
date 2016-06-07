@@ -11,7 +11,8 @@ describe('A request to POST /application/:id to update fields from the owner use
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId))
-    .save({method: 'POST', url: serverUtils.getUrl('/application/' + applicationId), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
+      htmlForm: true, followRedirect: false});
 
   it('recieves no errors', function () {
     expect(this.err).to.equal(null);
@@ -43,7 +44,8 @@ describe.skip('A request to POST /application/:id for "Received offer" action fr
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId))
-    .save({method: 'POST', url: serverUtils.getUrl('/application/' + applicationId), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
+      htmlForm: true, followRedirect: false});
 
   it('redirects to the application page', function () {
     expect(this.err).to.equal(null);
@@ -72,7 +74,8 @@ describe.skip('A request to POST /application/:id to "Archive" action from the o
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId))
-    .save({method: 'POST', url: serverUtils.getUrl('/application/' + applicationId), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
+      htmlForm: true, followRedirect: false});
 
   it('redirects to the schedule page', function () {
     expect(this.err).to.equal(null);
@@ -100,7 +103,8 @@ describe.skip('A request to POST /application/:id from a non-owner user', functi
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId))
-    .save({method: 'POST', url: serverUtils.getUrl('/application/' + applicationId), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
+      htmlForm: true, followRedirect: false});
 
   it('recieves a 404', function () {
     expect(this.err).to.equal(null);
@@ -113,7 +117,8 @@ describe.skip('A request to POST /application/:id that doesn\'t exist', function
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/does-not-exist'))
-    .save({method: 'POST', url: serverUtils.getUrl('/application/does-not-exist'), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/application/does-not-exist'),
+      htmlForm: true, followRedirect: false});
 
   it('recieves a 404', function () {
     expect(this.err).to.equal(null);
@@ -125,7 +130,8 @@ describe.skip('A request to POST /application/:id from a logged out user', funct
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init()
-    .save({method: 'POST', url: serverUtils.getUrl('/application/does-not-exist'), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/application/does-not-exist'),
+      htmlForm: true, followRedirect: false});
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
   it('recieves a prompt to log in', function () {

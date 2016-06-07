@@ -4,6 +4,7 @@ var _ = require('underscore');
 var express = require('express');
 var bodyParserMultiDict = require('body-parser-multidict');
 var connectFlash = require('connect-flash');
+var csurf = require('csurf');
 var expressSession = require('express-session');
 var RedisSessionStore = require('connect-redis')(expressSession);
 var redis = require('redis');
@@ -82,6 +83,19 @@ function Server(config) {
     next();
   });
   app.use(bodyParserMultiDict.urlencoded());
+
+  // Integrate CSRF on sessions (make sure this comes before flash messages to message loss)
+  app.use(csurf({
+    cookie: false,
+    sessionKey: 'session',
+    value: function (req) {
+      return req.body.get('x-csrf-token');
+    }
+  }));
+  app.use(function exposeCsrfInput (req, res, next) {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+  });
 
   // Integrate flash notifications (depends on session middleware)
   app.use(connectFlash());

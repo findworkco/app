@@ -4,15 +4,37 @@ var _ = require('underscore');
 var assert = require('assert');
 var cheerio = require('cheerio');
 var request = require('request');
-
-// TODO: For form generation, experiment with `save` taking a function for `form`
-//   But make sure `request` doesn't support that...
+var serverUtils = require('./server');
 
 // Copy over utilities from request-mocha
 // https://github.com/uber-archive/request-mocha/blob/0.2.0/lib/request-mocha.js
 // DEV: We use copy/paste as it's easier to integrate Cheerio parsing
 exports._save = function (options) {
   return function _saveFn (done) {
+    // If there is a form generator, then run it
+    if (options.htmlForm) {
+      // Verify we have a body to base on
+      assert(this.$, 'Expected `this.$` to be defined from previous `save` but it was not. ' +
+        'Please use `httpUtils.save` before using `htmlForm` in a subsequent request');
+
+      // Fallback form selector to target URL (e.g. `form[action=/add-application]`)
+      var hostlessUrl = options.url.replace(serverUtils.getUrl(''), '');
+      var htmlFormSelector = options.htmlFormSelector || 'form[action="' + _.escape(hostlessUrl) + '"]';
+
+      // Resolve and verify our form exists
+      var $htmlForm = this.$(htmlFormSelector);
+      assert($htmlForm.length, 'No HTML form was found under selector "' + htmlFormSelector + '"');
+
+      // If `options.htmlForm` is `true`, then use the form as is
+      if (options.htmlForm === true) {
+        options.htmlForm = _.identity;
+      }
+
+      // Complete and serialize our form
+      // DEV: We allow for returning a new element as the form or using the original
+      options.form = (options.htmlForm.call(this, $htmlForm) || $htmlForm).serialize();
+    }
+
     // Make our request
     var that = this;
     request(options, function (err, res, body) {

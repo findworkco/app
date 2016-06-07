@@ -19,7 +19,7 @@ block content
   .grid
     .grid__item.one-whole.medium-one-half.large-four-ninths
       form(method="POST", action=selectedInterview.url)
-        != csrfInput
+        +csrf-input()
         +interview-fields(selectedInterview, {showInfo: false})
         p.large-hidden
           //- DEV: On small/medium screens, display "All changes saved" close to content
@@ -27,6 +27,7 @@ block content
         .landmark
           button.btn.btn--primary(type="submit") Save changes
       form(method="POST", action=selectedInterview.delete_url)
+        +csrf-input()
         //- DEV: We can resolve nested form issue by moving to a modal
         //-   Currently, we resolved it via floats
         //- TODO: Add test that verifies form doesn't submit on confirm rejection

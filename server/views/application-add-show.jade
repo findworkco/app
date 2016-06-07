@@ -10,7 +10,7 @@ block content
   //- Fallback submission data for initial renders
   - submissionData.status = submissionData.status || APPLICATION_STATUSES.HAVE_NOT_APPLIED;
   form.cf(method="POST", action="/add-application")
-    != csrfInput
+    +csrf-input()
     .grid
       .grid__item.one-whole.medium-one-half.large-four-ninths
         +posting-url-and-name(submissionData)

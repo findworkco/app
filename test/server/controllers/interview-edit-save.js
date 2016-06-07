@@ -11,7 +11,8 @@ describe('A request to POST /interview/:id from the owner user', function () {
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
+      htmlForm: true, followRedirect: false});
 
   it('recieves no errors', function () {
     expect(this.err).to.equal(null);
@@ -43,7 +44,8 @@ describe.skip('A request to POST /interview/:id for a past interview from the ow
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
+      htmlForm: true, followRedirect: false});
 
   it('doesn\'t change application status', function () {
     // Verify data in PostgreSQL
@@ -57,7 +59,8 @@ describe.skip('A request to POST /interview/:id for an upcoming interview from t
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
+      htmlForm: true, followRedirect: false});
 
   it('changes application status to "Upcoming interview"', function () {
     // Verify data in PostgreSQL
@@ -70,7 +73,8 @@ describe.skip('A request to POST /interview/:id from a non-owner user', function
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
+      htmlForm: true, followRedirect: false});
 
   it('recieves a 404', function () {
     expect(this.err).to.equal(null);
@@ -86,7 +90,8 @@ describe.skip('A request to POST /interview/:id from a user that ' +
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
+      htmlForm: true, followRedirect: false});
 
   it('recieves an error', function () {
     // DEV: This verifies we don't leak sensitive info if something goes wrong
@@ -100,7 +105,8 @@ describe.skip('A request to POST /interview/:id that doesn\'t exist', function (
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/does-not-exist'))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'),
+      htmlForm: true, followRedirect: false});
 
   it('recieves a 404', function () {
     expect(this.err).to.equal(null);
@@ -112,7 +118,8 @@ describe.skip('A request to POST /interview/:id from a logged out user', functio
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init()
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'),
+      htmlForm: true, followRedirect: false});
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
   it('recieves a prompt to log in', function () {

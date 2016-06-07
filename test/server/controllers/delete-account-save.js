@@ -8,8 +8,8 @@ describe('A request to POST /delete-account from a logged in user', function () 
   // Start our server, login, and make our request
   serverUtils.run();
   httpUtils.session.init()
-    .save(serverUtils.getUrl('/login'))
-    .save({method: 'POST', url: serverUtils.getUrl('/delete-account'), followRedirect: false});
+    .save(serverUtils.getUrl('/settings'))
+    .save({method: 'POST', url: serverUtils.getUrl('/delete-account'), htmlForm: true, followRedirect: false});
 
   it('recieves no errors', function () {
     expect(this.err).to.equal(null);
@@ -37,7 +37,8 @@ describe('A request to POST /delete-account from a logged in user', function () 
 describe.skip('A request to POST /delete-account from a logged out user', function () {
   // Start our server and make our request
   serverUtils.run();
-  httpUtils.session.init().save({method: 'POST', url: serverUtils.getUrl('/delete-account'), followRedirect: false});
+  httpUtils.session.init().save({method: 'POST', url: serverUtils.getUrl('/delete-account'),
+    htmlForm: true, followRedirect: false});
 
   it('recieves no errors', function () {
     expect(this.err).to.equal(null);

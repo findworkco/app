@@ -19,8 +19,10 @@ block content
           //- DESIGN: When we add back email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
           label(for="email") Email (from Google):
           input#email.form-control.input--block(name="email", disabled, value=user.email, style="max-width: 220px")
-      p.push-double--bottom
-        a(href="/logout") Log out
+      form.push-double--bottom(method="POST", action="/logout")
+        +csrf-input()
+        button.text--link(type="submit") Log out
       //- TODO: Use a modal with confirmation of email address for deletion
       form(method="POST", action="/delete-account", onsubmit="javascript:return confirm('Are you sure you would like to delete the \"#{user.email}\" Find Work account?')")
+        +csrf-input()
         button.btn.btn--danger(type="submit") Delete

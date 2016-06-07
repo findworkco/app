@@ -1,4 +1,7 @@
 //- Declare common mixins
+mixin csrf-input()
+  input(type="hidden", name="x-csrf-token", value=csrfToken)
+
 mixin calendar-2x-with-date(date)
   //- Font stacking via: http://blog.fontawesome.io/2014/05/19/stacking-text-and-icons/
   span.fa-stack

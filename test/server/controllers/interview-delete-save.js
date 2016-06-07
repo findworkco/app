@@ -11,7 +11,8 @@ describe('A request to POST /interview/:id/delete from the owner user', function
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId + '/delete'), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId + '/delete'),
+      htmlForm: true, followRedirect: false});
 
   it('recieves no errors', function () {
     expect(this.err).to.equal(null);
@@ -43,7 +44,8 @@ describe.skip('A request to POST /interview/:id/delete for an upcoming interview
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId + '/delete'), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId + '/delete'),
+      htmlForm: true, followRedirect: false});
 
   it('changes application status to "Waiting for response"', function () {
     // Verify data in PostgreSQL
@@ -56,7 +58,8 @@ describe.skip('A request to POST /interview/:id/delete from a non-owner user', f
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId + '/delete'), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId + '/delete'),
+      htmlForm: true, followRedirect: false});
 
   it('recieves a 404', function () {
     expect(this.err).to.equal(null);
@@ -72,7 +75,8 @@ describe.skip('A request to POST /interview/:id/delete from a user that ' +
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId + '/delete'), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId + '/delete'),
+      htmlForm: true, followRedirect: false});
 
   it('recieves an error', function () {
     // DEV: This verifies we don't leak sensitive info if something goes wrong
@@ -86,7 +90,8 @@ describe.skip('A request to POST /interview/:id/delete that doesn\'t exist', fun
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/does-not-exist'))
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist/delete'), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist/delete'),
+      htmlForm: true, followRedirect: false});
 
   it('recieves a 404', function () {
     expect(this.err).to.equal(null);
@@ -98,7 +103,8 @@ describe.skip('A request to POST /interview/:id/delete from a logged out user', 
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init()
-    .save({method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist/delete'), followRedirect: false});
+    .save({method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist/delete'),
+      htmlForm: true, followRedirect: false});
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
   it('recieves a prompt to log in', function () {

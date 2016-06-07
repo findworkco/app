@@ -8,8 +8,8 @@ describe('A request to POST /logout', function () {
   // Start our server, login, and make our request
   serverUtils.run();
   httpUtils.session.init()
-    .save(serverUtils.getUrl('/login'))
-    .save({method: 'POST', url: serverUtils.getUrl('/logout'), followRedirect: false});
+    .save(serverUtils.getUrl('/settings'))
+    .save({method: 'POST', url: serverUtils.getUrl('/logout'), htmlForm: true, followRedirect: false});
 
   it('recieves no errors', function () {
     expect(this.err).to.equal(null);

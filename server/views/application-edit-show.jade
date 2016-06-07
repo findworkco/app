@@ -32,20 +32,20 @@ block content
         //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
         //- TODO: Reuse application save URL and pass a hidden `input(name=action, value="received-offer")`
         form(method="POST", action=selectedApplication.received_offer_url, style="display: inline")
-          != csrfInput
+          +csrf-input()
           button.action.btn.btn--thin.btn--default.btn--middle(type="submit")
             span.small-hidden I've received an offer
             span.medium-and-up-hidden Received offer
         //- DESIGN: On click, redirect to unselected nav and add notification for "Application has been archived"
         //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
         form(method="POST", action=selectedApplication.archive_url, style="display: inline")
-          != csrfInput
+          +csrf-input()
           button.action.btn.btn--thin.btn--default.btn--last(type="submit")
             span.small-hidden Archive application
             span.medium-and-up-hidden Archive
       else if selectedApplication.status === APPLICATION_STATUSES.ARCHIVED
         form(method="POST", action=selectedApplication.restore_url, style="display: inline")
-          != csrfInput
+          +csrf-input()
           button.action.btn.btn--thin.btn--default(type="submit")
             | Restore application
       else
@@ -55,7 +55,7 @@ block content
     i.muted(data-autosave) All changes saved
   .cf
     form(method="POST", action=selectedApplication.url)
-      != csrfInput
+      +csrf-input()
       .grid
         .grid__item.one-whole.medium-one-half.large-four-ninths
           +posting-url-and-name(selectedApplication)
@@ -102,6 +102,7 @@ block content
           div.landmark
             button.btn.btn--primary(type="submit") Save changes
     form.landmark.float--left(method="POST", action=selectedApplication.delete_url)
+      +csrf-input()
       //- DEV: We can resolve nested form issue by moving to a modal
       //-   Currently, we resolved it via floats
       //- TODO: Add test that verifies form doesn't submit on confirm rejection
