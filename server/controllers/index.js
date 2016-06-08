@@ -27,13 +27,19 @@ app.get('/settings', function settingsShow (req, res, next) {
   res.render('settings.jade', genericMockData);
 });
 app.post('/logout', function logoutSave (req, res, next) {
-  // TODO: Destroy our session (test me in full)
-  res.redirect('/');
+  // Destroy our session and redirect to the homepage
+  req.session.destroy(function handleDestroy (err) {
+    // TODO: Handle potential error
+    res.redirect('/');
+  });
 });
 app.post('/delete-account', function deleteAccountSave (req, res, next) {
   // TODO: Destroy our user/cascade destroy applications/interviews
-  // TODO: Destroy out session (test me in full)
-  res.redirect('/');
+  // Destroy out session and redirect to the homepage
+  req.session.destroy(function handleDestroy (err) {
+    // TODO: Handle potential error
+    res.redirect('/');
+  });
 });
 
 app.get('/schedule', function scheduleShow (req, res, next) {

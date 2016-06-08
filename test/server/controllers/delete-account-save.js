@@ -5,11 +5,39 @@ var serverUtils = require('../utils/server');
 
 // Start our tests
 describe('A request to POST /delete-account from a logged in user', function () {
-  // Start our server, login, and make our request
+  // Start our server, login, and save our session cokie
   serverUtils.run();
-  httpUtils.session.init()
-    .save(serverUtils.getUrl('/settings'))
-    .save({method: 'POST', url: serverUtils.getUrl('/delete-account'), htmlForm: true, followRedirect: false});
+  httpUtils.session.init().save(serverUtils.getUrl('/settings'));
+  before(function saveSessionCookie () {
+    // toJSON() = {version: 'tough-cookie@2.2.2', storeType: 'MemoryCookieStore', rejectPublicSuffixes: true,
+    // cookies: [{key: 'sid', value: 's%3A...', ...}]}
+    var cookies = this.jar._jar.toJSON().cookies;
+    expect(cookies).to.have.length(1);
+    expect(cookies[0]).to.have.property('key', 'sid');
+    this.sessionCookie = cookies[0];
+  });
+  after(function cleanup () {
+    delete this.sessionCookie;
+  });
+
+  // Verify we can use our cookie outside of `httpUtils.session`
+  function requestSettingsViaCookie(done) {
+    httpUtils._save({
+      headers: {
+        cookie: 'sid=' + this.sessionCookie.value
+      },
+      url: serverUtils.getUrl('/settings')
+    }).call(this, done);
+  }
+  before(requestSettingsViaCookie);
+  before(function verifyLoggedInOnlyPageSuccess () {
+    expect(this.err).to.equal(null);
+    expect(this.res.statusCode).to.equal(200);
+  });
+
+  // Make our destroy account request
+  httpUtils.session.save({method: 'POST', url: serverUtils.getUrl('/delete-account'),
+    htmlForm: true, followRedirect: false});
 
   it('recieves no errors', function () {
     expect(this.err).to.equal(null);
@@ -20,13 +48,24 @@ describe('A request to POST /delete-account from a logged in user', function () 
     expect(this.res.headers).to.have.property('location', '/');
   });
 
-  it.skip('destroys the session cookie', function () {
-    // Verify cookie jar exists via a `before`?
-    // Verify cookie jar is empty
+  describe('on subsequent requests', function () {
+    httpUtils.session.save(serverUtils.getUrl('/'));
+    it('receives a new cookie', function () {
+      // DEV: `express-session` doesn't erase original cookie, only invalidates in store
+      var cookies = this.jar._jar.toJSON().cookies;
+      expect(cookies).to.have.length(1);
+      expect(cookies[0]).to.have.property('key', 'sid');
+      expect(cookies[0].value).to.not.equal(this.sessionCookie.value);
+    });
   });
 
-  it.skip('destroys the stored session data', function () {
-    // Reuse original cookie value, verify Redis destroyed info
+  describe('with respect to stored session data', function () {
+    // Request logged-in only page and verify rejection
+    before(requestSettingsViaCookie);
+    it.skip('cannot access original session data', function () {
+      expect(this.res.statusCode).to.equal(302);
+      expect(this.res.headers).to.have.property('location', '/login');
+    });
   });
 
   it.skip('deletes the account', function () {
