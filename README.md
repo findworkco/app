@@ -12,8 +12,10 @@ vagrant ssh
 cd /vagrant/app
 
 # Install our dependencies and compile assets
-# DEV: This will automatically run `npm run build` on complete
-npm install
+bin/bootstrap.sh
+
+# Set up a local database
+bin/create-local-db.sh
 
 # Start our server
 npm run start-develop
@@ -50,6 +52,17 @@ npm run build
 npm run develop
 ```
 
+### Provisioning database
+To reset the local development database, run the following:
+
+```bash
+# Destroy our current database
+dropdb find_work
+
+# Create our database
+bin/create-local-db.sh
+```
+
 ### Automated refresh
 We integrate with LiveReload by starting a LiveReload server when `npm run develop` is running.
 
@@ -68,6 +81,10 @@ npm run start-develop
 To run our entire test suite (excluding visual tests), run the following:
 
 ```bash
+# On first test runs, create a test database
+bin/reset-test-db.sh
+
+# Run our test suite
 npm test
 ```
 
@@ -124,6 +141,23 @@ If we have manually edited the SVG, then update its template via:
 
 ```bash
 bin/build-screenshot-template.sh
+```
+
+### Setting up a production database
+We are currently running our database on the same server as our application. As a result, we can use `bin/create-local-db.sh`. Here's an example provisioning:
+
+```bash
+# SSH into the production machine
+ssh digital-my-server
+
+# Switch to the `postgres` user
+sudo su postgres --shell /bin/bash
+
+# Navigate to our application directory
+cd ~ubuntu/main
+
+# Create our local database
+bin/create-local-db.sh
 ```
 
 ## Copyright
