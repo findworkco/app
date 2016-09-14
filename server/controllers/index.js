@@ -18,6 +18,23 @@ app.get('/archive', function archiveShow (req, res, next) {
 
 // TODO: Build error handlers/pages (e.g. 404, 500)
 
+// TODO: Move to `development` or remove entirely
+app.get('/_dev/postgresql', function devPostgresqlShow (req, res, next) {
+  // Perform a calculation via PostgreSQL
+  // https://github.com/sequelize/sequelize/blob/v3.24.3/lib/sequelize.js#L1076-L1086
+  app.postgresqlClient.query('SELECT 1+1 AS sum;', {raw: true, plain: true, logging: null})
+      .asCallback(function handleQuery (err, queryResult) {
+    // If there was an error, pass it on
+    if (err) {
+      return next(err);
+    }
+
+    // Otherwise, send our result
+    //   queryResult = {sum: 2}
+    res.send('Sum: ' + queryResult.sum);
+  });
+});
+
 app.get('/login', function loginShow (req, res, next) {
   res.render('login.jade', genericMockData);
 });

@@ -15,6 +15,9 @@ createdb "$db_name"
 
 # TODO: Run our migrations
 
+# Notify user of success
+echo "Database \"$db_name\" successfully created" 1>&2
+
 # TODO: For development, we will likely want another script
 #   that pulls a pruned/scrubbed production database from S3
 #   and runs newer migrations on it (e.g. `clone-development-db.sh`)

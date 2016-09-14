@@ -12,3 +12,5 @@ fi
 createdb "$db_name"
 
 # TODO: Run migrations
+
+echo "Database \"$db_name\" successfully reset" 1>&2

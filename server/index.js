@@ -6,9 +6,11 @@ var bodyParserMultiDict = require('body-parser-multidict');
 var connectFlash = require('connect-flash');
 var csurf = require('csurf');
 var expressSession = require('express-session');
+var qsMultiDict = require('querystring-multidict');
 var RedisSessionStore = require('connect-redis')(expressSession);
 var redis = require('redis');
-var qsMultiDict = require('querystring-multidict');
+// DEV: ORM evaluation -- https://gist.github.com/twolfson/13eeeb547271c8ee32707f7b02c2ed90
+var Sequelize = require('sequelize');
 var appLocals = {
   ACCEPTABLE_NOTIFICATION_TYPES: require('./utils/notifications').ACCEPTABLE_TYPES,
   countryData: require('country-data'),
@@ -60,6 +62,15 @@ function Server(config) {
 
   // Create a Redis client
   app.redisClient = redis.createClient(config.redisUrl);
+
+  // Create a PostgreSQL client
+  // http://docs.sequelizejs.com/en/latest/docs/getting-started/#setting-up-a-connection
+  var psqlConfig = config.postgresql;
+  app.postgresqlClient = new Sequelize(psqlConfig.database, psqlConfig.username, psqlConfig.password, {
+    host: psqlConfig.host,
+    port: psqlConfig.port,
+    dialect: 'postgres'
+  });
 
   // Integrate session middleware
   // https://github.com/tj/connect-redis/tree/3.0.2#faq
