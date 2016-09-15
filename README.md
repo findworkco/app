@@ -63,6 +63,48 @@ dropdb find_work
 bin/create-local-db.sh
 ```
 
+### Connecting to a database
+To connnect to the development database, the simplest way is:
+
+```bash
+# Log into the Vagrant machine
+vagrant ssh
+
+# Use the PostgreSQL CLI on `find_work` database (auto-uses `vagrant` user and proper port)
+psql find_work
+```
+
+To connect from the host machine to the development database, we suggest using `pg_service.conf`. Here's a gist with instructions:
+
+https://gist.github.com/twolfson/5cd240862112ef4918bd
+
+**Example config:**
+
+```
+[vagrant_app]
+host=localhost
+port=5500
+dbname=find_work
+user=vagrant
+password=vagrant
+```
+
+**Usage:**
+
+```bash
+psql service=vagrant_app
+```
+
+To connect to the production database, we suggest using `ssh` and the `psql` CLI to prevent leaking unencrypted passwords:
+
+```bash
+# SSH into our production machine
+ssh digital-my-server
+
+# Use CLI with PostgreSQL super user on `find_work` database
+sudo su postgres --shell /bin/bash --command "psql find_work"
+```
+
 ### Automated refresh
 We integrate with LiveReload by starting a LiveReload server when `npm run develop` is running.
 
@@ -154,7 +196,7 @@ ssh digital-my-server
 sudo su postgres --shell /bin/bash
 
 # Navigate to our application directory
-cd ~ubuntu/main
+cd ~ubuntu/app/main
 
 # Create our local database
 bin/create-local-db.sh
