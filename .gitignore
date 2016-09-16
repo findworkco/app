@@ -2,6 +2,9 @@
 bower_components/
 node_modules/
 
+# Decrypted secrets
+config/static-secrets.json
+
 # Compiled assets
 dist/
 

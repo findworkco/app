@@ -1,8 +1,8 @@
 // Load in dependencies
 var _ = require('underscore');
+var assert = require('assert');
 var staticUrl = require('./static-url');
-
-// TODO: Move to SOPS and generate new secrets
+var secrets = require('./static-secrets');
 
 // Define our configurations
 // https://github.com/expressjs/session/tree/v1.13.1
@@ -34,13 +34,15 @@ exports.common = {
   }
 };
 
+var DEVELOPMENT_SECRET = secrets['static-session']['development-secret'];
+assert(DEVELOPMENT_SECRET);
 exports.development = {
   session: _.defaults({
     cookie: _.defaults({
       domain: staticUrl.development.url.external.hostname,
       secure: staticUrl.development.url.external.protocol === 'https'
     }, exports.common.session.cookie),
-    secret: 'supersecret.development'
+    secret: DEVELOPMENT_SECRET
   }, exports.common.session)
 };
 
@@ -55,12 +57,14 @@ exports.test = {
   }, exports.common.session)
 };
 
+var PRODUCTION_SECRET = secrets['static-session']['production-secret'];
+assert(PRODUCTION_SECRET);
 exports.production = {
   session: _.defaults({
     cookie: _.defaults({
       domain: staticUrl.production.url.external.hostname,
       secure: staticUrl.production.url.external.protocol === 'https'
     }, exports.common.session.cookie),
-    secret: 'supersecret.production'
+    secret: PRODUCTION_SECRET
   }, exports.common.session)
 };

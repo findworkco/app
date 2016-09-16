@@ -12,7 +12,9 @@ vagrant ssh
 cd /vagrant/app
 
 # Install our dependencies and compile assets
-bin/bootstrap.sh
+CONFIG_COPY_ONLY=TRUE bin/bootstrap.sh
+# To decrypt our secrets (e.g. production db password), use
+#   CONFIG_COPY_ONLY=FALSE bin/bootstrap.sh
 
 # Set up a local database
 bin/create-local-db.sh
@@ -103,6 +105,22 @@ ssh digital-my-server
 
 # Use CLI with PostgreSQL super user on `find_work` database
 sudo su postgres --shell /bin/bash --command "psql find_work"
+```
+
+### Managing secrets
+We use SOPS to manage secrets across all of our repositories. Our configuration is based on:
+
+https://github.com/mozilla/sops/tree/1.14/examples/all_in_one
+
+To edit this repo's secrets, get SOPS installed as instructed by:
+
+https://github.com/twolfson/find-work-scripts#editing-secrets
+
+Once SOPS is setup, we use the following steps to edit our secrets:
+
+```bash
+# Edit `config/static-secrets.enc.json` and output decrypted content to `config/static-secrets.json`
+bin/edit-secrets.sh
 ```
 
 ### Automated refresh

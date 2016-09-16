@@ -1,5 +1,7 @@
 // Load in our dependencies
 var _ = require('underscore');
+var assert = require('assert');
+var secrets = require('./static-secrets');
 
 // Define our configurations
 var DEFAULT_DATABASE = 'find_work';
@@ -30,9 +32,11 @@ exports.test = {
   }, exports.common.postgresql)
 };
 
+var PRODUCTION_PASSWORD = secrets['static-postgresql']['production-password'];
+assert(PRODUCTION_PASSWORD);
 exports.production = {
   postgresql: _.defaults({
     database: DEFAULT_DATABASE,
-    password: 'TODO: Pull me from SOPS'
+    password: PRODUCTION_PASSWORD
   }, exports.common.postgresql)
 };

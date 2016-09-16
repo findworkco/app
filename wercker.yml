@@ -5,18 +5,23 @@ box: ubuntu:14.04
 # Define our build steps (e.g. test steps)
 build:
   steps:
-    # Install service dependencies
+    # Install server dependencies (e.g. Redis, PostgreSQL)
     - script:
-        name: install service dependencies
+        name: install server dependencies
         code: |
+          # Updated our `apt-cache`
+          sudo apt-get update
+
+          # Install Node.js' apt repository
+          sudo apt-get install -y curl
+          curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
+
+          # Install our apt-based dependencies
           # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L178-L181
           # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L189-L195
           # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L302-L308
           # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/findwork.co/recipes/default.rb#L4-L16
           # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/findwork.co/recipes/default.rb#L18-L19
-          sudo apt-get update
-          sudo apt-get install -y curl
-          curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
           sudo apt-get install -y \
             redis-server=2:2.8.4-2 \
             postgresql-9.3=9.3.14-0ubuntu0.14.04 \
@@ -70,8 +75,28 @@ build:
           sudo su postgres --command "bin/reset-test-db.sh"
 
     # Install our dependencies and dev dependencies
-    # DEV: This also tests `npm run build` due to a `postinstall` hook
-    - npm-install@1.1.4
+    # DEV: We use this over `step-npm-install` to gain single step bootstrapping
+    #   https://github.com/wercker/step-npm-install/blob/082879a7d314754b3ee5aecf41f7234ecb6a3b78/run.sh
+    - script:
+        name: run bootstrap.sh
+        code: |
+          # Create our cache
+          # https://github.com/wercker/step-npm-install/blob/082879a7d314754b3ee5aecf41f7234ecb6a3b78/run.sh#L16-L22
+          mkdir -p "$WERCKER_CACHE_DIR/wercker/npm"
+          npm config set cache "$WERCKER_CACHE_DIR/wercker/npm"
+
+          # If we fail to bootstrap
+          if ! CONFIG_COPY_ONLY=TRUE bin/bootstrap.sh; then
+            # Clear our cache
+            # https://github.com/wercker/step-npm-install/blob/082879a7d314754b3ee5aecf41f7234ecb6a3b78/run.sh#L24-L32
+            npm cache clear
+            mkdir -p "$WERCKER_CACHE_DIR/wercker/npm"
+            printf keep > "$WERCKER_CACHE_DIR/wercker/npm/.keep"
+
+            # Exit as a failure
+            # https://github.com/wercker/step-npm-install/blob/082879a7d314754b3ee5aecf41f7234ecb6a3b78/run.sh#L37-L42
+            exit 1
+          fi
 
     # Run our tests
     - npm-test@0.0.3

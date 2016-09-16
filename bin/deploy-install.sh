@@ -4,3 +4,6 @@ set -e
 
 # Install our Node.js dependencies
 npm install --production --loglevel http
+
+# Decrypt our secrets
+bin/decrypt-config.sh
