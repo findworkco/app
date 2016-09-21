@@ -71,8 +71,7 @@ build:
     - script:
         name: provision test database
         code: |
-          # DEV: We use `postgres` as `root` doesn't have a PostgreSQL role
-          sudo su postgres --command "bin/reset-test-db.sh"
+          bin/reset-test-db.sh
 
     # Install our dependencies and dev dependencies
     # DEV: We use this over `step-npm-install` to gain single step bootstrapping

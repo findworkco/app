@@ -11,7 +11,7 @@ if psql "$db_name" --command "SELECT 'hai';" &> /dev/null; then
 fi
 
 # Create our database
-createdb "$db_name"
+sudo su postgres --shell /bin/bash --command "createdb \"$db_name\""
 
 # TODO: Run our migrations
 

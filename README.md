@@ -220,5 +220,26 @@ cd ~ubuntu/app/main
 bin/create-local-db.sh
 ```
 
+### Debugging Wercker
+Sometimes `vagrant-lxc` and Wercker can have different experiences during tests. To start a Docker instance locally (same platform as Wercker), run the following:
+
+```bash
+# Run our container with the local directory mounted to /vagrant
+docker run --interactive --tty --volume $PWD:/vagrant ubuntu:14.04 /bin/bash
+
+# Navigate to our /vagrant directory
+cd /vagrant
+
+# Run steps in `wercker.yml` by hand
+
+# To connect to the existing shell, run:
+# docker exec --interactive --tty 0d7bd9cac25b /bin/bash
+#   Id (e.g. 0d7bd9cac25b) found via `bash` shell or `docker images --all`
+
+# To destroy the container, run:
+# docker rm 0d7bd9cac25b
+#   Id (e.g. 0d7bd9cac25b) found via `bash` shell or `docker images --all`
+```
+
 ## Copyright
 All rights reserved, Shoulders of Titans LLC
