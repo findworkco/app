@@ -65,6 +65,31 @@ dropdb find_work
 bin/create-local-db.sh
 ```
 
+### Creating new migrations
+To create a new migration, copy our placeholder our file with the next sequential id. It will be automatically identified as the next migration to run:
+
+```bash
+cp server/migrations/0001-placeholder.js server/migrations/XXXX-my-new-migration.js
+# cp server/migrations/0001-placeholder.js server/migrations/0003-add-candidates-table.js
+```
+
+### Running migrations
+Migrations are automatically run by `bootstrap.sh` and `create-local-db.sh` but to run them alone, run the following:
+
+```bash
+ENV=development npm run migrate-latest
+# To run migrations for testing, use `bin/reset-tet-db.sh`
+```
+
+We provide other scripts for rolling back migrations:
+
+```bash
+# Roll back last run migration
+ENV=development npm run migrate-undo
+# Roll back all migrations (not recommended as it wipes database)
+ENV=development npm run migrate-undo-all
+```
+
 ### Connecting to a database
 To connnect to the development database, the simplest way is:
 

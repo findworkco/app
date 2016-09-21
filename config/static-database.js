@@ -9,6 +9,7 @@ var DEVELOPMENT_PASSWORD = 'find_work';
 var TEST_DATABASE = 'find_work_test';
 exports.common = {
   postgresql: {
+    // DEV: We use the same naming scheme as Sequelize so we can reuse these objects for migrations
     host: '127.0.0.1',
     port: '5500',
     database: undefined, // OVERRIDE: Need to override in each environment

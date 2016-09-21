@@ -14,6 +14,8 @@ fi
 # Create our new database
 sudo su postgres --shell /bin/bash --command "createdb \"$db_name\""
 
-# TODO: Run migrations
+# Run our migrations
+ENV=test npm run migrate-latest
 
+# Notify the user we are done
 echo "Database \"$db_name\" successfully reset" 1>&2

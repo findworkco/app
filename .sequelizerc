@@ -1,0 +1,18 @@
+// Configure our default invocation for `sequelize-cli`
+// https://github.com/sequelize/cli/blob/v2.4.0/bin/sequelize#L17-L45
+
+// Use our environment variable as the environment
+// https://github.com/sequelize/cli/blob/v2.4.0/lib/helpers/generic-helper.js#L27-L29
+exports.env = process.env.ENV;
+if (exports.env === undefined) {
+  console.warn('No environment variable ENV was found');
+}
+
+// Move to a more specific config name
+// https://github.com/sequelize/cli/blob/v2.4.0/lib/helpers/config-helper.js#L12-L14
+exports.config = __dirname + '/config/sequelize.js';
+
+// Move to a non-top-level migrations folder
+// DEV: This key emulates `--migrations-path`
+// https://github.com/sequelize/cli/blob/v2.4.0/lib/helpers/path-helper.js#L11-L44
+exports['migrations-path'] = __dirname + '/server/migrations';

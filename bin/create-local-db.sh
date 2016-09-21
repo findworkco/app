@@ -2,6 +2,12 @@
 # Exit on first error
 set -e
 
+# Verify we have the `ENV` environment variable
+if test "$ENV" = ""; then
+  echo "Expected environment variable \"ENV\" to be defined but it wasn't. Please define it" 1>&2
+  exit 1
+fi
+
 # If a local db already exists, then exit out
 db_name="find_work"
 if psql "$db_name" --command "SELECT 'hai';" &> /dev/null; then
@@ -13,7 +19,8 @@ fi
 # Create our database
 sudo su postgres --shell /bin/bash --command "createdb \"$db_name\""
 
-# TODO: Run our migrations
+# Run our migrations
+npm run migrate-latest
 
 # Notify user of success
 echo "Database \"$db_name\" successfully created" 1>&2

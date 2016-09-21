@@ -67,12 +67,6 @@ build:
           # https://github.com/bower/bower/issues/1752#issuecomment-113455403
           echo "{\"allow_root\": true}" > ~/.bowerrc
 
-    # Provision our test database
-    - script:
-        name: provision test database
-        code: |
-          bin/reset-test-db.sh
-
     # Install our dependencies and dev dependencies
     # DEV: We use this over `step-npm-install` to gain single step bootstrapping
     #   https://github.com/wercker/step-npm-install/blob/082879a7d314754b3ee5aecf41f7234ecb6a3b78/run.sh
@@ -96,6 +90,12 @@ build:
             # https://github.com/wercker/step-npm-install/blob/082879a7d314754b3ee5aecf41f7234ecb6a3b78/run.sh#L37-L42
             exit 1
           fi
+
+    # Provision our test database (depends on `sequelize` being installed)
+    - script:
+        name: provision test database
+        code: |
+          bin/reset-test-db.sh
 
     # Run our tests
     - npm-test@0.0.3
