@@ -27,7 +27,7 @@ build:
             postgresql-9.3=9.3.14-0ubuntu0.14.04 \
             postgresql-server-dev-9.3=9.3.14-0ubuntu0.14.04 \
             build-essential make openssl python-dev \
-            nodejs=4.5.0-1nodesource1~trusty1 \
+            nodejs=4.6.0-1nodesource1~trusty1 \
             git
 
 

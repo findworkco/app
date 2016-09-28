@@ -10,21 +10,19 @@ assert(SERVER_DSN);
 
 // Define our configurations
 exports.common = {
-  // No shared configuration across environments
-};
-
-exports.development = {
-  sentry: {
-    browserDSN: BROWSER_DSN,
-    serverDSN: SERVER_DSN
-  }
-};
-
-exports.test = {
+  // By default, send no info to Sentry
   sentry: {
     browserDSN: null,
     serverDSN: null
   }
+};
+
+exports.development = {
+  // Use common Sentry setup
+};
+
+exports.test = {
+  // Use common Sentry setup
 };
 
 exports.production = {

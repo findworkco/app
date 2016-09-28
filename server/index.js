@@ -21,9 +21,6 @@ var appLocals = {
   timezonesByCountryCode: require('../vendor/tz-locales.json')
 };
 
-// Resolve the current `git` version for Sentry
-var gitCommit = require('child_process').execSync('git rev-parse HEAD').toString('utf8');
-
 // DEV: Historically I (@twolfson) have built Node.js servers that aren't singleton based
 //   This means a controller would receive a `app` or `config` and return a function
 //   The main benefit of not using singletons is we can test one-off configurations easily (e.g. altering loggers)
@@ -68,7 +65,7 @@ function Server(config) {
   // Create a Sentry client
   app.sentryClient = new raven.Client(config.sentry.serverDSN, {
     environment: config.ENV,
-    release: gitCommit
+    release: config.gitRevision
   });
 
   // Create a Redis client

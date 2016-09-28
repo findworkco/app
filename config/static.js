@@ -1,16 +1,19 @@
 // Based on https://github.com/twolfson/twolfson.com/blob/3.87.0/config/static.js
 // Load in our dependencies
 var _ = require('underscore');
+var execSync = require('child_process').execSync;
 
 // DEV: When we want to store secrets, follow SOPS' all-in-one secret convention
 //   We prefer it over per-file as we can use aliasing in non-JSON files
 //   https://github.com/mozilla/sops/tree/f63597f901f50f07ff72452b4bdb485518b85de7/examples
 
-// TODO: Set up Sentry (browser and server)
-// TODO: Add Winston logger (try getting a nicer Sentry/Winston hybrid somehow...)
+// TODO: Set up Sentry (browser)
+// TODO: Add Winston logger
 
 // Define generic settings
 exports.common = {
+  // TODO: Load from source other than `git` as it isn't guaranteed in production
+  gitRevision: execSync('git rev-parse HEAD').toString('utf8'),
   redisUrl: 'redis://127.0.0.1:6400'
 };
 
