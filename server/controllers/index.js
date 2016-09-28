@@ -1,5 +1,6 @@
 // Load in our dependencies
 var app = require('../index.js').app;
+var config = require('../index.js').config;
 var applicationMockData = require('../models/application-mock-data');
 var interviewMockData = require('../models/interview-mock-data');
 var genericMockData = require('../models/generic-mock-data');
@@ -15,8 +16,6 @@ app.get('/', function rootShow (req, res, next) {
 app.get('/archive', function archiveShow (req, res, next) {
   res.render('archive.jade', genericMockData);
 });
-
-// TODO: Build error handlers/pages (e.g. 404, 500)
 
 // TODO: Move to `development` or remove entirely
 app.get('/_dev/postgresql', function devPostgresqlShow (req, res, next) {
@@ -133,3 +132,13 @@ app.post('/interview/:id/delete', function interviewDeleteSave (req, res, next) 
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Interview deleted');
   res.redirect(mockData.selectedApplication.url);
 });
+
+// Load our development routes
+if (config.loadDevelopmentRoutes) {
+  void require('./development.js');
+}
+
+// Load our error generators and handlers
+// DEV: `error-handlers` must go after all other middlewares/controllers to catch their errors
+void require('./error-generators.js');
+void require('./error-handlers.js');

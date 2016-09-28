@@ -8,6 +8,7 @@ var csurf = require('csurf');
 var expressSession = require('express-session');
 var qsMultiDict = require('querystring-multidict');
 var RedisSessionStore = require('connect-redis')(expressSession);
+var raven = require('raven');
 var redis = require('redis');
 // DEV: ORM evaluation -- https://gist.github.com/twolfson/13eeeb547271c8ee32707f7b02c2ed90
 var Sequelize = require('sequelize');
@@ -20,6 +21,9 @@ var appLocals = {
   timezonesByCountryCode: require('../vendor/tz-locales.json')
 };
 
+// Resolve the current `git` version for Sentry
+var gitCommit = require('child_process').execSync('git rev-parse HEAD').toString('utf8');
+
 // DEV: Historically I (@twolfson) have built Node.js servers that aren't singleton based
 //   This means a controller would receive a `app` or `config` and return a function
 //   The main benefit of not using singletons is we can test one-off configurations easily (e.g. altering loggers)
@@ -30,6 +34,7 @@ var appLocals = {
 var config = require('../config').getConfig();
 
 // Save configuration based locals
+appLocals.sentryBrowserDSN = config.sentry.browserDSN;
 appLocals.serveAnalytics = config.serveAnalytics;
 appLocals.googleAnalyticsId = config.googleAnalyticsId;
 
@@ -59,6 +64,12 @@ function Server(config) {
 
   // Define our application locals
   app.locals = _.defaults(app.locals, appLocals);
+
+  // Create a Sentry client
+  app.sentryClient = new raven.Client(config.sentry.serverDSN, {
+    environment: config.ENV,
+    release: gitCommit
+  });
 
   // Create a Redis client
   app.redisClient = redis.createClient(config.redisUrl);
@@ -132,6 +143,3 @@ module.exports = new Server(config);
 
 // Load our controller bindings
 void require('./controllers/index.js');
-if (config.loadDevelopmentRoutes) {
-  void require('./controllers/development.js');
-}

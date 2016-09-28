@@ -2,7 +2,7 @@
 var _ = require('underscore');
 var assert = require('assert');
 var staticUrl = require('./static-url');
-var secrets = require('./static-secrets');
+var staticSecrets = require('./static-secrets');
 
 // Define our configurations
 // https://github.com/expressjs/session/tree/v1.13.1
@@ -34,7 +34,7 @@ exports.common = {
   }
 };
 
-var DEVELOPMENT_SECRET = secrets['static-session']['development-secret'];
+var DEVELOPMENT_SECRET = staticSecrets.staticSession.developmentSecret;
 assert(DEVELOPMENT_SECRET);
 exports.development = {
   session: _.defaults({
@@ -57,7 +57,7 @@ exports.test = {
   }, exports.common.session)
 };
 
-var PRODUCTION_SECRET = secrets['static-session']['production-secret'];
+var PRODUCTION_SECRET = staticSecrets.staticSession.productionSecret;
 assert(PRODUCTION_SECRET);
 exports.production = {
   session: _.defaults({
