@@ -14,6 +14,10 @@ app.use(function handleError (err, req, res, next) {
     return next(err);
   }
 
+  // Log our error
+  // TODO: Log error to Winston
+  console.error(err);
+
   // Prepare and send our request for Sentry
   // https://github.com/getsentry/raven-node/blob/0.12.0/lib/middleware/connect.js#L21-L25
   // DEV: We overwrite `query` and `data` with the format Raven expects
