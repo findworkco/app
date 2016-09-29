@@ -7,13 +7,12 @@ var execSync = require('child_process').execSync;
 //   We prefer it over per-file as we can use aliasing in non-JSON files
 //   https://github.com/mozilla/sops/tree/f63597f901f50f07ff72452b4bdb485518b85de7/examples
 
-// TODO: Set up Sentry (browser)
 // TODO: Add Winston logger
 
 // Define generic settings
 exports.common = {
   // TODO: Load from source other than `git` as it isn't guaranteed in production
-  gitRevision: execSync('git rev-parse HEAD').toString('utf8'),
+  gitRevision: execSync('git rev-parse HEAD').toString('utf8').trim(),
   redisUrl: 'redis://127.0.0.1:6400'
 };
 

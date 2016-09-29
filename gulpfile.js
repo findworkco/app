@@ -8,6 +8,7 @@ var gulpSvgmin = require('gulp-svgmin');
 var gulpLivereload = require('gulp-livereload');
 var gulpNotify = require('gulp-notify');
 var gulpSass = require('gulp-sass');
+var gulpSourcemaps = require('gulp-sourcemaps');
 var gulpUglify = require('gulp-uglify');
 var gulpSizereport = require('gulp-sizereport');
 var rimraf = require('rimraf');
@@ -86,7 +87,11 @@ gulp.task('build-images', ['build-images-svg', 'build-images-non-svg', 'build-im
 // Create a browserify instance
 // https://github.com/gulpjs/gulp/blob/v3.9.1/docs/recipes/browserify-uglify-sourcemap.md
 // https://github.com/substack/watchify/tree/v3.7.0#watchifyb-opts
-var browserifyObj = browserify({cache: {}, packageCache: {}, entries: __dirname + '/public/js/index.js'});
+var browserifyObj = browserify({
+  cache: {}, packageCache: {},
+  debug: true, // Enable source maps
+  entries: __dirname + '/public/js/index.js'
+});
 gulp.task('build-js', function buildJs () {
   // Bundle browserify content
   var jsStream = browserifyObj.bundle();
@@ -101,12 +106,18 @@ gulp.task('build-js', function buildJs () {
     .pipe(vinylSourceStream('index.js'))
     .pipe(gulpBuffer());
 
+  // Extract browserify inline sourcemaps into in-memory file
+  jsStream = jsStream.pipe(gulpSourcemaps.init({loadMaps: true}));
+
   // If we are minifying assets, then minify them
   if (config.minifyAssets) {
     jsStream = jsStream
       .pipe(gulpUglify())
       .pipe(gulpSizereport({gzip: true}));
   }
+
+  // Output sourcemaps in-memory to Vinyl file
+  jsStream = jsStream.pipe(gulpSourcemaps.write('./'));
 
   // Return our stream
   return jsStream

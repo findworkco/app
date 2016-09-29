@@ -93,6 +93,7 @@
     "extract-values": "~0.1.2",
     "gemini": "~3.0.2",
     "gemini-gui": "~3.0.0",
+    "gulp-sourcemaps": "~1.6.0",
     "jscs": "~3.0.7",
     "jshint": "~2.9.3",
     "mocha": "~2.4.5",

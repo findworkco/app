@@ -26,6 +26,18 @@ html
     //- TODO: Don't use all of FontAwesome (it's 71kb gzipped with 605 icons)
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
 
+    //- Load Sentry to catch/record errors
+    //- https://docs.sentry.io/hosted/clients/javascript/
+    //- DEV: Sentry is loaded separate from other scripts to prevent blocking one another
+    //- TODO: Save user context
+    script(src="https://cdn.ravenjs.com/3.7.0/raven.min.js")
+    if locals.sentryBrowserDSN
+      script
+        | Raven.config('#{sentryBrowserDSN}', {
+        |   environment: '#{ENV}',
+        |   release: '#{gitRevision}'
+        | }).install();
+
     //- If we are serving analytics, then output it
     if locals.serveAnalytics
       script window._gaqId = '#{googleAnalyticsId}';

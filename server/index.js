@@ -31,9 +31,11 @@ var appLocals = {
 var config = require('../config').getConfig();
 
 // Save configuration based locals
+appLocals.ENV = config.ENV; // Only use ENV for Sentry reporting
+appLocals.googleAnalyticsId = config.googleAnalyticsId;
+appLocals.gitRevision = config.gitRevision;
 appLocals.sentryBrowserDSN = config.sentry.browserDSN;
 appLocals.serveAnalytics = config.serveAnalytics;
-appLocals.googleAnalyticsId = config.googleAnalyticsId;
 
 // Define our server constructor
 function Server(config) {
