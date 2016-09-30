@@ -33,7 +33,10 @@ exports.production = {
 };
 
 // Merge in grouped settings
-var configFiles = ['./static-analytics', './static-database', './static-session', './static-sentry', './static-url'];
+var configFiles = [
+  './static-analytics', './static-database', './static-google',
+  './static-session', './static-sentry', './static-url'
+];
 configFiles.forEach(function mergeConfigFile (configFile) {
   // Assert that the new config has no repeated keys
   var mainConfig = exports;

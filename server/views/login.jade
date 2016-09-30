@@ -1,7 +1,7 @@
 extends layout
 
 block title
-  title Sign Up/Log In - Find Work
+  title Sign up/Log in - Find Work
 
 block content
   .grid
@@ -11,9 +11,8 @@ block content
       p.text--center.landmark
         //- https://developers.google.com/identity/branding-guidelines
         //- DEV: `id` is for testing purposes only
-        //- TODO: Link to Google sign in
         //- TODO: Use Google branding for button
-        a#login_with_google.btn.btn--primary(href="/schedule")
+        a#login_with_google.btn.btn--primary(href="/oauth/google/request")
           strong G+
           = " Sign up/Log in with Google"
         br

@@ -133,6 +133,9 @@ app.post('/interview/:id/delete', function interviewDeleteSave (req, res, next) 
   res.redirect(mockData.selectedApplication.url);
 });
 
+// Load our OAuth controllers
+void require('./oauth-google.js');
+
 // Bind our legal controllers
 // DEV: Google OAuth links to these pages
 //   https://console.developers.google.com/apis/credentials/consent?project=app-development-144900
