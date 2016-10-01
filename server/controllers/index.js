@@ -38,6 +38,10 @@ app.get('/login', function loginShow (req, res, next) {
   res.render('login.jade', genericMockData);
 });
 
+app.get('/sign-up', function logInShow (req, res, next) {
+  res.render('sign-up.jade', genericMockData);
+});
+
 app.get('/settings', function settingsShow (req, res, next) {
   // TODO: Require login for this page
   res.render('settings.jade', genericMockData);

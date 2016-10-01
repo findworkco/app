@@ -9,8 +9,8 @@ block base-content
     - var callToActionStr = "Get started. It's free!";
     .container
       .grid
-        .grid__item.one-twelfth.small-hidden &nbsp;
-        .grid__item.five-sixths.small-one-whole
+        .grid__item.one-quarter.small-hidden &nbsp;
+        .grid__item.two-quarters.small-one-whole
           //- TODO: Make all headings not bold by default
           a.link--unstyled(href="/")
             h1(style="font-weight: normal").soft-half--ends.flush--bottom
@@ -18,9 +18,10 @@ block base-content
           h2(style="font-weight: normal") Manage job leads and applications
           p
             a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
-        .grid__item.one-twelfth.small-hidden
-          .float--right.soft-half--ends
-            a.btn.btn--default(href="/login") Sign up/Log In
+        .grid__item.one-quarter.small-hidden
+          .float--right
+            a.btn.btn--default.push-half--top(href="/sign-up") Sign up
+            a.btn.btn--default.push-half--left.push-half--top(href="/login") Log In
       .medium-and-up-hidden
         .grid
           .grid__item.one-whole
