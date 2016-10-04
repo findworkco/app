@@ -12,12 +12,11 @@ describe('An HTTP request receiving a notification', function () {
       pathname: '/_dev/notification',
       query: {type: 'success', message: 'Hello World'}
     }),
-    followRedirect: true
+    followRedirect: true,
+    expectedStatusCode: 200
   });
 
   it('receives a response with a notification', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     expect(this.body).to.contain('Hello World');
   });
 });
@@ -30,12 +29,11 @@ describe('An HTTP request receiving a malicious notification', function () {
       pathname: '/_dev/notification',
       query: {type: 'success', message: '<script>alert(1)</script>'}
     }),
-    followRedirect: true
+    followRedirect: true,
+    expectedStatusCode: 200
   });
 
   it('receives a response with an escaped notification', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     expect(this.body).to.contain('&lt;script&gt;alert(1)&lt;/script&gt;');
   });
 });

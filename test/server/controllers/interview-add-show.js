@@ -9,11 +9,9 @@ describe('A request to GET /application/:id/add-interview from the owner user', 
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-sky-networks-uuid';
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'));
-
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
+  httpUtils.session.init().save({
+    url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+    expectedStatusCode: 200
   });
 
   it('recieves the interview add page', function () {
@@ -62,22 +60,26 @@ describe.skip('A request to GET /application/:id/add-interview from a non-owner 
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-uuid';
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'));
+  httpUtils.session.init().save({
+    url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+    expectedStatusCode: 404
+  });
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
 describe.skip('A request to GET /application/:id/add-interview for an application that doesn\'t exist', function () {
   // Start our server, log in (need to do), and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/application/does-not-exist/add-interview'));
+  httpUtils.session.init().save({
+    url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
+    expectedStatusCode: 404
+  });
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -86,13 +88,12 @@ describe.skip('A request to GET /application/:id/add-interview from a logged out
   serverUtils.run();
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
-    followRedirect: false
+    followRedirect: false,
+    expectedStatusCode: 302
   });
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
   it('recieves a prompt to log in', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('Location', '/login');
   });
 });

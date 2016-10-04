@@ -7,12 +7,7 @@ var serverUtils = require('../utils/server');
 describe('A request to GET /sign-up', function () {
   // Start our server and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/sign-up'));
-
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
-  });
+  httpUtils.session.init().save({url: serverUtils.getUrl('/sign-up'), expectedStatusCode: 200});
 
   it('recieves the sign up page', function () {
     expect(this.$('.content__heading').text()).to.equal('Sign up');

@@ -13,15 +13,11 @@ describe('A request to POST /application/:id/delete from the owner user', functi
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/delete'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-  });
-
   it('redirects to the schedule', function () {
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers.location).to.equal('/schedule');
   });
 
@@ -47,12 +43,12 @@ describe.skip('A request to POST /application/:id/delete from a non-owner user',
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/delete'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -63,12 +59,12 @@ describe.skip('A request to POST /application/:id/delete that doesn\'t exist', f
     .save(serverUtils.getUrl('/application/does-not-exist'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/delete'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -78,13 +74,12 @@ describe.skip('A request to POST /application/:id/delete from a logged out user'
   httpUtils.session.init()
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/delete'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
   it('recieves a prompt to log in', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('Location', '/login');
   });
 });

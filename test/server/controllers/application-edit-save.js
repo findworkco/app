@@ -13,15 +13,11 @@ describe('A request to POST /application/:id to update fields from the owner use
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-  });
-
   it('redirects to the application page', function () {
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers.location).to.equal('/application/' + applicationId);
   });
 
@@ -48,12 +44,11 @@ describe.skip('A request to POST /application/:id for "Received offer" action fr
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
   it('redirects to the application page', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     expect(this.res.headers.location).to.equal('/application/' + applicationId);
   });
 
@@ -80,12 +75,11 @@ describe.skip('A request to POST /application/:id to "Archive" action from the o
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
   it('redirects to the schedule page', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     expect(this.res.headers.location).to.equal('/schedule');
   });
 
@@ -111,12 +105,12 @@ describe.skip('A request to POST /application/:id from a non-owner user', functi
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -127,12 +121,12 @@ describe.skip('A request to POST /application/:id that doesn\'t exist', function
     .save(serverUtils.getUrl('/application/does-not-exist'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/does-not-exist'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -142,13 +136,12 @@ describe.skip('A request to POST /application/:id from a logged out user', funct
   httpUtils.session.init()
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/does-not-exist'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
   it('recieves a prompt to log in', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('Location', '/login');
   });
 });

@@ -1,5 +1,4 @@
 // Load in our dependencies
-var expect = require('chai').expect;
 var httpUtils = require('./utils/http');
 var serverUtils = require('./utils/server');
 
@@ -15,12 +14,12 @@ describe('An HTTP request without a CSRF token', function () {
       htmlForm: function ($form) {
         $form.find('input[name="x-csrf-token"]').remove();
       },
-      followRedirect: false
+      followRedirect: false,
+      expectedStatusCode: 403
     });
 
   it('is rejected', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(403);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -31,11 +30,11 @@ describe('An HTTP request with a CSRF token', function () {
     .save(serverUtils.getUrl('/add-application'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/add-application'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
   it('is successful', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(302);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });

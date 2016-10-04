@@ -9,12 +9,11 @@ describe.skip('A request to GET /oauth/google/callback with no information', fun
   serverUtils.run();
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/oauth/google/callback'),
-    followRedirect: false
+    followRedirect: false,
+    expectedStatusCode: 302
   });
 
   it('is redirected to Google\'s OAuth page', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers.location).to.equal(
       'https://accounts.google.com/o/oauth2/v2/auth' +
         '?response_type=code&redirect_uri=' + encodeURIComponent('https://findwork.test/oauth/google/callback') +
@@ -31,12 +30,8 @@ describe.skip('A request to GET /oauth/google/callback with an error', function 
       // TODO: Provide proper error code
       query: {error: 'error_goes_here'}
     }),
-    followRedirect: true
-  });
-
-  it('has no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
+    followRedirect: true,
+    expectedStatusCode: 200
   });
 
   it('is redirected to /login', function () {
@@ -56,12 +51,8 @@ describe.skip('A request to GET /oauth/google/callback with an invalid state', f
       pathname: '/oauth/google/callback',
       query: {state: 'invalid_state'}
     }),
-    followRedirect: true
-  });
-
-  it('has no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
+    followRedirect: true,
+    expectedStatusCode: 200
   });
 
   it('is redirected to /login', function () {
@@ -81,12 +72,7 @@ describe.skip('A request to GET /oauth/google/callback with an invalid code', fu
       pathname: '/oauth/google/callback',
       query: {state: 'valid_state', code: 'invalid_code'}
     }),
-    followRedirect: true
-  });
-
-  it('has no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
+    expectedStatusCode: 200
   });
 
   it('is redirected to /login', function () {
@@ -105,12 +91,8 @@ describe.skip('A request to GET /oauth/google/callback with a non-whitelisted us
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
       query: {state: 'valid_state', code: 'valid_code'}
-    })
-  });
-
-  it('has no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
+    }),
+    expectedStatusCode: 200
   });
 
   it('has a flash message about restricted access', function () {
@@ -127,12 +109,8 @@ describe.skip('A request to GET /oauth/google/callback with a non-existant white
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
       query: {code: 'invalid_code'}
-    })
-  });
-
-  it('has no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
+    }),
+    expectedStatusCode: 200
   });
 
   it('is redirected to /schedule', function () {
@@ -155,12 +133,8 @@ describe('A request to GET /oauth/google/callback with an existant user', functi
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
       query: {state: 'valid_state', code: 'valid_code'}
-    })
-  });
-
-  it('has no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
+    }),
+    expectedStatusCode: 200
   });
 
   it('is redirected to /schedule', function () {

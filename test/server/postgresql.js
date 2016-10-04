@@ -7,11 +7,9 @@ var serverUtils = require('./utils/server');
 describe('An HTTP request that touches PostgreSQL', function () {
   // Start our server and make our request
   serverUtils.run();
-  httpUtils.save(serverUtils.getUrl('/_dev/postgresql'));
+  httpUtils.save({url: serverUtils.getUrl('/_dev/postgresql'), expectedStatusCode: 200});
 
   it('receives a successful response', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     expect(this.body).to.equal('Sum: 2');
   });
 });

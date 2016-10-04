@@ -8,12 +8,7 @@ describe('A request to GET /application/:id from the owner user', function () {
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-sky-networks-uuid';
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/application/' + applicationId));
-
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
-  });
+  httpUtils.session.init().save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
 
   it('recieves the application page', function () {
     expect(this.$('.content__heading').text()).to.equal('Job application');
@@ -35,11 +30,9 @@ describe('A request to an archived GET /application/:id', function () {
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-monstromart-uuid';
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/application/' + applicationId));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
 
   it('shows archive date', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     expect(this.$('.archive-date').text()).to.contain('Mon Jan 18 at 3:00PM CST');
   });
 });
@@ -48,22 +41,20 @@ describe.skip('A request to GET /application/:id from a non-owner user', functio
   // Start our server, log in (need to do), and make our request
   var applicationId = 'abcdef-uuid';
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/application/' + applicationId));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 404});
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
 describe.skip('A request to GET /application/:id that doesn\'t exist', function () {
   // Start our server, log in (need to do), and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/application/does-not-exist'));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/application/does-not-exist'), expectedStatusCode: 404});
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -72,13 +63,12 @@ describe.skip('A request to GET /application/:id from a logged out user', functi
   serverUtils.run();
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/application/does-not-exist'),
-    followRedirect: false
+    followRedirect: false,
+    expectedStatusCode: 302
   });
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
   it('recieves a prompt to log in', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('Location', '/login');
   });
 });

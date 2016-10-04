@@ -7,12 +7,7 @@ var serverUtils = require('../utils/server');
 describe('A request to GET /terms', function () {
   // Start our server and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/terms'));
-
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
-  });
+  httpUtils.session.init().save({url: serverUtils.getUrl('/terms'), expectedStatusCode: 200});
 
   it('recieves the terms page', function () {
     expect(this.$('title').text()).to.equal('Terms of service - Find Work');

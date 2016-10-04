@@ -13,15 +13,11 @@ describe('A request to POST /application/:id/add-interview from the owner user',
     .save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-  });
-
   it('redirects to the application page', function () {
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('location', '/application/' + applicationId);
   });
 
@@ -49,7 +45,8 @@ describe.skip('A request to POST /application/:id/add-interview for a past inter
     .save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
-      followRedirect: false
+      followRedirect: false,
+      expectedStatusCode: 302
     });
 
   it('doesn\'t change application status', function () {
@@ -67,7 +64,8 @@ describe.skip('A request to POST /application/:id/add-interview for an upcoming 
     .save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
   it('changes application status to "Upcoming interview"', function () {
@@ -83,12 +81,12 @@ describe.skip('A request to POST /application/:id/add-interview from a non-owner
     .save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -99,12 +97,12 @@ describe.skip('A request to POST /application/:id/add-interview for an applicati
     .save(serverUtils.getUrl('/application/does-not-exist/add-interview'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -113,13 +111,12 @@ describe.skip('A request to POST /application/:id/add-interview from a logged ou
   serverUtils.run();
   httpUtils.session.init().save({
     method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
-    htmlForm: true, followRedirect: false
+    htmlForm: true, followRedirect: false,
+    expectedStatusCode: 302
   });
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
   it('recieves a prompt to log in', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('Location', '/login');
   });
 });

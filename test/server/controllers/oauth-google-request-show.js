@@ -9,12 +9,11 @@ describe('A request to GET /oauth/google/request', function () {
   serverUtils.run();
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/oauth/google/request'),
-    followRedirect: false
+    followRedirect: false,
+    expectedStatusCode: 302
   });
 
   it('is redirected to Google\'s OAuth page', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers.location).to.equal(
       'https://accounts.google.com/o/oauth2/v2/auth' +
         '?response_type=code&redirect_uri=' + encodeURIComponent('https://findwork.test/oauth/google/callback') +

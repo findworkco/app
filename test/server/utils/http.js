@@ -43,6 +43,16 @@ exports._save = function (options) {
       that.res = res;
       that.body = body;
 
+      // Verify status code is as expected (default of 200)
+      // DEV: `expectedStatusCode` can be opted out via `null`
+      var expectedStatusCode = options.expectedStatusCode !== undefined ? options.expectedStatusCode : 200;
+      if (expectedStatusCode) {
+        assert.strictEqual(err, null);
+        assert.strictEqual(res.statusCode, expectedStatusCode,
+          'Expected status code "' + expectedStatusCode + '" but received "' + res.statusCode + '" ' +
+          'and body "' + body + '"');
+      }
+
       // If there was a request to parse the response, then do it
       if (options.parseHTML !== false) {
         try {

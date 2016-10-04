@@ -26,7 +26,8 @@ describe('A request to POST /delete-account from a logged in user', function () 
       headers: {
         cookie: 'sid=' + this.sessionCookie.value
       },
-      url: serverUtils.getUrl('/settings')
+      url: serverUtils.getUrl('/settings'),
+      expectedStatusCode: null
     }).call(this, done);
   }
   before(requestSettingsViaCookie);
@@ -38,15 +39,11 @@ describe('A request to POST /delete-account from a logged in user', function () 
   // Make our destroy account request
   httpUtils.session.save({
     method: 'POST', url: serverUtils.getUrl('/delete-account'),
-    htmlForm: true, followRedirect: false
-  });
-
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
+    htmlForm: true, followRedirect: false,
+    expectedStatusCode: 302
   });
 
   it('is redirected to the landing page', function () {
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('location', '/');
   });
 
@@ -80,15 +77,11 @@ describe.skip('A request to POST /delete-account from a logged out user', functi
   serverUtils.run();
   httpUtils.session.init().save({
     method: 'POST', url: serverUtils.getUrl('/delete-account'),
-    htmlForm: true, followRedirect: false
-  });
-
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
+    htmlForm: true, followRedirect: false,
+    expectedStatusCode: 302
   });
 
   it('is redirected to the login page', function () {
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('location', '/login');
   });
 });

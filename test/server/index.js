@@ -7,11 +7,10 @@ var serverUtils = require('./utils/server');
 describe('An HTTP request to a running server', function () {
   // Start our server and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/'));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/'), expectedStatusCode: 200});
 
   it('receives a response', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 
   it('receives a session cookie', function () {

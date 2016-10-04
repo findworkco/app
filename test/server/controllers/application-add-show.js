@@ -8,12 +8,7 @@ var serverUtils = require('../utils/server');
 describe('A request to GET /add-application', function () {
   // Start our server and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/add-application'));
-
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
-  });
+  httpUtils.session.init().save({url: serverUtils.getUrl('/add-application'), expectedStatusCode: 200});
 
   it('recieves the add application page', function () {
     expect(this.$('.content__heading').text()).to.equal('Add job application');

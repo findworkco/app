@@ -12,15 +12,11 @@ describe('A request to POST /add-application for a logged in user', function () 
     .save(serverUtils.getUrl('/add-application'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/add-application'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-  });
-
   it('redirects to the new application\'s page', function () {
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers.location).to.have.match(/^\/application\/[^\/]+$/);
   });
 
@@ -46,12 +42,11 @@ describe.skip('A request to POST /add-application for a logged out user', functi
     .save(serverUtils.getUrl('/add-application'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/add-application'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
   it('redirects to sign up page', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('location', '/login');
   });
 

@@ -13,15 +13,11 @@ describe('A request to POST /interview/:id from the owner user', function () {
     .save(serverUtils.getUrl('/interview/' + interviewId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-  });
-
   it('redirects to the interview page', function () {
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('location', '/interview/' + interviewId);
   });
 
@@ -48,7 +44,8 @@ describe.skip('A request to POST /interview/:id for a past interview from the ow
     .save(serverUtils.getUrl('/interview/' + interviewId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
   it('doesn\'t change application status', function () {
@@ -65,7 +62,8 @@ describe.skip('A request to POST /interview/:id for an upcoming interview from t
     .save(serverUtils.getUrl('/interview/' + interviewId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
   it('changes application status to "Upcoming interview"', function () {
@@ -81,12 +79,12 @@ describe.skip('A request to POST /interview/:id from a non-owner user', function
     .save(serverUtils.getUrl('/interview/' + interviewId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -100,13 +98,13 @@ describe.skip('A request to POST /interview/:id from a user that ' +
     .save(serverUtils.getUrl('/interview/' + interviewId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 500
     });
 
   it('recieves an error', function () {
     // DEV: This verifies we don't leak sensitive info if something goes wrong
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(500);
+    // TODO: Assert error somehow
   });
 });
 
@@ -117,12 +115,12 @@ describe.skip('A request to POST /interview/:id that doesn\'t exist', function (
     .save(serverUtils.getUrl('/interview/does-not-exist'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it('recieves a 404', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(404);
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
@@ -132,13 +130,12 @@ describe.skip('A request to POST /interview/:id from a logged out user', functio
   httpUtils.session.init()
     .save({
       method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'),
-      htmlForm: true, followRedirect: false
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
     });
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
   it('recieves a prompt to log in', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(302);
     expect(this.res.headers).to.have.property('Location', '/login');
   });
 });

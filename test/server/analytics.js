@@ -15,11 +15,9 @@ describe('An HTTP request to an analytics serving server', function () {
     server.app.locals.serveAnalytics = false;
     expect(server.app.locals.serveAnalytics).to.equal(false);
   });
-  httpUtils.save(serverUtils.getUrl('/'));
+  httpUtils.save({url: serverUtils.getUrl('/'), expectedStatusCode: 200});
 
   it('receives a response with analytics', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     expect(this.body).to.contain('i,s,o,g,r,a,m');
   });
 });

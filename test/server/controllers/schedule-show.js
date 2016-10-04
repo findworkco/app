@@ -7,12 +7,7 @@ var serverUtils = require('../utils/server');
 describe.skip('A request to GET /schedule from a logged out user', function () {
   // Start our server and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
-
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
-  });
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it('recieves the schedule page', function () {
     expect(this.$('.content__heading')).to.have.length(0);
@@ -25,14 +20,9 @@ describe.skip('A request to GET /schedule from a logged out user', function () {
 describe('A request to GET /schedule from a logged in user with no applications', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   // DEV: We test these again to make sure logged in/logged out users receive same treatment
-  it('recieves no errors', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
-  });
-
   it('recieves the schedule page', function () {
     expect(this.$('.content__heading')).to.have.length(0);
   });
@@ -52,11 +42,9 @@ describe('A request to GET /schedule from a logged in user with no applications'
 describe.skip('A request to GET /schedule from a logged in user with an offer received application', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it.skip('lists the application', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     // Test me
   });
 });
@@ -65,11 +53,9 @@ describe.skip('A request to GET /schedule from a logged in user with an offer re
 describe.skip('A request to GET /schedule from a logged in user with an upcoming interview application', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it('lists the application', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     // TODO: Remove `:first-child`, it's a legacy from prototyping
     expect(this.$('#nav #nav__upcoming-interviews .nav-row--application:first-child h4').text())
       .to.equal('Senior Software Engineer at Umbrella Corporation');
@@ -80,11 +66,9 @@ describe.skip('A request to GET /schedule from a logged in user with an upcoming
 describe.skip('A request to GET /schedule from a logged in user with a waiting for response application', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it('lists the application', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     expect(this.$('#nav #nav__waiting-for-response .nav-row--application h4').text())
       .to.equal('Engineer II at Sky Networks');
   });
@@ -93,11 +77,9 @@ describe.skip('A request to GET /schedule from a logged in user with a waiting f
 describe.skip('A request to GET /schedule from a logged in user with a have not applied application', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it.skip('lists the application', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     // Test me
   });
 });
@@ -105,11 +87,9 @@ describe.skip('A request to GET /schedule from a logged in user with a have not 
 describe.skip('A request to GET /schedule from a logged in user with an application in another account', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it.skip('does not list the application', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     // Test me
   });
 });
@@ -117,11 +97,9 @@ describe.skip('A request to GET /schedule from a logged in user with an applicat
 describe.skip('A request to GET /schedule from a logged in user with an archived application', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
-  httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it.skip('does not list the application', function () {
-    expect(this.err).to.equal(null);
-    expect(this.res.statusCode).to.equal(200);
     // Test me
   });
 });
