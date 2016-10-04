@@ -12,10 +12,8 @@ describe('A request to POST /application/:id/add-interview from the owner user',
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'))
     .save({
-      method: 'POST',
-      url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
-      htmlForm: true,
-      followRedirect: false
+      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+      htmlForm: true, followRedirect: false
     });
 
   it('recieves no errors', function () {
@@ -50,8 +48,7 @@ describe.skip('A request to POST /application/:id/add-interview for a past inter
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'))
     .save({
-      method: 'POST',
-      url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
       followRedirect: false
     });
 
@@ -69,10 +66,8 @@ describe.skip('A request to POST /application/:id/add-interview for an upcoming 
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'))
     .save({
-      method: 'POST',
-      url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
-      htmlForm: true,
-      followRedirect: false
+      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+      htmlForm: true, followRedirect: false
     });
 
   it('changes application status to "Upcoming interview"', function () {
@@ -87,10 +82,8 @@ describe.skip('A request to POST /application/:id/add-interview from a non-owner
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'))
     .save({
-      method: 'POST',
-      url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
-      htmlForm: true,
-      followRedirect: false
+      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+      htmlForm: true, followRedirect: false
     });
 
   it('recieves a 404', function () {
@@ -105,10 +98,8 @@ describe.skip('A request to POST /application/:id/add-interview for an applicati
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/does-not-exist/add-interview'))
     .save({
-      method: 'POST',
-      url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
-      htmlForm: true,
-      followRedirect: false
+      method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
+      htmlForm: true, followRedirect: false
     });
 
   it('recieves a 404', function () {
@@ -121,10 +112,8 @@ describe.skip('A request to POST /application/:id/add-interview from a logged ou
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    method: 'POST',
-    htmlForm: true,
-    followRedirect: false,
-    url: serverUtils.getUrl('/application/does-not-exist/add-interview')
+    method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
+    htmlForm: true, followRedirect: false
   });
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not

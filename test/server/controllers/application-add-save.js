@@ -10,7 +10,10 @@ describe('A request to POST /add-application for a logged in user', function () 
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/add-application'))
-    .save({method: 'POST', url: serverUtils.getUrl('/add-application'), htmlForm: true, followRedirect: false});
+    .save({
+      method: 'POST', url: serverUtils.getUrl('/add-application'),
+      htmlForm: true, followRedirect: false
+    });
 
   it('recieves no errors', function () {
     expect(this.err).to.equal(null);
@@ -41,7 +44,10 @@ describe.skip('A request to POST /add-application for a logged out user', functi
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/add-application'))
-    .save({method: 'POST', url: serverUtils.getUrl('/add-application'), htmlForm: true, followRedirect: false});
+    .save({
+      method: 'POST', url: serverUtils.getUrl('/add-application'),
+      htmlForm: true, followRedirect: false
+    });
 
   it('redirects to sign up page', function () {
     expect(this.err).to.equal(null);

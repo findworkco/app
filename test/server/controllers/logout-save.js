@@ -36,7 +36,10 @@ describe('A request to POST /logout', function () {
   });
 
   // Make our logout request
-  httpUtils.session.save({method: 'POST', url: serverUtils.getUrl('/logout'), htmlForm: true, followRedirect: false});
+  httpUtils.session.save({
+    method: 'POST', url: serverUtils.getUrl('/logout'),
+    htmlForm: true, followRedirect: false
+  });
 
   it('recieves no errors', function () {
     expect(this.err).to.equal(null);

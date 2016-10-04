@@ -71,8 +71,8 @@ describe.skip('A request to GET /application/:id from a logged out user', functi
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: false,
-    url: serverUtils.getUrl('/application/does-not-exist')
+    url: serverUtils.getUrl('/application/does-not-exist'),
+    followRedirect: false
   });
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not

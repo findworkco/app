@@ -8,11 +8,11 @@ describe('An HTTP request receiving a notification', function () {
   // Start our server and make our request (will be redirected to /schedule)
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: true,
     url: serverUtils.getUrl({
       pathname: '/_dev/notification',
       query: {type: 'success', message: 'Hello World'}
-    })
+    }),
+    followRedirect: true
   });
 
   it('receives a response with a notification', function () {
@@ -26,11 +26,11 @@ describe('An HTTP request receiving a malicious notification', function () {
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: true,
     url: serverUtils.getUrl({
       pathname: '/_dev/notification',
       query: {type: 'success', message: '<script>alert(1)</script>'}
-    })
+    }),
+    followRedirect: true
   });
 
   it('receives a response with an escaped notification', function () {

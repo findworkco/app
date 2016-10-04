@@ -23,8 +23,8 @@ describe.skip('A request to GET /settings from a logged out user', function () {
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: false,
-    url: serverUtils.getUrl('/settings')
+    url: serverUtils.getUrl('/settings'),
+    followRedirect: false
   });
 
   it('is redirected to the /login page', function () {

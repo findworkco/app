@@ -8,8 +8,8 @@ describe('A request to GET /oauth/google/request', function () {
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: false,
-    url: serverUtils.getUrl('/oauth/google/request')
+    url: serverUtils.getUrl('/oauth/google/request'),
+    followRedirect: false
   });
 
   it('is redirected to Google\'s OAuth page', function () {

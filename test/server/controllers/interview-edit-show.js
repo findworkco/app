@@ -73,8 +73,8 @@ describe.skip('A request to GET /interview/:id from a logged out user', function
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: false,
-    url: serverUtils.getUrl('/interview/does-not-exist')
+    url: serverUtils.getUrl('/interview/does-not-exist'),
+    followRedirect: false
   });
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not

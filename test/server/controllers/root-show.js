@@ -24,8 +24,8 @@ describe.skip('A request to / from a logged in user', function () {
   // Start our server, log in our user (need to add), and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: false,
-    url: serverUtils.getUrl('/')
+    url: serverUtils.getUrl('/'),
+    followRedirect: false
   });
 
   it('is redirected to the /schedule page', function () {

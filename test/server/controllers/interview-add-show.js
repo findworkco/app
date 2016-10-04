@@ -85,8 +85,8 @@ describe.skip('A request to GET /application/:id/add-interview from a logged out
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: false,
-    url: serverUtils.getUrl('/application/does-not-exist/add-interview')
+    url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
+    followRedirect: false
   });
 
   // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not

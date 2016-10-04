@@ -11,8 +11,7 @@ describe('An HTTP request without a CSRF token', function () {
   httpUtils.session.init()
     .save(serverUtils.getUrl('/add-application'))
     .save({
-      method: 'POST',
-      url: serverUtils.getUrl('/add-application'),
+      method: 'POST', url: serverUtils.getUrl('/add-application'),
       htmlForm: function ($form) {
         $form.find('input[name="x-csrf-token"]').remove();
       },
@@ -30,7 +29,10 @@ describe('An HTTP request with a CSRF token', function () {
   serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/add-application'))
-    .save({method: 'POST', url: serverUtils.getUrl('/add-application'), htmlForm: true, followRedirect: false});
+    .save({
+      method: 'POST', url: serverUtils.getUrl('/add-application'),
+      htmlForm: true, followRedirect: false
+    });
 
   it('is successful', function () {
     expect(this.err).to.equal(null);

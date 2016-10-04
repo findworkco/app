@@ -8,8 +8,8 @@ describe.skip('A request to GET /oauth/google/callback with no information', fun
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: false,
-    url: serverUtils.getUrl('/oauth/google/callback')
+    url: serverUtils.getUrl('/oauth/google/callback'),
+    followRedirect: false
   });
 
   it('is redirected to Google\'s OAuth page', function () {
@@ -26,12 +26,12 @@ describe.skip('A request to GET /oauth/google/callback with an error', function 
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: true,
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
       // TODO: Provide proper error code
       query: {error: 'error_goes_here'}
-    })
+    }),
+    followRedirect: true
   });
 
   it('has no errors', function () {
@@ -52,11 +52,11 @@ describe.skip('A request to GET /oauth/google/callback with an invalid state', f
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: true,
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
       query: {state: 'invalid_state'}
-    })
+    }),
+    followRedirect: true
   });
 
   it('has no errors', function () {
@@ -77,11 +77,11 @@ describe.skip('A request to GET /oauth/google/callback with an invalid code', fu
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
-    followRedirect: true,
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
       query: {state: 'valid_state', code: 'invalid_code'}
-    })
+    }),
+    followRedirect: true
   });
 
   it('has no errors', function () {
