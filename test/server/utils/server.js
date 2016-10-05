@@ -4,6 +4,8 @@ var _ = require('underscore');
 var server = require('../../../server/index.js');
 
 // Define our exports
+exports.app = server.app;
+
 exports.run = function () {
   // Create a new HTTP binding for our server
   before(function runServer () {

@@ -170,32 +170,38 @@ block base-content
           //- If we aren't on an archive page, then display normal schedule
           if !useArchiveSchedule
             //- Upcoming interviews section
-            h3.flush--bottom(style="font-weight: normal") Upcoming interviews
-            //- DEV: This is actually a 1.5x push due to extra padding for link border
-            #nav__upcoming-interviews.push--bottom
-              if upcomingInterviews.length
-                each upcomingInterview in upcomingInterviews
-                  +nav-row--application(upcomingInterview.application, APPLICATION_STATUSES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
-              else
-                p TODO: Add placeholder text for upcoming interviews
+            //- DEV: `locals.upcomingInterviews` isn't necessarily defined when we encounter a 500
+            if locals.upcomingInterviews
+              h3.flush--bottom(style="font-weight: normal") Upcoming interviews
+              //- DEV: This is actually a 1.5x push due to extra padding for link border
+              #nav__upcoming-interviews.push--bottom
+                if upcomingInterviews.length
+                  each upcomingInterview in upcomingInterviews
+                    +nav-row--application(upcomingInterview.application, APPLICATION_STATUSES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
+                else
+                  p TODO: Add placeholder text for upcoming interviews
 
             //- Waiting for response section
-            h3.flush--bottom(style="font-weight: normal") Waiting for response
-            #nav__waiting-for-response.landmark
-              if waitingForResponseApplications.length
-                each waitingForResponseApplication in waitingForResponseApplications
-                  +nav-row--application(waitingForResponseApplication, APPLICATION_STATUSES.WAITING_FOR_RESPONSE)
-              else
-                p TODO: Add placeholder text for upcoming interviews
+            //- DEV: `locals.waitingForResponseApplications` isn't necessarily defined when we encounter a 500
+            if locals.waitingForResponseApplications
+              h3.flush--bottom(style="font-weight: normal") Waiting for response
+              #nav__waiting-for-response.landmark
+                if waitingForResponseApplications.length
+                  each waitingForResponseApplication in waitingForResponseApplications
+                    +nav-row--application(waitingForResponseApplication, APPLICATION_STATUSES.WAITING_FOR_RESPONSE)
+                else
+                  p TODO: Add placeholder text for upcoming interviews
           else
             //- Otherwise, display archived applications
-            h3.flush--bottom(style="font-weight: normal") Archived applications
-            #nav__archived.push--bottom
-              if archivedApplications.length
-                each archivedApplication in archivedApplications
-                  +nav-row--application(archivedApplication, APPLICATION_STATUSES.ARCHIVED)
-              else
-                p TODO: Add placeholder text for archived applications
+            //- DEV: `locals.archivedApplications` isn't necessarily defined when we encounter a 500
+            if locals.archivedApplications
+              h3.flush--bottom(style="font-weight: normal") Archived applications
+              #nav__archived.push--bottom
+                if archivedApplications.length
+                  each archivedApplication in archivedApplications
+                    +nav-row--application(archivedApplication, APPLICATION_STATUSES.ARCHIVED)
+                else
+                  p TODO: Add placeholder text for archived applications
 
           //- Nav links
           if !useArchiveSchedule

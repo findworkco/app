@@ -64,6 +64,14 @@ function Server(config) {
   // Define our application locals
   app.locals = _.defaults(app.locals, appLocals);
 
+  // Create a fake Winston client
+  // TODO: Setup proper winston client
+  app.notWinston = {
+    error: function (err) {
+      console.error(err.stack);
+    }
+  };
+
   // Create a Sentry client
   app.sentryClient = new raven.Client(config.sentry.serverDSN, {
     environment: config.ENV,
@@ -81,6 +89,14 @@ function Server(config) {
     port: psqlConfig.port,
     dialect: 'postgres'
   });
+
+  // Set up development 500 error
+  // DEV: We perform this before most `app.use` to emphasize not all `res.locals` will be available in case of error
+  if (config.loadDevelopmentRoutes) {
+    app.use('/_dev/500', function dev500Show (req, res, next) {
+      throw new Error('Development 500 error');
+    });
+  }
 
   // Integrate session middleware
   // https://github.com/tj/connect-redis/tree/3.0.2#faq
@@ -100,7 +116,7 @@ function Server(config) {
 
   // Add MultiDict based query string/body handling
   app.use(function overrideQueryString (req, res, next) {
-    req.query = qsMultiDict.parse(req._parsedOriginalUrl.query);
+    req.query = qsMultiDict.parse(req._parsedUrl.query);
     next();
   });
   app.use(bodyParserMultiDict.urlencoded());

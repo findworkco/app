@@ -88,11 +88,13 @@ html
     //- Declare notifications to render
     //- DEV: We intentionally use a `style` so this never ever renders
     #notification-content(style="display: none;")
-      each notificationArr, notificationType in notifications
-        if ACCEPTABLE_NOTIFICATION_TYPES.indexOf(notificationType) === -1
-          - throw new Error('Unacceptable notification type used');
-        for notification in notificationArr
-          div(data-notification=notificationType)= notification
+      //- DEV: `notifications` will not necessarily be defined when a 500 is encountered
+      if locals.notifications
+        each notificationArr, notificationType in notifications
+          if ACCEPTABLE_NOTIFICATION_TYPES.indexOf(notificationType) === -1
+            - throw new Error('Unacceptable notification type used');
+          for notification in notificationArr
+            div(data-notification=notificationType)= notification
 
     //- Load scripts after body
     script(src="/dist/js/index.js")

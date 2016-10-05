@@ -12,3 +12,8 @@ app.get('/_dev/notification', function devNotificationShow (req, res, next) {
   // Redirect to a common page
   res.redirect('/schedule');
 });
+
+// app.get('/_dev/404') is handled by Express not seeing a route
+
+// app.get('/_dev/500') is defined in `server/index.js` to occur before other middlewares
+// DEV: This is to emphasize that we might not have user state
