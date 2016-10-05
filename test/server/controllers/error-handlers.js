@@ -93,3 +93,49 @@ describe('A request for a page with a render error', function () {
     expect(captureErrorSpy.callCount).to.equal(2);
   });
 });
+
+describe('A request for a page with a missing parameter', function () {
+  // Start our server, spy on Sentry, and make our request
+  serverUtils.run();
+  sinonUtils.spy(app.sentryClient, 'captureError');
+  httpUtils.session.init().save({
+    url: serverUtils.getUrl('/_dev/missing-query-parameter'),
+    expectedStatusCode: 400
+  });
+
+  it('receives a bad request response', function () {
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
+  });
+
+  it('receives helpful information', function () {
+    expect(this.body).to.contain('Missing query string/body parameter: &quot;foo&quot;');
+  });
+
+  it('doesn\'t report the error to Sentry', function () {
+    var captureErrorSpy = app.sentryClient.captureError;
+    expect(captureErrorSpy.callCount).to.equal(0);
+  });
+});
+
+describe('A request for a page with an unexposable yet expected error', function () {
+  // Start our server, spy on Sentry, and make our request
+  serverUtils.run();
+  sinonUtils.spy(app.sentryClient, 'captureError');
+  httpUtils.session.init().save({
+    url: serverUtils.getUrl('/_dev/unexposed-error'),
+    expectedStatusCode: 400
+  });
+
+  it('receives a bad request response', function () {
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
+  });
+
+  it('receives no helpful information', function () {
+    expect(this.body).to.contain('Bad Request');
+  });
+
+  it('doesn\'t report the error to Sentry', function () {
+    var captureErrorSpy = app.sentryClient.captureError;
+    expect(captureErrorSpy.callCount).to.equal(0);
+  });
+});

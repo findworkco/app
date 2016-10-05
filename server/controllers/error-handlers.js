@@ -1,7 +1,15 @@
 // Load in our dependencies
+var HttpError = require('http-errors');
 var jsonStringifySafe = require('json-stringify-safe');
+var MultiDictKeyError = require('querystring-multidict').MultiDictKeyError;
+var statuses = require('statuses');
 var sentryParsers = require('raven/lib/parsers');
 var app = require('../index.js').app;
+
+// Define our constants
+var GENERIC_ERROR_TITLE = 'Error encountered';
+var GENERIC_ERROR_MESSAGE = 'We encountered an unexpected error. ' +
+    'The development team has been notified and it should be fixed promptly.';
 
 // Define our controllers
 // DEV: We use 404 handler before generic error handler in case something is wrong in 404 controller
@@ -14,18 +22,40 @@ app.use(function handle404Error (req, res, next) {
   });
 });
 
-// DEV: This error handler always comes last in case other error handlers are broken
-app.use(function handleGenericError (err, req, res, next) {
-  // TODO: Build/handle HTTP errors (e.g. Express, csurf)
-  //   Make sure we have a POST error generator when csurf is patched
-  //   Move it into its own `handleHttpError` controller
-  // For the interim:
-  // If we have an HTTP status code, then pass it on to Express' default error handler
+app.use(function handleHttpError (err, req, res, next) {
+  // If the error is a MultiDictKeyError, then replace it with an HttpError
+  // https://github.com/twolfson/querystring-multidict/tree/1.1.0#multidictkeyerror
+  if (err instanceof MultiDictKeyError) {
+    err = new HttpError.BadRequest(
+      'Missing query string/body parameter: "' + err.key + '"');
+  }
+
+  // If there is no status, then continue to our generic error handler
   // https://github.com/getsentry/raven-node/blob/0.12.0/lib/middleware/connect.js#L16
-  if (err.status || err.statusCode || err.status_code) {
+  var status = err.status || err.statusCode || err.status_code;
+  if (status === undefined) {
     return next(err);
   }
 
+  // If our error wants to be exposed, then send its message directly
+  // https://github.com/jshttp/http-errors/tree/1.5.0#api
+  // https://github.com/jshttp/http-errors/tree/1.5.0#list-of-all-constructors
+  if (err.expose) {
+    res.status(status).render('error.jade', {
+      message: err.message,
+      title: GENERIC_ERROR_TITLE
+    });
+  // Otherwise, send a generic message
+  } else {
+    res.status(status).render('error.jade', {
+      message: statuses[status],
+      title: GENERIC_ERROR_TITLE
+    });
+  }
+});
+
+// DEV: This error handler always comes last in case other error handlers are broken
+app.use(function handleGenericError (err, req, res, next) {
   // Log our error
   // TODO: Use actual Winston client
   app.notWinston.error(err);
@@ -44,12 +74,10 @@ app.use(function handleGenericError (err, req, res, next) {
   app.sentryClient.captureError(err, sentryKwargs);
 
   // Render an error page
-  var renderMessage = 'We encountered an unexpected error. ' +
-    'The development team has been notified and it should be fixed promptly.';
   try {
     res.status(500).render('error.jade', {
-      message: renderMessage,
-      title: 'Error encountered'
+      message: GENERIC_ERROR_MESSAGE,
+      title: GENERIC_ERROR_TITLE
     });
   } catch (renderErr) {
     // Log and report our render error
@@ -58,6 +86,6 @@ app.use(function handleGenericError (err, req, res, next) {
     app.sentryClient.captureError(renderErr, sentryKwargs);
 
     // Send a text only response
-    res.status(500).set('Content-Type', 'text/plain').send(renderMessage);
+    res.status(500).set('Content-Type', 'text/plain').send(GENERIC_ERROR_MESSAGE);
   }
 });
