@@ -12,6 +12,7 @@ block content
         //- https://developers.google.com/identity/branding-guidelines
         //- DEV: `id` is for testing purposes only
         //- TODO: Use Google branding for button
+        //-   We can probably leverage a CodePen http://codepen.io/timlayton/pen/gppWqz
         a#login_with_google.btn.btn--primary(href="/oauth/google/request?action=login")
           strong G+
           = " Log in with Google"
@@ -20,9 +21,9 @@ block content
           small
             //- TODO: Make sure this is valid legalese speak
             = "By signing up for Find Work, you hereby consent to our "
-            a(href="/privacy") Privacy Policy
+            a(href="/privacy") Privacy policy
             = " and "
-            a(href="/terms") Terms of Use
+            a(href="/terms") Terms of use
             = "."
       p.text--center.landmark
         = "Want to sign up instead? "

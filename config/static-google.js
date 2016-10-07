@@ -13,7 +13,7 @@ exports.common = {
   }
 };
 
-// https://console.developers.google.com/apis/credentials/consent?project=app-development-144900
+// https://console.developers.google.com/apis/credentials?project=app-development-144900
 exports.development = {
   google: _.defaults({
     clientID: '607344720024-pm4njq4mcs2bphtj90vmcd4mqu1fkao0.apps.googleusercontent.com',

@@ -1,10 +1,10 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
-var express = require('express');
 var bodyParserMultiDict = require('body-parser-multidict');
 var connectFlash = require('connect-flash');
 var csurf = require('csurf');
+var express = require('express');
 var expressSession = require('express-session');
 var qsMultiDict = require('querystring-multidict');
 var RedisSessionStore = require('connect-redis')(expressSession);
