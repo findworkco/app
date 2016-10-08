@@ -1,3 +1,21 @@
+// Static notifications
+.notification {
+  display: inline-block;
+  padding: 8px 12px;
+  color: $notification-color;
+  border-radius: $notification-border-radius;
+}
+.notification--default {
+  background: $notification-default-background;
+}
+.notification--error {
+  background: $notification-error-background;
+}
+.notification--success {
+  background: $notification-success-background;
+}
+
+// Alertify notifications
 // Define custom container setup
 #notification-container {
   position: fixed;

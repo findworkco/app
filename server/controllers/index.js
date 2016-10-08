@@ -34,13 +34,31 @@ app.get('/_dev/postgresql', function devPostgresqlShow (req, res, next) {
   });
 });
 
-app.get('/login', function loginShow (req, res, next) {
-  res.render('login.jade', genericMockData);
-});
+function handleAuthError(req, res, next) {
+  // If we have a login error, then update our status and send it to the render
+  // DEV: We use `req.session` for login errors to prevent errors persisting on page refresh
+  var authError = req.session.authError;
+  delete req.session.authError;
+  if (authError) {
+    res.locals.auth_error = authError;
+    res.status(400);
+  }
 
-app.get('/sign-up', function logInShow (req, res, next) {
-  res.render('sign-up.jade', genericMockData);
-});
+  // Continue to next controller
+  next();
+}
+app.get('/login', [
+  handleAuthError,
+  function loginShow (req, res, next) {
+    res.render('login.jade', genericMockData);
+  }
+]);
+app.get('/sign-up', [
+  handleAuthError,
+  function signUpShow (req, res, next) {
+    res.render('sign-up.jade', genericMockData);
+  }
+]);
 
 app.get('/settings', function settingsShow (req, res, next) {
   // TODO: Require login for this page

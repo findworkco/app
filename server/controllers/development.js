@@ -14,6 +14,16 @@ app.get('/_dev/notification', function devNotificationShow (req, res, next) {
   res.redirect('/schedule');
 });
 
+app.get('/_dev/login/error', function devLoginErrorShow (req, res, next) {
+  // Set an authentication error and redirect to the login page
+  req.session.authError = 'Access was denied from Google. Please try again.';
+  res.redirect('/login');
+});
+app.get('/_dev/sign-up/error', function devSignUpErrorShow (req, res, next) {
+  req.session.authError = 'Access was denied from Google. Please try again.';
+  res.redirect('/sign-up');
+});
+
 // app.get('/_dev/404') is handled by Express not seeing a route
 
 // app.get('/_dev/500') is defined in `server/index.js` to occur before other middlewares

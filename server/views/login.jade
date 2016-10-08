@@ -7,6 +7,9 @@ block content
   .grid
     .grid__item.one-whole
       h1.content__heading.text--center.push--bottom(style="font-weight: normal") Log in
+      if locals.auth_error
+        p.text--center
+          span.notification.notification--error= auth_error
       //- DESIGN: If we get AngelList support, build Sign up/Log in with AngelList
       p.text--center
         //- https://developers.google.com/identity/branding-guidelines
