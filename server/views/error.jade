@@ -15,6 +15,7 @@ block content
     .grid__item.small-hidden.medium-two-twelfths.large-two-ninths &nbsp;
     .grid__item.one-whole.medium-eight-twelfths.large-five-ninths
       h1.content__heading.text--center(style="font-weight: normal")= title
-      p.text--center= message
+      //- DEV: `#_error` id is only for debugging in tests
+      p#_error.text--center= message
       p.text--center
         a(href="javascript:window.history.go(-1);") Click here to return to the previous page

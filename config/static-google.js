@@ -9,7 +9,12 @@ exports.common = {
     // https://developers.google.com/+/web/api/rest/oauth#login-scopes
     clientID: undefined, // OVERRIDE: Need to override in each environment
     clientSecret: undefined, // OVERRIDE: Need to override in each environment
-    scope: ['email']
+    scope: ['email'],
+
+    // https://github.com/jaredhanson/passport-google-oauth2/blob/v1.0.0/lib/strategy.js#L49-L54
+    authorizationURL: undefined, // By default, use value set by `passport-google-oauth2`
+    tokenURL: undefined, // By default, use value set by `passport-google-oauth2`
+    userProfileURL: undefined // By default, use value set by `passport-google-oauth2`
   }
 };
 
@@ -22,9 +27,16 @@ exports.development = {
 };
 
 exports.test = {
+  fakeGoogle: {
+    port: 7000
+  },
   google: _.defaults({
     clientID: 'mock-google-client-id.apps.googleusercontent.com',
-    clientSecret: 'mock-google-client-secret'
+    clientSecret: 'mock-google-client-secret',
+
+    // Override values to point to `fakeGoogle` server
+    tokenURL: 'http://localhost:7000/oauth2/v4/token', // By default, use value set by `passport-google-oauth2`
+    userProfileURL: 'http://localhost:7000/plus/v1/people/me' // By default, use value set by `passport-google-oauth2`
   }, exports.common.google)
 };
 

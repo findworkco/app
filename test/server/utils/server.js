@@ -5,6 +5,7 @@ var server = require('../../../server/index.js');
 
 // Define our exports
 exports.app = server.app;
+exports.config = server.config;
 
 exports.run = function () {
   // Create a new HTTP binding for our server

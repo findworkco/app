@@ -1,7 +1,10 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var app = require('../utils/server').app;
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
+var sinonUtils = require('../utils/sinon');
+var fakeGoogleFactory = require('../utils/fake-google');
 
 // Start our tests
 describe('A request to GET /oauth/google/callback with no information', function () {
@@ -99,24 +102,47 @@ describe.skip('A request to GET /oauth/google/callback with an invalid state', f
   });
 });
 
-describe.skip('A request to GET /oauth/google/callback with an invalid code', function () {
+describe('A request to GET /oauth/google/callback with an invalid code', function () {
   // Start our server and make our request
   serverUtils.run();
+  fakeGoogleFactory.run(['/oauth2/v4/token#invalid-code']);
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
       query: {action: 'login', state: 'valid_state', code: 'invalid_code'}
     }),
-    followRedirect: true,
-    expectedStatusCode: 200
+    followRedirect: false,
+    expectedStatusCode: 500
   });
 
-  it('is redirected to /login', function () {
-    expect(this.$('title').text()).to.equal('Sign up/Log in - Find Work');
+  // DEV: We could provide something helpful but passport seems against it
+  it('has an error message', function () {
+    expect(this.body).to.contain('Internal Server Error');
+  });
+});
+
+describe('A request to GET /oauth/google/callback with no account email address', function () {
+  // Start our server and make our request
+  serverUtils.run();
+  sinonUtils.spy(app.sentryClient, 'captureError');
+  sinonUtils.stub(app.notWinston, 'error');
+  fakeGoogleFactory.run(['/oauth2/v4/token#valid-code', '/plus/v1/people/me#no-account-email']);
+  httpUtils.session.init().save({
+    url: serverUtils.getUrl({
+      pathname: '/oauth/google/callback',
+      query: {action: 'login', state: 'valid_state', code: 'valid_code'}
+    }),
+    followRedirect: false,
+    expectedStatusCode: 500
   });
 
-  it('has a flash message about an invalid code and trying again', function () {
-    expect(this.body).to.contain('Something went wrong when talking to Google, please try logging in again');
+  it('has an error message', function () {
+    expect(this.body).to.contain('We encountered an unexpected error');
+  });
+
+  it('reports error to Sentry', function () {
+    var captureErrorSpy = app.sentryClient.captureError;
+    expect(captureErrorSpy.callCount).to.equal(1);
   });
 });
 
@@ -164,9 +190,10 @@ describe.skip('A request to GET /oauth/google/callback with a non-existant white
   });
 });
 
-describe.skip('A request to GET /oauth/google/callback with an existant user', function () {
+describe('A request to GET /oauth/google/callback with an existant user', function () {
   // Start our server and make our request
   serverUtils.run();
+  fakeGoogleFactory.run(['/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']);
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',

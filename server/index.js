@@ -6,6 +6,7 @@ var connectFlash = require('connect-flash');
 var csurf = require('csurf');
 var express = require('express');
 var expressSession = require('express-session');
+var passport = require('passport');
 var qsMultiDict = require('querystring-multidict');
 var RedisSessionStore = require('connect-redis')(expressSession);
 var raven = require('raven');
@@ -115,7 +116,10 @@ function Server(config) {
   });
 
   // Add MultiDict based query string/body handling
+  // DEV: We avoid Express' query as it's inconsistent with multiple parameters
+  //   https://speakerdeck.com/ckarande/top-overlooked-security-threats-to-node-dot-js-web-applications
   app.use(function overrideQueryString (req, res, next) {
+    req._originalQuery = req.query;
     req.query = qsMultiDict.parse(req._parsedUrl.query);
     next();
   });
@@ -136,6 +140,22 @@ function Server(config) {
 
   // Integrate flash notifications (depends on session middleware)
   app.use(connectFlash());
+
+  // Initialize Passport for authentication
+  // https://github.com/jaredhanson/passport/tree/v0.3.2#middleware
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Configure saving/loading users by their session
+  // http://passportjs.org/docs#sessions
+  // TODO: Serialize/deserialize user by id on PostgreSQL (requires `candidate` table first)
+  // TODO: Be sure to use domains when handling PostgreSQL data
+  passport.serializeUser(function handleSerializeUser (user, cb) {
+    cb(null, user.email);
+  });
+  passport.deserializeUser(function handleDeserializeUser (email, cb) {
+    cb(null, {email: email});
+  });
 
   // Load existing flash notifications before routing
   app.use(function loadExistingFlashNotifications (req, res, next) {

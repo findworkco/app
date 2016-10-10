@@ -15,11 +15,32 @@ var config = require('../index.js').config;
 // https://github.com/jaredhanson/passport-google-oauth2/tree/v1.0.0#configure-strategy
 passport.use(new GoogleStrategy({
   clientID: config.google.clientID,
-  clientSecret: config.google.clientSecret
+  clientSecret: config.google.clientSecret,
   // callbackURL is configured on each `authenticate` call
   //   https://github.com/jaredhanson/passport-google-oauth2/issues/5#issuecomment-212378963
+
+  // Override URLs for `fakeGoogle` during testing
+  authorizationURL: config.google.authorizationURL,
+  tokenURL: config.google.tokenURL,
+  userProfileURL: config.google.userProfileURL
 }, function handlePassportGoogle (accessToken, refreshToken, profile, cb) {
-  // TODO: Complete with content from development branch
+  // TODO: Use `try/catch` and `domains` to catch sync and async errors
+
+  // profile = {id: '1234', ..., emails: [{value: 'todd@findwork.co', type: 'account'}, ...]}
+  // DEV: For full profile info, see `nine-track` recordings
+  // DEV: There is only 1 account (main) email per account
+  var emails = profile.emails || [];
+  var accountEmail = (_.findWhere(emails, {type: 'account'}) || {}).value;
+
+  // If there is no account email, then error out
+  // DEV: Error will be sent back to corresponding `next` handler eventually
+  if (!accountEmail) {
+    return cb(new Error('Unable to resolve email from Google\'s response'));
+  }
+
+  // Otherwise, callback with a placeholder user
+  // TODO: Find or create our user with PostgreSQL
+  cb(null, {email: accountEmail});
 }));
 
 // Define our controllers
@@ -89,8 +110,15 @@ app.get('/oauth/google/callback', [
       return res.redirect(oauthAction === 'sign_up' ? '/sign-up' : '/login');
     }
 
-    // Redirect our user to a predefined location
-    // TODO: Handle redirect strategy... (e.g. redirect to past page, create job application)
+    // Reset to Express' `req.query` to match `passport's` expectations
+    req.query = req._originalQuery;
+
+    // Otherwise, continue to the corresponding controller
+    oauthActionControllers[oauthAction](req, res, next);
+  },
+  function redirectAuthenticatedUser (req, res, next) {
+    // TODO: Handle redirect strategy... (likely via another URL like `continue-after-auth`)
+    //   This is to handle likely split of login and any missing middlewares (e.g. must be admin) for endpoints/actions
     res.redirect('/schedule');
   }
 ]);
