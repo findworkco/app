@@ -35,6 +35,7 @@ exports.test = {
     clientSecret: 'mock-google-client-secret',
 
     // Override values to point to `fakeGoogle` server
+    authorizationURL: 'http://localhost:7000/o/oauth2/v2/auth', // By default, use value set by `passport-google-oauth2`
     tokenURL: 'http://localhost:7000/oauth2/v4/token', // By default, use value set by `passport-google-oauth2`
     userProfileURL: 'http://localhost:7000/plus/v1/people/me' // By default, use value set by `passport-google-oauth2`
   }, exports.common.google)

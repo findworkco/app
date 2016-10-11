@@ -1,4 +1,5 @@
 // Load in our dependencies
+var url = require('url');
 var expect = require('chai').expect;
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
@@ -48,10 +49,16 @@ describe('A request to GET /oauth/google/request with a valid action', function 
   });
 
   it('is redirected to Google\'s OAuth page', function () {
+    // Verify we got a state token
+    var state = url.parse(this.res.headers.location, true).query.state;
+    expect(state).to.not.equal(undefined);
+
+    // Verify rest of redirect
     var redirectUri = 'https://findwork.test/oauth/google/callback?action=login';
     expect(this.res.headers.location).to.equal(
-      'https://accounts.google.com/o/oauth2/v2/auth' +
+      'http://localhost:7000/o/oauth2/v2/auth' +
         '?response_type=code&redirect_uri=' + encodeURIComponent(redirectUri) +
-        '&scope=email&client_id=' + encodeURIComponent('mock-google-client-id.apps.googleusercontent.com'));
+        '&scope=email&state=' + encodeURIComponent(state) +
+        '&client_id=' + encodeURIComponent('mock-google-client-id.apps.googleusercontent.com'));
   });
 });

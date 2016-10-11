@@ -13,7 +13,11 @@ var config = require('../index.js').config;
 
 // Configure our integration with Passport
 // https://github.com/jaredhanson/passport-google-oauth2/tree/v1.0.0#configure-strategy
+// State validation is enabled via hidden flag
+//   https://github.com/jaredhanson/passport-oauth2/issues/28
+//   https://github.com/jaredhanson/passport-oauth2/blob/v1.3.0/lib/strategy.js#L102-L103
 passport.use(new GoogleStrategy({
+  state: true,
   clientID: config.google.clientID,
   clientSecret: config.google.clientSecret,
   // callbackURL is configured on each `authenticate` call

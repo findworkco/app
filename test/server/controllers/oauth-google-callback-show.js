@@ -6,6 +6,12 @@ var serverUtils = require('../utils/server');
 var sinonUtils = require('../utils/sinon');
 var fakeGoogleFactory = require('../utils/fake-google');
 
+// Define our constants
+var OAUTH_GOOGLE_REQUEST_URL_OPTIONS = {
+  pathname: '/oauth/google/request',
+  query: {action: 'login'}
+};
+
 // Start our tests
 describe('A request to GET /oauth/google/callback with no information', function () {
   // Start our server and make our request
@@ -81,37 +87,51 @@ describe('A sign up-originating request to GET /oauth/google/callback with an er
   });
 });
 
-describe.skip('A request to GET /oauth/google/callback with an invalid state', function () {
+describe('A request to GET /oauth/google/callback with no state', function () {
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
-      query: {action: 'login', state: 'invalid_state'}
+      query: {action: 'login', code: 'invalid_code'}
     }),
     followRedirect: true,
-    expectedStatusCode: 200
+    expectedStatusCode: 403
   });
 
-  it('is redirected to /login', function () {
-    expect(this.$('title').text()).to.equal('Sign up/Log in - Find Work');
+  // DEV: We could provide something helpful but passport seems against it
+  it('has an error message', function () {
+    expect(this.body).to.contain('Forbidden');
+  });
+});
+
+describe('A request to GET /oauth/google/callback with an invalid state', function () {
+  // Start our server and make our request
+  serverUtils.run();
+  httpUtils.session.init().save({
+    url: serverUtils.getUrl({
+      pathname: '/oauth/google/callback',
+      query: {action: 'login', code: 'invalid_code', state: 'invalid_state'}
+    }),
+    followRedirect: true,
+    expectedStatusCode: 403
   });
 
-  it('has a flash message about an invalid state and trying again', function () {
-    expect(this.body).to.contain('Something went wrong when talking to Google, please try logging in again');
+  // DEV: We could provide something helpful but passport seems against it
+  it('has an error message', function () {
+    expect(this.body).to.contain('Forbidden');
   });
 });
 
 describe('A request to GET /oauth/google/callback with an invalid code', function () {
   // Start our server and make our request
   serverUtils.run();
-  fakeGoogleFactory.run(['/oauth2/v4/token#invalid-code']);
+  fakeGoogleFactory.run(['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#invalid-code']);
   httpUtils.session.init().save({
-    url: serverUtils.getUrl({
-      pathname: '/oauth/google/callback',
-      query: {action: 'login', state: 'valid_state', code: 'invalid_code'}
-    }),
-    followRedirect: false,
+    // Redirects to fake Google OAuth, then to `/oauth/google/callback`
+    // DEV: While `auth#valid` sends back a code, we assume it invalid via fixture
+    url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
+    followRedirect: true,
     expectedStatusCode: 500
   });
 
@@ -126,13 +146,12 @@ describe('A request to GET /oauth/google/callback with no account email address'
   serverUtils.run();
   sinonUtils.spy(app.sentryClient, 'captureError');
   sinonUtils.stub(app.notWinston, 'error');
-  fakeGoogleFactory.run(['/oauth2/v4/token#valid-code', '/plus/v1/people/me#no-account-email']);
+  fakeGoogleFactory.run([
+    '/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#no-account-email']);
   httpUtils.session.init().save({
-    url: serverUtils.getUrl({
-      pathname: '/oauth/google/callback',
-      query: {action: 'login', state: 'valid_state', code: 'valid_code'}
-    }),
-    followRedirect: false,
+    // Redirects to fake Google OAuth, then to `/oauth/google/callback`
+    url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
+    followRedirect: true,
     expectedStatusCode: 500
   });
 
@@ -193,12 +212,11 @@ describe.skip('A request to GET /oauth/google/callback with a non-existant white
 describe('A request to GET /oauth/google/callback with an existant user', function () {
   // Start our server and make our request
   serverUtils.run();
-  fakeGoogleFactory.run(['/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']);
+  fakeGoogleFactory.run([
+    '/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']);
   httpUtils.session.init().save({
-    url: serverUtils.getUrl({
-      pathname: '/oauth/google/callback',
-      query: {action: 'login', state: 'valid_state', code: 'valid_code'}
-    }),
+    // Redirects to fake Google OAuth, then to `/oauth/google/callback`
+    url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
     followRedirect: true,
     expectedStatusCode: 200
   });

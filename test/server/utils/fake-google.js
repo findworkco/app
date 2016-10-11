@@ -1,9 +1,38 @@
 // Load in our dependencies
+var url = require('url');
+var _ = require('underscore');
 var SpyServerFactory = require('spy-server');
 var config = require('./server.js').config;
+var serverUtils = require('./server.js');
 
 // Generate our server and set up fixtures
 var fakeGoogleFactory = new SpyServerFactory({port: config.fakeGoogle.port});
+
+// https://github.com/jaredhanson/passport-google-oauth2/blob/v1.0.0/lib/strategy.js#L49
+// Fixture for: https://accounts.google.com/o/oauth2/v2/auth
+fakeGoogleFactory.addFixture('/o/oauth2/v2/auth#valid', {
+  method: 'get',
+  route: '/o/oauth2/v2/auth',
+  response: function (req, res) {
+    // Fake request obtained via:
+    //   console.log(req.url, req.headers);
+    // Strip away external host info for redirect URL
+    //   https://findwork.test/oauth/google/callback?action=login
+    //   -> /oauth/google/callback?action=login
+    var redirectUrl = url.parse(req.query.redirect_uri, true);
+    redirectUrl = _.pick(redirectUrl, ['pathname', 'query']);
+
+    // Add on valid state and code placeholder
+    // DEV: Other fixtures will take care of considering code valid/not
+    redirectUrl.query = _.extend(redirectUrl.query, {
+      code: 'mock_code',
+      state: req.query.state
+    });
+
+    // Complete our redirect
+    res.redirect(serverUtils.getUrl(redirectUrl));
+  }
+});
 
 // https://github.com/jaredhanson/passport-google-oauth2/blob/v1.0.0/lib/strategy.js#L50
 // https://github.com/ciaranj/node-oauth/blob/0.9.14/lib/oauth2.js#L176
