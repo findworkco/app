@@ -103,6 +103,29 @@ fakeGoogleFactory.addFixture('/plus/v1/people/me#invalid-access-token', {
   }
 });
 
+var validMeInfo = {
+  kind: 'plus#person',
+  etag: '"mock-etag"',
+  emails: [{
+    value: 'mock-email@mock-domain.test',
+    type: 'account'
+  }],
+  objectType: 'person',
+  id: '1234567890',
+  displayName: '',
+  name: {
+    familyName: '',
+    givenName: ''
+  },
+  image: {
+    url: 'https://mock-googleusercontent.test/mock/photo.jpg?sz=50',
+    isDefault: false
+  },
+  isPlusUser: false,
+  circledByCount: 0,
+  verified: false,
+  domain: 'mock-domain.test'
+};
 fakeGoogleFactory.addFixture('/plus/v1/people/me#valid-access-token', {
   method: 'get',
   route: '/plus/v1/people/me',
@@ -110,29 +133,7 @@ fakeGoogleFactory.addFixture('/plus/v1/people/me#valid-access-token', {
     // Intercepted by adding a `console.log` in `oauth/lib/oauth2.js` and performing normal login via UI
     //   https://github.com/jaredhanson/passport-google-oauth2/blob/v1.0.0/lib/strategy.js#L103
     //   console.log(body);
-    res.status(200).json({
-      kind: 'plus#person',
-      etag: '"mock-etag"',
-      emails: [{
-        value: 'mock-email@mock-domain.test',
-        type: 'account'
-      }],
-      objectType: 'person',
-      id: '1234567890',
-      displayName: '',
-      name: {
-        familyName: '',
-        givenName: ''
-      },
-      image: {
-        url: 'https://mock-googleusercontent.test/mock/photo.jpg?sz=50',
-        isDefault: false
-      },
-      isPlusUser: false,
-      circledByCount: 0,
-      verified: false,
-      domain: 'mock-domain.test'
-    });
+    res.status(200).json(validMeInfo);
   }
 });
 
@@ -140,29 +141,9 @@ fakeGoogleFactory.addFixture('/plus/v1/people/me#no-account-email', {
   method: 'get',
   route: '/plus/v1/people/me',
   response: function (req, res) {
-    // Intercepted by adding a `console.log` in `oauth/lib/oauth2.js` and performing normal login via UI
-    //   https://github.com/jaredhanson/passport-google-oauth2/blob/v1.0.0/lib/strategy.js#L103
-    //   console.log(body);
-    res.status(200).json({
-      kind: 'plus#person',
-      etag: '"mock-etag"',
-      emails: [],
-      objectType: 'person',
-      id: '1234567890',
-      displayName: '',
-      name: {
-        familyName: '',
-        givenName: ''
-      },
-      image: {
-        url: 'https://mock-googleusercontent.test/mock/photo.jpg?sz=50',
-        isDefault: false
-      },
-      isPlusUser: false,
-      circledByCount: 0,
-      verified: false,
-      domain: 'mock-domain.test'
-    });
+    res.status(200).json(_.defaults({
+      emails: []
+    }, validMeInfo));
   }
 });
 

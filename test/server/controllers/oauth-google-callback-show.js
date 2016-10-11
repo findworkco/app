@@ -165,26 +165,8 @@ describe('A request to GET /oauth/google/callback with no account email address'
   });
 });
 
-describe.skip('A request to GET /oauth/google/callback with a non-whitelisted user', function () {
-  // Start our server and make our request
-  serverUtils.run();
-  httpUtils.session.init().save({
-    url: serverUtils.getUrl({
-      pathname: '/oauth/google/callback',
-      query: {action: 'login', state: 'valid_state', code: 'valid_code'}
-    }),
-    followRedirect: true,
-    expectedStatusCode: 200
-  });
-
-  it('has a flash message about restricted access', function () {
-    expect(this.body).to.contain('Sorry, Find Work is currently in closed development. ' +
-      'Please contact todd@findwork.co to gain sign in access');
-  });
-});
-
-// TODO: Enable after we integrate PostgreSQL
-describe.skip('A request to GET /oauth/google/callback with a non-existant whitelisted user', function () {
+// TODO: Enable after we integrate PostgreSQL (otherwise, it's duplicate code as below)
+describe.skip('A request to GET /oauth/google/callback with a non-existant user', function () {
   // Start our server and make our request
   serverUtils.run();
   httpUtils.session.init().save({

@@ -1,8 +1,5 @@
 // Define our configurations
 exports.common = {
-  // Define proxy trust (e.g. NGINX, nothing)
-  //   http://expressjs.com/en/4x/api.html#trust.proxy.options.table
-  trustProxy: undefined // OVERRIDE: Need to override in each environment
 };
 
 exports.development = {
@@ -24,6 +21,8 @@ exports.development.url = {
     port: exports.development.listen.port
   }
 };
+// Define proxy trust (e.g. NGINX, nothing)
+//   http://expressjs.com/en/4x/api.html#trust.proxy.options.table
 exports.development.trustProxy =
   exports.development.url.external.protocol === 'https';
 

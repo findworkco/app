@@ -28,8 +28,7 @@ passport.use(new GoogleStrategy({
   tokenURL: config.google.tokenURL,
   userProfileURL: config.google.userProfileURL
 }, function handlePassportGoogle (accessToken, refreshToken, profile, cb) {
-  // TODO: Use `try/catch` and `domains` to catch sync and async errors
-
+  // DEV: Sync errors are caught and sent back to `next` handler
   // profile = {id: '1234', ..., emails: [{value: 'todd@findwork.co', type: 'account'}, ...]}
   // DEV: For full profile info, see `nine-track` recordings
   // DEV: There is only 1 account (main) email per account
@@ -44,6 +43,7 @@ passport.use(new GoogleStrategy({
 
   // Otherwise, callback with a placeholder user
   // TODO: Find or create our user with PostgreSQL
+  // TODO: Use `domains` to catch async errors
   cb(null, {email: accountEmail});
 }));
 
