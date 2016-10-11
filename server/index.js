@@ -46,6 +46,9 @@ function Server(config) {
   // Create a new server
   var app = this.app = express();
 
+  // Configure our proxy trust
+  app.set('trust proxy', config.trustProxy);
+
   // Host our static files
   app.use('/dist', express.static(__dirname + '/../dist'));
   app.use('/favicon.ico', express.static(__dirname + '/../dist/images/favicon.ico'));
@@ -165,7 +168,7 @@ function Server(config) {
 }
 Server.prototype.listen = function () {
   assert.strictEqual(this._app, undefined, 'A server is already listening to a port. Please `close` first');
-  this._app = this.app.listen(this.config.port, this.config.hostname);
+  this._app = this.app.listen(this.config.listen.port, this.config.listen.hostname);
 };
 Server.prototype.close = function (cb) {
   assert.notEqual(this._app, undefined, 'No server was found to `close`');

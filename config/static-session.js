@@ -5,7 +5,7 @@ var staticUrl = require('./static-url');
 var staticSecrets = require('./static-secrets');
 
 // Define our configurations
-// https://github.com/expressjs/session/tree/v1.13.1
+// https://github.com/expressjs/session/tree/v1.13.0
 // DEV: `express-session` uses SHA256 HMAC for cookie signing
 //    https://github.com/tj/node-cookie-signature/blob/1.0.6/index.js
 // DEV: `express-session` uses Node.js' `crypto.randomBytes` implementation for ids
@@ -24,7 +24,13 @@ exports.common = {
       firstPartyOnly: true
     },
     name: 'sid',
-    proxy: undefined, // Use "trust proxy" from express
+    // Configure proxy trust to use `req.secure` from express
+    // DEV: This can prevent sending cookies marked as Secure in production =/
+    // DEV: "trust proxy" verifies most recent X-Forwarded-For is `https`
+    //   https://github.com/expressjs/session/blob/v1.13.0/index.js#L550-L556
+    //   https://github.com/expressjs/express/blob/4.14.0/lib/request.js#L325-L327
+    //   https://github.com/expressjs/express/blob/4.14.0/lib/request.js#L300-L314
+    proxy: undefined, // Use
     resave: false, // Don't resave on no modification, only touch
     rolling: true, // Prevent sessions from ever expiring as long as site is visited
     saveUninitialized: true, // Always save a session cookie (we will anyway for CSRF)
