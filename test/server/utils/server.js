@@ -3,10 +3,6 @@ var url = require('url');
 var _ = require('underscore');
 var server = require('../../../server/index.js');
 
-// Auto-load test helpers
-// DEV: This dodges even more requirements per file
-void require('./test.js');
-
 // Define our exports
 exports.app = server.app;
 exports.config = server.config;

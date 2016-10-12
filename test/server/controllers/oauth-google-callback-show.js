@@ -4,7 +4,6 @@ var app = require('../utils/server').app;
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 var sinonUtils = require('../utils/sinon');
-var fakeGoogleFactory = require('../utils/fake-google');
 
 // Define our constants
 var OAUTH_GOOGLE_REQUEST_URL_OPTIONS = {
@@ -13,7 +12,10 @@ var OAUTH_GOOGLE_REQUEST_URL_OPTIONS = {
 };
 
 // Start our tests
-scenario('A request to GET /oauth/google/callback with no information', function () {
+scenario('A request to GET /oauth/google/callback with no information', {
+  candidate: null,
+  googleFixtures: []
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/oauth/google/callback'),
@@ -26,7 +28,10 @@ scenario('A request to GET /oauth/google/callback with no information', function
   });
 });
 
-scenario('A request to GET /oauth/google/callback with an invalid OAuth action', function () {
+scenario('A request to GET /oauth/google/callback with an invalid OAuth action', {
+  candidate: null,
+  googleFixtures: []
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
@@ -42,7 +47,10 @@ scenario('A request to GET /oauth/google/callback with an invalid OAuth action',
   });
 });
 
-scenario('A login-originating request to GET /oauth/google/callback with an error', function () {
+scenario('A login-originating request to GET /oauth/google/callback with an error', {
+  candidate: null,
+  googleFixtures: []
+}, function () {
   // Make our request
   httpUtils.session.init()
     .save({
@@ -63,7 +71,10 @@ scenario('A login-originating request to GET /oauth/google/callback with an erro
   });
 });
 
-scenario('A sign up-originating request to GET /oauth/google/callback with an error', function () {
+scenario('A sign up-originating request to GET /oauth/google/callback with an error', {
+  candidate: null,
+  googleFixtures: []
+}, function () {
   // Make our request
   httpUtils.session.init().save({
       url: serverUtils.getUrl({
@@ -83,7 +94,10 @@ scenario('A sign up-originating request to GET /oauth/google/callback with an er
   });
 });
 
-scenario('A request to GET /oauth/google/callback with no state', function () {
+scenario('A request to GET /oauth/google/callback with no state', {
+  candidate: null,
+  googleFixtures: []
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
@@ -100,7 +114,10 @@ scenario('A request to GET /oauth/google/callback with no state', function () {
   });
 });
 
-scenario('A request to GET /oauth/google/callback with an invalid state', function () {
+scenario('A request to GET /oauth/google/callback with an invalid state', {
+  candidate: null,
+  googleFixtures: []
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
@@ -117,9 +134,11 @@ scenario('A request to GET /oauth/google/callback with an invalid state', functi
   });
 });
 
-scenario('A request to GET /oauth/google/callback with an invalid code', function () {
+scenario('A request to GET /oauth/google/callback with an invalid code', {
+  candidate: null,
+  googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#invalid-code']
+}, function () {
   // Make our request
-  fakeGoogleFactory.run(['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#invalid-code']);
   httpUtils.session.init().save({
     // Redirects to fake Google OAuth, then to `/oauth/google/callback`
     // DEV: While `auth#valid` sends back a code, we assume it invalid via fixture
@@ -134,12 +153,13 @@ scenario('A request to GET /oauth/google/callback with an invalid code', functio
   });
 });
 
-scenario('A request to GET /oauth/google/callback with no account email address', function () {
+scenario('A request to GET /oauth/google/callback with no account email address', {
+  candidate: null,
+  googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#no-account-email']
+}, function () {
   // Make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   sinonUtils.stub(app.notWinston, 'error');
-  fakeGoogleFactory.run([
-    '/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#no-account-email']);
   httpUtils.session.init().save({
     // Redirects to fake Google OAuth, then to `/oauth/google/callback`
     url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
@@ -158,13 +178,14 @@ scenario('A request to GET /oauth/google/callback with no account email address'
 });
 
 // TODO: Enable after we integrate PostgreSQL (otherwise, it's duplicate code as below)
-scenario.skip('A request to GET /oauth/google/callback with a non-existant user', function () {
+scenario.skip('A request to GET /oauth/google/callback with a non-existant user', {
+  candidate: null,
+  googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
+}, function () {
   // Make our request
   httpUtils.session.init().save({
-    url: serverUtils.getUrl({
-      pathname: '/oauth/google/callback',
-      query: {action: 'login', code: 'invalid_code'}
-    }),
+    // Redirects to fake Google OAuth, then to `/oauth/google/callback`
+    url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
     followRedirect: true,
     expectedStatusCode: 200
   });
@@ -182,10 +203,11 @@ scenario.skip('A request to GET /oauth/google/callback with a non-existant user'
   });
 });
 
-scenario('A request to GET /oauth/google/callback with an existant user', function () {
+scenario('A request to GET /oauth/google/callback with an existant user', {
+  candidate: null,
+  googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
+}, function () {
   // Make our request
-  fakeGoogleFactory.run([
-    '/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']);
   httpUtils.session.init().save({
     // Redirects to fake Google OAuth, then to `/oauth/google/callback`
     url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),

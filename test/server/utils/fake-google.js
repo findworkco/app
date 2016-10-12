@@ -8,6 +8,13 @@ var serverUtils = require('./server.js');
 // Generate our server and set up fixtures
 var fakeGoogleFactory = new SpyServerFactory({port: config.fakeGoogle.port});
 
+// Define default fixtures
+// DEV: We don't include `/o/oauth2/v2/auth` as `code` should reflect chosen user
+fakeGoogleFactory.DEFAULT_FIXTURES = [
+  '/oauth2/v4/token#valid-code',
+  '/plus/v1/people/me#valid-access-token'
+];
+
 // https://github.com/jaredhanson/passport-google-oauth2/blob/v1.0.0/lib/strategy.js#L49
 // Fixture for: https://accounts.google.com/o/oauth2/v2/auth
 fakeGoogleFactory.addFixture('/o/oauth2/v2/auth#valid', {
