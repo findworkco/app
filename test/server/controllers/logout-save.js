@@ -4,9 +4,8 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to POST /logout', function () {
-  // Start our server, login, and save our session cokie
-  serverUtils.run();
+scenario('A request to POST /logout', function () {
+  // Login and save our session cokie
   httpUtils.session.init().save(serverUtils.getUrl('/settings'));
   before(function saveSessionCookie () {
     // toJSON() = {version: 'tough-cookie@2.2.2', storeType: 'MemoryCookieStore', rejectPublicSuffixes: true,

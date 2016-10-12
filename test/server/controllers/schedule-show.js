@@ -4,9 +4,8 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe.skip('A request to GET /schedule from a logged out user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /schedule from a logged out user', function () {
+  // Make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it('recieves the schedule page', function () {
@@ -17,9 +16,8 @@ describe.skip('A request to GET /schedule from a logged out user', function () {
   });
 });
 
-describe('A request to GET /schedule from a logged in user with no applications', function () {
-  // Start our server, log in our user (need to add), and make our request
-  serverUtils.run();
+scenario('A request to GET /schedule from a logged in user with no applications', function () {
+  // Log in our user (need to add) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   // DEV: We test these again to make sure logged in/logged out users receive same treatment
@@ -39,9 +37,8 @@ describe('A request to GET /schedule from a logged in user with no applications'
   });
 });
 
-describe.skip('A request to GET /schedule from a logged in user with an offer received application', function () {
-  // Start our server, log in our user (need to add), and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /schedule from a logged in user with an offer received application', function () {
+  // Log in our user (need to add) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it.skip('lists the application', function () {
@@ -50,9 +47,8 @@ describe.skip('A request to GET /schedule from a logged in user with an offer re
 });
 
 // DEV: We are skipping these for now to allow prototyping flexibility
-describe.skip('A request to GET /schedule from a logged in user with an upcoming interview application', function () {
-  // Start our server, log in our user (need to add), and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /schedule from a logged in user with an upcoming interview application', function () {
+  // Log in our user (need to add) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it('lists the application', function () {
@@ -63,9 +59,8 @@ describe.skip('A request to GET /schedule from a logged in user with an upcoming
 });
 
 // DEV: We are skipping these for now to allow prototyping flexibility
-describe.skip('A request to GET /schedule from a logged in user with a waiting for response application', function () {
-  // Start our server, log in our user (need to add), and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /schedule from a logged in user with a waiting for response application', function () {
+  // Log in our user (need to add) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it('lists the application', function () {
@@ -74,9 +69,8 @@ describe.skip('A request to GET /schedule from a logged in user with a waiting f
   });
 });
 
-describe.skip('A request to GET /schedule from a logged in user with a have not applied application', function () {
-  // Start our server, log in our user (need to add), and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /schedule from a logged in user with a have not applied application', function () {
+  // Log in our user (need to add) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it.skip('lists the application', function () {
@@ -84,9 +78,8 @@ describe.skip('A request to GET /schedule from a logged in user with a have not 
   });
 });
 
-describe.skip('A request to GET /schedule from a logged in user with an application in another account', function () {
-  // Start our server, log in our user (need to add), and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /schedule from a logged in user with an application in another account', function () {
+  // Log in our user (need to add) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it.skip('does not list the application', function () {
@@ -94,9 +87,8 @@ describe.skip('A request to GET /schedule from a logged in user with an applicat
   });
 });
 
-describe.skip('A request to GET /schedule from a logged in user with an archived application', function () {
-  // Start our server, log in our user (need to add), and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /schedule from a logged in user with an archived application', function () {
+  // Log in our user (need to add) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it.skip('does not list the application', function () {

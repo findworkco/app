@@ -4,10 +4,9 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to GET /application/:id from the owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario('A request to GET /application/:id from the owner user', function () {
+  // Log in (need to do) and make our request
   var applicationId = 'abcdef-sky-networks-uuid';
-  serverUtils.run();
   httpUtils.session.init().save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
 
   it('recieves the application page', function () {
@@ -26,10 +25,9 @@ describe('A request to GET /application/:id from the owner user', function () {
   });
 });
 
-describe('A request to an archived GET /application/:id', function () {
-  // Start our server, log in (need to do), and make our request
+scenario('A request to an archived GET /application/:id', function () {
+  // Log in (need to do) and make our request
   var applicationId = 'abcdef-monstromart-uuid';
-  serverUtils.run();
   httpUtils.session.init().save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
 
   it('shows archive date', function () {
@@ -37,10 +35,9 @@ describe('A request to an archived GET /application/:id', function () {
   });
 });
 
-describe.skip('A request to GET /application/:id from a non-owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario.skip('A request to GET /application/:id from a non-owner user', function () {
+  // Log in (need to do) and make our request
   var applicationId = 'abcdef-uuid';
-  serverUtils.run();
   httpUtils.session.init().save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 404});
 
   it('recieves a 404', function () {
@@ -48,9 +45,8 @@ describe.skip('A request to GET /application/:id from a non-owner user', functio
   });
 });
 
-describe.skip('A request to GET /application/:id that doesn\'t exist', function () {
-  // Start our server, log in (need to do), and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /application/:id that doesn\'t exist', function () {
+  // Log in (need to do) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/application/does-not-exist'), expectedStatusCode: 404});
 
   it('recieves a 404', function () {
@@ -58,9 +54,8 @@ describe.skip('A request to GET /application/:id that doesn\'t exist', function 
   });
 });
 
-describe.skip('A request to GET /application/:id from a logged out user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /application/:id from a logged out user', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/application/does-not-exist'),
     followRedirect: false,

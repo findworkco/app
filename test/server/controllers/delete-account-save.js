@@ -4,9 +4,8 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to POST /delete-account from a logged in user', function () {
-  // Start our server, login, and save our session cokie
-  serverUtils.run();
+scenario('A request to POST /delete-account from a logged in user', function () {
+  // Login and save our session cokie
   httpUtils.session.init().save(serverUtils.getUrl('/settings'));
   before(function saveSessionCookie () {
     // toJSON() = {version: 'tough-cookie@2.2.2', storeType: 'MemoryCookieStore', rejectPublicSuffixes: true,
@@ -72,9 +71,8 @@ describe('A request to POST /delete-account from a logged in user', function () 
   });
 });
 
-describe.skip('A request to POST /delete-account from a logged out user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario.skip('A request to POST /delete-account from a logged out user', function () {
+  // Make our request
   httpUtils.session.init().save({
     method: 'POST', url: serverUtils.getUrl('/delete-account'),
     htmlForm: true, followRedirect: false,

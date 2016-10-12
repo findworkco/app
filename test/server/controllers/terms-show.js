@@ -4,9 +4,8 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to GET /terms', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /terms', function () {
+  // Make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/terms'), expectedStatusCode: 200});
 
   it('recieves the terms page', function () {

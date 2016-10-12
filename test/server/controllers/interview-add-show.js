@@ -5,10 +5,9 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to GET /application/:id/add-interview from the owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario('A request to GET /application/:id/add-interview from the owner user', function () {
+  // Log in (need to do) and make our request
   var applicationId = 'abcdef-sky-networks-uuid';
-  serverUtils.run();
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
     expectedStatusCode: 200
@@ -56,10 +55,9 @@ describe('A request to GET /application/:id/add-interview from the owner user', 
   });
 });
 
-describe.skip('A request to GET /application/:id/add-interview from a non-owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario.skip('A request to GET /application/:id/add-interview from a non-owner user', function () {
+  // Log in (need to do) and make our request
   var applicationId = 'abcdef-uuid';
-  serverUtils.run();
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
     expectedStatusCode: 404
@@ -70,9 +68,8 @@ describe.skip('A request to GET /application/:id/add-interview from a non-owner 
   });
 });
 
-describe.skip('A request to GET /application/:id/add-interview for an application that doesn\'t exist', function () {
-  // Start our server, log in (need to do), and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /application/:id/add-interview for an application that doesn\'t exist', function () {
+  // Log in (need to do) and make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
     expectedStatusCode: 404
@@ -83,9 +80,8 @@ describe.skip('A request to GET /application/:id/add-interview for an applicatio
   });
 });
 
-describe.skip('A request to GET /application/:id/add-interview from a logged out user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /application/:id/add-interview from a logged out user', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/application/does-not-exist/add-interview'),
     followRedirect: false,

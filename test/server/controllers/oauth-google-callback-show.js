@@ -13,9 +13,8 @@ var OAUTH_GOOGLE_REQUEST_URL_OPTIONS = {
 };
 
 // Start our tests
-describe('A request to GET /oauth/google/callback with no information', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /oauth/google/callback with no information', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/oauth/google/callback'),
     followRedirect: false,
@@ -27,9 +26,8 @@ describe('A request to GET /oauth/google/callback with no information', function
   });
 });
 
-describe('A request to GET /oauth/google/callback with an invalid OAuth action', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /oauth/google/callback with an invalid OAuth action', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
@@ -44,9 +42,8 @@ describe('A request to GET /oauth/google/callback with an invalid OAuth action',
   });
 });
 
-describe('A login-originating request to GET /oauth/google/callback with an error', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A login-originating request to GET /oauth/google/callback with an error', function () {
+  // Make our request
   httpUtils.session.init()
     .save({
       url: serverUtils.getUrl({
@@ -66,9 +63,8 @@ describe('A login-originating request to GET /oauth/google/callback with an erro
   });
 });
 
-describe('A sign up-originating request to GET /oauth/google/callback with an error', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A sign up-originating request to GET /oauth/google/callback with an error', function () {
+  // Make our request
   httpUtils.session.init().save({
       url: serverUtils.getUrl({
         pathname: '/oauth/google/callback',
@@ -87,9 +83,8 @@ describe('A sign up-originating request to GET /oauth/google/callback with an er
   });
 });
 
-describe('A request to GET /oauth/google/callback with no state', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /oauth/google/callback with no state', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
@@ -105,9 +100,8 @@ describe('A request to GET /oauth/google/callback with no state', function () {
   });
 });
 
-describe('A request to GET /oauth/google/callback with an invalid state', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /oauth/google/callback with an invalid state', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
@@ -123,9 +117,8 @@ describe('A request to GET /oauth/google/callback with an invalid state', functi
   });
 });
 
-describe('A request to GET /oauth/google/callback with an invalid code', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /oauth/google/callback with an invalid code', function () {
+  // Make our request
   fakeGoogleFactory.run(['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#invalid-code']);
   httpUtils.session.init().save({
     // Redirects to fake Google OAuth, then to `/oauth/google/callback`
@@ -141,9 +134,8 @@ describe('A request to GET /oauth/google/callback with an invalid code', functio
   });
 });
 
-describe('A request to GET /oauth/google/callback with no account email address', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /oauth/google/callback with no account email address', function () {
+  // Make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   sinonUtils.stub(app.notWinston, 'error');
   fakeGoogleFactory.run([
@@ -166,9 +158,8 @@ describe('A request to GET /oauth/google/callback with no account email address'
 });
 
 // TODO: Enable after we integrate PostgreSQL (otherwise, it's duplicate code as below)
-describe.skip('A request to GET /oauth/google/callback with a non-existant user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /oauth/google/callback with a non-existant user', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/oauth/google/callback',
@@ -191,9 +182,8 @@ describe.skip('A request to GET /oauth/google/callback with a non-existant user'
   });
 });
 
-describe('A request to GET /oauth/google/callback with an existant user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /oauth/google/callback with an existant user', function () {
+  // Make our request
   fakeGoogleFactory.run([
     '/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']);
   httpUtils.session.init().save({

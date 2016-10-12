@@ -4,9 +4,8 @@ var httpUtils = require('./utils/http');
 var serverUtils = require('./utils/server');
 
 // Start our tests
-describe('An HTTP request that touches PostgreSQL', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('An HTTP request that touches PostgreSQL', function () {
+  // Make our request
   httpUtils.save({url: serverUtils.getUrl('/_dev/postgresql'), expectedStatusCode: 200});
 
   it('receives a successful response', function () {

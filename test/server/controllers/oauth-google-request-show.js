@@ -5,9 +5,8 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to GET /oauth/google/request without an action', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /oauth/google/request without an action', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/oauth/google/request'),
     followRedirect: false,
@@ -19,9 +18,8 @@ describe('A request to GET /oauth/google/request without an action', function ()
   });
 });
 
-describe('A request to GET /oauth/google/request with an invalid action', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /oauth/google/request with an invalid action', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/oauth/google/request',
@@ -36,9 +34,8 @@ describe('A request to GET /oauth/google/request with an invalid action', functi
   });
 });
 
-describe('A request to GET /oauth/google/request with a valid action', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /oauth/google/request with a valid action', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/oauth/google/request',

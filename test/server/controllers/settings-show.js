@@ -4,9 +4,8 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to GET /settings from a logged in user', function () {
-  // Start our server, log in our user (need to add), and make our request
-  serverUtils.run();
+scenario('A request to GET /settings from a logged in user', function () {
+  // Log in our user (need to add) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/settings'), expectedStatusCode: 200});
 
   it('recieves the settings page', function () {
@@ -14,9 +13,8 @@ describe('A request to GET /settings from a logged in user', function () {
   });
 });
 
-describe.skip('A request to GET /settings from a logged out user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /settings from a logged out user', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/settings'),
     followRedirect: false,

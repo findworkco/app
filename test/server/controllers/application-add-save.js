@@ -4,10 +4,9 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to POST /add-application for a logged in user', function () {
-  // Start our server, login, and make our request
+scenario('A request to POST /add-application for a logged in user', function () {
+  // Login and make our request
   // TODO: Complete form for test
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/add-application'))
     .save({
@@ -34,10 +33,9 @@ describe('A request to POST /add-application for a logged in user', function () 
   });
 });
 
-describe.skip('A request to POST /add-application for a logged out user', function () {
-  // Start our server and make our request
+scenario.skip('A request to POST /add-application for a logged out user', function () {
+  // Make our request
   // TODO: Complete form for test
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/add-application'))
     .save({

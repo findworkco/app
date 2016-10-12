@@ -4,11 +4,10 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to POST /interview/:id from the owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario('A request to POST /interview/:id from the owner user', function () {
+  // Log in (need to do) and make our request
   // TODO: Complete form for test
   var interviewId = 'abcdef-sky-networks-interview-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
     .save({
@@ -35,11 +34,10 @@ describe('A request to POST /interview/:id from the owner user', function () {
   });
 });
 
-describe.skip('A request to POST /interview/:id for a past interview from the owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario.skip('A request to POST /interview/:id for a past interview from the owner user', function () {
+  // Log in (need to do) and make our request
   // TODO: Complete form for test
   var interviewId = 'abcdef-sky-networks-interview-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
     .save({
@@ -53,11 +51,10 @@ describe.skip('A request to POST /interview/:id for a past interview from the ow
   });
 });
 
-describe.skip('A request to POST /interview/:id for an upcoming interview from the owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario.skip('A request to POST /interview/:id for an upcoming interview from the owner user', function () {
+  // Log in (need to do) and make our request
   // TODO: Complete form for test
   var interviewId = 'abcdef-sky-networks-interview-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
     .save({
@@ -71,10 +68,9 @@ describe.skip('A request to POST /interview/:id for an upcoming interview from t
   });
 });
 
-describe.skip('A request to POST /interview/:id from a non-owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario.skip('A request to POST /interview/:id from a non-owner user', function () {
+  // Log in (need to do) and make our request
   var interviewId = 'abcdef-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
     .save({
@@ -88,12 +84,11 @@ describe.skip('A request to POST /interview/:id from a non-owner user', function
   });
 });
 
-describe.skip('A request to POST /interview/:id from a user that ' +
+scenario.skip('A request to POST /interview/:id from a user that ' +
     'owns the interview yet doesn\'t own the application', function () {
   // TODO: Enforce interview must have the same owner as application via DB restrictions
-  // Start our server, log in (need to do), and make our request
+  // Log in (need to do) and make our request
   var interviewId = 'abcdef-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/' + interviewId))
     .save({
@@ -108,9 +103,8 @@ describe.skip('A request to POST /interview/:id from a user that ' +
   });
 });
 
-describe.skip('A request to POST /interview/:id that doesn\'t exist', function () {
-  // Start our server, log in (need to do), and make our request
-  serverUtils.run();
+scenario.skip('A request to POST /interview/:id that doesn\'t exist', function () {
+  // Log in (need to do) and make our request
   httpUtils.session.init()
     .save(serverUtils.getUrl('/interview/does-not-exist'))
     .save({
@@ -124,9 +118,8 @@ describe.skip('A request to POST /interview/:id that doesn\'t exist', function (
   });
 });
 
-describe.skip('A request to POST /interview/:id from a logged out user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario.skip('A request to POST /interview/:id from a logged out user', function () {
+  // Make our request
   httpUtils.session.init()
     .save({
       method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'),

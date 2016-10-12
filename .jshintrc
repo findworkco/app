@@ -12,6 +12,7 @@
   "globals": {
     "exports": true,
     "describe": true,
+    "scenario": true,
     "before": true,
     "beforeEach": true,
     "after": true,

@@ -4,9 +4,8 @@ var serverUtils = require('./utils/server');
 
 // Start our tests
 // DEV: If we encounter issues due to too many inputs, then switch to `/login` or `/settings`
-describe('An HTTP request without a CSRF token', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('An HTTP request without a CSRF token', function () {
+  // Make our request
   httpUtils.session.init()
     .save(serverUtils.getUrl('/add-application'))
     .save({
@@ -23,9 +22,8 @@ describe('An HTTP request without a CSRF token', function () {
   });
 });
 
-describe('An HTTP request with a CSRF token', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('An HTTP request with a CSRF token', function () {
+  // Make our request
   httpUtils.session.init()
     .save(serverUtils.getUrl('/add-application'))
     .save({

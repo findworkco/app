@@ -4,11 +4,10 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to POST /application/:id to update fields from the owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario('A request to POST /application/:id to update fields from the owner user', function () {
+  // Log in (need to do) and make our request
   // TODO: Complete form for test
   var applicationId = 'abcdef-sky-networks-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
@@ -35,11 +34,10 @@ describe('A request to POST /application/:id to update fields from the owner use
   });
 });
 
-describe.skip('A request to POST /application/:id for "Received offer" action from the owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario.skip('A request to POST /application/:id for "Received offer" action from the owner user', function () {
+  // Log in (need to do) and make our request
   // TODO: Submit proper form
   var applicationId = 'abcdef-sky-networks-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
@@ -66,11 +64,10 @@ describe.skip('A request to POST /application/:id for "Received offer" action fr
   });
 });
 
-describe.skip('A request to POST /application/:id to "Archive" action from the owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario.skip('A request to POST /application/:id to "Archive" action from the owner user', function () {
+  // Log in (need to do) and make our request
   // TODO: Submit proper form
   var applicationId = 'abcdef-sky-networks-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
@@ -97,10 +94,9 @@ describe.skip('A request to POST /application/:id to "Archive" action from the o
   });
 });
 
-describe.skip('A request to POST /application/:id from a non-owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario.skip('A request to POST /application/:id from a non-owner user', function () {
+  // Log in (need to do) and make our request
   var applicationId = 'abcdef-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
@@ -114,9 +110,8 @@ describe.skip('A request to POST /application/:id from a non-owner user', functi
   });
 });
 
-describe.skip('A request to POST /application/:id that doesn\'t exist', function () {
-  // Start our server, log in (need to do), and make our request
-  serverUtils.run();
+scenario.skip('A request to POST /application/:id that doesn\'t exist', function () {
+  // Log in (need to do) and make our request
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/does-not-exist'))
     .save({
@@ -130,9 +125,8 @@ describe.skip('A request to POST /application/:id that doesn\'t exist', function
   });
 });
 
-describe.skip('A request to POST /application/:id from a logged out user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario.skip('A request to POST /application/:id from a logged out user', function () {
+  // Make our request
   httpUtils.session.init()
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/does-not-exist'),

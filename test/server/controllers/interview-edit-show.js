@@ -4,10 +4,9 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to GET /interview/:id from the owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario('A request to GET /interview/:id from the owner user', function () {
+  // Log in (need to do) and make our request
   var interviewId = 'abcdef-sky-networks-interview-uuid';
-  serverUtils.run();
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/interview/' + interviewId),
     expectedStatusCode: 200
@@ -29,10 +28,9 @@ describe('A request to GET /interview/:id from the owner user', function () {
   });
 });
 
-describe.skip('A request to GET /interview/:id from a non-owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario.skip('A request to GET /interview/:id from a non-owner user', function () {
+  // Log in (need to do) and make our request
   var interviewId = 'abcdef-uuid';
-  serverUtils.run();
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/interview/' + interviewId),
     expectedStatusCode: 404
@@ -43,12 +41,11 @@ describe.skip('A request to GET /interview/:id from a non-owner user', function 
   });
 });
 
-describe.skip('A request to GET /interview/:id from a user that ' +
+scenario.skip('A request to GET /interview/:id from a user that ' +
     'owns the interview yet doesn\'t own the application', function () {
   // TODO: Enforce interview must have the same owner as application via DB restrictions
-  // Start our server, log in (need to do), and make our request
+  // Log in (need to do) and make our request
   var interviewId = 'abcdef-uuid';
-  serverUtils.run();
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/interview/' + interviewId),
     expectedStatusCode: 500
@@ -60,9 +57,8 @@ describe.skip('A request to GET /interview/:id from a user that ' +
   });
 });
 
-describe.skip('A request to GET /interview/:id that doesn\'t exist', function () {
-  // Start our server, log in (need to do), and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /interview/:id that doesn\'t exist', function () {
+  // Log in (need to do) and make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/interview/does-not-exist'),
     expectedStatusCode: 404
@@ -73,9 +69,8 @@ describe.skip('A request to GET /interview/:id that doesn\'t exist', function ()
   });
 });
 
-describe.skip('A request to GET /interview/:id from a logged out user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario.skip('A request to GET /interview/:id from a logged out user', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/interview/does-not-exist'),
     followRedirect: false,

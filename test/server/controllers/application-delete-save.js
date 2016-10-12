@@ -4,11 +4,10 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to POST /application/:id/delete from the owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario('A request to POST /application/:id/delete from the owner user', function () {
+  // Log in (need to do) and make our request
   // TODO: Complete form for test
   var applicationId = 'abcdef-sky-networks-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
@@ -35,10 +34,9 @@ describe('A request to POST /application/:id/delete from the owner user', functi
   });
 });
 
-describe.skip('A request to POST /application/:id/delete from a non-owner user', function () {
-  // Start our server, log in (need to do), and make our request
+scenario.skip('A request to POST /application/:id/delete from a non-owner user', function () {
+  // Log in (need to do) and make our request
   var applicationId = 'abcdef-uuid';
-  serverUtils.run();
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
@@ -52,9 +50,8 @@ describe.skip('A request to POST /application/:id/delete from a non-owner user',
   });
 });
 
-describe.skip('A request to POST /application/:id/delete that doesn\'t exist', function () {
-  // Start our server, log in (need to do), and make our request
-  serverUtils.run();
+scenario.skip('A request to POST /application/:id/delete that doesn\'t exist', function () {
+  // Log in (need to do) and make our request
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/does-not-exist'))
     .save({
@@ -68,9 +65,8 @@ describe.skip('A request to POST /application/:id/delete that doesn\'t exist', f
   });
 });
 
-describe.skip('A request to POST /application/:id/delete from a logged out user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario.skip('A request to POST /application/:id/delete from a logged out user', function () {
+  // Make our request
   httpUtils.session.init()
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/delete'),

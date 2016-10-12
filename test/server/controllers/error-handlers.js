@@ -7,9 +7,8 @@ var sinonUtils = require('../utils/sinon');
 var Response = require('express/lib/response');
 
 // Start our tests
-describe('A request for a missing page', function () {
-  // Start our server, spy on Sentry, and make our request
-  serverUtils.run();
+scenario('A request for a missing page', function () {
+  // Spy on Sentry and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/_dev/404'),
@@ -31,9 +30,8 @@ describe('A request for a missing page', function () {
   });
 });
 
-describe('A request for a page with a server error', function () {
-  // Start our server, spy on Sentry, silence Winston, and make our request
-  serverUtils.run();
+scenario('A request for a page with a server error', function () {
+  // Spy on Sentry, silence Winston, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   sinonUtils.stub(app.notWinston, 'error');
   httpUtils.session.init().save({
@@ -61,9 +59,8 @@ describe('A request for a page with a server error', function () {
   });
 });
 
-describe('A request for a page with a render error', function () {
-  // Start our server, spy on Sentry, silence Winston, force a render error, and make our request
-  serverUtils.run();
+scenario('A request for a page with a render error', function () {
+  // Spy on Sentry, silence Winston, force a render error, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   sinonUtils.stub(app.notWinston, 'error');
   sinonUtils.stub(Response, 'render', function forceRenderError () {
@@ -94,9 +91,8 @@ describe('A request for a page with a render error', function () {
   });
 });
 
-describe('A request for a page with a missing parameter', function () {
-  // Start our server, spy on Sentry, and make our request
-  serverUtils.run();
+scenario('A request for a page with a missing parameter', function () {
+  // Spy on Sentry and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/_dev/missing-query-parameter'),
@@ -117,9 +113,8 @@ describe('A request for a page with a missing parameter', function () {
   });
 });
 
-describe('A request for a page with an unexposable yet expected error', function () {
-  // Start our server, spy on Sentry, and make our request
-  serverUtils.run();
+scenario('A request for a page with an unexposable yet expected error', function () {
+  // Spy on Sentry and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/_dev/unexposed-error'),

@@ -4,9 +4,8 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to GET / from a logged out user', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET / from a logged out user', function () {
+  // Make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/'), expectedStatusCode: 200});
 
   it('recieves the landing page', function () {
@@ -15,9 +14,8 @@ describe('A request to GET / from a logged out user', function () {
   });
 });
 
-describe.skip('A request to / from a logged in user', function () {
-  // Start our server, log in our user (need to add), and make our request
-  serverUtils.run();
+scenario.skip('A request to / from a logged in user', function () {
+  // Log in our user (need to add) and make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/'),
     followRedirect: false,

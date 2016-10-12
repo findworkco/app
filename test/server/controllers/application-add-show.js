@@ -5,9 +5,8 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to GET /add-application', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /add-application', function () {
+  // Make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/add-application'), expectedStatusCode: 200});
 
   it('recieves the add application page', function () {

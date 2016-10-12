@@ -4,9 +4,8 @@ var httpUtils = require('./utils/http');
 var serverUtils = require('./utils/server');
 
 // Start our tests
-describe('An HTTP request receiving a notification', function () {
-  // Start our server and make our request (will be redirected to /schedule)
-  serverUtils.run();
+scenario('An HTTP request receiving a notification', function () {
+  // Make our request (will be redirected to /schedule)
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/_dev/notification',
@@ -21,9 +20,8 @@ describe('An HTTP request receiving a notification', function () {
   });
 });
 
-describe('An HTTP request receiving a malicious notification', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('An HTTP request receiving a malicious notification', function () {
+  // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
       pathname: '/_dev/notification',

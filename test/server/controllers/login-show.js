@@ -4,9 +4,8 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-describe('A request to GET /login', function () {
-  // Start our server and make our request
-  serverUtils.run();
+scenario('A request to GET /login', function () {
+  // Make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/login'), expectedStatusCode: 200});
 
   it('recieves the login page', function () {
