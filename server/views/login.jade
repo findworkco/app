@@ -1,4 +1,5 @@
 extends layout
+include login-mixins
 
 block title
   title Log in - Find Work
@@ -12,13 +13,9 @@ block content
           span.notification.notification--error= auth_error
       //- DESIGN: If we get AngelList support, build Sign up/Log in with AngelList
       p.text--center
-        //- https://developers.google.com/identity/branding-guidelines
         //- DEV: `id` is for testing purposes only
-        //- TODO: Use Google branding for button
-        //-   We can probably leverage a CodePen http://codepen.io/timlayton/pen/gppWqz
-        a#login_with_google.btn.btn--primary(href="/oauth/google/request?action=login")
-          strong G+
-          = " Log in with Google"
+        +googleButton()#login_with_google(href="/oauth/google/request?action=login")
+          = "Log in with Google"
         br
         em
           small

@@ -13,7 +13,7 @@ scenario('A request to GET /login', function () {
   });
 
   it('has a button to log in with Google', function () {
-    expect(this.$('#login_with_google').text()).to.equal('G+ Log in with Google');
+    expect(this.$('#login_with_google').text()).to.equal('Log in with Google');
     expect(this.$('#login_with_google').attr('href')).to.equal('/oauth/google/request?action=login');
   });
 });

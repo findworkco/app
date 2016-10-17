@@ -13,7 +13,7 @@ scenario('A request to GET /sign-up', function () {
   });
 
   it('has a button to sign up with Google', function () {
-    expect(this.$('#sign_up_with_google').text()).to.equal('G+ Sign up with Google');
+    expect(this.$('#sign_up_with_google').text()).to.equal('Sign up with Google');
     expect(this.$('#sign_up_with_google').attr('href')).to.equal('/oauth/google/request?action=sign_up');
   });
 });

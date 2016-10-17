@@ -1,0 +1,152 @@
+// Taken from http://codepen.io/twolfson/pen/bwrkvP
+//   We removed `working` and `error` states
+
+/*** Additional edits to original (e.g. moving to button, adding
+state) ***/
+/* DEV: These come before original styles so conflicting selectors can be overridden properly (e.g. :active overrides :focus patch)*/
+
+/* Style our button */
+.abcRioButton {
+  /* Remove conflicting default button styles */
+  border: 0;
+  padding: 0;
+
+  /* Declare button as inline-block (in case we are using a link) */
+  display: inline-block;
+}
+
+/* Remove :visited link coloring */
+.abcRioButton:visited {
+  color: #262626;
+}
+.abcRioButtonBlue:visited {
+  color: #fff
+}
+.abcRioButtonLightBlue:visited {
+  color: #757575
+}
+
+/* Redefine all `spans` as `blocks` */
+/* DEV: We are using spans to prevent `divs` breaking out of `a` container */
+.abcRioButtonContentWrapper,
+.abcRioButtonIcon,
+.abcRioButtonIconImage {
+  display: block;
+}
+
+/* Workaround irremovable button padding in Firefox */
+.abcRioButtonContentWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Add focus state to button for a11y */
+/* DEV: Styles are same as `:hover` */
+.abcRioButton:focus {
+    -webkit-box-shadow: 0 0 3px 3px rgba(66, 133, 244, .3);
+    box-shadow: 0 0 3px 3px rgba(66, 133, 244, .3)
+}
+.abcRioButtonBlue:focus {
+    background-color: #4285f4
+}
+
+/* Add disabled state to button */
+/* DEV: Derived from PNG assets (same for dark/light) */
+.abcRioButton[disabled] {
+  color: rgba(0, 0, 0, 0.44);
+  background-color: rgba(0, 0, 0, 0.08);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.abcRioButton[disabled] .abcRioButtonIcon {
+  background: none;
+}
+
+/*** Original styles ***/
+.abcRioButton {
+    -webkit-border-radius: 1px;
+    border-radius: 1px;
+    -webkit-box-shadow: 0 2px 4px 0px rgba(0, 0, 0, .25);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .25);
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
+    transition: background-color .218s, border-color .218s, box-shadow .218s;
+    -webkit-user-select: none;
+    -webkit-appearance: none;
+    background-color: #fff;
+    background-image: none;
+    color: #262626;
+    cursor: pointer;
+    outline: none;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    width: auto
+}
+
+.abcRioButton:hover {
+    -webkit-box-shadow: 0 0 3px 3px rgba(66, 133, 244, .3);
+    box-shadow: 0 0 3px 3px rgba(66, 133, 244, .3)
+}
+
+.abcRioButtonBlue {
+    background-color: #4285f4;
+    border: none;
+    color: #fff
+}
+
+.abcRioButtonBlue:hover {
+    background-color: #4285f4
+}
+
+.abcRioButtonBlue:active {
+    background-color: #3367d6
+}
+
+.abcRioButtonLightBlue {
+    background-color: #fff;
+    color: #757575
+}
+
+.abcRioButtonLightBlue:active {
+    background-color: #eee;
+    color: #6d6d6d
+}
+
+.abcRioButtonIcon {
+    float: left
+}
+
+.abcRioButtonBlue .abcRioButtonIcon {
+    background-color: #fff;
+    -webkit-border-radius: 1px;
+    border-radius: 1px
+}
+
+.abcRioButtonSvg {
+    display: block
+}
+
+.abcRioButtonContents {
+    font-family: Roboto, arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: .21px;
+    margin-left: 6px;
+    margin-right: 6px;
+    vertical-align: top
+}
+
+.abcRioButtonContentWrapper {
+    height: 100%;
+    width: 100%
+}
+
+.abcRioButtonBlue .abcRioButtonContentWrapper {
+    border: 1px solid transparent
+}
