@@ -19,7 +19,6 @@ function _scenario(key, describeStr, options, describeFn) {
 
   // Set up default options
   options = _.extend({
-    candidate: 'mock-user',
     // DEV: Later services might want to add/remove a single fixture
     //   We could support that via `{add: [], remove: [], removeAll: true}`
     //   Default behavior would be `[overrides] = {add: [overrides], removeAll: true}`

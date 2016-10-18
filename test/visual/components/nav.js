@@ -1,45 +1,80 @@
 // Load in our dependencies
 var gemini = require('gemini');
+var geminiUtils = require('../utils/gemini');
 
 // Define our visual tests
 gemini.suite('components/nav', function (suite) {
-  suite.setUrl('/application/abcdef-sky-networks-uuid');
-
-  gemini.suite('selected-nav-row', function (child) {
-    // DEV: This verifies we add a left border to selected nav rows
-    child.setCaptureElements('.nav-row--selected').capture('selected');
+  gemini.suite('login-status', function (child) {
+    var navTopSelector = '.nav__top';
+    gemini.suite('schedule-logged-out', function (child) {
+      child.setUrl('/_dev/schedule?logged_in=false')
+        .setCaptureElements(navTopSelector)
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
+    gemini.suite('schedule-logged-in', function (child) {
+      child.setUrl('/_dev/schedule?logged_in=true')
+        .setCaptureElements(navTopSelector)
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
+    gemini.suite('non-schedule-logged-out', function (child) {
+      child.setUrl('/_dev/add-application?logged_in=false')
+        .setCaptureElements(navTopSelector)
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
+    gemini.suite('non-schedule-logged-in', function (child) {
+      child.setUrl('/_dev/add-application?logged_in=true')
+        .setCaptureElements(navTopSelector)
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
   });
 
-  gemini.suite('hover-nav-row', function (child) {
-    // DEV: This verifies we add a left border on hovering a nav row
-    var unselectedRowSelector = '.nav-row:not(.nav-row--selected)';
-    child
-      .setCaptureElements(unselectedRowSelector)
-      .capture('default')
-      .capture('hover', function hoverEl (actions, find) {
-        actions.mouseMove(find(unselectedRowSelector));
-      });
-  });
+  gemini.suite('nav-row', function (child) {
+    child.setUrl('/application/abcdef-sky-networks-uuid');
 
-  gemini.suite('focus-nav-row', function (child) {
-    // DEV: This verifies we add a left border on focusing a nav link row
-    var unselectedLinkRowSelector = 'a.nav-row:not(.nav-row--selected)';
-    child
-      .setCaptureElements(unselectedLinkRowSelector)
-      .capture('default')
-      .capture('focus', function focusEl (actions, find) {
-        actions.focus(find(unselectedLinkRowSelector));
-      });
-  });
+    gemini.suite('selected', function (child) {
+      // DEV: This verifies we add a left border to selected nav rows
+      child.setCaptureElements('.nav-row--selected').capture('selected');
+    });
 
-  gemini.suite('active-nav-row', function (child) {
-    // DEV: This verifies we don't color nav links red on active
-    var navLinkSelector = 'a.nav-row';
-    child
-      .setCaptureElements(navLinkSelector)
-      .capture('default')
-      .capture('active', function focusEl (actions, find) {
-        actions.mouseDown(find(navLinkSelector));
-      });
+    gemini.suite('hover', function (child) {
+      // DEV: This verifies we add a left border on hovering a nav row
+      var unselectedRowSelector = '.nav-row:not(.nav-row--selected)';
+      child
+        .setCaptureElements(unselectedRowSelector)
+        .capture('default')
+        .capture('hover', function hoverEl (actions, find) {
+          actions.mouseMove(find(unselectedRowSelector));
+        });
+    });
+
+    gemini.suite('focus', function (child) {
+      // DEV: This verifies we add a left border on focusing a nav link row
+      var unselectedLinkRowSelector = 'a.nav-row:not(.nav-row--selected)';
+      child
+        .setCaptureElements(unselectedLinkRowSelector)
+        .capture('default')
+        .capture('focus', function focusEl (actions, find) {
+          actions.focus(find(unselectedLinkRowSelector));
+        });
+    });
+
+    gemini.suite('active', function (child) {
+      // DEV: This verifies we don't color nav links red on active
+      var navLinkSelector = 'a.nav-row';
+      child
+        .setCaptureElements(navLinkSelector)
+        .capture('default')
+        .capture('active', function focusEl (actions, find) {
+          actions.mouseDown(find(navLinkSelector));
+        });
+    });
   });
 });

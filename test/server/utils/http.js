@@ -2,6 +2,7 @@
 // Load in our dependencies
 var _ = require('underscore');
 var assert = require('assert');
+var url = require('url');
 var cheerio = require('cheerio');
 var request = require('request');
 var serverUtils = require('./server');
@@ -132,6 +133,48 @@ exports.session = {
     });
     after(function cleanup () {
       delete this.jar;
+    });
+
+    // Return this for a fluent interface
+    return this;
+  },
+  // Define shorthand login with default candidate
+  login: function () {
+    return this.loginAs('mock-candidate');
+  },
+  loginAs: function (candidateName) {
+    before(function loginAsFn () {
+      // Verify a session already has been started
+      assert(this.jar, '`this.jar` doesn\'t exists for `httpUtils.session` ' +
+        '(meaning a session hasn\'t been started). Please begin a session before logging in.');
+    });
+    // Scrape state and pass along to callback with custom code
+    // DEV: We are using `code` as a key to determine which candidate to log in
+    //   so we cannot use `/oauth/google/request` as it uses a mock code
+    exports.session.save({
+      // Redirects to fake Google OAuth
+      url: serverUtils.getUrl({
+        pathname: '/oauth/google/request',
+        query: {action: 'login'}
+      }),
+      followRedirect: false,
+      expectedStatusCode: 302
+    });
+    before(function callbackWithCustomCode (done) {
+      // Extract state from redirect URL
+      var redirectURL = url.parse(this.res.headers.location, true);
+      var state = redirectURL.query.state;
+      assert(state);
+
+      // Perform our custom callback
+      exports.session._save({
+        url: serverUtils.getUrl({
+          pathname: '/oauth/google/callback',
+          query: {action: 'login', state: state, code: candidateName}
+        }),
+        followRedirect: true,
+        expectedStatusCode: 200
+      }).call(this, done);
     });
 
     // Return this for a fluent interface

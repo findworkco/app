@@ -13,7 +13,6 @@ var OAUTH_GOOGLE_REQUEST_URL_OPTIONS = {
 
 // Start our tests
 scenario('A request to GET /oauth/google/callback with no information', {
-  candidate: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -29,7 +28,6 @@ scenario('A request to GET /oauth/google/callback with no information', {
 });
 
 scenario('A request to GET /oauth/google/callback with an invalid OAuth action', {
-  candidate: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -48,7 +46,6 @@ scenario('A request to GET /oauth/google/callback with an invalid OAuth action',
 });
 
 scenario('A login-originating request to GET /oauth/google/callback with an error', {
-  candidate: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -72,7 +69,6 @@ scenario('A login-originating request to GET /oauth/google/callback with an erro
 });
 
 scenario('A sign up-originating request to GET /oauth/google/callback with an error', {
-  candidate: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -95,7 +91,6 @@ scenario('A sign up-originating request to GET /oauth/google/callback with an er
 });
 
 scenario('A request to GET /oauth/google/callback with no state', {
-  candidate: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -115,7 +110,6 @@ scenario('A request to GET /oauth/google/callback with no state', {
 });
 
 scenario('A request to GET /oauth/google/callback with an invalid state', {
-  candidate: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -135,7 +129,6 @@ scenario('A request to GET /oauth/google/callback with an invalid state', {
 });
 
 scenario('A request to GET /oauth/google/callback with an invalid code', {
-  candidate: null,
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#invalid-code']
 }, function () {
   // Make our request
@@ -154,7 +147,6 @@ scenario('A request to GET /oauth/google/callback with an invalid code', {
 });
 
 scenario('A request to GET /oauth/google/callback with no account email address', {
-  candidate: null,
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#no-account-email']
 }, function () {
   // Make our request
@@ -179,7 +171,6 @@ scenario('A request to GET /oauth/google/callback with no account email address'
 
 // TODO: Enable after we integrate PostgreSQL (otherwise, it's duplicate code as below)
 scenario.skip('A request to GET /oauth/google/callback with a non-existant user', {
-  candidate: null,
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
 }, function () {
   // Make our request
@@ -204,7 +195,6 @@ scenario.skip('A request to GET /oauth/google/callback with a non-existant user'
 });
 
 scenario('A request to GET /oauth/google/callback with an existant user', {
-  candidate: null,
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
 }, function () {
   // Make our request

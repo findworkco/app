@@ -1,4 +1,5 @@
 // Load in our dependencies
+var _ = require('underscore');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
 var applicationMockData = require('../models/application-mock-data');
@@ -8,13 +9,20 @@ var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Bind our controllers
 app.get('/', function rootShow (req, res, next) {
-  // TODO: If the user is logged in, then redirect them to `/schedule`
+  // If the user is logged in, then redirect them to `/schedule`
+  if (req.candidate) {
+    res.redirect('/schedule');
   // Otherwise, show the landing page
-  res.render('landing.jade');
+  } else {
+    res.render('landing.jade');
+  }
 });
 
 app.get('/archive', function archiveShow (req, res, next) {
-  res.render('archive.jade', genericMockData);
+  res.render('archive.jade', _.defaults({
+    // DEV: We use `isArchive` over direct URL comparisons to allow `/_dev` routes
+    isArchive: true
+  }, genericMockData));
 });
 
 // TODO: Move to `development` or remove entirely
@@ -62,7 +70,9 @@ app.get('/sign-up', [
 
 app.get('/settings', function settingsShow (req, res, next) {
   // TODO: Require login for this page
-  res.render('settings.jade', genericMockData);
+  res.render('settings.jade', _.defaults({
+    isSettings: true
+  }, genericMockData));
 });
 app.post('/logout', function logoutSave (req, res, next) {
   // Destroy our session and redirect to the homepage
@@ -81,7 +91,10 @@ app.post('/delete-account', function deleteAccountSave (req, res, next) {
 });
 
 app.get('/schedule', function scheduleShow (req, res, next) {
-  res.render('schedule.jade', genericMockData);
+  res.render('schedule.jade', _.defaults({
+    // DEV: We use `isSchedule` over direct URL comparisons to allow `/_dev` routes
+    isSchedule: true
+  }, genericMockData));
 });
 
 // TODO: Add smoke tests for these and skeletons for form testing but not content

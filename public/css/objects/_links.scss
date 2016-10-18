@@ -19,6 +19,15 @@ a,
   }
 }
 
+.link--inherit-color {
+  // DEV: We retain `&:focus` to have an outline for accessibility
+  &,
+  &:visited,
+  &:active {
+    color: inherit;
+  }
+}
+
 .link--unstyled {
   // DEV: We retain `&:focus` to have an outline for accessibility
   &,

@@ -14,15 +14,15 @@ scenario('A request to GET / from a logged out user', function () {
   });
 });
 
-scenario.skip('A request to / from a logged in user', function () {
-  // Log in our user (need to add) and make our request
-  httpUtils.session.init().save({
+scenario('A request to / from a logged in user', function () {
+  // Log in our user and make our request
+  httpUtils.session.init().login().save({
     url: serverUtils.getUrl('/'),
     followRedirect: false,
     expectedStatusCode: 302
   });
 
   it('is redirected to the /schedule page', function () {
-    expect(this.res.headers).to.have.property('Location', '/schedule');
+    expect(this.res.headers).to.have.property('location', '/schedule');
   });
 });

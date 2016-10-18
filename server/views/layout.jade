@@ -23,9 +23,9 @@ block base-content
   //- Start our HTML
   //- TODO: Remove `APPLICATION_URL_OVERRIDE` by either add missing mock data for applications
   //-   or waiting until we have actual data
-  - var isSchedule = urlPath === '/schedule';
-  - var isArchive = urlPath === '/archive';
-  - var useArchiveSchedule = urlPath === '/archive' || (locals.selectedApplication && locals.selectedApplication.status === APPLICATION_STATUSES.ARCHIVED);
+  - var isSchedule = locals.isSchedule === true;
+  - var isArchive = locals.isArchive === true;
+  - var useArchiveSchedule = locals.isArchive === true || (locals.selectedApplication && locals.selectedApplication.status === APPLICATION_STATUSES.ARCHIVED);
   - var APPLICATION_URL_OVERRIDE = !useArchiveSchedule ? '/application/abcdef-sky-networks-uuid' : '/application/abcdef-monstromart-uuid';
   .container
     .grid
@@ -38,8 +38,12 @@ block base-content
               a(href="/schedule")
                 img.nav__logo(alt="Find Work logo", src="/dist/images/white-logo.svg", style="width: 198px")
               p.flush--bottom.soft-half--bottom
-                //- TODO: Build signed out state
-                a.link--unstyled.muted(href="/settings") todd@findwork.co
+                if locals.candidate
+                  a.link--unstyled.muted(href="/settings")= candidate.email
+                else
+                  a.link--inherit-color(href="/sign-up") Sign up
+                  = " / "
+                  a.link--inherit-color(href="/login") Log in
             //- On medium screens, show logo with major links
             .small-hidden.large-hidden
               .grid.soft--ends
@@ -47,19 +51,23 @@ block base-content
                   a(href="/schedule")
                     img.nav__logo(alt="Find Work logo", src="/dist/images/white-logo.svg", style="height: 26px")
                 .grid__item(style="margin-top: 6px")
-                  - var isSelected = urlPath === '/schedule' || (locals.selectedApplication && !useArchiveSchedule);
+                  - var isSelected = locals.isSchedule === true || (locals.selectedApplication && !useArchiveSchedule);
                   a.delta.link--unstyled(href="/schedule", style=isSelected ? "text-decoration: underline" : "") Schedule
                 .grid__item(style="margin-top: 6px")
-                  - var isSelected = urlPath === '/archive' || (locals.selectedApplication && useArchiveSchedule);
+                  - var isSelected = locals.isArchive === true || (locals.selectedApplication && useArchiveSchedule);
                   a.delta.link--unstyled(href="/archive", style=isSelected ? "text-decoration: underline" : "") Archive
                 .float--right.grid__item.text--right(style="margin-top: 6px")
                   span.delta
-                    //- TODO: Build signed out state
-                    //- DESIGN: Links in dropdown are "Settings", "Log out"
-                    //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a03ef4dcc
-                    span todd@findwork.co
-                    = " "
-                    i.fa.fa-caret-down(style="position: relative; top: 1px")
+                    if locals.candidate
+                      //- DESIGN: Links in dropdown are "Settings", "Log out"
+                      //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a03ef4dcc
+                      span= candidate.email
+                      = " "
+                      i.fa.fa-caret-down(style="position: relative; top: 1px")
+                    else
+                      a.link--inherit-color(href="/sign-up") Sign up
+                      = " / "
+                      a.link--inherit-color(href="/login") Log in
             //- On non-schedule small screens, display thin bar with back button
             if !isSchedule
               .medium-and-up-hidden
@@ -73,8 +81,12 @@ block base-content
                       span.delta(style="position: relative; top: -4px") Back
                   //- DEV: Same line height as `.fa-angle-left`
                   .grid__item.three-quarters.text--right(style="line-height: 34px")
-                    //- TODO: Build signed out state
-                    a.link--unstyled.muted(href="/settings") todd@findwork.co
+                    if locals.candidate
+                      a.link--unstyled.muted(href="/settings")= candidate.email
+                    else
+                      a.link--inherit-color(href="/sign-up") Sign up
+                      = " / "
+                      a.link--inherit-color(href="/login") Log in
         //- On non-schedule for medium/small pages, hide our schedule listing
         div(class={'medium-and-down-hidden': !(isSchedule || isArchive)})
           if !useArchiveSchedule
@@ -99,7 +111,7 @@ block base-content
                 block
 
           mixin nav-row--application(application, type, params)
-            +nav-row({selected: application.url === urlPath || (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application
+            +nav-row({selected: (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application
               h4.text--normal.flush--bottom
                 a.link--unstyled(href=APPLICATION_URL_OVERRIDE || application.url)
                   strong= application.name
@@ -205,8 +217,8 @@ block base-content
 
           //- Nav links
           if !useArchiveSchedule
-            +nav-row--link({selected: urlPath === '/archive'})(href="/archive") Archived applications
-          +nav-row--link({selected: urlPath === '/settings'})(href="/settings",
+            +nav-row--link({selected: locals.isArchive === true})(href="/archive") Archived applications
+          +nav-row--link({selected: locals.isSettings === true})(href="/settings",
             class={'medium-and-down-hidden': useArchiveSchedule}) Settings
 
           //- Footer

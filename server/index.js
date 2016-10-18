@@ -55,10 +55,6 @@ function Server(config) {
 
   // Configure our views
   // http://expressjs.com/en/guide/using-template-engines.html
-  app.use(function bindResponseLocals (req, res, next) {
-    res.locals.urlPath = req.path;
-    next();
-  });
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   // DEV: We set view cache to true during testing for performance
@@ -146,7 +142,10 @@ function Server(config) {
 
   // Initialize Passport for authentication
   // https://github.com/jaredhanson/passport/tree/v0.3.2#middleware
-  app.use(passport.initialize());
+  // Set `req.candidate` to be our candidate key
+  //   https://github.com/jaredhanson/passport/blob/v0.3.2/lib/authenticator.js#L108-L129
+  //   https://github.com/jaredhanson/passport/blob/v0.3.2/lib/strategies/session.js#L63-L64
+  app.use(passport.initialize({userProperty: 'candidate'}));
   app.use(passport.session());
 
   // Configure saving/loading users by their session
@@ -158,6 +157,12 @@ function Server(config) {
   });
   passport.deserializeUser(function handleDeserializeUser (email, cb) {
     cb(null, {email: email});
+  });
+
+  // Expose logged in candidate to render
+  app.use(function exposeLoggedInCandidate (req, res, next) {
+    res.locals.candidate = req.candidate;
+    next();
   });
 
   // Load existing flash notifications before routing
