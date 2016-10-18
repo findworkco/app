@@ -6,7 +6,7 @@ var serverUtils = require('../utils/server');
 // Start our tests
 scenario('A request to POST /delete-account from a logged in user', function () {
   // Login and save our session cokie
-  httpUtils.session.init().save(serverUtils.getUrl('/settings'));
+  httpUtils.session.init().login().save(serverUtils.getUrl('/settings'));
   before(function saveSessionCookie () {
     // toJSON() = {version: 'tough-cookie@2.2.2', storeType: 'MemoryCookieStore', rejectPublicSuffixes: true,
     // cookies: [{key: 'sid', value: 's%3A...', ...}]}
@@ -26,6 +26,7 @@ scenario('A request to POST /delete-account from a logged in user', function () 
         cookie: 'sid=' + this.sessionCookie.value
       },
       url: serverUtils.getUrl('/settings'),
+      followRedirect: false,
       expectedStatusCode: null
     }).call(this, done);
   }
@@ -60,7 +61,7 @@ scenario('A request to POST /delete-account from a logged in user', function () 
   describe('with respect to stored session data', function () {
     // Request logged-in only page and verify rejection
     before(requestSettingsViaCookie);
-    it.skip('cannot access original session data', function () {
+    it('cannot access original session data', function () {
       expect(this.res.statusCode).to.equal(302);
       expect(this.res.headers).to.have.property('location', '/login');
     });
@@ -71,11 +72,11 @@ scenario('A request to POST /delete-account from a logged in user', function () 
   });
 });
 
-scenario.skip('A request to POST /delete-account from a logged out user', function () {
+scenario('A request to POST /delete-account from a logged out user', function () {
   // Make our request
   httpUtils.session.init().save({
     method: 'POST', url: serverUtils.getUrl('/delete-account'),
-    htmlForm: true, followRedirect: false,
+    csrfForm: true, followRedirect: false,
     expectedStatusCode: 302
   });
 

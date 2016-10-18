@@ -4,9 +4,11 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
+// DEV: We could add a test for `POST /logout` from a logged out user
+//   but it's pointless to lock down the endpoint
 scenario('A request to POST /logout', function () {
   // Login and save our session cokie
-  httpUtils.session.init().save(serverUtils.getUrl('/settings'));
+  httpUtils.session.init().login().save(serverUtils.getUrl('/settings'));
   before(function saveSessionCookie () {
     // toJSON() = {version: 'tough-cookie@2.2.2', storeType: 'MemoryCookieStore', rejectPublicSuffixes: true,
     // cookies: [{key: 'sid', value: 's%3A...', ...}]}
@@ -26,6 +28,7 @@ scenario('A request to POST /logout', function () {
         cookie: 'sid=' + this.sessionCookie.value
       },
       url: serverUtils.getUrl('/settings'),
+      followRedirect: false,
       expectedStatusCode: null
     }).call(this, done);
   }
@@ -60,7 +63,7 @@ scenario('A request to POST /logout', function () {
   describe('with respect to stored session data', function () {
     // Request logged-in only page and verify rejection
     before(requestSettingsViaCookie);
-    it.skip('cannot access original session data', function () {
+    it('cannot access original session data', function () {
       expect(this.res.statusCode).to.equal(302);
       expect(this.res.headers).to.have.property('location', '/login');
     });

@@ -2,6 +2,7 @@
 var _ = require('underscore');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
+var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var applicationMockData = require('../models/application-mock-data');
 var interviewMockData = require('../models/interview-mock-data');
 var genericMockData = require('../models/generic-mock-data');
@@ -68,12 +69,14 @@ app.get('/sign-up', [
   }
 ]);
 
-app.get('/settings', function settingsShow (req, res, next) {
-  // TODO: Require login for this page
-  res.render('settings.jade', _.defaults({
-    isSettings: true
-  }, genericMockData));
-});
+app.get('/settings', [
+  ensureLoggedIn,
+  function settingsShow (req, res, next) {
+    res.render('settings.jade', _.defaults({
+      isSettings: true
+    }, genericMockData));
+  }
+]);
 app.post('/logout', function logoutSave (req, res, next) {
   // Destroy our session and redirect to the homepage
   req.session.destroy(function handleDestroy (err) {
@@ -81,14 +84,17 @@ app.post('/logout', function logoutSave (req, res, next) {
     res.redirect('/');
   });
 });
-app.post('/delete-account', function deleteAccountSave (req, res, next) {
-  // TODO: Destroy our user/cascade destroy applications/interviews
-  // Destroy out session and redirect to the homepage
-  req.session.destroy(function handleDestroy (err) {
-    // TODO: Handle potential error
-    res.redirect('/');
-  });
-});
+app.post('/delete-account', [
+  ensureLoggedIn,
+  function deleteAccountSave (req, res, next) {
+    // TODO: Destroy our user/cascade destroy applications/interviews
+    // Destroy out session and redirect to the homepage
+    req.session.destroy(function handleDestroy (err) {
+      // TODO: Handle potential error
+      res.redirect('/');
+    });
+  }
+]);
 
 app.get('/schedule', function scheduleShow (req, res, next) {
   res.render('schedule.jade', _.defaults({

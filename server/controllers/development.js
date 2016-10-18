@@ -54,6 +54,16 @@ app.get('/_dev/schedule', [
   }
 ]);
 
+app.get('/_dev/settings', [
+  handleDevParams,
+  function devSettingsShow (req, res, next) {
+    // Render our page with mock data
+    res.render('settings.jade', _.defaults({
+      isSettings: true
+    }, genericMockData));
+  }
+]);
+
 // DEV: Used by Gemini to verify sidebar/nav bar logged in state on non-nav page
 app.get('/_dev/add-application', [
   handleDevParams,

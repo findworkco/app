@@ -1,9 +1,6 @@
 // Load in our dependencies
 var moment = require('moment-timezone');
 
-// Declare and export our mock info
-exports.user = {email: 'todd@findwork.co'};
-
 // Define constants for our applications
 exports.APPLICATION_STATUSES = {
   HAVE_NOT_APPLIED: 'have_not_applied',
