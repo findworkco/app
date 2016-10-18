@@ -1,5 +1,4 @@
 // Load in our dependencies
-var _ = require('underscore');
 var applicationMockData = require('./application-mock-data');
 var genericMockData = require('./generic-mock-data');
 
@@ -16,7 +15,7 @@ interviews.forEach(function saveInterviewById (interview) {
 // Export application mock data resolver
 exports.getById = function (id) {
   // Find and save our interview
-  var retVal = _.clone(genericMockData);
+  var retVal = {};
   retVal.selectedInterview = interviewsById[id];
 
   // Find and save our interview's application

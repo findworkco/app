@@ -1,5 +1,4 @@
 // Load in our dependencies
-var _ = require('underscore');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
@@ -7,6 +6,32 @@ var applicationMockData = require('../models/application-mock-data');
 var interviewMockData = require('../models/interview-mock-data');
 var genericMockData = require('../models/generic-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
+
+// Define common data loader for nav
+app.get('*', function loadNavData (req, res, next) {
+  // Define common statuses for all pages
+  res.locals.APPLICATION_STATUSES = genericMockData.APPLICATION_STATUSES;
+  res.locals.APPLICATION_HUMAN_STATUSES = genericMockData.APPLICATION_HUMAN_STATUSES;
+
+  // If our endpoint is exempt (e.g. `/`), then don't load data
+  if (['/'].indexOf(req.url) !== -1) {
+    return next();
+  }
+
+  // Define our mock data
+  // TODO: Break up by user logged in/not to render any applications at all
+  // TODO: Conditionally load archived content on archive pages
+  //   (may require switching `/application` and `/interview` to `/archive/application` and `/archive/interview`)
+  //   We should also make `/application` redirect to `/archive/application` if it's archived and vice versa
+  //   (or maybe history.pushState like Trello)
+  // TODO: When we add model loading, make this a queued action so we load all models in parallel
+  res.locals.archivedApplications = genericMockData.archivedApplications;
+  res.locals.upcomingInterviews = genericMockData.upcomingInterviews;
+  res.locals.waitingForResponseApplications = genericMockData.waitingForResponseApplications;
+
+  // Continue
+  next();
+});
 
 // Bind our controllers
 app.get('/', function rootShow (req, res, next) {
@@ -20,10 +45,10 @@ app.get('/', function rootShow (req, res, next) {
 });
 
 app.get('/archive', function archiveShow (req, res, next) {
-  res.render('archive.jade', _.defaults({
+  res.render('archive.jade', {
     // DEV: We use `isArchive` over direct URL comparisons to allow `/_dev` routes
     isArchive: true
-  }, genericMockData));
+  });
 });
 
 // TODO: Move to `development` or remove entirely
@@ -59,22 +84,22 @@ function handleAuthError(req, res, next) {
 app.get('/login', [
   handleAuthError,
   function loginShow (req, res, next) {
-    res.render('login.jade', genericMockData);
+    res.render('login.jade');
   }
 ]);
 app.get('/sign-up', [
   handleAuthError,
   function signUpShow (req, res, next) {
-    res.render('sign-up.jade', genericMockData);
+    res.render('sign-up.jade');
   }
 ]);
 
 app.get('/settings', [
   ensureLoggedIn,
   function settingsShow (req, res, next) {
-    res.render('settings.jade', _.defaults({
+    res.render('settings.jade', {
       isSettings: true
-    }, genericMockData));
+    });
   }
 ]);
 app.post('/logout', function logoutSave (req, res, next) {
@@ -97,16 +122,16 @@ app.post('/delete-account', [
 ]);
 
 app.get('/schedule', function scheduleShow (req, res, next) {
-  res.render('schedule.jade', _.defaults({
+  res.render('schedule.jade', {
     // DEV: We use `isSchedule` over direct URL comparisons to allow `/_dev` routes
     isSchedule: true
-  }, genericMockData));
+  });
 });
 
 // TODO: Add smoke tests for these and skeletons for form testing but not content
 //   We want some flexibility still
 app.get('/add-application', function applicationAddShow (req, res, next) {
-  res.render('application-add-show.jade', genericMockData);
+  res.render('application-add-show.jade');
 });
 app.post('/add-application', function applicationAddSave (req, res, next) {
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application saved');
@@ -182,10 +207,10 @@ void require('./oauth-google.js');
 //   https://console.developers.google.com/apis/credentials/consent?project=app-development-144900
 //   https://console.developers.google.com/apis/credentials/consent?project=app-production-144901
 app.get('/privacy', function privacyShow (req, res, next) {
-  res.render('privacy.jade', genericMockData);
+  res.render('privacy.jade');
 });
 app.get('/terms', function termsShow (req, res, next) {
-  res.render('terms.jade', genericMockData);
+  res.render('terms.jade');
 });
 
 // Load our development routes

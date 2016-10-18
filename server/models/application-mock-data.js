@@ -15,7 +15,7 @@ applications.forEach(function saveApplicationById (application) {
 // Export application mock data resolver
 exports.getById = function (id) {
   // Find and save our application
-  var retVal = _.clone(genericMockData);
+  var retVal = {};
   retVal.selectedApplication = applicationsById[id];
 
   // Save application specific info

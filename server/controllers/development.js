@@ -1,9 +1,7 @@
 // Load in our dependencies
-var _ = require('underscore');
 var HttpError = require('http-errors');
 var app = require('../index.js').app;
 var applicationMockData = require('../models/application-mock-data');
-var genericMockData = require('../models/generic-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Bind our controllers
@@ -48,9 +46,9 @@ app.get('/_dev/schedule', [
   handleDevParams,
   function devScheduleShow (req, res, next) {
     // Render our page with mock data
-    res.render('schedule.jade', _.defaults({
+    res.render('schedule.jade', {
       isSchedule: true
-    }, genericMockData));
+    });
   }
 ]);
 
@@ -58,9 +56,9 @@ app.get('/_dev/settings', [
   handleDevParams,
   function devSettingsShow (req, res, next) {
     // Render our page with mock data
-    res.render('settings.jade', _.defaults({
+    res.render('settings.jade', {
       isSettings: true
-    }, genericMockData));
+    });
   }
 ]);
 
@@ -68,7 +66,7 @@ app.get('/_dev/settings', [
 app.get('/_dev/add-application', [
   handleDevParams,
   function devApplicationAddShow (req, res, next) {
-    res.render('application-add-show.jade', genericMockData);
+    res.render('application-add-show.jade');
   }
 ]);
 
