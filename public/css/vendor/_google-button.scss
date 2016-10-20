@@ -53,7 +53,9 @@ state) ***/
 
 /* Add disabled state to button */
 /* DEV: Derived from PNG assets (same for dark/light) */
-.abcRioButton[disabled] {
+.abcRioButton[disabled],
+.abcRioButton[disabled]:hover,
+.abcRioButton[disabled]:active {
   color: rgba(0, 0, 0, 0.44);
   background-color: rgba(0, 0, 0, 0.08);
   -webkit-box-shadow: none;

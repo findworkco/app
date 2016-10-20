@@ -1,5 +1,4 @@
 extends layout
-include login-mixins
 
 block title
   title Sign up - Find Work
@@ -14,7 +13,7 @@ block content
       //- DESIGN: If we get AngelList support, build Sign up/Log in with AngelList
       p.text--center
         //- DEV: `id` is for testing purposes only
-        +googleButton()#sign_up_with_google(href="/oauth/google/request?action=sign_up")
+        +google-button()#sign_up_with_google(href="/oauth/google/request?action=sign_up")
           = "Sign up with Google"
         br
         em

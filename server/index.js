@@ -14,6 +14,8 @@ var redis = require('redis');
 // DEV: ORM evaluation -- https://gist.github.com/twolfson/13eeeb547271c8ee32707f7b02c2ed90
 var Sequelize = require('sequelize');
 var appLocals = {
+  _: require('underscore'),
+  assert: require('assert'),
   ACCEPTABLE_NOTIFICATION_TYPES: require('./utils/notifications').ACCEPTABLE_TYPES,
   countryData: require('country-data'),
   moment: require('moment-timezone'),

@@ -67,3 +67,42 @@ mixin reminderpicker(name, moment)
       | &nbsp;
     div(style="display: table-cell; vertical-align: middle; padding: 3px")
       = "No reminder"
+
+//- Created on http://codepen.io/twolfson/pen/bwrkvP
+//- https://developers.google.com/identity/branding-guidelines
+//- DEV: We modified this to use the same dimensions/theme always
+mixin google-button(options)
+  //- Overload with site specific options
+  - options = _.extend({el: 'a', height: 40, width: 210, theme: 'dark'}, options);
+
+  //- Localize options
+  - var height = options.height; assert(height, 'Missing options.height');
+  - var width = options.width; assert(width, 'Missing options.width');
+  - var theme = options.theme; assert(theme, 'Missing options.theme');
+
+  //- Verify required info
+  - if (options.el === 'a') { assert(attributes.href, 'Missing `attributes.href` for `+google-button`') }
+  - assert(block, 'Missing content for `+google-button`');
+
+  //- Calculate derived variables
+  - var innerHeight = height - 2; // Height without 1px border
+  - var iconHeight = 18; // Constant from Google
+  - var iconWidth = iconHeight;
+  - var iconPadding = (innerHeight - iconHeight) / 2;
+  - var fontSize = Math.floor(6.2 + height / 5); // Found via debug panel
+  - var buttonClass = theme === 'dark' ? 'abcRioButtonBlue' : 'abcRioButtonLight';
+  - var el = options.el || 'button';
+  #{el}.abcRioButton(class=buttonClass, style="height:#{height}px;width:#{width}px;", disabled=options.disabled)&attributes(attributes)
+    span.abcRioButtonContentWrapper
+      span.abcRioButtonIcon(style="padding:#{iconPadding}px")
+        span.abcRioButtonSvgImageWithFallback.abcRioButtonIconImage.abcRioButtonIconImage18(style="width:#{iconWidth}px;height:#{iconHeight}px;")
+          if !options.disabled
+            //- DEV: We ran this through `svgo` which removed an unused `g`, `version`, and self-closed `path`
+            <svg xmlns="http://www.w3.org/2000/svg" width="#{iconWidth}" height="#{iconHeight}" viewBox="0 0 48 48" class="abcRioButtonSvg"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+          else
+            //- Derived from SVG assets
+            //-   https://developers.google.com/identity/branding-guidelines
+            //-   https://gist.github.com/twolfson/8f578c0720df7fc87f29e4d8395cf76b
+            <svg width="#{iconWidth}" height="#{iconHeight}" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M9.001 10.71V7.362h8.424c.126.567.225 1.098.225 1.845 0 5.139-3.447 8.793-8.64 8.793-4.968 0-9-4.032-9-9s4.032-9 9-9c2.43 0 4.464.891 6.021 2.349l-2.556 2.484c-.648-.612-1.782-1.332-3.465-1.332-2.979 0-5.409 2.475-5.409 5.508s2.43 5.508 5.409 5.508c3.447 0 4.716-2.385 4.95-3.798H9.001v-.009z" fill-opacity=".4"/></svg>
+      span.abcRioButtonContents(style="font-size:#{fontSize}px;line-height:#{innerHeight}px;")
+        block

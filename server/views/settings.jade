@@ -10,11 +10,9 @@ block content
       h1.content__heading.text--center.push--bottom(style="font-weight: normal") Settings
       form.cf(method="POST", action="/settings")
         //- DEV: When not disabled, this will be a link or a button for OAuth
-        //- TODO: Use Google branding for button
         p
-          span.btn.btn--primary
-            strong G+
-            = " Connected via Google"
+          +google-button({el: 'button', disabled: true})
+            = "Connected with Google"
         .form-group.push-double--bottom
           //- DESIGN: When we add back email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
           label(for="email") Email (from Google):
