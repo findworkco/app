@@ -4,25 +4,32 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-scenario.skip('A request to GET /schedule from a logged out user', function () {
+scenario('A request to GET /schedule from a logged out user', function () {
   // Make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   it('recieves the schedule page', function () {
-    expect(this.$('.content__heading')).to.have.length(0);
+    expect(this.$('title').text()).to.equal('Schedule - Find Work');
   });
-  it.skip('has a call to action for creating a new application', function () {
-    // Test me
+  it('has calls to action in nav for creating a new application or performing research', function () {
+    expect(this.$('#nav__upcoming-interviews a').eq(0).text()).to.equal('Add a job application');
+    expect(this.$('#nav__upcoming-interviews a').eq(1).text()).to.equal('research a company');
+    expect(this.$('#nav__waiting-for-response a').eq(0).text()).to.equal('Add a job application');
+    expect(this.$('#nav__waiting-for-response a').eq(1).text()).to.equal('research a company');
+  });
+  it('has calls to action in large content for creating a new application or performing research', function () {
+    expect(this.$('#content a').eq(0).text()).to.equal('+ Add a job application');
+    expect(this.$('#content a').eq(1).text()).to.equal('Research a company');
   });
 });
 
-scenario('A request to GET /schedule from a logged in user with no applications', function () {
+scenario.skip('A request to GET /schedule from a logged in user with no applications', function () {
   // Log in our user (need to add) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
   // DEV: We test these again to make sure logged in/logged out users receive same treatment
   it('recieves the schedule page', function () {
-    expect(this.$('.content__heading')).to.have.length(0);
+    expect(this.$('title').text()).to.equal('Schedule - Find Work');
   });
   it.skip('has a call to action for creating a new application', function () {
     // Test me
@@ -33,6 +40,40 @@ scenario('A request to GET /schedule from a logged in user with no applications'
   });
 
   it.skip('does not show a "Have not applied" section', function () {
+    // Test me
+  });
+});
+
+// DEV: We are skipping these for now to allow prototyping flexibility
+scenario.skip('A request to GET /schedule from a logged in user with active applications', function () {
+  // Log in our user (need to add) and make our request
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
+
+  it.skip('has selection prompt in center of content', function () {
+    // Test me
+  });
+});
+
+// DEV: We are skipping these for now to allow prototyping flexibility
+scenario.skip('A request to GET /schedule from a logged in user with ' +
+    'active applications but no upcoming interviews', function () {
+  // Log in our user (need to add) and make our request
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
+
+  it.skip('has no call to action in upcoming interviews', function () {
+    // DEV: We assume user knows how to use UI now
+    // Test me
+  });
+});
+
+// DEV: We are skipping these for now to allow prototyping flexibility
+scenario.skip('A request to GET /schedule from a logged in user with ' +
+    'active applications but no waiting for response applications', function () {
+  // Log in our user (need to add) and make our request
+  httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
+
+  it.skip('has no call to action in waiting for response applications', function () {
+    // DEV: We assume user knows how to use UI now
     // Test me
   });
 });

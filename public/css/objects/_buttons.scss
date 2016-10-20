@@ -31,6 +31,11 @@
   font-size: $h4-size;
 }
 
+.btn--big {
+  padding: 22px 35px;
+  font-size: $h3-size;
+}
+
 // Define button colors via Bootstrap
 // https://github.com/twbs/bootstrap/blob/v3.3.6/less/buttons.less#L63-L87
 .btn--default {

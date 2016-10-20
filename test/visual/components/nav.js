@@ -7,7 +7,7 @@ gemini.suite('components/nav', function (suite) {
   gemini.suite('login-status', function (child) {
     var navTopSelector = '.nav__top';
     gemini.suite('schedule-logged-out', function (child) {
-      child.load('/schedule')
+      child.load('/schedule', geminiUtils.SETUPS.LOGGED_OUT)
         .setCaptureElements(navTopSelector)
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
@@ -21,7 +21,7 @@ gemini.suite('components/nav', function (suite) {
         .capture('default-small', geminiUtils.resizeSmall);
     });
     gemini.suite('non-schedule-logged-out', function (child) {
-      child.load('/add-application')
+      child.load('/add-application', geminiUtils.SETUPS.LOGGED_OUT)
         .setCaptureElements(navTopSelector)
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
@@ -37,7 +37,7 @@ gemini.suite('components/nav', function (suite) {
   });
 
   gemini.suite('nav-row', function (child) {
-    child.load('/application/abcdef-sky-networks-uuid');
+    child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT);
 
     gemini.suite('selected', function (child) {
       // DEV: This verifies we add a left border to selected nav rows

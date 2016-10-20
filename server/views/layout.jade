@@ -190,8 +190,20 @@ block base-content
                 if upcomingInterviews.length
                   each upcomingInterview in upcomingInterviews
                     +nav-row--application(upcomingInterview.application, APPLICATION_STATUSES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
+                else if hasActiveApplications
+                  p
+                    i TODO: Set up placeholder text and tests (visual, server)
+                    //- i No upcoming interviews.
                 else
-                  p TODO: Add placeholder text for upcoming interviews
+                  p
+                    i No interviews scheduled.
+                    br.medium-and-down-hidden
+                    span.large-hidden= " "
+                    i
+                      a(href="/add-application") Add a job application
+                      = " or "
+                      a(href="/research-company") research a company
+                      = " to get started."
 
             //- Waiting for response section
             //- DEV: `locals.waitingForResponseApplications` isn't necessarily defined when we encounter a 500
@@ -201,8 +213,20 @@ block base-content
                 if waitingForResponseApplications.length
                   each waitingForResponseApplication in waitingForResponseApplications
                     +nav-row--application(waitingForResponseApplication, APPLICATION_STATUSES.WAITING_FOR_RESPONSE)
+                else if hasActiveApplications
+                  p
+                    i TODO: Set up placeholder text and tests (visual, server)
+                    //- i Not waiting for any responses.
                 else
-                  p TODO: Add placeholder text for upcoming interviews
+                  p
+                    i No active job applications.
+                    br.medium-and-down-hidden
+                    span.large-hidden= " "
+                    i
+                      a(href="/add-application") Add a job application
+                      = " or "
+                      a(href="/research-company") research a company
+                      = " to get started."
           else
             //- Otherwise, display archived applications
             //- DEV: `locals.archivedApplications` isn't necessarily defined when we encounter a 500
@@ -213,7 +237,14 @@ block base-content
                   each archivedApplication in archivedApplications
                     +nav-row--application(archivedApplication, APPLICATION_STATUSES.ARCHIVED)
                 else
-                  p TODO: Add placeholder text for archived applications
+                  p
+                    i No archived applications.
+                    br.medium-and-down-hidden
+                    span.large-hidden= " "
+                    i To archive an application, click the "Archive" button on its page.
+                  p.large-hidden
+                    i
+                      a(href="/schedule") Click here to return to active applications.
 
           //- Nav links
           if !useArchiveSchedule

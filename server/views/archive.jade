@@ -1,4 +1,19 @@
-extends schedule-base
+extends layout
+include schedule-mixins
 
 block title
   title Archived applications - Find Work
+
+block content
+  if archivedApplications.length
+    +schedule-selection-content()
+  else
+    p.alpha.text--center.push-double--top(style="line-height: 1.3")
+      span.alpha
+        | You have no archived applications.
+      br
+      span.gamma
+        | To archive an application, click the "Archive" button on its page.
+    p.gamma.text--center.push-double--top
+      a(href="/schedule")
+        | Click here to return to active applications.

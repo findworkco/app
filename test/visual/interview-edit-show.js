@@ -5,7 +5,7 @@ var geminiUtils = require('./utils/gemini').bind(gemini);
 // Define our visual tests
 gemini.suite('interview-edit-show', function (suite) {
   // DEV: We include nav to make sure we have selected the proper link
-  suite.load('/interview/abcdef-sky-networks-interview-uuid')
+  suite.load('/interview/abcdef-sky-networks-interview-uuid', geminiUtils.SETUPS.DEFAULT)
     .setCaptureElements('body')
     .capture('default-large', geminiUtils.resizeLarge)
     .capture('default-medium', geminiUtils.resizeMedium)

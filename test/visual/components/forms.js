@@ -1,11 +1,11 @@
 // Load in our dependencies
 var gemini = require('gemini');
-void require('../utils/gemini').bind(gemini);
+var geminiUtils = require('../utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('components/forms', function (suite) {
   // Navigate to a page with form inputs
-  suite.load('/application/abcdef-sky-networks-uuid');
+  suite.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT);
 
   gemini.suite('input', function (child) {
     // DEV: This verifies we have a clear focus state

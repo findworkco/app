@@ -7,6 +7,8 @@ exports.SETUPS = {
   DEFAULT: {
     logged_in: 'true'
   },
+  // DEV: LOGGED_OUT setup isn't necessary but nice for being explicit
+  LOGGED_OUT: {},
   SCREENSHOT: {
     screenshot: 'true'
   }
@@ -26,9 +28,11 @@ exports.bind = function (gemini) {
       // DEV: `suite-builder` directly writes new functions so we can do the same
       // https://github.com/gemini-testing/gemini/blob/v3.0.2/lib/tests-api/suite-builder.js
       suite.load = function (redirectUri, options) {
+        // Fallback our options
+        options = options || {};
+
         // If we have no options, use `redirectUri` directly as `setUrl`
-        if (!options) {
-          options = {};
+        if (_.isEmpty(options)) {
           suite.setUrl(redirectUri);
         // Otherwise, configure our `/_dev/setup` endpoint
         } else {

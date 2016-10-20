@@ -4,7 +4,7 @@ var geminiUtils = require('./utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('landing', function (suite) {
-  suite.load('/')
+  suite.load('/', geminiUtils.SETUPS.LOGGED_OUT)
     .setCaptureElements('body')
     .capture('default-large', geminiUtils.resizeLarge)
     .capture('default-medium', geminiUtils.resizeMedium)

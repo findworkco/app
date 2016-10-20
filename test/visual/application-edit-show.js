@@ -6,7 +6,7 @@ var geminiUtils = require('./utils/gemini').bind(gemini);
 gemini.suite('application-edit-show', function (suite) {
   gemini.suite('active', function (child) {
     // DEV: We include nav to make sure we have selected the proper link
-    child.load('/application/abcdef-sky-networks-uuid')
+    child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)
@@ -15,7 +15,7 @@ gemini.suite('application-edit-show', function (suite) {
 
   gemini.suite('archive', function (child) {
     // DEV: We include nav to make sure we have archived nav and selected the proper link
-    child.load('/application/abcdef-monstromart-uuid')
+    child.load('/application/abcdef-monstromart-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)

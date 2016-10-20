@@ -19,15 +19,28 @@ app.get('*', function loadNavData (req, res, next) {
   }
 
   // Define our mock data
-  // TODO: Break up by user logged in/not to render any applications at all
+  // If the user is logged in, provide mock applications
   // TODO: Conditionally load archived content on archive pages
   //   (may require switching `/application` and `/interview` to `/archive/application` and `/archive/interview`)
   //   We should also make `/application` redirect to `/archive/application` if it's archived and vice versa
   //   (or maybe history.pushState like Trello)
   // TODO: When we add model loading, make this a queued action so we load all models in parallel
-  res.locals.archivedApplications = genericMockData.archivedApplications;
-  res.locals.upcomingInterviews = genericMockData.upcomingInterviews;
-  res.locals.waitingForResponseApplications = genericMockData.waitingForResponseApplications;
+  // DEV: We fetch active applications separately so we can add limits to each type
+  var upcomingInterviews, waitingForResponseApplications;
+  if (req.candidate) {
+    res.locals.archivedApplications = genericMockData.archivedApplications;
+    upcomingInterviews = res.locals.upcomingInterviews = genericMockData.upcomingInterviews;
+    waitingForResponseApplications = res.locals.waitingForResponseApplications =
+      genericMockData.waitingForResponseApplications;
+  // Otherwise, provide no mock applications
+  } else {
+    res.locals.archivedApplications = [];
+    upcomingInterviews = res.locals.upcomingInterviews = [];
+    waitingForResponseApplications = res.locals.waitingForResponseApplications = [];
+  }
+
+  // Prepare aggregate data
+  res.locals.hasActiveApplications = upcomingInterviews.length !== 0 || waitingForResponseApplications.length !== 0;
 
   // Continue
   next();

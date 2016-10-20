@@ -5,7 +5,7 @@ var geminiUtils = require('./utils/gemini').bind(gemini);
 // Define our visual tests
 gemini.suite('application-add-show', function (suite) {
   // DEV: We include nav to make sure we have no links selected
-  suite.load('/add-application')
+  suite.load('/add-application', geminiUtils.SETUPS.DEFAULT)
     .setCaptureElements('body')
     .before(function normalizeRelativeValues (actions, find) {
       // Reset date/time inputs to consistent time
