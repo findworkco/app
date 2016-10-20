@@ -1,34 +1,34 @@
 // Load in our dependencies
 var gemini = require('gemini');
-var geminiUtils = require('../utils/gemini');
+var geminiUtils = require('../utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('components/nav', function (suite) {
   gemini.suite('login-status', function (child) {
     var navTopSelector = '.nav__top';
     gemini.suite('schedule-logged-out', function (child) {
-      child.setUrl('/_dev/schedule?logged_in=false')
+      child.load('/schedule')
         .setCaptureElements(navTopSelector)
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
         .capture('default-small', geminiUtils.resizeSmall);
     });
     gemini.suite('schedule-logged-in', function (child) {
-      child.setUrl('/_dev/schedule?logged_in=true')
+      child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
         .setCaptureElements(navTopSelector)
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
         .capture('default-small', geminiUtils.resizeSmall);
     });
     gemini.suite('non-schedule-logged-out', function (child) {
-      child.setUrl('/_dev/add-application?logged_in=false')
+      child.load('/add-application')
         .setCaptureElements(navTopSelector)
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
         .capture('default-small', geminiUtils.resizeSmall);
     });
     gemini.suite('non-schedule-logged-in', function (child) {
-      child.setUrl('/_dev/add-application?logged_in=true')
+      child.load('/add-application', geminiUtils.SETUPS.DEFAULT)
         .setCaptureElements(navTopSelector)
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
@@ -37,7 +37,7 @@ gemini.suite('components/nav', function (suite) {
   });
 
   gemini.suite('nav-row', function (child) {
-    child.setUrl('/application/abcdef-sky-networks-uuid');
+    child.load('/application/abcdef-sky-networks-uuid');
 
     gemini.suite('selected', function (child) {
       // DEV: This verifies we add a left border to selected nav rows

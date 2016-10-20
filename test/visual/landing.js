@@ -1,10 +1,10 @@
 // Load in our dependencies
 var gemini = require('gemini');
-var geminiUtils = require('./utils/gemini');
+var geminiUtils = require('./utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('landing', function (suite) {
-  suite.setUrl('/')
+  suite.load('/')
     .setCaptureElements('body')
     .capture('default-large', geminiUtils.resizeLarge)
     .capture('default-medium', geminiUtils.resizeMedium)

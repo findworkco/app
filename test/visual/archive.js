@@ -1,11 +1,11 @@
 // Load in our dependencies
 var gemini = require('gemini');
-var geminiUtils = require('./utils/gemini');
+var geminiUtils = require('./utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('archive', function (suite) {
   // DEV: We include nav to make sure we show archived applications and have no links selected
-  suite.setUrl('/archive')
+  suite.load('/archive')
     .setCaptureElements('body')
     .capture('default-large', geminiUtils.resizeLarge)
     .capture('default-medium', geminiUtils.resizeMedium)

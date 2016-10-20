@@ -1,13 +1,13 @@
 // Load in our dependencies
 var gemini = require('gemini');
-var geminiUtils = require('./utils/gemini');
+var geminiUtils = require('./utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('login', function (suite) {
   // DEV: We include nav to make sure we have no link selected
   // TODO: We should not have a logged in state in the nav for the login page
   gemini.suite('default', function (child) {
-    child.setUrl('/login')
+    child.load('/login')
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)
@@ -15,7 +15,7 @@ gemini.suite('login', function (suite) {
   });
 
   gemini.suite('error', function (child) {
-    child.setUrl('/_dev/login/error')
+    child.load('/_dev/login/error')
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)
