@@ -18,17 +18,20 @@ exports.common = {
 
 exports.development = {
   loadDevelopmentRoutes: true,
+  throwGenericErrors: true,
   viewCache: false
 };
 
 exports.test = {
   loadDevelopmentRoutes: true,
   redisUrl: 'redis://127.0.0.1:6401',
+  throwGenericErrors: false,
   viewCache: true
 };
 
 exports.production = {
   loadDevelopmentRoutes: false,
+  throwGenericErrors: false,
   viewCache: true
 };
 

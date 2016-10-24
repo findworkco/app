@@ -96,7 +96,10 @@ function Server(config) {
   // DEV: We perform this before most `app.use` to emphasize not all `res.locals` will be available in case of error
   if (config.loadDevelopmentRoutes) {
     app.use('/_dev/500', function dev500Show (req, res, next) {
-      throw new Error('Development 500 error');
+      // DEV: We add a special flag so we can test error not being thrown for Gemini
+      var err = new Error('Development 500 error');
+      err.dontThrow = true;
+      throw err;
     });
   }
 

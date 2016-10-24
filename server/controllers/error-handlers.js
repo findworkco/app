@@ -5,6 +5,7 @@ var MultiDictKeyError = require('querystring-multidict').MultiDictKeyError;
 var statuses = require('statuses');
 var sentryParsers = require('raven/lib/parsers');
 var app = require('../index.js').app;
+var config = require('../index.js').config;
 
 // Define our constants
 var GENERIC_ERROR_TITLE = 'Error encountered';
@@ -59,6 +60,12 @@ app.use(function handleGenericError (err, req, res, next) {
   // Log our error
   // TODO: Use actual Winston client
   app.notWinston.error(err);
+
+  // If we should throw our error (caught/rendered by Express in dev), then throw it
+  // DEV: We have `dontThrow` flag for testing generic errors in Gemini
+  if (config.throwGenericErrors && !err.dontThrow) {
+    throw err;
+  }
 
   // Prepare and send our request for Sentry
   // https://github.com/getsentry/raven-node/blob/0.12.0/lib/middleware/connect.js#L21-L25

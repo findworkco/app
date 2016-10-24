@@ -14,7 +14,8 @@
 // https://github.com/csswizardry/inuit.css/blob/v5.0.1/generic/_helper.scss#L176-L183
 @each $state in $responsive-states {
   @include media-query(#{$state}) {
-    @include grid-setup('#{$state}-')
+    @include grid-setup('#{$state}-');
+
     .#{$state}-one-ninth    { width: 11.111%; }
     .#{$state}-two-ninths   { width: 22.222%; }
     .#{$state}-three-ninths { width: 33.333%; }
