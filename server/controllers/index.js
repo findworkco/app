@@ -1,8 +1,10 @@
 // Load in our dependencies
+var _ = require('underscore');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var applicationMockData = require('../models/application-mock-data');
+var companyMockData = require('../models/company-mock-data');
 var interviewMockData = require('../models/interview-mock-data');
 var genericMockData = require('../models/generic-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
@@ -153,6 +155,12 @@ app.post('/add-application', function applicationAddSave (req, res, next) {
 });
 app.get('/application/:id', function applicationEditShow (req, res, next) {
   var mockData = applicationMockData.getById(req.params.id);
+  var selectedApplication = mockData.selectedApplication;
+  if (selectedApplication.company_name) {
+    mockData = _.extend({
+      // Placeholder object
+    }, companyMockData.getByName(selectedApplication.company_name, false), mockData);
+  }
   res.render('application-edit-show.jade', mockData);
 });
 // TODO: Move to pattern with multiple functions;

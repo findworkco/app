@@ -48,7 +48,7 @@ mixin company-notes-and-research(values)
       button.btn.btn--small.btn--wide.btn--default.push--left(type="button") Search
     h5.text--normal.flush--bottom Glassdoor results:
     p
-      if values.company_name
+      if locals.glassdoorResult
         | Name: #{glassdoorResult.name}
         br
         = "Website: "
@@ -77,7 +77,7 @@ mixin company-notes-and-research(values)
         em Please enter one in the field above.
     h5.text--normal.flush--bottom AngelList results:
     p
-      if values.company_name
+      if locals.angelListResult
         | Name: #{angelListResult.name}
         br
         = "Website: "

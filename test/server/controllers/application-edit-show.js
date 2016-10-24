@@ -25,6 +25,22 @@ scenario('A request to GET /application/:id from the owner user', function () {
   });
 });
 
+scenario('A request to GET /application/:id with a company name', function () {
+  var applicationId = 'abcdef-sky-networks-uuid';
+  httpUtils.session.init().save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
+
+  it.skip('renders non-extended company research data', function () {
+    expect(this.$('#company-results').text()).to.contain('Website: mock-domain.test');
+    expect(this.$('#company-results').text()).to.not.contain('Culture and values rating');
+  });
+});
+
+scenario.skip('A request to GET /application/:id without a company name', function () {
+  it('renders no company research data', function () {
+    expect(this.$('#company-results').text()).to.contain('No company name entered');
+  });
+});
+
 scenario('A request to an archived GET /application/:id', function () {
   // Log in (need to do) and make our request
   var applicationId = 'abcdef-monstromart-uuid';
