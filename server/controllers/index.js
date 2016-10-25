@@ -145,14 +145,43 @@ app.get('/schedule', function scheduleShow (req, res, next) {
 
 // TODO: Add smoke tests for these and skeletons for form testing but not content
 //   We want some flexibility still
-app.get('/add-application', function applicationAddShow (req, res, next) {
-  res.render('application-add-show.jade');
+app.get('/add-application', function applicationAddSelectionShow (req, res, next) {
+  res.render('application-add-selection-show.jade');
 });
-app.post('/add-application', function applicationAddSave (req, res, next) {
+function applicationAddFormShow(req, res, next) {
+  res.render('application-add-form-show.jade', {
+    pageUrl: req.url
+  });
+}
+function applicationAddFormSave(req, res, next) {
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application saved');
   // TODO: Use mock based on status
   res.redirect('/application/abcdef-sky-networks-uuid');
-});
+}
+app.get('/add-application/save-for-later', [
+  applicationAddFormShow
+]);
+app.post('/add-application/save-for-later', [
+  applicationAddFormSave
+]);
+app.get('/add-application/waiting-for-response', [
+  applicationAddFormShow
+]);
+app.post('/add-application/waiting-for-response', [
+  applicationAddFormSave
+]);
+app.get('/add-application/upcoming-interview', [
+  applicationAddFormShow
+]);
+app.post('/add-application/upcoming-interview', [
+  applicationAddFormSave
+]);
+app.get('/add-application/received-offer', [
+  applicationAddFormShow
+]);
+app.post('/add-application/received-offer', [
+  applicationAddFormSave
+]);
 app.get('/application/:id', function applicationEditShow (req, res, next) {
   var mockData = applicationMockData.getById(req.params.id);
   var selectedApplication = mockData.selectedApplication;

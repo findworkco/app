@@ -7,9 +7,9 @@ var serverUtils = require('./utils/server');
 scenario('An HTTP request without a CSRF token', function () {
   // Make our request
   httpUtils.session.init()
-    .save(serverUtils.getUrl('/add-application'))
+    .save(serverUtils.getUrl('/add-application/save-for-later'))
     .save({
-      method: 'POST', url: serverUtils.getUrl('/add-application'),
+      method: 'POST', url: serverUtils.getUrl('/add-application/save-for-later'),
       htmlForm: function ($form) {
         $form.find('input[name="x-csrf-token"]').remove();
       },
@@ -25,9 +25,9 @@ scenario('An HTTP request without a CSRF token', function () {
 scenario('An HTTP request with a CSRF token', function () {
   // Make our request
   httpUtils.session.init()
-    .save(serverUtils.getUrl('/add-application'))
+    .save(serverUtils.getUrl('/add-application/save-for-later'))
     .save({
-      method: 'POST', url: serverUtils.getUrl('/add-application'),
+      method: 'POST', url: serverUtils.getUrl('/add-application/save-for-later'),
       htmlForm: true, followRedirect: false,
       expectedStatusCode: 302
     });

@@ -41,7 +41,7 @@ exports._save = function (options) {
       assert(options.jar, 'Expected `csrfForm` to be used in a `httpUtils.session` context but it was not');
       request({
         jar: options.jar,
-        url: serverUtils.getUrl('/add-application')
+        url: serverUtils.getUrl('/add-application/save-for-later')
       }, function handleRequest (err, res, body) {
         // If there was an error, callback with it
         if (err) {
