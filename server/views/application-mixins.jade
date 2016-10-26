@@ -10,6 +10,18 @@ mixin posting-url-and-name(values)
     label(for="name") Name:
     input#name.form-control.input--block(name="name", type="text", value=values.name, placeholder="Job title at company (e.g. Engineer at Google)")
 
+mixin application-reminder(values)
+  .form-group
+    h4.flush--bottom(style="font-weight: normal")
+      = "Application reminder: "
+      span.text--normal
+        i.fa.fa-reply(style="font-size: 1.5em")
+    //- TODO: Only show info if someone has never saved a "Have not applied" application before
+    .section--info.push-half--ends We will send you a reminder email to apply to this posting
+    //- If there is no application reminder, then default to 1 week from today (raised to nearest hour)
+    - var applicationReminderMoment = values.application_reminder || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    +reminderpicker("application_reminder", applicationReminderMoment)
+
 mixin company-notes-and-research(values)
   .form-group
     label(for="notes") Notes:
@@ -24,6 +36,11 @@ mixin company-notes-and-research(values)
     //-   ... doesn't look like it...
     //-   We could design away the need for "Ctrl+Enter" by generating a loading image
     //-      when the user starts typing
+
+    //- TODO: For now, prob go with:
+    //-   JS binding for Ctrl+Enter
+    //-   Make button a link to /research-company
+    //-   When JS is bound though, make it a turbolink loader
 
     //- Worst case scenarios:
     //- - Absolute position form

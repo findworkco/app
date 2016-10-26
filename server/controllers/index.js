@@ -9,16 +9,24 @@ var interviewMockData = require('../models/interview-mock-data');
 var genericMockData = require('../models/generic-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
+// TODO: Normalize interview info for /upcoming-interview on Gemini screenshots
+
 // Define common data loader for nav
 app.get('*', function loadNavData (req, res, next) {
   // Define common statuses for all pages
+  // TODO: Consider relocating statuses to `app.locals`
   res.locals.APPLICATION_STATUSES = genericMockData.APPLICATION_STATUSES;
-  res.locals.APPLICATION_HUMAN_STATUSES = genericMockData.APPLICATION_HUMAN_STATUSES;
+  res.locals.APPLICATION_ADD_HUMAN_STATUSES = genericMockData.APPLICATION_ADD_HUMAN_STATUSES;
+  res.locals.APPLICATION_EDIT_HUMAN_STATUSES = genericMockData.APPLICATION_EDIT_HUMAN_STATUSES;
 
   // If our endpoint is exempt (e.g. `/`), then don't load data
   if (['/'].indexOf(req.url) !== -1) {
     return next();
   }
+
+  // Set up default timezone
+  // TODO: Resolve our user's timezone from IP or their settings
+  res.locals.timezone = 'America/Chicago';
 
   // Define our mock data
   // If the user is logged in, provide mock applications
@@ -143,43 +151,69 @@ app.get('/schedule', function scheduleShow (req, res, next) {
   });
 });
 
-// TODO: Add smoke tests for these and skeletons for form testing but not content
-//   We want some flexibility still
 app.get('/add-application', function applicationAddSelectionShow (req, res, next) {
   res.render('application-add-selection-show.jade');
 });
+function setSaveForLaterStatusKey(req, res, next) {
+  res.locals.status_key = 'SAVED_FOR_LATER';
+  next();
+}
+function setWaitingForResponseStatusKey(req, res, next) {
+  res.locals.status_key = 'WAITING_FOR_RESPONSE';
+  next();
+}
+function setUpcomingInterviewStatusKey(req, res, next) {
+  res.locals.status_key = 'UPCOMING_INTERVIEW';
+  next();
+}
+function setReceivedOfferStatusKey(req, res, next) {
+  res.locals.status_key = 'RECEIVED_OFFER';
+  next();
+}
 function applicationAddFormShow(req, res, next) {
   res.render('application-add-form-show.jade', {
     pageUrl: req.url
   });
 }
 function applicationAddFormSave(req, res, next) {
+  // TODO: On save, show "Job application successfully created!" and go to its edit page (if user logged in)
+  // jscs:disable maximumLineLength
+  // TODO: If user logged out, provide messaging on log in page like: "Sorry, you’ll need an account before we can save the job application. Don’t worry, we will finish saving it when you are done."
+  // jscs:enable maximumLineLength
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application saved');
   // TODO: Use mock based on status
   res.redirect('/application/abcdef-sky-networks-uuid');
 }
 app.get('/add-application/save-for-later', [
+  setSaveForLaterStatusKey,
   applicationAddFormShow
 ]);
 app.post('/add-application/save-for-later', [
+  setSaveForLaterStatusKey,
   applicationAddFormSave
 ]);
 app.get('/add-application/waiting-for-response', [
+  setWaitingForResponseStatusKey,
   applicationAddFormShow
 ]);
 app.post('/add-application/waiting-for-response', [
+  setWaitingForResponseStatusKey,
   applicationAddFormSave
 ]);
 app.get('/add-application/upcoming-interview', [
+  setUpcomingInterviewStatusKey,
   applicationAddFormShow
 ]);
 app.post('/add-application/upcoming-interview', [
+  setUpcomingInterviewStatusKey,
   applicationAddFormSave
 ]);
 app.get('/add-application/received-offer', [
+  setReceivedOfferStatusKey,
   applicationAddFormShow
 ]);
 app.post('/add-application/received-offer', [
+  setReceivedOfferStatusKey,
   applicationAddFormSave
 ]);
 app.get('/application/:id', function applicationEditShow (req, res, next) {

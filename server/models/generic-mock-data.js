@@ -1,21 +1,25 @@
 // Load in our dependencies
+var _ = require('underscore');
 var moment = require('moment-timezone');
 
 // Define constants for our applications
 exports.APPLICATION_STATUSES = {
-  HAVE_NOT_APPLIED: 'have_not_applied',
+  SAVED_FOR_LATER: 'saved_for_later',
   WAITING_FOR_RESPONSE: 'waiting_for_response',
   UPCOMING_INTERVIEW: 'upcoming_interview',
   RECEIVED_OFFER: 'received_offer',
   ARCHIVED: 'archived'
 };
-exports.APPLICATION_HUMAN_STATUSES = {
-  HAVE_NOT_APPLIED: 'Have not applied',
+exports.APPLICATION_ADD_HUMAN_STATUSES = {
+  SAVED_FOR_LATER: 'Saving for later',
   WAITING_FOR_RESPONSE: 'Waiting for response',
   UPCOMING_INTERVIEW: 'Upcoming interview',
-  RECEIVED_OFFER: 'Received offer',
-  ARCHIVED: 'Archived'
+  RECEIVED_OFFER: 'Received offer'
 };
+exports.APPLICATION_EDIT_HUMAN_STATUSES = _.defaults({
+  SAVED_FOR_LATER: 'Saved for later',
+  ARCHIVED: 'Archived'
+}, exports.APPLICATION_ADD_HUMAN_STATUSES);
 
 // TODO: Be sure to sort by upcoming date
 // TODO: Warn ourselves if we see a date that was before today
@@ -24,7 +28,7 @@ exports.upcomingInterviews = [{
     id: 'abcdef-umbrella-corp-uuid',
     name: 'Senior Software Engineer at Umbrella Corporation',
     url: '/application/abcdef-umbrella-corp-uuid',
-    human_status: exports.APPLICATION_HUMAN_STATUSES.UPCOMING_INTERVIEW,
+    human_status: exports.APPLICATION_EDIT_HUMAN_STATUSES.UPCOMING_INTERVIEW,
     status: exports.APPLICATION_STATUSES.UPCOMING_INTERVIEW
   },
   // Wed Jan 20 at 2:00PM CST
@@ -40,7 +44,7 @@ exports.upcomingInterviews = [{
     id: 'abcdef-globo-gym-uuid',
     name: 'Globo Gym',
     url: '/application/abcdef-globo-gym-uuid',
-    human_status: exports.APPLICATION_HUMAN_STATUSES.UPCOMING_INTERVIEW,
+    human_status: exports.APPLICATION_EDIT_HUMAN_STATUSES.UPCOMING_INTERVIEW,
     status: exports.APPLICATION_STATUSES.UPCOMING_INTERVIEW
   },
   // Mon Mar 14 at 2:00PM CST
@@ -58,7 +62,7 @@ exports.waitingForResponseApplications = [{
   archived_at_moment: null,
   company_name: 'Sky Networks',
   delete_url: '/application/abcdef-sky-networks-uuid/delete',
-  human_status: exports.APPLICATION_HUMAN_STATUSES.WAITING_FOR_RESPONSE,
+  human_status: exports.APPLICATION_EDIT_HUMAN_STATUSES.WAITING_FOR_RESPONSE,
   status: exports.APPLICATION_STATUSES.WAITING_FOR_RESPONSE,
   // Tue Feb 23
   follow_up_reminder_moment: moment.tz('2016-02-23T12:00', 'America/Chicago'),
@@ -93,7 +97,7 @@ exports.archivedApplications = [{
   archive_url: '/application/abcdef-monstromart-uuid/archive',
   computed_status: 'archived', // = archived_at_moment ? 'archived' : status
   company_name: 'Monstromart',
-  human_status: exports.APPLICATION_HUMAN_STATUSES.ARCHIVED,
+  human_status: exports.APPLICATION_EDIT_HUMAN_STATUSES.ARCHIVED,
   status: exports.APPLICATION_STATUSES.ARCHIVED,
   // Tue Feb 23
   follow_up_reminder_moment: moment.tz('2016-02-23T12:00', 'America/Chicago'),

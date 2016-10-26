@@ -10,7 +10,7 @@ block content
   //- Set up moment for 1 day from now with reminders 2 hours before/after
   //- TODO: Use user's timezone from IP
   //- TODO: Restrict pre/post interview reminders to be before/after date/time
-  - submissionData.moment = submissionData.moment || moment().tz('America/Chicago').startOf('hour').add({days: 1, hours: 1});
+  - submissionData.moment = submissionData.moment || moment().tz(timezone).startOf('hour').add({days: 1, hours: 1});
   - submissionData.pre_interview_reminder_moment = submissionData.pre_interview_reminder_moment || submissionData.moment.clone().subtract({hours: 2});
   - submissionData.post_interview_reminder_moment = submissionData.post_interview_reminder_moment || submissionData.moment.clone().add({hours: 2});
 

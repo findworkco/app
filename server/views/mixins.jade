@@ -60,13 +60,14 @@ mixin reminderpicker(name, moment)
       input(name="#{name}_enabled", type="radio", checked=hasReminder, value="yes")
       | &nbsp;
     div(style="display: table-cell; vertical-align: middle; padding: 3px")
+      //- TODO: When any of the date picker elements are clicked/changed, select our radio
       +datetimepicker(name, moment)(id=name)
   div(style="display: table")
     div(style="display: table-cell; vertical-align: middle")
-      input(name="#{name}_enabled", type="radio", checked=!hasReminder, value="no")
+      input(id="#{name}_enabled_no", name="#{name}_enabled", type="radio", checked=!hasReminder, value="no")
       | &nbsp;
     div(style="display: table-cell; vertical-align: middle; padding: 3px")
-      = "No reminder"
+      label(for="#{name}_enabled_no") No reminder
 
 //- Created on http://codepen.io/twolfson/pen/bwrkvP
 //- https://developers.google.com/identity/branding-guidelines
