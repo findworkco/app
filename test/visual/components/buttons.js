@@ -14,7 +14,7 @@ gemini.suite('components/buttons', function (suite) {
     child
       .setCaptureElements(btnSelector)
       .capture('default')
-      .capture('focus', function hoverEl (actions, find) {
+      .capture('focus', function focusEl (actions, find) {
         actions.focus(find(btnSelector));
       });
   });

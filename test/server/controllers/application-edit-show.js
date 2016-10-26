@@ -11,16 +11,17 @@ scenario('A request to GET /application/:id from the owner user', function () {
 
   it('recieves the application page', function () {
     expect(this.$('.content__heading').text()).to.equal('Job application');
-    expect(this.$('.content__subheading').text()).to.contain('Engineer II at Sky Networks');
+    expect(this.$('.content__subheading input').val()).to.equal('Engineer II at Sky Networks');
   });
 
   it('receives the proper title', function () {
     // DEV: We have title testing as we cannot test it in visual tests
-    expect(this.$('title').text()).to.equal('Application - Engineer II at Sky Networks - Find Work');
+    expect(this.$('title').text()).to.equal('Job application - Engineer II at Sky Networks - Find Work');
   });
 
   // Test that all fields exist
   it.skip('has our expected fields', function () {
+    // **Name (not in add)**, URL, notes, company name
     expect(this.$('input[name=...]').val()).to.equal('Test me');
   });
 });

@@ -6,12 +6,15 @@ extends layout
 include application-mixins
 
 block title
-  title Application - #{selectedApplication.name} - Find Work
+  title Job application - #{selectedApplication.name} - Find Work
 
 block content
   h1.content__heading(style="font-weight: normal") Job application
   h2.content__subheading(style="font-weight: normal")
-    = selectedApplication.name
+    //- Interaction heavily inspired by Google Docs
+    //- TODO: Add italicized support for "Untitled application 1"
+    //- TODO: Reconsider scraping for "Company" instead of "Role at Company" for better mobile visibility
+    input.form-control.form-control--editable-title(type="text", name="name", data-autosize, value=selectedApplication.name)
     //- DEV: On large screens, display "All changes saved" away from content
     i.text--normal.float--right.muted.medium-and-down-hidden(data-autosave) All changes saved
   //- DEV: We wanted to use a `p` but we can't nest forms in them
@@ -58,7 +61,7 @@ block content
       +csrf-input()
       .grid
         .grid__item.one-whole.medium-one-half.large-four-ninths
-          +posting-url-and-name(selectedApplication)
+          +posting-url(selectedApplication)
         .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
           +company-notes-and-research(selectedApplication)
         .grid__item.one-whole.medium-one-half.large-four-ninths

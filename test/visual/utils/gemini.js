@@ -126,3 +126,13 @@ exports.disableTransitions = function (actions, find) {
       document.styleSheets[0].cssRules.length);
   });
 };
+
+// Define a helper to clear fields
+exports.clear = function (actions, selector) {
+  actions._pushAction(exports.clear, function clearFn (browser) {
+    return browser.findElement(selector)
+      .then(function handleFind (foundElement) {
+        return foundElement.clear();
+      });
+  });
+};

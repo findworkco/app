@@ -373,3 +373,38 @@ $large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__un
     @include left-screenshot-highlight((top: 474px, right: 195px, position: 'top', full-width: true));
   }
 }
+
+.form-control--editable-title {
+  // DEV: CSS cascade will override `border` and `box-shadow` for focus
+  border: 0;
+  box-shadow: none;
+  background: #EEE;
+
+  // Double our padding for more closeness to input
+  // DEV: We lose some padding due to `box-sizing: content-box`
+  // DEV: `autosize-input` already converts to `content-box` but this is for logical reenforcement
+  box-sizing: content-box;
+  padding-left: 6px;
+  padding-right: 6px;
+
+  // Correct vertical offsets so we act like text
+  margin-top: -3px;
+  margin-bottom: -3px;
+
+  // Guarantee our title has a minimum width and maximum
+  min-width: 200px;
+  max-width: 500px;
+
+  // Add ellipsis support to our title
+  // DEV: This isn't bulletproof but works more/less especially with a11y
+  //   Example issue: On Firefox, if you fill out content, then leave cursor at end of line, it won't show ellipsis
+  text-overflow: ellipsis;
+  white-space: pre;
+}
+
+@include media-query(small) {
+  .form-control--editable-title {
+    box-sizing: border-box !important;
+    max-width: 100%;
+  }
+}

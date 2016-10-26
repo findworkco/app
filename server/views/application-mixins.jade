@@ -1,4 +1,4 @@
-mixin posting-url-and-name(values)
+mixin posting-url(values)
   //- TODO: Link up `follow URL` to automatically update on throttled keydown
   .form-group
     label(for="posting_url")
@@ -6,9 +6,6 @@ mixin posting-url-and-name(values)
       a(href=values.posting_url) follow URL
       = ")"
     input#posting_url.form-control.input--block(name="posting_url", type="text", value=values.posting_url, placeholder="https://job-board.com/url/of/listing")
-  .form-group
-    label(for="name") Name:
-    input#name.form-control.input--block(name="name", type="text", value=values.name, placeholder="Job title at company (e.g. Engineer at Google)")
 
 mixin application-reminder(values)
   .form-group
