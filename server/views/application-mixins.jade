@@ -11,48 +11,46 @@ mixin application-date(values)
   //- TODO: Reuse with edit field
   .form-group
     label(for="application_date")
-      //- DEV: Note that "Edit" uses "Application date"
-      //- TODO: Maybe we should use "Applied on" always
       = "Applied on: "
       i.fa.fa-calendar-o(style="font-size: 1.5em")
     //- If there is no application date moment, then default to today
     - var applicationDateMoment = values.application_date_moment || moment().tz(timezone);
     +datepicker(applicationDateMoment)#application_date.form-control(name="application_date")
 
-mixin application-reminder(values)
+mixin application-reminder(values, options)
   .form-group
     h4.flush--bottom(style="font-weight: normal")
       = "Application reminder: "
       span.text--normal
         i.fa.fa-reply(style="font-size: 1.5em")
-    //- TODO: Only show info if someone has never saved a "Have not applied" application before
-    .section--info.push-half--ends We will send you a reminder email to apply to this posting
+    if options.showInfo
+      .section--info.push-half--ends We will send you a reminder email to apply to this posting
     //- If there is no application reminder, then default to 1 week from today (raised to nearest hour)
-    - var applicationReminderMoment = values.application_reminder || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    - var applicationReminderMoment = values.application_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
     +reminderpicker("application_reminder", applicationReminderMoment)
 
-mixin follow-up-reminder(values)
+mixin follow-up-reminder(values, options)
   .form-group
     h4.flush--bottom(style="font-weight: normal")
       = "Follow up reminder: "
       span.text--normal
         i.fa.fa-reply(style="font-size: 1.5em")
-    //- TODO: Only show info if someone has never saved a "Waiting for response" application before
-    .section--info.push-half--ends We will send you a reminder email to follow up to this posting
+    if options.showInfo
+      .section--info.push-half--ends We will send you a reminder email to follow up to this posting
     //- If there is no follow up reminder, then default to 1 week from today (raised to nearest hour)
-    - var followUpReminderMoment = values.follow_up_reminder || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    - var followUpReminderMoment = values.follow_up_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
     +reminderpicker("follow_up_reminder", followUpReminderMoment)
 
-mixin offer-response-reminder(values)
+mixin offer-response-reminder(values, options)
   .form-group
     h4.flush--bottom(style="font-weight: normal")
       = "Response reminder: "
       span.text--normal
         i.fa.fa-reply(style="font-size: 1.5em")
-    //- TODO: Only show info if someone has never saved a "Offer received" application before
-    .section--info.push-half--ends We will send you a reminder email to respond to your offer
+    if options.showInfo
+      .section--info.push-half--ends We will send you a reminder email to respond to your offer
     //- If there is no offer received reminder, then default to 1 week from today (raised to nearest hour)
-    - var offerResponseMoment = values.offer_response_reminder || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    - var offerResponseMoment = values.offer_response_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
     +reminderpicker("offer_response_reminder", offerResponseMoment)
 
 mixin company-notes-and-research(values)

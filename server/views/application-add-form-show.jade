@@ -34,9 +34,9 @@ block content
         +company-notes-and-research(submissionData)
       .grid__item.one-whole.medium-one-half.large-four-ninths
         if status === APPLICATION_STATUSES.SAVED_FOR_LATER
-          +application-reminder(submissionData)
+          +application-reminder(submissionData, {showInfo: true})
         else if status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-          +follow-up-reminder(submissionData)
+          +follow-up-reminder(submissionData, {showInfo: true})
         else if status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
           h4.push-half--bottom(style="font-weight: normal") Interview information:
           //- DEV: We could shift follow up dates with application info but
@@ -44,7 +44,7 @@ block content
           //- TODO: Hide reminders when people have seen them before
           +interview-fields(submissionData, {showInfo: true})
         else if status === APPLICATION_STATUSES.RECEIVED_OFFER
-          +offer-response-reminder(submissionData)
+          +offer-response-reminder(submissionData, {showInfo: true})
         else
           throw new Error('Unrecognized status "' + status + '"');
         p.push-triple--bottom

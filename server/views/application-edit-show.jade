@@ -62,24 +62,18 @@ block content
       .grid
         .grid__item.one-whole.medium-one-half.large-four-ninths
           +posting-url(selectedApplication)
+
+          //- DEV: Archived applications can only be created from waiting for response or later (i.e. they'll always have an application date)
+          if selectedApplication.status !== APPLICATION_STATUSES.SAVED_FOR_LATER
+            +application-date(selectedApplication)
         .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
           +company-notes-and-research(selectedApplication)
         .grid__item.one-whole.medium-one-half.large-four-ninths
-          .form-group
-            label(for="application_date")
-              //- TODO: Is text "Applied on" or "Application date" (I think it's "Applied on" for "Add" and "Application date" for "Edit")
-              = "Application date: "
-              i.fa.fa-calendar-o(style="font-size: 1.5em")
-            //- TODO: Explore using full datetime so we can capture timezone
-            +datepicker(selectedApplication.application_date_moment)#application_date.form-control(name="application_date")
-          .form-group
-            //- TODO: Make sure we are consistent with "Follow-up" vs "Follow up"
-            h4.flush--bottom(style="font-weight: normal")
-              = "Follow up reminder: "
-              span.text--normal
-                i.fa.fa-reply(style="font-size: 1.5em")
-            //- TODO: Handle default moment
-            +reminderpicker("follow_up_reminder", selectedApplication.follow_up_reminder_moment)
+          if selectedApplication.status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+            //- TODO: Only show info if someone has never saved a "Waiting for response" application before
+            +follow-up-reminder(selectedApplication, {showInfo: false})
+          else if selectedApplication.status == APPLICATION_STATUSES.ARCHIVED
+            //- Nothing goes here (no visible reminders)
           div.past-interviews
             //- TODO: Design our empty state for this...
             h4.push-half--bottom(style="font-weight: normal")
@@ -96,7 +90,8 @@ block content
           if selectedApplication.status == APPLICATION_STATUSES.ARCHIVED
             .landmark.archive-date(style="margin-top: -18px")
               h4.push-half--bottom(style="font-weight: normal")
-                = "Archive date: "
+                //- DEV: Label is consistent with "Archived on" in nav
+                = "Archived on: "
                 i.fa.fa-calendar-o(style="font-size: 1.5em")
               span= selectedApplication.archived_at_moment.format('ddd MMM D [at] h:mmA zz')
           p.large-hidden(style="margin-top: -18px")
