@@ -1,4 +1,10 @@
 mixin interview-fields(values, options)
+  //- Default moment for 1 week from now with reminders 2 hours before/after
+  //- TODO: Restrict pre/post interview reminders to be before/after date/time
+  - var dateTimeMoment = values.date_time_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+  - var preInterviewReminderMoment = values.pre_interview_reminder_moment || dateTimeMoment.clone().subtract({hours: 2});
+  - var postInterviewReminderMoment = values.post_interview_reminder_moment || dateTimeMoment.clone().add({hours: 2});
+
   .form-group
     //- DEV: We use table/table-cell for consistent sizing with pre-interview reminder
     div(style="display: table")
@@ -6,8 +12,8 @@ mixin interview-fields(values, options)
         label(for="date")
           = "Date/Time: "
           i.fa.fa-calendar-o(style="font-size: 1.5em")
-        //- Keys for inputs will be `date`, `time`, and `timezone`
-        +datetimepicker("", values.moment, {delimiter: ''})
+        //- Keys for inputs will be `date_time_date`, `date_time_time`, and `date_time_timezone`
+        +datetimepicker('date_time', dateTimeMoment, {delimiter: '_'})
   .form-group
     label(for="details")
       = "Details: "
@@ -19,9 +25,9 @@ mixin interview-fields(values, options)
     //- TODO: Hide reminders when people have seen them before
     if options.showInfo
       .section--info We will send you a reminder email to review your notes before the interview
-    +reminderpicker("pre_interview_reminder", values.pre_interview_reminder_moment)
+    +reminderpicker("pre_interview_reminder", preInterviewReminderMoment)
   .form-group
     h4.flush--bottom(style="font-weight: normal") Post-interview reminder:
     if options.showInfo
       .section--info We will send you a reminder email to update your notes after the interview
-    +reminderpicker("post_interview_reminder", values.post_interview_reminder_moment)
+    +reminderpicker("post_interview_reminder", postInterviewReminderMoment)

@@ -9,8 +9,6 @@ var interviewMockData = require('../models/interview-mock-data');
 var genericMockData = require('../models/generic-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
-// TODO: Normalize interview info for /upcoming-interview on Gemini screenshots
-
 // Define common data loader for nav
 app.get('*', function loadNavData (req, res, next) {
   // Define common statuses for all pages

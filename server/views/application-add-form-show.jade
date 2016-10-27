@@ -1,5 +1,6 @@
 extends layout
 include application-mixins
+include interview-mixins
 
 block title
   //- Resolve human status
@@ -27,15 +28,29 @@ block content
     .grid
       .grid__item.one-whole.medium-one-half.large-four-ninths
         +posting-url(submissionData)
+        if status !== APPLICATION_STATUSES.SAVED_FOR_LATER
+          +application-date(submissionData)
       .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
         +company-notes-and-research(submissionData)
       .grid__item.one-whole.medium-one-half.large-four-ninths
         if status === APPLICATION_STATUSES.SAVED_FOR_LATER
           +application-reminder(submissionData)
+        else if status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+          +follow-up-reminder(submissionData)
+        else if status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
+          h4.push-half--bottom(style="font-weight: normal") Interview information:
+          //- DEV: We could shift follow up dates with application info but
+          //-   it's sanest to keep relevant/changing info next to each other
+          //- TODO: Hide reminders when people have seen them before
+          +interview-fields(submissionData, {showInfo: true})
+        else if status === APPLICATION_STATUSES.RECEIVED_OFFER
+          +offer-response-reminder(submissionData)
         else
           throw new Error('Unrecognized status "' + status + '"');
         p.push-triple--bottom
           button.btn.btn--primary(type="submit")
             | Save job application
+            if status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
+              = " and interview"
         p
           a.btn.btn--default(href="javascript:window.history.go(-1);") Go back to previous screen

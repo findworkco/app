@@ -121,7 +121,7 @@ block base-content
                   .nav-info
                     +nav-info__icon(application)
                       if type == APPLICATION_STATUSES.UPCOMING_INTERVIEW
-                        +calendar-2x-with-date(params.interview.moment.format('D'))
+                        +calendar-2x-with-date(params.interview.date_time_moment.format('D'))
                       else if type == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
                         i.fa.fa-2x.fa-envelope-o
                       else if type == APPLICATION_STATUSES.ARCHIVED
@@ -131,7 +131,7 @@ block base-content
                     +nav-info__content(application)
                       if type == APPLICATION_STATUSES.UPCOMING_INTERVIEW
                         //- Mon Mar 14 at 2:00PM CST
-                        = params.interview.moment.format('ddd MMM D [at] h:mmA zz')
+                        = params.interview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
                       else if type == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
                         //- Tue Feb 16
                         = "Last contact: " + application.last_contact_moment.format('ddd MMM D')

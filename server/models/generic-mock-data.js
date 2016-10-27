@@ -36,7 +36,7 @@ exports.upcomingInterviews = [{
   // DEV: When datetime is saved to the database, a moment instance that give us the offset
   //   Also, note that we have no numeric offset for `moment.tz`
   //   allowing it to set the appropriate one from the IANA timezone
-  moment: moment.tz('2016-01-20T14:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-01-20T14:00', 'America/Chicago'),
   // TODO: Be sure to sanitize details
   details: 'Go to <a href="https://maps.google.com">1200 Lake St, Suite 303, Chicago</a>'
 }, {
@@ -48,7 +48,7 @@ exports.upcomingInterviews = [{
     status: exports.APPLICATION_STATUSES.UPCOMING_INTERVIEW
   },
   // Mon Mar 14 at 2:00PM CST
-  moment: moment.tz('2016-03-14T14:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-03-14T14:00', 'America/Chicago'),
   // DEV: Alternative names for `details` are `instructions`, `info`, and `information`
   details: ''
 }];
@@ -71,10 +71,10 @@ exports.waitingForResponseApplications = [{
   past_interviews: [{
     id: 'abcdef-sky-networks-interview-uuid',
     application_id: 'abcdef-sky-networks-uuid',
+    // Fri Jan 15 at 9:00AM PST
+    date_time_moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
     details: 'Call 555-123-4567',
     delete_url: '/interview/abcdef-sky-networks-interview-uuid/delete',
-    // Fri Jan 15 at 9:00AM PST
-    moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
     pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
     post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles'),
     url: '/interview/abcdef-sky-networks-interview-uuid'
@@ -106,9 +106,9 @@ exports.archivedApplications = [{
   past_interviews: [{
     id: 'abcdef-monstromart-interview-uuid',
     application_id: 'abcdef-monstromart-uuid',
-    details: 'Call 555-123-4567',
     // Fri Jan 15 at 9:00AM PST
-    moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
+    date_time_moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
+    details: 'Call 555-123-4567',
     pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
     post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles'),
     url: '/interview/abcdef-monstromart-interview-uuid'

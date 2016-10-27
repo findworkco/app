@@ -32,16 +32,16 @@ scenario('A request to GET /application/:id/add-interview from the owner user', 
     // Prepare our date (including timezone offset for Chicago)
     // DEV: Our visual tests override this value for consistency in screenshots
     // DEV: We construct values without moment to verify our logic is correct
-    var expectedDateVal = Date.now() + (1000 * 60 * 60 * 24) + (1000 * 60 * 60) - (1000 * 60 * 60 * 5);
+    var expectedDateVal = Date.now() + (1000 * 60 * 60 * 24 * 7) + (1000 * 60 * 60) - (1000 * 60 * 60 * 5);
     expectedDateVal = expectedDateVal - (expectedDateVal % (1000 * 60 * 60));
 
     // Extract and compare our values
     // 2016-05-23T21:00:00.000Z
     var expectedDateStr = new Date(expectedDateVal).toISOString();
     var expectedInfo = extractValues(expectedDateStr, '{date}T{time}:00.000Z');
-    expect(this.$('input[name=date]').val()).to.equal(expectedInfo.date);
-    expect(this.$('input[name=time]').val()).to.equal(expectedInfo.time);
-    expect(this.$('select[name=timezone]').val()).to.equal('US-America/Chicago');
+    expect(this.$('input[name=date_time_date]').val()).to.equal(expectedInfo.date);
+    expect(this.$('input[name=date_time_time]').val()).to.equal(expectedInfo.time);
+    expect(this.$('select[name=date_time_timezone]').val()).to.equal('US-America/Chicago');
     expectedDateStr = new Date(expectedDateVal - (1000 * 60 * 60 * 2)).toISOString();
     expectedInfo = extractValues(expectedDateStr, '{date}T{time}:00.000Z');
     expect(this.$('input[name=pre_interview_reminder_date]').val()).to.equal(expectedInfo.date);
