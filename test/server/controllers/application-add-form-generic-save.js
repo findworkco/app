@@ -4,7 +4,7 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-// TODO: These are basic tests, one-off tests like specific field handling should be done in one-off files
+// DEV: These are basic tests, one-off tests for specific forms are handled in separate files
 var scenarioInfoArr = [
   {url: '/add-application/save-for-later', form: {}},
   {url: '/add-application/waiting-for-response', form: {}},

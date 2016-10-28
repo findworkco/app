@@ -10,7 +10,7 @@ var genericMockData = require('../models/generic-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Define common data loader for nav
-app.get('*', function loadNavData (req, res, next) {
+app.all('*', function loadNavData (req, res, next) {
   // Define common statuses for all pages
   // TODO: Consider relocating statuses to `app.locals`
   res.locals.APPLICATION_STATUSES = genericMockData.APPLICATION_STATUSES;
@@ -19,6 +19,11 @@ app.get('*', function loadNavData (req, res, next) {
 
   // If our endpoint is exempt (e.g. `/`), then don't load data
   if (['/'].indexOf(req.url) !== -1) {
+    return next();
+  }
+
+  // If our endpoint isn't GET and non-exempt, then don't load data
+  if (req.method !== 'GET' && ['/research-company'].indexOf(req.url) === -1) {
     return next();
   }
 
@@ -63,13 +68,6 @@ app.get('/', function rootShow (req, res, next) {
   } else {
     res.render('landing.jade');
   }
-});
-
-app.get('/archive', function archiveShow (req, res, next) {
-  res.render('archive.jade', {
-    // DEV: We use `isArchive` over direct URL comparisons to allow `/_dev` routes
-    isArchive: true
-  });
 });
 
 // TODO: Move to `development` or remove entirely
@@ -148,6 +146,26 @@ app.get('/schedule', function scheduleShow (req, res, next) {
     isSchedule: true
   });
 });
+app.get('/archive', function archiveShow (req, res, next) {
+  res.render('archive.jade', {
+    // DEV: We use `isArchive` over direct URL comparisons to allow `/_dev` routes
+    isArchive: true
+  });
+});
+
+app.get('/research-company', function researchCompanyShow (req, res, next) {
+  res.render('research-company-show.jade');
+});
+app.post('/research-company', function researchCompanySave (req, res, next) {
+  // Collect our company research info
+  var companyName = req.body.fetch('company_name');
+  var renderData = _.extend({
+    company_name: companyName
+  }, companyMockData.getByName(companyName, true));
+
+  // Render our page
+  res.render('research-company-show.jade', renderData);
+});
 
 app.get('/add-application', function applicationAddSelectionShow (req, res, next) {
   res.render('application-add-selection-show.jade');
@@ -170,7 +188,8 @@ function setReceivedOfferStatusKey(req, res, next) {
 }
 function applicationAddFormShow(req, res, next) {
   res.render('application-add-form-show.jade', {
-    pageUrl: req.url
+    page_url: req.url,
+    query_company_name: req.query.get('company_name')
   });
 }
 function applicationAddFormSave(req, res, next) {

@@ -25,6 +25,10 @@ exports._save = function (options) {
       // Resolve and verify our form exists
       var $htmlForm = this.$(htmlFormSelector);
       assert($htmlForm.length, 'No HTML form was found under selector "' + htmlFormSelector + '"');
+      var actualHttpMethod = ($htmlForm.attr('method') || 'GET');
+      assert.strictEqual(actualHttpMethod.toUpperCase(), options.method.toUpperCase(),
+        'Expected HTML form to use method "' + options.method + ' but it was using "' + actualHttpMethod + '". ' +
+        'Please verify `httpUtils.save` is using expected `method` parameter');
 
       // If `options.htmlForm` is `true`, then use the form as is
       if (options.htmlForm === true) {
@@ -33,7 +37,12 @@ exports._save = function (options) {
 
       // Complete and serialize our form
       // DEV: We allow for returning a new element as the form or using the original
-      options.form = (options.htmlForm.call(this, $htmlForm) || $htmlForm).serialize();
+      var formData = (options.htmlForm.call(this, $htmlForm) || $htmlForm).serialize();
+      if (options.method.toUpperCase() === 'GET') {
+        options.url += '?' + formData;
+      } else {
+        options.form = formData;
+      }
     }
 
     // If there is a CSRF form to generate, then collect our CSRF token and generate a form

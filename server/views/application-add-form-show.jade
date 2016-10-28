@@ -17,7 +17,7 @@ block content
     | Please fill out information about the application
   //- Fallback submission data for initial renders
   - var submissionData = {};
-  form.cf(method="POST", action=locals.pageUrl)
+  form.cf(method="POST", action=page_url)
     +csrf-input()
     .action-bar.push--bottom
       .action-bar__info

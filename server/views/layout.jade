@@ -90,10 +90,14 @@ block base-content
         //- On non-schedule for medium/small pages, hide our schedule listing
         div(class={'medium-and-down-hidden': !(isSchedule || isArchive)})
           if !useArchiveSchedule
-            p.text--center
-              a.btn.btn--wide.btn--default.nav-btn(href="/add-application")
-                span(aria-hidden="true")= "+ "
-                | Add job application
+            .grid
+              .grid__item.one-whole.medium-and-down-one-half.nav-btn__container
+                a.btn.btn--wide.btn--default.nav-btn--side-by-side(href="/add-application")
+                  span(aria-hidden="true")= "+ "
+                  | Add job application
+              .grid__item.one-whole.medium-and-down-one-half.nav-btn__container
+                a.btn.btn--wide.btn--default.nav-btn--side-by-side(href="/research-company")
+                  | Research company
           else
             +nav-row--link({selected: false}).medium-and-down-hidden(href="/schedule") Back to active applications
 
@@ -177,7 +181,7 @@ block base-content
                       i No notes recorded
               //- On small/medium screens, provide a link to the application's page
               .large-hidden
-                a.btn.btn--default.one-whole.nav-btn(href=APPLICATION_URL_OVERRIDE || application.url) View/edit job application
+                a.btn.btn--default.one-whole.nav-btn--standalone(href=APPLICATION_URL_OVERRIDE || application.url) View/edit job application
 
           //- If we aren't on an archive page, then display normal schedule
           if !useArchiveSchedule

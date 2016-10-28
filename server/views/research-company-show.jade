@@ -1,0 +1,52 @@
+//- DEV: Designer after:
+//-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a2e2f81ac
+extends layout
+include application-mixins
+
+block title
+  title Research company - Find Work
+
+block content
+  h1.content__heading(style="font-weight: normal") Research company
+  //- TODO: Use loading animation + turbolinks for submitting form with progressive enhancement
+  //-   https://trello.com/c/g857wfA8/154-add-loading-state-for-research-company-and-its-widget
+  //-   https://trello.com/c/B6vvssVI/153-add-turbolinks-support-for-submitting-research-company
+  .grid
+    //- DEV: We use an inline-block to expand to width of input
+    //-   then a negative margin to unoffset second set of buttons
+    mixin company-name-input()
+      .form-group&attributes(attributes)
+        label(for="company_name")
+          = "Name: "
+        input#company_name.form-control(name="company_name", type="text", value=company_name, placeholder=
+        "Company name (e.g. Google)", style="width: 230px")
+    .grid__item.small-one-whole.push--bottom(style="margin-right: -60px")
+      form(method="POST", action="/research-company")
+        +csrf-input()
+        +company-name-input()
+        div
+          button.btn.btn--primary.btn--wide(type="submit") Search
+    .grid__item.small-one-whole.push--bottom
+      //- DEV: We use a duplicate label/input to offset our buttons to same height
+      +company-name-input().invisible.small-hidden
+      form.form--inline.push--right(method="POST", action="/add-application/save-for-later")
+        +csrf-input()
+        input(type="hidden", name="company_name", value=company_name)
+        button.btn.btn--default(type="submit", disabled=!company_name) Save for later
+      //- DEV: We use a form (even though this could be a link) to support disabled behavior elegantly
+      //- DEV: We don't submit an application as we want to show off our application before sign up requirement
+      form.form--inline(method="GET", action="/add-application/waiting-for-response")
+        //- DEV: No CSRF token necessary as this is a GET form
+        input(type="hidden", name="company_name", value=company_name)
+        button.btn.btn--default(type="submit", disabled=!company_name) Apply to company
+  .grid
+    //- DEV: Id is for testing only
+    #glassdoor-results.grid__item.one-whole.large-four-ninths
+      h5.text--normal.flush--bottom Glassdoor results:
+      p
+        +glassdoor-result(locals.glassdoorResult, {extended: true})
+    //- DEV: Id is for testing only
+    #angellist-results.grid__item.one-whole.large-five-ninths
+      h5.text--normal.flush--bottom AngelList results:
+      p
+        +angellist-result(locals.angelListResult, {extended: true})
