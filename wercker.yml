@@ -1,36 +1,15 @@
-# Use Ubuntu@14.04 as our box image
-# https://hub.docker.com/_/ubuntu/
-box: ubuntu:14.04
+# Use findworkco/wercker-app as our image
+# DEV: To build and publish a new image, run:
+#   # Be sure to update version in command and in `wercker.yml`
+#   # DEV: We use a temporary directory to avoid sending unnecessary content to Docker daemon
+#   tmp_dir="$(mktemp --directory)"; cp wercker.Dockerfile "$tmp_dir/Dockerfile"
+#   docker build --tag findworkco/wercker-app:1.0.0 "$tmp_dir"
+#   docker push findworkco/wercker-app
+box: findworkco/wercker-app:1.0.0
 
 # Define our build steps (e.g. test steps)
 build:
   steps:
-    # Install server dependencies (e.g. Redis, PostgreSQL)
-    - script:
-        name: install server dependencies
-        code: |
-          # Updated our `apt-cache`
-          sudo apt-get update
-
-          # Install Node.js' apt repository
-          sudo apt-get install -y curl
-          curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
-
-          # Install our apt-based dependencies
-          # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L178-L181
-          # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L189-L195
-          # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L302-L308
-          # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/findwork.co/recipes/default.rb#L4-L16
-          # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/findwork.co/recipes/default.rb#L18-L19
-          sudo apt-get install -y \
-            redis-server=2:2.8.4-2 \
-            postgresql-9.3=9.3.14-0ubuntu0.14.04 \
-            postgresql-server-dev-9.3=9.3.14-0ubuntu0.14.04 \
-            build-essential make openssl python-dev \
-            nodejs=4.6.1-1nodesource1~trusty1 \
-            git
-
-
     # Configure PostgreSQL to match our server
     # DEV: Ideally we would reuse the container from Wercker's test builds
     #   However, that costs $2/month at the moment and would burn unnecessary development time
@@ -70,26 +49,71 @@ build:
     # Install our dependencies and dev dependencies
     # DEV: We use this over `step-npm-install` to gain single step bootstrapping
     #   https://github.com/wercker/step-npm-install/blob/082879a7d314754b3ee5aecf41f7234ecb6a3b78/run.sh
+    # DEV: We use caching from here https://gist.github.com/twolfson/7a2ccbad85981b89f55bf0e5c8378e5c
     - script:
         name: run bootstrap.sh
         code: |
-          # Create our cache
+          # Resolve our cache
           # https://github.com/wercker/step-npm-install/blob/082879a7d314754b3ee5aecf41f7234ecb6a3b78/run.sh#L16-L22
-          mkdir -p "$WERCKER_CACHE_DIR/wercker/npm"
-          npm config set cache "$WERCKER_CACHE_DIR/wercker/npm"
+          bower_json_md5="$(md5sum bower.json | cut -f 1 -d " ")"
+          bower_components_cache_base_dir="$WERCKER_CACHE_DIR/wercker/bower_components"
+          bower_components_cache_filepath="$bower_components_cache_base_dir/$bower_json_md5.tar.gz"
+          package_json_md5="$(md5sum package.json | cut -f 1 -d " ")"
+          node_modules_cache_base_dir="$WERCKER_CACHE_DIR/wercker/node_modules"
+          node_modules_cache_filepath="$node_modules_cache_base_dir/$package_json_md5.tar.gz"
+
+          # Output cache filepaths
+          echo "bower_components cache filepath: $bower_components_cache_filepath"
+          echo "node_modules cache filepath: $node_modules_cache_filepath"
+
+          # If cache exists, then copy it over as bower components
+          if test -f "$bower_components_cache_filepath"; then
+            echo "bower_components cache found, extracting contents" 1>&2
+            tar xzf "$bower_components_cache_filepath"
+          # Otherwise, remove others to prevent future conflicts
+          else
+            echo "bower_components cache not found, erasing others" 1>&2
+            rm -r "$bower_components_cache_base_dir" || true
+            mkdir -p "$bower_components_cache_base_dir"
+          fi
+          if test -f "$node_modules_cache_filepath"; then
+            echo "node_modules cache found, extracting contents" 1>&2
+            tar xzf "$node_modules_cache_filepath"
+          else
+            echo "node_modules cache not found, erasing others" 1>&2
+            rm -r "$node_modules_cache_base_dir" || true
+            mkdir -p "$node_modules_cache_base_dir"
+          fi
 
           # If we fail to bootstrap
+          echo "Running bootstrap..." 1>&2
           if ! CONFIG_COPY_ONLY=TRUE bin/bootstrap.sh; then
-            # Clear our cache
+            # Remove our cache's contents but make sure we keep the cache base directory
             # https://github.com/wercker/step-npm-install/blob/082879a7d314754b3ee5aecf41f7234ecb6a3b78/run.sh#L24-L32
-            npm cache clear
-            mkdir -p "$WERCKER_CACHE_DIR/wercker/npm"
-            printf keep > "$WERCKER_CACHE_DIR/wercker/npm/.keep"
+            echo "Bootstrap failed, wiping cache" 1>&2
+            rm "$bower_components_cache_filepath" || true
+            mkdir -p "$bower_components_cache_base_dir"
+            printf keep > "$bower_components_cache_base_dir/.keep"
+            rm "$node_modules_cache_filepath" || true
+            mkdir -p "$node_modules_cache_base_dir"
+            printf keep > "$node_modules_cache_base_dir/.keep"
 
             # Exit as a failure
             # https://github.com/wercker/step-npm-install/blob/082879a7d314754b3ee5aecf41f7234ecb6a3b78/run.sh#L37-L42
             exit 1
           fi
+
+          # If there are no cache files, then output them
+          if ! test -f "$bower_components_cache_filepath"; then
+            echo "bower_components cache doesn't exist, creating it" 1>&2
+            tar czf "$bower_components_cache_filepath" bower_components
+          fi
+          if ! test -f "$node_modules_cache_filepath"; then
+            echo "node_modules cache doesn't exist, creating it" 1>&2
+            tar czf "$node_modules_cache_filepath" node_modules
+          fi
+          ls -la "$bower_components_cache_filepath"
+          ls -la "$node_modules_cache_filepath"
 
     # Provision our test database (depends on `sequelize` being installed)
     - script:
