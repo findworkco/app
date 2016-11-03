@@ -4,6 +4,7 @@ var app = require('../index.js').app;
 var config = require('../index.js').config;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var applicationMockData = require('../models/application-mock-data');
+var Application = require('../models/application');
 var companyMockData = require('../models/company-mock-data');
 var interviewMockData = require('../models/interview-mock-data');
 var genericMockData = require('../models/generic-mock-data');
@@ -13,9 +14,9 @@ var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 app.all('*', function loadNavData (req, res, next) {
   // Define common statuses for all pages
   // TODO: Consider relocating statuses to `app.locals`
-  res.locals.APPLICATION_STATUSES = genericMockData.APPLICATION_STATUSES;
-  res.locals.APPLICATION_ADD_HUMAN_STATUSES = genericMockData.APPLICATION_ADD_HUMAN_STATUSES;
-  res.locals.APPLICATION_EDIT_HUMAN_STATUSES = genericMockData.APPLICATION_EDIT_HUMAN_STATUSES;
+  res.locals.APPLICATION_STATUSES = Application.APPLICATION_STATUSES;
+  res.locals.APPLICATION_ADD_HUMAN_STATUSES = Application.APPLICATION_ADD_HUMAN_STATUSES;
+  res.locals.APPLICATION_EDIT_HUMAN_STATUSES = Application.APPLICATION_EDIT_HUMAN_STATUSES;
 
   // If our endpoint is exempt (e.g. `/`), then don't load data
   if (['/'].indexOf(req.url) !== -1) {

@@ -32,17 +32,17 @@ module.exports = _.extend(baseDefine('application', {
   id: {type: Sequelize.STRING(36), primaryKey: true},
 
   // Example: 2016-01-08, no time
-  application_date_moment: {type: baseDefine.MOMENT_DATEONLY, allowNull: true},
-  archived_at_moment: {type: baseDefine.MOMENT_TZ, allowNull: true},
+  application_date_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
+  archived_at_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
 
   // Example: Sky Networks
   // DEV: This is never null, only an empty string (this gives us falsy consistency)
   company_name: {type: Sequelize.STRING(255), defaultValue: '', allowNull: false},
 
   // TODO: Reminders should be in their own table =/
-  follow_up_reminder_moment: {type: baseDefine.MOMENT_TZ, allowNull: true},
+  follow_up_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
   // TODO: Figure out whether "Last contact" was "Last event" or is missing from edit pages...
-  last_contact_moment: {type: baseDefine.MOMENT_TZ, allowNull: true},
+  last_contact_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
 
   // DEV: We allow url OR name in controller but url always backfills name
   name: {type: Sequelize.STRING(255), allowNull: false},

@@ -1,121 +1,121 @@
 // Load in our dependencies
 var _ = require('underscore');
 var moment = require('moment-timezone');
+var Application = require('./application');
+var Interview = require('./interview');
 
-// Define constants for our applications
-exports.APPLICATION_STATUSES = {
-  SAVED_FOR_LATER: 'saved_for_later',
-  WAITING_FOR_RESPONSE: 'waiting_for_response',
-  UPCOMING_INTERVIEW: 'upcoming_interview',
-  RECEIVED_OFFER: 'received_offer',
-  ARCHIVED: 'archived'
-};
-exports.APPLICATION_ADD_HUMAN_STATUSES = {
-  SAVED_FOR_LATER: 'Saving for later',
-  WAITING_FOR_RESPONSE: 'Waiting for response',
-  UPCOMING_INTERVIEW: 'Upcoming interview',
-  RECEIVED_OFFER: 'Received offer'
-};
-exports.APPLICATION_EDIT_HUMAN_STATUSES = _.defaults({
-  SAVED_FOR_LATER: 'Saved for later',
-  ARCHIVED: 'Archived'
-}, exports.APPLICATION_ADD_HUMAN_STATUSES);
+// DEV: We define all our mock data side by side for easy tweaking'
 
-// TODO: Be sure to sort by upcoming date
-// TODO: Warn ourselves if we see a date that was before today
-exports.upcomingInterviews = [{
-  application: {
-    id: 'abcdef-umbrella-corp-uuid',
-    name: 'Senior Software Engineer at Umbrella Corporation',
-    url: '/application/abcdef-umbrella-corp-uuid',
-    human_status: exports.APPLICATION_EDIT_HUMAN_STATUSES.UPCOMING_INTERVIEW,
-    status: exports.APPLICATION_STATUSES.UPCOMING_INTERVIEW
-  },
+// Define collection for applications and interviews
+var applications = [];
+var interviews = [];
+
+// Upcoming interviews
+// TODO: Be sure to sort queries by upcoming date
+// TODO: Warn ourselves if we see a date that was before today for upcoming interviews
+// TODO: Use `getById` to resolve `application_id`
+// http://docs.sequelizejs.com/en/latest/docs/instances/#values-of-an-instance
+exports.upcomingInterviews = [];
+applications.push({
+  id: 'abcdef-umbrella-corp-uuid',
+  name: 'Senior Software Engineer at Umbrella Corporation',
+  status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
+});
+interviews.push({
+  id: 'abcdef-umbrella-corp-interview-uuid',
+  application_id: applications[applications.length - 1].id,
   // Wed Jan 20 at 2:00PM CST
-  // DEV: We should also populate `datetime` and `timzone` properties
-  // DEV: When datetime is saved to the database, a moment instance that give us the offset
-  //   Also, note that we have no numeric offset for `moment.tz`
-  //   allowing it to set the appropriate one from the IANA timezone
   date_time_moment: moment.tz('2016-01-20T14:00', 'America/Chicago'),
-  // TODO: Be sure to sanitize details
+  // TODO: Be sure to sanitize details (done in view)
   details: 'Go to <a href="https://maps.google.com">1200 Lake St, Suite 303, Chicago</a>'
-}, {
-  application: {
-    id: 'abcdef-globo-gym-uuid',
-    name: 'Globo Gym',
-    url: '/application/abcdef-globo-gym-uuid',
-    human_status: exports.APPLICATION_EDIT_HUMAN_STATUSES.UPCOMING_INTERVIEW,
-    status: exports.APPLICATION_STATUSES.UPCOMING_INTERVIEW
-  },
+});
+exports.upcomingInterviews.push(_.extend({
+  application: Application.build(applications[applications.length - 1]).get({plain: true, clone: true})
+}, Interview.build(interviews[interviews.length - 1]).get({plain: true, clone: true})));
+
+applications.push({
+  id: 'abcdef-globo-gym-uuid',
+  name: 'Globo Gym',
+  status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
+});
+interviews.push({
+  id: 'abcdef-globo-gym-interview-uuid',
+  application_id: applications[applications.length - 1].id,
   // Mon Mar 14 at 2:00PM CST
   date_time_moment: moment.tz('2016-03-14T14:00', 'America/Chicago'),
-  // DEV: Alternative names for `details` are `instructions`, `info`, and `information`
   details: ''
-}];
+});
+exports.upcomingInterviews.push(_.extend({
+  application: Application.build(applications[applications.length - 1]).get({plain: true, clone: true})
+}, Interview.build(interviews[interviews.length - 1]).get({plain: true, clone: true})));
 
-exports.waitingForResponseApplications = [{
+// Waiting for response applications
+// TODO: Figure out whether "Last contact" was "Last event" or is missing from edit pages...
+exports.waitingForResponseApplications = [];
+applications.push({
   id: 'abcdef-sky-networks-uuid',
-  add_interview_url: '/application/abcdef-sky-networks-uuid/add-interview',
   // Fri Jan 8
   application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
-  archive_url: '/application/abcdef-sky-networks-uuid/archive',
   archived_at_moment: null,
   company_name: 'Sky Networks',
-  delete_url: '/application/abcdef-sky-networks-uuid/delete',
-  human_status: exports.APPLICATION_EDIT_HUMAN_STATUSES.WAITING_FOR_RESPONSE,
-  status: exports.APPLICATION_STATUSES.WAITING_FOR_RESPONSE,
   // Tue Feb 23
   follow_up_reminder_moment: moment.tz('2016-02-23T12:00', 'America/Chicago'),
   // Tue Feb 16
   last_contact_moment: moment.tz('2016-02-16T12:00', 'America/Chicago'),
-  past_interviews: [{
-    id: 'abcdef-sky-networks-interview-uuid',
-    application_id: 'abcdef-sky-networks-uuid',
-    // Fri Jan 15 at 9:00AM PST
-    date_time_moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
-    details: 'Call 555-123-4567',
-    delete_url: '/interview/abcdef-sky-networks-interview-uuid/delete',
-    pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
-    post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles'),
-    url: '/interview/abcdef-sky-networks-interview-uuid'
-  }],
+  // past_interviews: [], // Filled out by `waitingForResponseApplications.push`
   posting_url: 'https://github.com/about/jobs',
   name: 'Engineer II at Sky Networks',
   notes: 'Phone screen (John): 100 employees, focused on AI<br/>' +
     'Website: <a href="https://sky.net/">https://sky.net/</a>',
-  received_offer_url: '/application/abcdef-sky-networks-uuid/received-offer',
-  url: '/application/abcdef-sky-networks-uuid'
-}];
+  status: Application.APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+});
+interviews.push({
+  id: 'abcdef-sky-networks-interview-uuid',
+  application_id: applications[applications.length - 1].id,
+  // Fri Jan 15 at 9:00AM PST
+  date_time_moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
+  details: 'Call 555-123-4567',
+  pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
+  post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles')
+});
+exports.waitingForResponseApplications.push(_.extend({
+  past_interviews: [
+    Interview.build(interviews[interviews.length - 1]).get({plain: true, clone: true})
+  ]
+}, Application.build(applications[applications.length - 1]).get({plain: true, clone: true})));
 
-exports.archivedApplications = [{
+// Archived applications
+exports.archivedApplications = [];
+applications.push({
   id: 'abcdef-monstromart-uuid',
-  add_interview_url: '/application/abcdef-monstromart-uuid/add-interview',
   // Fri Jan 8
   application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
   // Mon Jan 18 at 3:00PM CST
   archived_at_moment: moment.tz('2016-01-18T15:00', 'America/Chicago'),
-  archive_url: '/application/abcdef-monstromart-uuid/archive',
-  computed_status: 'archived', // = archived_at_moment ? 'archived' : status
   company_name: 'Monstromart',
-  human_status: exports.APPLICATION_EDIT_HUMAN_STATUSES.ARCHIVED,
-  status: exports.APPLICATION_STATUSES.ARCHIVED,
+  status: Application.APPLICATION_STATUSES.ARCHIVED,
   // Tue Feb 23
   follow_up_reminder_moment: moment.tz('2016-02-23T12:00', 'America/Chicago'),
   // Tue Feb 16
   last_contact_moment: moment.tz('2016-02-16T12:00', 'America/Chicago'),
-  past_interviews: [{
-    id: 'abcdef-monstromart-interview-uuid',
-    application_id: 'abcdef-monstromart-uuid',
-    // Fri Jan 15 at 9:00AM PST
-    date_time_moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
-    details: 'Call 555-123-4567',
-    pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
-    post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles'),
-    url: '/interview/abcdef-monstromart-interview-uuid'
-  }],
+  // past_interviews: [], // Filled out by `archivedApplications.push`
   posting_url: 'https://github.com/about/jobs',
   name: 'Senior Manager at Monstromart',
   notes: '100 employees, all seem robotic',
   received_offer_url: '/application/abcdef-monstromart-uuid/received-offer',
   url: '/application/abcdef-monstromart-uuid'
-}];
+});
+interviews.push({
+  id: 'abcdef-monstromart-interview-uuid',
+  application_id: applications[applications.length - 1].id,
+  // Fri Jan 15 at 9:00AM PST
+  date_time_moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
+  details: 'Call 555-123-4567',
+  pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
+  post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles')
+});
+exports.archivedApplications.push(_.extend({
+  past_interviews: [
+    Interview.build(interviews[interviews.length - 1]).get({plain: true, clone: true})
+  ]
+}, Application.build(applications[applications.length - 1]).get({plain: true, clone: true})));

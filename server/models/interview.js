@@ -1,6 +1,7 @@
 // Load in our dependencies
 var baseDefine = require('./base.js');
 var Sequelize = require('sequelize');
+var Application = require('./application');
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
@@ -11,8 +12,15 @@ module.exports = baseDefine('interview', {
   // TODO: Verify we make this a UNIQUE PRIMARY INDEX in SQL migrations
   id: {type: Sequelize.STRING(36), primaryKey: true},
 
-  // TODO: Properly set up foreign key
-  application_id: {type: Sequelize.STRING(36), allowNull: false},
+  // TODO: Verify foreign key properly set up
+  application_id: {
+    type: Sequelize.STRING(36),
+    allowNull: false,
+    references: {
+      model: Application,
+      key: 'id'
+    }
+  },
 
   date_time_moment: {type: baseDefine.MOMENT_TZ, allowNull: false},
 
@@ -21,8 +29,8 @@ module.exports = baseDefine('interview', {
   details: {type: Sequelize.STRING(1024), allowNull: false},
 
   // TODO: Pre/post interview reminders should be in reminder table
-  pre_interview_reminder_moment: {type: baseDefine.MOMENT_TZ, allowNull: true},
-  post_interview_reminder_moment: {type: baseDefine.MOMENT_TZ, allowNull: true}
+  pre_interview_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
+  post_interview_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true}
 }, {
   getterMethods: {
     delete_url: function () {
