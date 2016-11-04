@@ -1,21 +1,15 @@
 // Load in our dependencies
-var _ = require('underscore');
 var moment = require('moment-timezone');
 var Application = require('./application');
-var Interview = require('./interview');
 
 // DEV: We define all our mock data side by side for easy tweaking'
 
 // Define collection for applications and interviews
-var applications = [];
-var interviews = [];
+var applications = exports.applications = [];
+var interviews = exports.interviews = [];
 
 // Upcoming interviews
-// TODO: Be sure to sort queries by upcoming date
-// TODO: Warn ourselves if we see a date that was before today for upcoming interviews
-// TODO: Use `getById` to resolve `application_id`
 // http://docs.sequelizejs.com/en/latest/docs/instances/#values-of-an-instance
-exports.upcomingInterviews = [];
 applications.push({
   id: 'abcdef-umbrella-corp-uuid',
   name: 'Senior Software Engineer at Umbrella Corporation',
@@ -25,14 +19,10 @@ interviews.push({
   id: 'abcdef-umbrella-corp-interview-uuid',
   application_id: applications[applications.length - 1].id,
   // Wed Jan 20 at 2:00PM CST
-  date_time_moment: moment.tz('2016-01-20T14:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2022-01-20T14:00', 'America/Chicago'),
   // TODO: Be sure to sanitize details (done in view)
   details: 'Go to <a href="https://maps.google.com">1200 Lake St, Suite 303, Chicago</a>'
 });
-exports.upcomingInterviews.push(_.extend({
-  application: Application.build(applications[applications.length - 1]).get({plain: true, clone: true})
-}, Interview.build(interviews[interviews.length - 1]).get({plain: true, clone: true})));
-
 applications.push({
   id: 'abcdef-globo-gym-uuid',
   name: 'Globo Gym',
@@ -42,16 +32,11 @@ interviews.push({
   id: 'abcdef-globo-gym-interview-uuid',
   application_id: applications[applications.length - 1].id,
   // Mon Mar 14 at 2:00PM CST
-  date_time_moment: moment.tz('2016-03-14T14:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2022-03-14T14:00', 'America/Chicago'),
   details: ''
 });
-exports.upcomingInterviews.push(_.extend({
-  application: Application.build(applications[applications.length - 1]).get({plain: true, clone: true})
-}, Interview.build(interviews[interviews.length - 1]).get({plain: true, clone: true})));
 
 // Waiting for response applications
-// TODO: Figure out whether "Last contact" was "Last event" or is missing from edit pages...
-exports.waitingForResponseApplications = [];
 applications.push({
   id: 'abcdef-sky-networks-uuid',
   // Fri Jan 8
@@ -78,14 +63,8 @@ interviews.push({
   pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
   post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles')
 });
-exports.waitingForResponseApplications.push(_.extend({
-  past_interviews: [
-    Interview.build(interviews[interviews.length - 1]).get({plain: true, clone: true})
-  ]
-}, Application.build(applications[applications.length - 1]).get({plain: true, clone: true})));
 
 // Archived applications
-exports.archivedApplications = [];
 applications.push({
   id: 'abcdef-monstromart-uuid',
   // Fri Jan 8
@@ -114,8 +93,3 @@ interviews.push({
   pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
   post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles')
 });
-exports.archivedApplications.push(_.extend({
-  past_interviews: [
-    Interview.build(interviews[interviews.length - 1]).get({plain: true, clone: true})
-  ]
-}, Application.build(applications[applications.length - 1]).get({plain: true, clone: true})));

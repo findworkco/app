@@ -7,7 +7,6 @@ var applicationMockData = require('../models/application-mock-data');
 var Application = require('../models/application');
 var companyMockData = require('../models/company-mock-data');
 var interviewMockData = require('../models/interview-mock-data');
-var genericMockData = require('../models/generic-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Define common data loader for nav
@@ -42,10 +41,12 @@ app.all('*', function loadNavData (req, res, next) {
   // DEV: We fetch active applications separately so we can add limits to each type
   var upcomingInterviews, waitingForResponseApplications;
   if (req.candidate) {
-    res.locals.archivedApplications = genericMockData.archivedApplications;
-    upcomingInterviews = res.locals.upcomingInterviews = genericMockData.upcomingInterviews;
+    // TODO: Be sure to sort queries by upcoming date
+    // TODO: Warn ourselves if we see a date that was before today for upcoming interviews
+    res.locals.archivedApplications = applicationMockData.getArchivedApplications();
+    upcomingInterviews = res.locals.upcomingInterviews = interviewMockData.getUpcomingInterviews();
     waitingForResponseApplications = res.locals.waitingForResponseApplications =
-      genericMockData.waitingForResponseApplications;
+      applicationMockData.getWaitingForResponseApplications();
   // Otherwise, provide no mock applications
   } else {
     res.locals.archivedApplications = [];
@@ -235,21 +236,21 @@ app.post('/add-application/received-offer', [
   applicationAddFormSave
 ]);
 app.get('/application/:id', function applicationEditShow (req, res, next) {
-  var mockData = applicationMockData.getById(req.params.id);
-  var selectedApplication = mockData.selectedApplication;
+  var renderData = {selectedApplication: applicationMockData.getById(req.params.id)};
+  var selectedApplication = renderData.selectedApplication;
   if (selectedApplication.company_name) {
-    mockData = _.extend({
+    renderData = _.extend({
       // Placeholder object
-    }, companyMockData.getByName(selectedApplication.company_name, false), mockData);
+    }, companyMockData.getByName(selectedApplication.company_name, false), renderData);
   }
-  res.render('application-edit-show.jade', mockData);
+  res.render('application-edit-show.jade', renderData);
 });
 // TODO: Move to pattern with multiple functions;
 //   retrieve all models `loadModels(function (req, res) { req.models = {a: A.get(1)} })`, update models `(req, res)`,
 //   save changes `saveModels`, flash + redirect `(req, res)`
 app.post('/application/:id', function applicationEditSave (req, res, next) {
   // Resolve our application
-  var mockData = applicationMockData.getById(req.params.id);
+  var mockApplication = applicationMockData.getById(req.params.id);
 
   // TODO: Update application on save
 
@@ -257,13 +258,13 @@ app.post('/application/:id', function applicationEditSave (req, res, next) {
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Changes saved');
 
   // Redirect to the same page to render flash messages and prevent double submissions
-  res.redirect(mockData.selectedApplication.url);
+  res.redirect(mockApplication.url);
 });
 app.post('/application/:id/received-offer', function applicationOfferRecievedSave (req, res, next) {
-  var mockData = applicationMockData.getById(req.params.id);
+  var mockApplication = applicationMockData.getById(req.params.id);
   req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
   // req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application status updated to "Offer received"');
-  res.redirect(mockData.selectedApplication.url);
+  res.redirect(mockApplication.url);
 });
 app.post('/application/:id/archive', function applicationArchiveSave (req, res, next) {
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application archived');
@@ -275,30 +276,35 @@ app.post('/application/:id/delete', function applicationDeleteSave (req, res, ne
 });
 
 app.get('/application/:id/add-interview', function interviewAddShow (req, res, next) {
-  var mockData = applicationMockData.getById(req.params.id);
-  res.render('interview-add-show.jade', mockData);
+  res.render('interview-add-show.jade', {
+    selectedApplication: applicationMockData.getById(req.params.id)
+  });
 });
 app.post('/application/:id/add-interview', function interviewAddSave (req, res, next) {
-  var mockData = applicationMockData.getById(req.params.id);
+  var mockApplication = applicationMockData.getById(req.params.id);
   // TODO: Update status if interview is upcoming
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Interview saved');
-  res.redirect(mockData.selectedApplication.url);
+  res.redirect(mockApplication.url);
 });
 app.get('/interview/:id', function interviewEditShow (req, res, next) {
-  var mockData = interviewMockData.getById(req.params.id);
-  res.render('interview-edit-show.jade', mockData);
+  var mockInterview = interviewMockData.getById(req.params.id);
+  res.render('interview-edit-show.jade', {
+    selectedApplication: mockInterview.application,
+    selectedInterview: mockInterview
+  });
 });
 app.post('/interview/:id', function interviewEditSave (req, res, next) {
-  var mockData = interviewMockData.getById(req.params.id);
+  var mockInterview = interviewMockData.getById(req.params.id);
   // TODO: Update applicaiton status if interview is upcoming
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Changes saved');
-  res.redirect(mockData.selectedInterview.url);
+  res.redirect(mockInterview.url);
 });
 app.post('/interview/:id/delete', function interviewDeleteSave (req, res, next) {
-  var mockData = interviewMockData.getById(req.params.id);
+  var mockInterview = interviewMockData.getById(req.params.id);
+  var mockApplication = mockInterview.application;
   // TODO: Update applicaiton status if interview was upcoming
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Interview deleted');
-  res.redirect(mockData.selectedApplication.url);
+  res.redirect(mockApplication.url);
 });
 
 // Load our OAuth controllers
