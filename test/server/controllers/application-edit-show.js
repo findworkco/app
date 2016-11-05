@@ -11,12 +11,12 @@ scenario('A request to GET /application/:id from the owner user', function () {
 
   it('recieves the application page', function () {
     expect(this.$('.content__heading').text()).to.equal('Job application');
-    expect(this.$('.content__subheading input').val()).to.equal('Engineer II at Sky Networks');
+    expect(this.$('.content__subheading input').val()).to.equal('Sky Networks');
   });
 
   it('receives the proper title', function () {
     // DEV: We have title testing as we cannot test it in visual tests
-    expect(this.$('title').text()).to.equal('Job application - Engineer II at Sky Networks - Find Work');
+    expect(this.$('title').text()).to.equal('Job application - Sky Networks - Find Work');
   });
 
   // Test that all fields exist

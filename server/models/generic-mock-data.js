@@ -12,7 +12,7 @@ var interviews = exports.interviews = [];
 // http://docs.sequelizejs.com/en/latest/docs/instances/#values-of-an-instance
 applications.push({
   id: 'abcdef-umbrella-corp-uuid',
-  name: 'Senior Software Engineer at Umbrella Corporation',
+  name: 'Umbrella Corporation',
   status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
 });
 interviews.push({
@@ -49,7 +49,7 @@ applications.push({
   last_contact_moment: moment.tz('2016-02-16T12:00', 'America/Chicago'),
   // past_interviews: [], // Filled out by `waitingForResponseApplications.push`
   posting_url: 'https://github.com/about/jobs',
-  name: 'Engineer II at Sky Networks',
+  name: 'Sky Networks',
   notes: 'Phone screen (John): 100 employees, focused on AI<br/>' +
     'Website: <a href="https://sky.net/">https://sky.net/</a>',
   status: Application.APPLICATION_STATUSES.WAITING_FOR_RESPONSE
@@ -79,7 +79,7 @@ applications.push({
   last_contact_moment: moment.tz('2016-02-16T12:00', 'America/Chicago'),
   // past_interviews: [], // Filled out by `archivedApplications.push`
   posting_url: 'https://github.com/about/jobs',
-  name: 'Senior Manager at Monstromart',
+  name: 'Monstromart',
   notes: '100 employees, all seem robotic',
   received_offer_url: '/application/abcdef-monstromart-uuid/received-offer',
   url: '/application/abcdef-monstromart-uuid'

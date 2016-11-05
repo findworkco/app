@@ -8,9 +8,8 @@ extends layout-base
 
 block base-content
   mixin nav-row(options)
-    //- DEV: We use padded half ends to give padding for the selected border
     - var el = options.el || 'div';
-    #{el}.nav-row.soft-half--ends(class={'nav-row--selected': options.selected})&attributes(attributes)
+    #{el}.nav-row(class={'nav-row--selected': options.selected})&attributes(attributes)
       block
 
   mixin nav-row--link(options)
@@ -90,7 +89,7 @@ block base-content
         //- On non-schedule for medium/small pages, hide our schedule listing
         div(class={'medium-and-down-hidden': !(isSchedule || isArchive)})
           if !useArchiveSchedule
-            .grid
+            .grid.nav__schedule-actions
               .grid__item.one-whole.medium-and-down-one-half.nav-btn__container
                 a.btn.btn--wide.btn--default.nav-btn--side-by-side(href="/add-application")
                   span(aria-hidden="true")= "+ "
@@ -99,7 +98,7 @@ block base-content
                 a.btn.btn--wide.btn--default.nav-btn--side-by-side(href="/research-company")
                   | Research company
           else
-            +nav-row--link({selected: false}).medium-and-down-hidden(href="/schedule") Back to active applications
+            +nav-row--link({selected: false}).medium-and-down-hidden.push-half--bottom(href="/schedule") Back to active applications
 
           //- Define mixins for our upcoming content
           mixin nav-info__icon(application)
@@ -213,7 +212,7 @@ block base-content
             //- DEV: `locals.waitingForResponseApplications` isn't necessarily defined when we encounter a 500
             if locals.waitingForResponseApplications
               h3.flush--bottom(style="font-weight: normal") Waiting for response
-              #nav__waiting-for-response.landmark
+              #nav__waiting-for-response.push--bottom
                 if waitingForResponseApplications.length
                   each waitingForResponseApplication in waitingForResponseApplications
                     +nav-row--application(waitingForResponseApplication, APPLICATION_STATUSES.WAITING_FOR_RESPONSE)

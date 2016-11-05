@@ -7,7 +7,7 @@ block title
 block content
   h1.content__heading(style="font-weight: normal") Interview
   h2.content__subheading(style="font-weight: normal")
-    = selectedApplication.name
+    | Application: #{selectedApplication.name}
   p.medium-and-up-hidden
     a.btn.btn--default.btn--thin(href=selectedApplication.url) Back to application
     = " "

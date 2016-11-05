@@ -44,7 +44,7 @@ scenario.skip('A request to GET /archive from a logged in user with an archived 
   it('lists the application', function () {
     // TODO: Remove `:first-child`, it's a legacy from prototyping
     expect(this.$('#nav #nav__archived .nav-row--application:first-child h4').text())
-      .to.equal('Senior Manager at Monstromart');
+      .to.equal('Monstromart');
   });
 });
 

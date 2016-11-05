@@ -1,5 +1,9 @@
 .nav-row {
   display: block;
+  //- DEV: We use a non-standard width as 9px padding seems like too much spacing when an application isn't selected
+  //- DEV: We use padded half ends to give top/bottom padding for the selected border
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 @include media-query(large) {
@@ -9,17 +13,18 @@
     // Calculate the offset to use to give ourselves a border
     $nav-row-margin-width: $half-spacing-unit;
     $nav-row-border-width: 6px;
-    $nav-row-padding-width: $nav-row-margin-width - $nav-row-border-width;
+    $nav-row-padding-width: 4px;
 
     border-left: $nav-row-border-width solid $nav-row-border-color;
-    margin-left: -1 * $nav-row-margin-width;
+    margin-left: -1 * ($nav-row-border-width + $nav-row-padding-width);
     padding-left: $nav-row-padding-width;
   }
 }
 
-@include media-query(small) {
-  .nav-row--application {
-    margin-bottom: $half-spacing-unit;
+@include media-query(medium-and-down) {
+  .nav-row {
+    padding-top: 0;
+    padding-bottom: $base-spacing-unit;
   }
 }
 
@@ -61,6 +66,12 @@
   }
   .nav-btn__container + .nav-btn__container {
     text-align: left;
+  }
+}
+
+@include media-query(medium-and-down) {
+  .nav__schedule-actions {
+    margin-bottom: $half-spacing-unit;
   }
 }
 

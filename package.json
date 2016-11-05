@@ -68,7 +68,7 @@
     "underscore": "~1.8.3"
   },
   "optionalDependencies": {
-    "autosize-input": "~0.2.1",
+    "autosize-input": "git://github.com/twolfson/autosize-input.git#385931f",
     "bootstrap-datepicker": "~1.6.0",
     "bower": "~1.7.7",
     "browserify": "~13.0.0",

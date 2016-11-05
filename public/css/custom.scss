@@ -380,20 +380,13 @@ $large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__un
   box-shadow: none;
   background: #EEE;
 
-  // Double our padding for more closeness to input
-  // DEV: We lose some padding due to `box-sizing: content-box`
-  // DEV: `autosize-input` already converts to `content-box` but this is for logical reenforcement
-  box-sizing: content-box;
+  // Double our padding for more closeness to scaled up input
   padding-left: 6px;
   padding-right: 6px;
 
   // Correct vertical offsets so we act like text
   margin-top: -3px;
   margin-bottom: -3px;
-
-  // Guarantee our title has a minimum width and maximum
-  min-width: 200px;
-  max-width: 500px;
 
   // Add ellipsis support to our title
   // DEV: This isn't bulletproof but works more/less especially with a11y
@@ -402,9 +395,22 @@ $large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__un
   white-space: pre;
 }
 
+@include media-query(large) {
+  .form-control--editable-title {
+    max-width: 77.777%; // 7/9 to match layout
+    min-width: 44.444%; // 4/9 to match layout
+  }
+}
+
+@include media-query(medium) {
+  .form-control--editable-title {
+    max-width: 100%;
+    min-width: 50%; // 1/2 to match layout
+  }
+}
+
 @include media-query(small) {
   .form-control--editable-title {
-    box-sizing: border-box !important;
-    max-width: 100%;
+    width: 100% !important;
   }
 }

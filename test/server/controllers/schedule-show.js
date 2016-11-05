@@ -95,7 +95,7 @@ scenario.skip('A request to GET /schedule from a logged in user with an upcoming
   it('lists the application', function () {
     // TODO: Remove `:first-child`, it's a legacy from prototyping
     expect(this.$('#nav #nav__upcoming-interviews .nav-row--application:first-child h4').text())
-      .to.equal('Senior Software Engineer at Umbrella Corporation');
+      .to.equal('Umbrella Corporation');
   });
 });
 
@@ -106,7 +106,7 @@ scenario.skip('A request to GET /schedule from a logged in user with a waiting f
 
   it('lists the application', function () {
     expect(this.$('#nav #nav__waiting-for-response .nav-row--application h4').text())
-      .to.equal('Engineer II at Sky Networks');
+      .to.equal('Sky Networks');
   });
 });
 
