@@ -384,6 +384,10 @@ $large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__un
   padding-left: 6px;
   padding-right: 6px;
 
+  // Define a width to prevent jumping widths when `autosize-input` initializes
+  // DEV: This will always be less than `min-width` so we will use that but otherwise min-width won't be triggered
+  width: 200px;
+
   // Correct vertical offsets so we act like text
   margin-top: -3px;
   margin-bottom: -3px;
