@@ -27,6 +27,10 @@ block content
           b= humanStatus
     .grid
       .grid__item.one-whole.medium-one-half.large-four-ninths
+        .form-group
+          label(for="name")
+            = "Name: (if empty, autofilled from URL)"
+          input#name.form-control.input--block(name="name", type="text", value=submissionData.name, placeholder="Examples: Google, Acme Corp")
         +posting-url(submissionData)
         if status !== APPLICATION_STATUSES.SAVED_FOR_LATER
           +application-date(submissionData)

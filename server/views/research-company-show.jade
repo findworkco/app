@@ -17,9 +17,8 @@ block content
     mixin company-name-input()
       .form-group&attributes(attributes)
         label(for="company_name")
-          = "Name: "
-        input#company_name.form-control(name="company_name", type="text", value=company_name, placeholder=
-        "Company name (e.g. Google)", style="width: 230px")
+          = "Company name: "
+        input#company_name.form-control(name="company_name", type="text", value=company_name, placeholder="Examples: Google, Acme Corp", style="width: 230px")
     .grid__item.small-one-whole.push--bottom(style="margin-right: -60px")
       form(method="POST", action="/research-company")
         +csrf-input()

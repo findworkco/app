@@ -87,13 +87,16 @@ mixin company-notes-and-research(values)
           button.text--link expand section
           = ")"
     .form-group
-      label(for="company_name") Name:
-      input.form-control.three-fifths#company_name(name="company_name", type="text", value=values.company_name || locals.query_company_name, placeholder="Company name (e.g. Google)")
+      label(for="company_name") Company name:
+      .flexbox
+        .flexbox__item.company-name__container
+          input.form-control.input--block#company_name(name="company_name", type="text", value=values.company_name || locals.query_company_name, placeholder="Examples: Google, Acme Corp")
+        .flexbox__item
+          button.btn.btn--small.btn--wide.btn--default(type="button") Search
       //- TODO: Connect to search mechanism on click
       //- TODO: Alter button to link and link to standalone page
       //-   but allow JS to switch back to button for inline form
       //-   so we can save `company_name` as part of application
-      button.btn.btn--small.btn--wide.btn--default.push--left(type="button") Search
     h5.text--normal.flush--bottom Glassdoor results:
     p
       +glassdoor-result(locals.glassdoorResult, {expanded: false})

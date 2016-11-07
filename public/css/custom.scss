@@ -96,13 +96,22 @@
   }
 }
 
+.research-company {
+  @include well();
+  padding: $half-spacing-unit $half-spacing-unit 0;
+}
+
 @include media-query(small) {
   .research-company {
     margin-bottom: $half-spacing-unit;
-
-    @include well();
-    padding: $half-spacing-unit $half-spacing-unit 0;
   }
+}
+
+.company-name__container {
+  // DEV: Magic number that fills out to 100% when under 250px (due to .flexbox) but stops at 250px width
+  //   Same as `research-company-show.jade`
+  padding-right: $base-spacing-unit;
+  width: 230px + $base-spacing-unit;
 }
 
 .footer-link {
