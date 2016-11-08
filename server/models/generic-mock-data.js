@@ -12,7 +12,12 @@ var interviews = exports.interviews = [];
 // http://docs.sequelizejs.com/en/latest/docs/instances/#values-of-an-instance
 applications.push({
   id: 'abcdef-umbrella-corp-uuid',
+  // Fri Jan 8
+  application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
+  archived_at_moment: null,
+  company_name: 'Umbrella Corporation',
   name: 'Umbrella Corporation',
+  posting_url: 'https://www.linkedin.com/jobs/view/133713371337',
   status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
 });
 interviews.push({
@@ -21,11 +26,17 @@ interviews.push({
   // Wed Jan 20 at 2:00PM CST
   date_time_moment: moment.tz('2022-01-20T14:00', 'America/Chicago'),
   // TODO: Be sure to sanitize details (done in view)
+  // TODO: Fix up not rendering HTML in interview add/edit view
   details: 'Go to <a href="https://maps.google.com">1200 Lake St, Suite 303, Chicago</a>'
 });
 applications.push({
   id: 'abcdef-globo-gym-uuid',
+  // Mon Feb 1
+  application_date_moment: moment.tz('2016-02-01', 'America/Chicago'),
+  archived_at_moment: null,
+  company_name: null,
   name: 'Globo Gym',
+  posting_url: 'http://job-openings.monster.com/monster/abcdef-ghij-klmn-opqr-stuvwxyz',
   status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
 });
 interviews.push({
@@ -33,6 +44,20 @@ interviews.push({
   application_id: applications[applications.length - 1].id,
   // Mon Mar 14 at 2:00PM CST
   date_time_moment: moment.tz('2022-03-14T14:00', 'America/Chicago'),
+  details: ''
+});
+interviews.push({
+  id: 'abcdef-globo-gym-interview-past-1',
+  application_id: applications[applications.length - 1].id,
+  // Thu Feb 18 at 9:00AM CST
+  date_time_moment: moment.tz('2016-02-18T09:00', 'America/Chicago'),
+  details: ''
+});
+interviews.push({
+  id: 'abcdef-globo-gym-interview-past-2',
+  application_id: applications[applications.length - 1].id,
+  // Wed Mar 2 at 6:00PM CST
+  date_time_moment: moment.tz('2016-03-02T18:00', 'America/Chicago'),
   details: ''
 });
 

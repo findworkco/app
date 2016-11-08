@@ -22,7 +22,7 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
 
     // Test that all fields exist
     it.skip('has our expected fields', function () {
-      // Posting URL, notes, research company, back button
+      // Name, posting URL, notes, research company, back button
       expect(this.$('input[name=...]').val()).to.equal('Test me');
     });
   });

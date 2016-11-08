@@ -16,12 +16,18 @@ function buildApplication(applicationAttributes) {
   var retVal = Application.build(applicationAttributes).get({plain: true, clone: true});
 
   // Resolve and add on our past interviews
-  var pastInterviews = _.where(genericMockData.interviews, {
+  var interviews = _.where(genericMockData.interviews, {
     application_id: applicationAttributes.id
   }).map(function buildInterview (interviewAttributes) {
     return Interview.build(interviewAttributes).get({plain: true, clone: true});
   });
-  retVal.past_interviews = pastInterviews;
+  var now = new Date();
+  retVal.past_interviews = interviews.filter(function isPastInterview (interview) {
+    return interview.date_time_datetime < now;
+  });
+  retVal.upcoming_interviews = interviews.filter(function isUpcomingInterview (interview) {
+    return interview.date_time_datetime >= now;
+  });
 
   // Return our retVal
   return retVal;

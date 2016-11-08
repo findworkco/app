@@ -12,8 +12,6 @@ block content
   h1.content__heading(style="font-weight: normal") Job application
   h2.content__subheading(style="font-weight: normal")
     //- Interaction heavily inspired by Google Docs
-    //- TODO: Add italicized support for "Untitled application 1"
-    //- TODO: Reconsider scraping for "Company" instead of "Role at Company" for better mobile visibility
     input.form-control.form-control--editable-title(type="text", name="name", data-autosize, value=selectedApplication.name)
     //- DEV: On large screens, display "All changes saved" away from content
     i.text--normal.float--right.muted.medium-and-down-hidden(data-autosave) All changes saved
@@ -25,10 +23,8 @@ block content
       b= selectedApplication.human_status
     .action-bar__actions.btn-group
       .large-hidden Actions:
-      if selectedApplication.status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-        a.action.btn.btn--thin.btn--default.btn--first(href=selectedApplication.add_interview_url)
-          span.small-hidden(aria-hidden="true")= "+ "
-          | Add interview
+
+      mixin action--received-offer()
         //- DESIGN: On load of next page, add a confetti animation
         //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
         //- DESIGN: On load of next page, have indication that we preselected 7 day response reminder
@@ -36,16 +32,31 @@ block content
         //- TODO: Reuse application save URL and pass a hidden `input(name=action, value="received-offer")`
         form(method="POST", action=selectedApplication.received_offer_url, style="display: inline")
           +csrf-input()
-          button.action.btn.btn--thin.btn--default.btn--middle(type="submit")
+          button.action.btn.btn--thin.btn--default(type="submit")&attributes(attributes)
             span.small-hidden I've received an offer
             span.medium-and-up-hidden Received offer
+      mixin action--archive()
         //- DESIGN: On click, redirect to unselected nav and add notification for "Application has been archived"
         //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
         form(method="POST", action=selectedApplication.archive_url, style="display: inline")
           +csrf-input()
-          button.action.btn.btn--thin.btn--default.btn--last(type="submit")
+          button.action.btn.btn--thin.btn--default(type="submit")&attributes(attributes)
             span.small-hidden Archive application
             span.medium-and-up-hidden Archive
+
+      //- if selectedApplication.status === APPLICATION_STATUSES.SAVED_FOR_LATER
+        //- TODO: Add new content
+      if selectedApplication.status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+        a.action.btn.btn--thin.btn--default.btn--first(href=selectedApplication.add_interview_url)
+          span.small-hidden(aria-hidden="true")= "+ "
+          | Add interview
+        +action--received-offer().btn--middle
+        +action--archive().btn--last
+      else if selectedApplication.status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
+        +action--received-offer().btn--first
+        +action--archive().btn--last
+        //- else if selectedApplication.status === APPLICATION_STATUSES.RECEIVED_OFFER
+        //- TODO: Add new content
       else if selectedApplication.status === APPLICATION_STATUSES.ARCHIVED
         form(method="POST", action=selectedApplication.restore_url, style="display: inline")
           +csrf-input()
@@ -69,24 +80,47 @@ block content
         .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
           +company-notes-and-research(selectedApplication)
         .grid__item.one-whole.medium-one-half.large-four-ninths
+          //- if selectedApplication.status === APPLICATION_STATUSES.SAVED_FOR_LATER
+            //- TODO: Add new content
           if selectedApplication.status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
             //- TODO: Only show info if someone has never saved a "Waiting for response" application before
             +follow-up-reminder(selectedApplication, {showInfo: false})
+          else if selectedApplication.status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
+            //- Nothing goes here (no visible reminders)
+            //- else if selectedApplication.status === APPLICATION_STATUSES.RECEIVED_OFFER
+            //- TODO: Add new content
           else if selectedApplication.status == APPLICATION_STATUSES.ARCHIVED
             //- Nothing goes here (no visible reminders)
+          else
+            - throw new Error('Unexpected application status');
+
+          mixin interviews-list(interviews)
+            each interview in interviews
+              //- Fri Jan 15 at 9:00AM PST
+              //- TODO: Use dynamic date format https://trello.com/c/nKTzPQFg/165-update-date-formats-to-dynamically-include-year-not
+              a(href=interview.url)= interview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+              if i != interviews.length - 1
+                br
+          if selectedApplication.upcoming_interviews.length > 0
+            div.upcoming-interviews
+              h4.push-half--bottom(style="font-weight: normal")
+                = "Upcoming interviews: "
+                a.text--normal.btn.btn--small.btn--default(href=selectedApplication.add_interview_url)
+                  span(aria-hidden="true")= "+ "
+                  | Add interview
+              p(style="line-height: 1.5em")
+                +interviews-list(selectedApplication.upcoming_interviews)
           div.past-interviews
-            //- TODO: Design our empty state for this...
             h4.push-half--bottom(style="font-weight: normal")
               = "Past interviews: "
               a.text--normal.btn.btn--small.btn--default(href=selectedApplication.add_interview_url)
                 span(aria-hidden="true")= "+ "
                 | Add interview
-            p.landmark
-              each past_interview, i in selectedApplication.past_interviews
-                //- Fri Jan 15 at 9:00AM PST
-                a(href=past_interview.url)= past_interview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
-                if i != selectedApplication.past_interviews.length - 1
-                  br
+            p.landmark(style="line-height: 1.5em")
+              if selectedApplication.past_interviews.length > 0
+                +interviews-list(selectedApplication.past_interviews)
+              else
+                i There are no past interviews for this job application.
           if selectedApplication.status == APPLICATION_STATUSES.ARCHIVED
             .landmark.archive-date(style="margin-top: -18px")
               h4.push-half--bottom(style="font-weight: normal")

@@ -4,7 +4,15 @@ var geminiUtils = require('./utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('application-edit-show', function (suite) {
-  gemini.suite('active', function (child) {
+  gemini.suite('upcoming-interview', function (child) {
+    // DEV: We include nav to make sure we have selected the proper link
+    child.load('/application/abcdef-umbrella-corp-uuid', geminiUtils.SETUPS.DEFAULT)
+      .setCaptureElements('body')
+      .capture('default-large', geminiUtils.resizeLarge)
+      .capture('default-medium', geminiUtils.resizeMedium)
+      .capture('default-small', geminiUtils.resizeSmall);
+  });
+  gemini.suite('waiting-for-response', function (child) {
     // DEV: We include nav to make sure we have selected the proper link
     child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
@@ -12,7 +20,6 @@ gemini.suite('application-edit-show', function (suite) {
       .capture('default-medium', geminiUtils.resizeMedium)
       .capture('default-small', geminiUtils.resizeSmall);
   });
-
   gemini.suite('archive', function (child) {
     // DEV: We include nav to make sure we have archived nav and selected the proper link
     child.load('/application/abcdef-monstromart-uuid', geminiUtils.SETUPS.DEFAULT)
@@ -65,6 +72,38 @@ gemini.suite('application-edit-show', function (suite) {
         // Reset focus to the body
         actions.focus(find('body'));
       })
+      .capture('default-large', geminiUtils.resizeLarge)
+      .capture('default-medium', geminiUtils.resizeMedium)
+      .capture('default-small', geminiUtils.resizeSmall);
+  });
+
+  // Verify listing multiple upcoming/past interviews looks good
+  gemini.suite('multiple-upcoming-interviews', function (child) {
+    // Skipped due to lack of mock data for now
+    child.skip();
+    child.load('/application/abcdef-globo-gym-uuid', geminiUtils.SETUPS.DEFAULT)
+      .setCaptureElements('body')
+      .capture('default-large', geminiUtils.resizeLarge)
+      .capture('default-medium', geminiUtils.resizeMedium)
+      .capture('default-small', geminiUtils.resizeSmall);
+  });
+  gemini.suite('multiple-past-interviews', function (child) {
+    child.load('/application/abcdef-globo-gym-uuid', geminiUtils.SETUPS.DEFAULT)
+      .setCaptureElements('body')
+      .capture('default-large', geminiUtils.resizeLarge)
+      .capture('default-medium', geminiUtils.resizeMedium)
+      .capture('default-small', geminiUtils.resizeSmall);
+  });
+  gemini.suite('no-upcoming-interviews', function (child) {
+    child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
+      .setCaptureElements('body')
+      .capture('default-large', geminiUtils.resizeLarge)
+      .capture('default-medium', geminiUtils.resizeMedium)
+      .capture('default-small', geminiUtils.resizeSmall);
+  });
+  gemini.suite('no-past-interviews', function (child) {
+    child.load('/application/abcdef-umbrella-corp-uuid', geminiUtils.SETUPS.DEFAULT)
+      .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)
       .capture('default-small', geminiUtils.resizeSmall);
