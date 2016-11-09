@@ -26,6 +26,8 @@ module.exports = baseDefine('interview', {
 
   // Allow long notes for interview (prevent null, only empty strings)
   // DEV: Alternative names for `details` are `instructions`, `info`, and `information`
+  // TODO: Be sure to sanitize details (done in view)
+  // TODO: Fix up not rendering HTML in interview add/edit view
   details: {type: Sequelize.STRING(1024), allowNull: false},
 
   // TODO: Pre/post interview reminders should be in reminder table

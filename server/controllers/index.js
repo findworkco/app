@@ -1,4 +1,5 @@
 // Load in our dependencies
+var assert = require('assert');
 var _ = require('underscore');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
@@ -8,6 +9,15 @@ var Application = require('../models/application');
 var companyMockData = require('../models/company-mock-data');
 var interviewMockData = require('../models/interview-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
+
+// Define common applications for redirects
+var mockApplicationsByStatus = {
+  SAVED_FOR_LATER: applicationMockData.getById('abcdef-intertrode-uuid'),
+  WAITING_FOR_RESPONSE: applicationMockData.getById('abcdef-sky-networks-uuid'),
+  UPCOMING_INTERVIEW: applicationMockData.getById('abcdef-umbrella-corp-uuid'),
+  RECEIVED_OFFER: applicationMockData.getById('abcdef-black-mesa-uuid'),
+  ARCHIVED: applicationMockData.getById('abcdef-monstromart-uuid')
+};
 
 // Define common data loader for nav
 app.all('*', function loadNavData (req, res, next) {
@@ -195,13 +205,16 @@ function applicationAddFormShow(req, res, next) {
   });
 }
 function applicationAddFormSave(req, res, next) {
+  var mockApplication = mockApplicationsByStatus[res.locals.status_key];
+  assert(mockApplication, 'No redirect application found with status key "' + res.locals.status_key + '"');
+
   // TODO: On save, show "Job application successfully created!" and go to its edit page (if user logged in)
   // jscs:disable maximumLineLength
   // TODO: If user logged out, provide messaging on log in page like: "Sorry, you’ll need an account before we can save the job application. Don’t worry, we will finish saving it when you are done."
   // jscs:enable maximumLineLength
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application saved');
-  // TODO: Use mock based on status
-  res.redirect('/application/abcdef-sky-networks-uuid');
+  // TODO: Redirect to saved application
+  res.redirect(mockApplication.url);
 }
 app.get('/add-application/save-for-later', [
   setSaveForLaterStatusKey,
@@ -261,7 +274,9 @@ app.post('/application/:id', function applicationEditSave (req, res, next) {
   res.redirect(mockApplication.url);
 });
 app.post('/application/:id/received-offer', function applicationOfferRecievedSave (req, res, next) {
-  var mockApplication = applicationMockData.getById(req.params.id);
+  // TODO: Update received offer application
+  var mockApplication = mockApplicationsByStatus.RECEIVED_OFFER;
+  // var mockApplication = applicationMockData.getById(req.params.id);
   req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
   // req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application status updated to "Offer received"');
   res.redirect(mockApplication.url);
@@ -281,8 +296,9 @@ app.get('/application/:id/add-interview', function interviewAddShow (req, res, n
   });
 });
 app.post('/application/:id/add-interview', function interviewAddSave (req, res, next) {
-  var mockApplication = applicationMockData.getById(req.params.id);
   // TODO: Update status if interview is upcoming
+  var mockApplication = mockApplicationsByStatus.UPCOMING_INTERVIEW;
+  // var mockApplication = applicationMockData.getById(req.params.id);
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Interview saved');
   res.redirect(mockApplication.url);
 });

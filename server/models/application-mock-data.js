@@ -13,6 +13,7 @@ genericMockData.applications.forEach(function saveApplicationById (application) 
 // Define application builder
 function buildApplication(applicationAttributes) {
   // Build our application
+  // http://docs.sequelizejs.com/en/latest/docs/instances/#values-of-an-instance
   var retVal = Application.build(applicationAttributes).get({plain: true, clone: true});
 
   // Resolve and add on our past interviews
@@ -28,6 +29,13 @@ function buildApplication(applicationAttributes) {
   retVal.upcoming_interviews = interviews.filter(function isUpcomingInterview (interview) {
     return interview.date_time_datetime >= now;
   });
+
+  // Construct last contact moment
+  // TODO: Resolve inside of `Application` model, maybe save as its own column for independent querying
+  var pastInterviewMoments = _.pluck(retVal.past_interviews, 'date_time_moment');
+  retVal.last_contact_moment = pastInterviewMoments.reduce(function findLatestInterview (momentA, momentB) {
+    return momentA.isAfter(momentB) ? momentA : momentB;
+  }, retVal.application_date_moment);
 
   // Return our retVal
   return retVal;

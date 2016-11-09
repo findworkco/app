@@ -24,32 +24,40 @@ block content
     .action-bar__actions.btn-group
       .large-hidden Actions:
 
+      mixin action--form(url)
+        form(method="POST", action=url, style="display: inline")
+          +csrf-input()
+          button.action.btn.btn--thin.btn--default(type="submit")&attributes(attributes)
+            block
+
+      mixin action--add-interview()
+        a.action.btn.btn--thin.btn--default(href=selectedApplication.add_interview_url)&attributes(attributes)
+          span.small-hidden(aria-hidden="true")= "+ "
+          | Add interview
       mixin action--received-offer()
         //- DESIGN: On load of next page, add a confetti animation
         //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
         //- DESIGN: On load of next page, have indication that we preselected 7 day response reminder
         //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
         //- TODO: Reuse application save URL and pass a hidden `input(name=action, value="received-offer")`
-        form(method="POST", action=selectedApplication.received_offer_url, style="display: inline")
-          +csrf-input()
-          button.action.btn.btn--thin.btn--default(type="submit")&attributes(attributes)
-            span.small-hidden I've received an offer
-            span.medium-and-up-hidden Received offer
+        +action--form(received_offer_url)&attributes(attributes)
+          span.small-hidden I've received an offer
+          span.medium-and-up-hidden Received offer
       mixin action--archive()
         //- DESIGN: On click, redirect to unselected nav and add notification for "Application has been archived"
         //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
-        form(method="POST", action=selectedApplication.archive_url, style="display: inline")
-          +csrf-input()
-          button.action.btn.btn--thin.btn--default(type="submit")&attributes(attributes)
-            span.small-hidden Archive application
-            span.medium-and-up-hidden Archive
+        +action--form(selectedApplication.archive_url)&attributes(attributes)
+          span.small-hidden Archive application
+          span.medium-and-up-hidden Archive
 
-      //- if selectedApplication.status === APPLICATION_STATUSES.SAVED_FOR_LATER
-        //- TODO: Add new content
-      if selectedApplication.status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-        a.action.btn.btn--thin.btn--default.btn--first(href=selectedApplication.add_interview_url)
-          span.small-hidden(aria-hidden="true")= "+ "
-          | Add interview
+      if selectedApplication.status === APPLICATION_STATUSES.SAVED_FOR_LATER
+        +action--form(selectedApplication.restore_url).btn--first
+          span.small-hidden Applied to posting
+          span.medium-and-up-hidden Applied
+        +action--add-interview().btn--middle
+        +action--received-offer().btn--last
+      else if selectedApplication.status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+        +action--add-interview().btn--first
         +action--received-offer().btn--middle
         +action--archive().btn--last
       else if selectedApplication.status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
@@ -58,10 +66,8 @@ block content
         //- else if selectedApplication.status === APPLICATION_STATUSES.RECEIVED_OFFER
         //- TODO: Add new content
       else if selectedApplication.status === APPLICATION_STATUSES.ARCHIVED
-        form(method="POST", action=selectedApplication.restore_url, style="display: inline")
-          +csrf-input()
-          button.action.btn.btn--thin.btn--default(type="submit")
-            | Restore application
+        +action--form(selectedApplication.restore_url)
+          | Restore application
       else
         - throw new Error('Unexpected application status');
   p.large-hidden
@@ -80,9 +86,10 @@ block content
         .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
           +company-notes-and-research(selectedApplication)
         .grid__item.one-whole.medium-one-half.large-four-ninths
-          //- if selectedApplication.status === APPLICATION_STATUSES.SAVED_FOR_LATER
-            //- TODO: Add new content
-          if selectedApplication.status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+          if selectedApplication.status === APPLICATION_STATUSES.SAVED_FOR_LATER
+            //- TODO: Only show info if someone has never saved a "Saved for later" application before
+            +application-reminder(selectedApplication, {showInfo: false})
+          else if selectedApplication.status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
             //- TODO: Only show info if someone has never saved a "Waiting for response" application before
             +follow-up-reminder(selectedApplication, {showInfo: false})
           else if selectedApplication.status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
@@ -110,17 +117,18 @@ block content
                   | Add interview
               p(style="line-height: 1.5em")
                 +interviews-list(selectedApplication.upcoming_interviews)
-          div.past-interviews
-            h4.push-half--bottom(style="font-weight: normal")
-              = "Past interviews: "
-              a.text--normal.btn.btn--small.btn--default(href=selectedApplication.add_interview_url)
-                span(aria-hidden="true")= "+ "
-                | Add interview
-            p.landmark(style="line-height: 1.5em")
-              if selectedApplication.past_interviews.length > 0
-                +interviews-list(selectedApplication.past_interviews)
-              else
-                i There are no past interviews for this job application.
+          if selectedApplication.status !== APPLICATION_STATUSES.SAVED_FOR_LATER
+            div.past-interviews
+              h4.push-half--bottom(style="font-weight: normal")
+                = "Past interviews: "
+                a.text--normal.btn.btn--small.btn--default(href=selectedApplication.add_interview_url)
+                  span(aria-hidden="true")= "+ "
+                  | Add interview
+              p.landmark(style="line-height: 1.5em")
+                if selectedApplication.past_interviews.length > 0
+                  +interviews-list(selectedApplication.past_interviews)
+                else
+                  i There are no past interviews for this job application.
           if selectedApplication.status == APPLICATION_STATUSES.ARCHIVED
             .landmark.archive-date(style="margin-top: -18px")
               h4.push-half--bottom(style="font-weight: normal")

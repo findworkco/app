@@ -4,6 +4,14 @@ var geminiUtils = require('./utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('application-edit-show', function (suite) {
+  gemini.suite('saved-for-later', function (child) {
+    // DEV: We include nav to make sure we have selected the proper link
+    child.load('/application/abcdef-intertrode-uuid', geminiUtils.SETUPS.DEFAULT)
+      .setCaptureElements('body')
+      .capture('default-large', geminiUtils.resizeLarge)
+      .capture('default-medium', geminiUtils.resizeMedium)
+      .capture('default-small', geminiUtils.resizeSmall);
+  });
   gemini.suite('upcoming-interview', function (child) {
     // DEV: We include nav to make sure we have selected the proper link
     child.load('/application/abcdef-umbrella-corp-uuid', geminiUtils.SETUPS.DEFAULT)

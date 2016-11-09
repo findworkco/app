@@ -15,6 +15,7 @@ genericMockData.interviews.forEach(function saveInterviewById (interview) {
 // Define interview builder
 function buildInterview(interviewAttributes) {
   // Build our interview
+  // http://docs.sequelizejs.com/en/latest/docs/instances/#values-of-an-instance
   var retVal = Interview.build(interviewAttributes).get({plain: true, clone: true});
 
   // Resolve our application by its id
