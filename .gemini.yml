@@ -1,3 +1,4 @@
+# https://github.com/gemini-testing/gemini/blob/v3.0.2/doc/config.md
 rootUrl: http://localhost:9000
 
 browsers:
@@ -11,4 +12,8 @@ browsers:
     windowSize: 1024x1600
 
     # Restrict to 1 suite per session to prevent issues like mouse down sticking
+    sessionsPerBrowser: 1
     suitesPerSession: 1
+    # DEV: We can speed up tests overall by using the following but it breaks on `:focus` and similar tests
+    # sessionsPerBrowser: 5
+    # suitesPerSession: 10

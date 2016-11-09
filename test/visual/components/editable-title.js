@@ -15,7 +15,6 @@ gemini.suite('components/editable-title', function (suite) {
       .capture('default')
       // Verify we see a border and box shadow
       .capture('focus', function focusEl (actions, find) {
-        geminiUtils.disableTransitions(actions, find);
         actions.focus(find(inputSelector));
       });
   });

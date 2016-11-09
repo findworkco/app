@@ -26,6 +26,61 @@ html
     //- TODO: Don't use all of FontAwesome (it's 71kb gzipped with 605 icons)
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
 
+    //- If there's a request for clean CSS
+    //- DEV: This is used by Gemini during visual tests
+    if locals.clean_css
+      script.
+        // When the page loads
+        document.addEventListener('DOMContentLoaded', function handleDOMContentLoaded () {
+          // Remove :visited link styles
+          // DEV: We thought a `:visited` style reset would be necessary but nope
+          //   If we find out it is, then create an `a` element, grab its color, and put it into a rule
+          [].forEach.call(document.styleSheets, function removeVisitedStyles (styleSheet) {
+            // If the stylesheet isn't local, then bail out
+            // DEV: Firefox throws a security exception when accessing a remote stylesheet's cssRules (or at least HTTP to HTTPS)
+            try {
+              void styleSheet.cssRules;
+            } catch (err) {
+              return;
+            }
+
+            // Continue removing rules
+            [].forEach.call(styleSheet.cssRules, function removeVisitedStylesFn (cssRule, i) {
+              // If the rule isn't a hard rule, skip it
+              // DEV: We could support :visited styles in media queries but it's overkill
+              if (cssRule instanceof window.CSSMediaRule) {
+                return;
+              }
+
+              // If the selector text doesn't have :visited in it, skip it
+              if (cssRule.selectorText.indexOf(':visited') === -1) {
+                return;
+              }
+
+              // Break down our selector and filter out `:visited`
+              //   'text--link:visited, a:visited' -> [text--link:visited, a:visited]
+              var selectors = cssRule.selectorText.split(/,\s+/g);
+              var nonVisitedSelectors = selectors.filter(function filterVisited (selector) {
+                return selector.indexOf(':visited') === -1;
+              });
+
+              // If we have no selectors left, remove our rule
+              // https://github.com/twolfson/css-controls/blob/0.1.1/lib/css-controls.js#L50
+              if (nonVisitedSelectors.length === 0) {
+                styleSheet.deleteRule(i);
+              // Otherwise, update the rule
+              } else {
+                cssRule.selectorText = nonVisitedSelectors.join(',');
+              }
+            });
+          });
+
+          // Disable transitions on the page
+          // https://github.com/twolfson/css-controls/blob/0.1.1/lib/css-controls.js#L35
+          document.styleSheets[0].insertRule('* { transition: none !important; }',
+            document.styleSheets[0].cssRules.length);
+        });
+
     //- Load Sentry to catch/record errors
     //- https://docs.sentry.io/hosted/clients/javascript/
     //- DEV: Sentry is loaded separate from other scripts to prevent blocking one another

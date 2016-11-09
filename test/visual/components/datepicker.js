@@ -14,7 +14,6 @@ gemini.suite('components/datepicker', function (suite) {
     child
       .setCaptureElements(popoverSelector)
       .capture('active', function hoverEl (actions, find) {
-        geminiUtils.disableTransitions(actions, find);
         actions.click(find(inputSelector));
       });
   });

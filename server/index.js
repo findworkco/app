@@ -175,6 +175,12 @@ function Server(config) {
     res.locals.notifications = req.flash();
     next();
   });
+
+  // Load various page configurations
+  app.use(function configurePage (req, res, next) {
+    res.locals.clean_css = req.session.cleanCss;
+    next();
+  });
 }
 Server.prototype.listen = function () {
   assert.strictEqual(this._app, undefined, 'A server is already listening to a port. Please `close` first');

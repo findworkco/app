@@ -31,27 +31,22 @@ exports.bind = function (gemini) {
         // Fallback our options
         options = options || {};
 
-        // If we have no options, use `redirectUri` directly as `setUrl`
-        if (_.isEmpty(options)) {
-          suite.setUrl(redirectUri);
-        // Otherwise, configure our `/_dev/setup` endpoint
-        } else {
-          // Resolve our setup URL
-          // DEV: We use `options` directly as query string (e.g. `logged_in: true` -> `?logged_in=true`)
-          // DEV: This will navigate to `/_dev/setup`, set up session, and redirect to intended page
-          //   If we did this without redirect magic, it would be `setUrl` navigating to original page
-          //   then we navigate to the page and then navigate back to original page
-          // DEV: `gemini.setUrl` will automatically prepend our hostname
-          var setupUrl = url.format({
-            pathname: '/_dev/setup',
-            query: _.defaults({
-              redirect_uri: redirectUri
-            }, options)
-          });
+        // Configure our `/_dev/setup` endpoint
+        // DEV: We use `options` directly as query string (e.g. `logged_in: true` -> `?logged_in=true`)
+        // DEV: This will navigate to `/_dev/setup`, set up session, and redirect to intended page
+        //   If we did this without redirect magic, it would be `setUrl` navigating to original page
+        //   then we navigate to the page and then navigate back to original page
+        // DEV: `gemini.setUrl` will automatically prepend our hostname
+        var setupUrl = url.format({
+          pathname: '/_dev/setup',
+          query: _.defaults({
+            clean_css: 'true',
+            redirect_uri: redirectUri
+          }, options)
+        });
 
-          // Define it as our URL for the suite
-          suite.setUrl(setupUrl);
-        }
+        // Define it as our URL for the suite
+        suite.setUrl(setupUrl);
 
         // If we had a login action, then reset our session by wiping cookies
         // DEV: This is more efficient than using `/logout` as that requires navigation + finding element + clicking
@@ -116,15 +111,6 @@ exports.resizeMediumScrollMiddle = function (actions, find) {
 exports.resizeSmallScrollMiddle = function (actions, find) {
   actions.setWindowSize(340, 200);
   actions.executeJS(function (window) { window.scroll(0, 200); });
-};
-
-// Define a helper to disable CSS transitions
-exports.disableTransitions = function (actions, find) {
-  actions.executeJS(function handleExecuteJS () {
-    // https://github.com/twolfson/css-controls/blob/0.1.1/lib/css-controls.js#L35
-    document.styleSheets[0].insertRule('* { transition: none !important; }',
-      document.styleSheets[0].cssRules.length);
-  });
 };
 
 // Define a helper to clear fields

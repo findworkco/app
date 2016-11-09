@@ -4,9 +4,6 @@ var geminiUtils = require('../utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('components/notifications', function (suite) {
-  // Disable all transitions
-  suite.before(geminiUtils.disableTransitions);
-
   // Capture 3 color variations
   gemini.suite('color-log', function (child) {
     child.load('/_dev/notification?type=log&message=Hello%20World')

@@ -28,6 +28,11 @@ app.get('/_dev/setup', function devSetupShow (req, res, next) {
     req.session.passport = {user: 'todd@findwork.co'};
   }
 
+  // If there is a request for clean CSS, set it up
+  if (req.query.get('clean_css')) {
+    req.session.cleanCss = req.query.get('clean_css') === 'true';
+  }
+
   // If there's a redirect URI, use it
   var redirectUri = req.query.get('redirect_uri');
   if (redirectUri) {

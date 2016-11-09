@@ -36,9 +36,6 @@ gemini.suite('application-edit-show', function (suite) {
     child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .before(function setShortTitle (actions, find) {
-        // Disable our transitions
-        geminiUtils.disableTransitions(actions, find);
-
         // Update our title
         // DEV: `sendKeys` doesn't clear original text so we use `clear` first
         // https://github.com/admc/wd/blob/v0.4.0/lib/element-commands.js#L279-L286
@@ -60,9 +57,6 @@ gemini.suite('application-edit-show', function (suite) {
     child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .before(function setLongTitle (actions, find) {
-        // Disable our transitions
-        geminiUtils.disableTransitions(actions, find);
-
         // Update our title
         geminiUtils.clear(actions, titleSelector);
         actions.sendKeys(find(titleSelector),
