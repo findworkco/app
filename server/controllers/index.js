@@ -273,7 +273,7 @@ app.post('/application/:id', function applicationEditSave (req, res, next) {
   // Redirect to the same page to render flash messages and prevent double submissions
   res.redirect(mockApplication.url);
 });
-app.post('/application/:id/received-offer', function applicationOfferRecievedSave (req, res, next) {
+app.post('/application/:id/received-offer', function applicationRecievedOfferSave (req, res, next) {
   // TODO: Update received offer application
   var mockApplication = mockApplicationsByStatus.RECEIVED_OFFER;
   // var mockApplication = applicationMockData.getById(req.params.id);
@@ -281,9 +281,22 @@ app.post('/application/:id/received-offer', function applicationOfferRecievedSav
   // req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application status updated to "Offer received"');
   res.redirect(mockApplication.url);
 });
+app.post('/application/:id/remove-offer', function applicationRemoveOfferSave (req, res, next) {
+  // TODO: Update application back to waiting for response or upcoming interview
+  var mockApplication = mockApplicationsByStatus.WAITING_FOR_RESPONSE;
+  // var mockApplication = applicationMockData.getById(req.params.id);
+  req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
+  res.redirect(mockApplication.url);
+});
 app.post('/application/:id/archive', function applicationArchiveSave (req, res, next) {
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application archived');
   res.redirect('/schedule');
+});
+app.post('/application/:id/restore', function applicationRestoreSave (req, res, next) {
+  // TODO: Update application back to any of the non-archived statuses
+  var mockApplication = mockApplicationsByStatus.WAITING_FOR_RESPONSE;
+  req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application restored');
+  res.redirect(mockApplication.url);
 });
 app.post('/application/:id/delete', function applicationDeleteSave (req, res, next) {
   req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application deleted');

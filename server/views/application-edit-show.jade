@@ -40,7 +40,7 @@ block content
         //- DESIGN: On load of next page, have indication that we preselected 7 day response reminder
         //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
         //- TODO: Reuse application save URL and pass a hidden `input(name=action, value="received-offer")`
-        +action--form(received_offer_url)&attributes(attributes)
+        +action--form(selectedApplication.received_offer_url)&attributes(attributes)
           span.small-hidden I've received an offer
           span.medium-and-up-hidden Received offer
       mixin action--archive()
@@ -63,8 +63,10 @@ block content
       else if selectedApplication.status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
         +action--received-offer().btn--first
         +action--archive().btn--last
-        //- else if selectedApplication.status === APPLICATION_STATUSES.RECEIVED_OFFER
-        //- TODO: Add new content
+      else if selectedApplication.status === APPLICATION_STATUSES.RECEIVED_OFFER
+        +action--archive().btn--first
+        +action--form(selectedApplication.remove_offer_url).btn--last
+          | Remove offer
       else if selectedApplication.status === APPLICATION_STATUSES.ARCHIVED
         +action--form(selectedApplication.restore_url)
           | Restore application
@@ -94,8 +96,9 @@ block content
             +follow-up-reminder(selectedApplication, {showInfo: false})
           else if selectedApplication.status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
             //- Nothing goes here (no visible reminders)
-            //- else if selectedApplication.status === APPLICATION_STATUSES.RECEIVED_OFFER
-            //- TODO: Add new content
+          else if selectedApplication.status === APPLICATION_STATUSES.RECEIVED_OFFER
+            //- TODO: Only show info if someone has never saved a "Offer received" application before
+            +offer-response-reminder(selectedApplication, {showInfo: false})
           else if selectedApplication.status == APPLICATION_STATUSES.ARCHIVED
             //- Nothing goes here (no visible reminders)
           else

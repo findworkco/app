@@ -33,6 +33,8 @@ module.exports = _.extend(baseDefine('application', {
 
   // Example: 2016-01-08, no time
   application_date_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
+  // TODO: Reminders should be in their own table =/
+  application_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
   archived_at_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
 
   // Example: Sky Networks
@@ -47,6 +49,9 @@ module.exports = _.extend(baseDefine('application', {
 
   // Example: Website <a href="https://sky.net/">https://sky.net/</a>
   notes: {type: Sequelize.STRING(64 * 1024) /* 64kb */, defaultValue: '', allowNull: false},
+
+  // TODO: Reminders should be in their own table =/
+  offer_response_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
 
   // DEV: GET URL limit is 2083 but 1024 is simpler
   // http://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
@@ -76,6 +81,14 @@ module.exports = _.extend(baseDefine('application', {
     received_offer_url: function () {
       // Example: /application/abcdef-sky-networks-uuid/received-offer
       return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/received-offer';
+    },
+    remove_offer_url: function () {
+      // Example: /application/abcdef-sky-networks-uuid/remove-offer
+      return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/remove-offer';
+    },
+    restore_url: function () {
+      // Example: /application/abcdef-sky-networks-uuid/restore
+      return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/restore';
     },
     status_key: function () {
       return this.getDataValue('status').toUpperCase();
