@@ -5,10 +5,9 @@ var Application = require('../../../server/models/application.js');
 
 // Start our tests
 describe('A Base model', function () {
-  it.skip('has timestamp fields', function () {
-    var base = Application.build({});
-    expect(base.get('created_at')).to.not.equal(undefined);
-    expect(base.get('updated_at')).to.not.equal(undefined);
+  it('has timestamp fields', function () {
+    expect(Application.attributes).to.have.property('created_at');
+    expect(Application.attributes).to.have.property('updated_at');
   });
 });
 

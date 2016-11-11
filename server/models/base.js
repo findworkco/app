@@ -3,7 +3,7 @@ var _ = require('underscore');
 var assert = require('assert');
 var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
-var sequelize = require('../index.js').app.postgresqlClient;
+var sequelize = require('../index.js').app.sequelize;
 
 // Define our custom types
 exports.MOMENT_DATEONLY = 'MOMENT_DATEONLY';
@@ -97,14 +97,6 @@ module.exports = _.extend(function (modelName, attributes, options) {
       };
     }
   });
-
-  // Enable timestamps as underscored attributes
-  // http://docs.sequelizejs.com/en/v3/docs/models-definition/#configuration
-  // DEV: This code is untested, please test it
-  if (options.timestamps === undefined) {
-    options.timestamps = true;
-  }
-  options.underscored = true;
 
   // Build our class
   return sequelize.define(modelName, attributes, options);

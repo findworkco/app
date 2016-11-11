@@ -70,7 +70,7 @@ To create a new migration, copy our placeholder our file with the next sequentia
 
 ```bash
 cp server/migrations/0001-placeholder.js server/migrations/XXXX-my-new-migration.js
-# cp server/migrations/0001-placeholder.js server/migrations/0003-add-candidates-table.js
+# cp server/migrations/0001-placeholder.js server/migrations/0002-add-candidates-table.js
 ```
 
 ### Running migrations

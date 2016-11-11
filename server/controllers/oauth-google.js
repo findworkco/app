@@ -1,9 +1,11 @@
 // Load in our dependencies
+var domain = require('domain');
 var url = require('url');
 var _ = require('underscore');
 var HttpError = require('http-errors');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var passport = require('passport');
+var Candidate = require('../models/candidate');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
 
@@ -28,23 +30,56 @@ passport.use(new GoogleStrategy({
   tokenURL: config.google.tokenURL,
   userProfileURL: config.google.userProfileURL
 }, function handlePassportGoogle (accessToken, refreshToken, profile, cb) {
+  // DEV: Domains are overkill as this is executed in a controller but we use it for clarity
   // DEV: Sync errors are caught and sent back to `next` handler
-  // profile = {id: '1234', ..., emails: [{value: 'todd@findwork.co', type: 'account'}, ...]}
-  // DEV: For full profile info, see `nine-track` recordings
-  // DEV: There is only 1 account (main) email per account
-  var emails = profile.emails || [];
-  var accountEmail = (_.findWhere(emails, {type: 'account'}) || {}).value;
+  var passportDomain = domain.create();
+  passportDomain.on('error', cb);
+  passportDomain.run(function handleRun () {
+    // profile = {id: '1234', ..., emails: [{value: 'todd@findwork.co', type: 'account'}, ...]}
+    // DEV: For full profile info, see `nine-track` recordings
+    // DEV: There is only 1 account (main) email per account
+    var emails = profile.emails || [];
+    var accountEmail = (_.findWhere(emails, {type: 'account'}) || {}).value;
 
-  // If there is no account email, then error out
-  // DEV: Error will be sent back to corresponding `next` handler eventually
-  if (!accountEmail) {
-    return cb(new Error('Unable to resolve email from Google\'s response'));
-  }
+    // If there is no account email, then error out
+    // DEV: Error will be sent back to corresponding `next` handler eventually
+    if (!accountEmail) {
+      return cb(new Error('Unable to resolve email from Google\'s response'));
+    }
 
-  // Otherwise, callback with a placeholder user
-  // TODO: Find or create our user with PostgreSQL
-  // TODO: Use `domains` to catch async errors
-  cb(null, {email: accountEmail});
+    // Otherwise, if the candidate exists in our database, return them
+    Candidate.find({where: {email: accountEmail}}).asCallback(function handleFind (err, _candidate) {
+      // If there was an error, callback with it
+      if (err) { return cb(err); }
+
+      // If we have a candidate
+      if (_candidate) {
+        // Update their access token (refresh token isn't defined for us)
+        _candidate.update({google_access_token: accessToken})
+            .asCallback(function handleUpdate (err) {
+          // If there was an error, send it to Sentry (no need to bail)
+          if (err) { app.sentryClient.captureError(err); }
+
+          // Callback with the candidate
+          return cb(null, _candidate);
+        });
+        return;
+      }
+
+      // Otherwise, create our candidate
+      var candidate = Candidate.build({email: accountEmail, google_access_token: accessToken});
+      candidate.save().asCallback(function handleSave (err) {
+        // If there was an error, callback with it
+        if (err) { return cb(err); }
+
+        // TODO: Send a welcome email to candidate
+        // TODO: Should we have any flash message (e.g. Welcome to Find Work!)
+
+        // Callback with our candidate
+        cb(null, candidate);
+      });
+    });
+  });
 }));
 
 // Define our controllers

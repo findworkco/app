@@ -1,6 +1,7 @@
 // Load in our dependencies
 var expect = require('chai').expect;
 var app = require('../utils/server').app;
+var Candidate = require('../../../server/models/candidate');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 var sinonUtils = require('../utils/sinon');
@@ -169,8 +170,7 @@ scenario('A request to GET /oauth/google/callback with no account email address'
   });
 });
 
-// TODO: Enable after we integrate PostgreSQL (otherwise, it's duplicate code as below)
-scenario.skip('A request to GET /oauth/google/callback with a non-existant user', {
+scenario('A request to GET /oauth/google/callback with a non-existant user', {
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
 }, function () {
   // Make our request
@@ -185,16 +185,25 @@ scenario.skip('A request to GET /oauth/google/callback with a non-existant user'
     expect(this.$('title').text()).to.equal('Schedule - Find Work');
   });
 
-  it('creates a new user', function () {
-    // TODO: Query PostgreSQL
+  it('creates a new user', function (done) {
+    Candidate.findAll().asCallback(function handleCandidates (err, candidates) {
+      if (err) { return done(err); }
+      expect(candidates).to.have.length(1);
+      expect(candidates[0].get('id')).to.be.a('String');
+      expect(candidates[0].get('email')).to.equal('mock-email@mock-domain.test');
+      expect(candidates[0].get('google_access_token')).to.equal('mock_access_token');
+      expect(candidates[0].get('created_at')).to.be.a('Date');
+      expect(candidates[0].get('updated_at')).to.be.a('Date');
+      done();
+    });
   });
 
-  it('sends new user a welcome email', function () {
+  it.skip('sends new user a welcome email', function () {
     // TODO: Query our job queue
   });
 });
 
-scenario('A request to GET /oauth/google/callback with an existant user', {
+scenario.skip('A request to GET /oauth/google/callback with an existant user', {
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
 }, function () {
   // Make our request
@@ -210,6 +219,10 @@ scenario('A request to GET /oauth/google/callback with an existant user', {
   });
 
   it.skip('doesn\'t create a new user', function () {
+    // TODO: Query PostgreSQL
+  });
+
+  it.skip('updates Google access token', function () {
     // TODO: Query PostgreSQL
   });
 

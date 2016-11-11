@@ -20,6 +20,8 @@ exports.common = {
 };
 
 exports.development = {
+  // DEV: We use top level config as `postgresql` is passed directly to `sequelize-cli`
+  logQueries: true,
   postgresql: _.defaults({
     database: DEFAULT_DATABASE,
     password: DEVELOPMENT_PASSWORD
@@ -27,6 +29,7 @@ exports.development = {
 };
 
 exports.test = {
+  logQueries: false,
   postgresql: _.defaults({
     database: TEST_DATABASE,
     password: DEVELOPMENT_PASSWORD
@@ -36,6 +39,7 @@ exports.test = {
 var PRODUCTION_PASSWORD = staticSecrets.staticPostgresql.productionPassword;
 assert(PRODUCTION_PASSWORD);
 exports.production = {
+  logQueries: false,
   postgresql: _.defaults({
     database: DEFAULT_DATABASE,
     password: PRODUCTION_PASSWORD

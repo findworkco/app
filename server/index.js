@@ -1,5 +1,6 @@
 // Load in our dependencies
 var assert = require('assert');
+var domain = require('domain');
 var _ = require('underscore');
 var bodyParserMultiDict = require('body-parser-multidict');
 var connectFlash = require('connect-flash');
@@ -85,11 +86,18 @@ function Server(config) {
 
   // Create a PostgreSQL client
   // http://docs.sequelizejs.com/en/latest/docs/getting-started/#setting-up-a-connection
+  // http://docs.sequelizejs.com/en/v3/api/sequelize/#new-sequelizedatabase-usernamenull-passwordnull-options
   var psqlConfig = config.postgresql;
-  app.postgresqlClient = new Sequelize(psqlConfig.database, psqlConfig.username, psqlConfig.password, {
+  app.sequelize = new Sequelize(psqlConfig.database, psqlConfig.username, psqlConfig.password, {
     host: psqlConfig.host,
     port: psqlConfig.port,
-    dialect: 'postgres'
+    dialect: 'postgres',
+    logging: config.logQueries ? console.log : false,
+    define: {
+      // http://docs.sequelizejs.com/en/v3/docs/models-definition/#configuration
+      timestamps: true,
+      underscored: true
+    }
   });
 
   // Set up development 500 error
@@ -150,23 +158,14 @@ function Server(config) {
   // Set `req.candidate` to be our candidate key
   //   https://github.com/jaredhanson/passport/blob/v0.3.2/lib/authenticator.js#L108-L129
   //   https://github.com/jaredhanson/passport/blob/v0.3.2/lib/strategies/session.js#L63-L64
+  // DEV: Candidate serialization/deserialization is defined at the end of this file
   app.use(passport.initialize({userProperty: 'candidate'}));
   app.use(passport.session());
 
-  // Configure saving/loading users by their session
-  // http://passportjs.org/docs#sessions
-  // TODO: Serialize/deserialize user by id on PostgreSQL (requires `candidate` table first)
-  // TODO: Be sure to use domains when handling PostgreSQL data
-  passport.serializeUser(function handleSerializeUser (user, cb) {
-    cb(null, user.email);
-  });
-  passport.deserializeUser(function handleDeserializeUser (email, cb) {
-    cb(null, {email: email});
-  });
-
   // Expose logged in candidate to render
+  // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L203
   app.use(function exposeLoggedInCandidate (req, res, next) {
-    res.locals.candidate = req.candidate;
+    res.locals.candidate = req.candidate ? req.candidate.get({plain: true, clone: true}) : null;
     next();
   });
 
@@ -194,6 +193,23 @@ Server.prototype.close = function (cb) {
 
 // Export a new server
 module.exports = new Server(config);
+
+// Configure saving/loading users by their session
+// http://passportjs.org/docs#sessions
+// DEV: We load `Candidate` model here due to needing `app.sequelize` to be loaded
+var Candidate = require('./models/candidate');
+passport.serializeUser(function handleSerializeUser (candidate, cb) {
+  cb(null, candidate.get('id'));
+});
+passport.deserializeUser(function handleDeserializeUser (id, cb) {
+  // DEV: Domains are overkill here as this is within a domain-wrapped controller
+  //   However, we use it here for clarity
+  var deserializeDomain = domain.create();
+  deserializeDomain.on('error', cb);
+  deserializeDomain.run(function handleRun () {
+    Candidate.findById(id).asCallback(cb);
+  });
+});
 
 // Load our controller bindings
 void require('./controllers/index.js');
