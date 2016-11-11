@@ -14,6 +14,7 @@ var OAUTH_GOOGLE_REQUEST_URL_OPTIONS = {
 
 // Start our tests
 scenario('A request to GET /oauth/google/callback with no information', {
+  dbFixtures: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -29,6 +30,7 @@ scenario('A request to GET /oauth/google/callback with no information', {
 });
 
 scenario('A request to GET /oauth/google/callback with an invalid OAuth action', {
+  dbFixtures: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -47,6 +49,7 @@ scenario('A request to GET /oauth/google/callback with an invalid OAuth action',
 });
 
 scenario('A login-originating request to GET /oauth/google/callback with an error', {
+  dbFixtures: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -70,6 +73,7 @@ scenario('A login-originating request to GET /oauth/google/callback with an erro
 });
 
 scenario('A sign up-originating request to GET /oauth/google/callback with an error', {
+  dbFixtures: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -92,6 +96,7 @@ scenario('A sign up-originating request to GET /oauth/google/callback with an er
 });
 
 scenario('A request to GET /oauth/google/callback with no state', {
+  dbFixtures: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -111,6 +116,7 @@ scenario('A request to GET /oauth/google/callback with no state', {
 });
 
 scenario('A request to GET /oauth/google/callback with an invalid state', {
+  dbFixtures: null,
   googleFixtures: []
 }, function () {
   // Make our request
@@ -130,6 +136,7 @@ scenario('A request to GET /oauth/google/callback with an invalid state', {
 });
 
 scenario('A request to GET /oauth/google/callback with an invalid code', {
+  dbFixtures: null,
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#invalid-code']
 }, function () {
   // Make our request
@@ -148,6 +155,7 @@ scenario('A request to GET /oauth/google/callback with an invalid code', {
 });
 
 scenario('A request to GET /oauth/google/callback with no account email address', {
+  dbFixtures: null,
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#no-account-email']
 }, function () {
   // Make our request
@@ -171,6 +179,7 @@ scenario('A request to GET /oauth/google/callback with no account email address'
 });
 
 scenario('A request to GET /oauth/google/callback with a non-existant user', {
+  dbFixtures: [],
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
 }, function () {
   // Make our request

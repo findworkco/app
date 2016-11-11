@@ -50,7 +50,9 @@ scenario.skip('A request to POST /application/:id/delete from a non-owner user',
   });
 });
 
-scenario.skip('A request to POST /application/:id/delete that doesn\'t exist', function () {
+scenario.skip('A request to POST /application/:id/delete that doesn\'t exist', {
+  dbFixtures: null
+}, function () {
   // Log in (need to do) and make our request
   httpUtils.session.init()
     .save(serverUtils.getUrl('/application/does-not-exist'))

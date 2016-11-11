@@ -118,7 +118,9 @@ scenario.skip('A request to POST /interview/:id that doesn\'t exist', function (
   });
 });
 
-scenario.skip('A request to POST /interview/:id from a logged out user', function () {
+scenario.skip('A request to POST /interview/:id from a logged out user', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init()
     .save({

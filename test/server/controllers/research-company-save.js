@@ -5,7 +5,9 @@ var serverUtils = require('../utils/server');
 
 // Start our tests
 // TODO: Add tests for AngelList logged in state/not when searching for companies
-scenario('A request to POST /research-company with a company name', function () {
+scenario('A request to POST /research-company with a company name', {
+  dbFixtures: null
+}, function () {
   httpUtils.session.init()
     .save(serverUtils.getUrl('/research-company'))
     .save({
@@ -41,7 +43,9 @@ scenario('A request to POST /research-company with a company name', function () 
   });
 });
 
-scenario('A request to POST /research-company with no company name', function () {
+scenario('A request to POST /research-company with no company name', {
+  dbFixtures: null
+}, function () {
   httpUtils.session.init()
     .save(serverUtils.getUrl('/research-company'))
     .save({
@@ -109,8 +113,10 @@ scenario('A request to "Save for later" from POST /research-company', function (
   });
 });
 
-scenario('A request to "Apply to company" from POST /research-company', function () {
-  httpUtils.session.init().login()
+scenario('A request to "Apply to company" from POST /research-company', {
+  dbFixtures: null
+}, function () {
+  httpUtils.session.init()
     .save(serverUtils.getUrl('/research-company'))
     .save({
       method: 'POST', url: serverUtils.getUrl('/research-company'),

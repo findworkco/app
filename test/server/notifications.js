@@ -4,7 +4,9 @@ var httpUtils = require('./utils/http');
 var serverUtils = require('./utils/server');
 
 // Start our tests
-scenario('An HTTP request receiving a notification', function () {
+scenario('An HTTP request receiving a notification', {
+  dbFixtures: null
+}, function () {
   // Make our request (will be redirected to /schedule)
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
@@ -20,7 +22,9 @@ scenario('An HTTP request receiving a notification', function () {
   });
 });
 
-scenario('An HTTP request receiving a malicious notification', function () {
+scenario('An HTTP request receiving a malicious notification', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({

@@ -72,7 +72,9 @@ scenario('A request to POST /delete-account from a logged in user', function () 
   });
 });
 
-scenario('A request to POST /delete-account from a logged out user', function () {
+scenario('A request to POST /delete-account from a logged out user', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     method: 'POST', url: serverUtils.getUrl('/delete-account'),
@@ -82,5 +84,9 @@ scenario('A request to POST /delete-account from a logged out user', function ()
 
   it('is redirected to the login page', function () {
     expect(this.res.headers).to.have.property('location', '/login');
+  });
+
+  it.skip('does not execute account deletion on login completion', function () {
+    expect(false).to.equal(true);
   });
 });

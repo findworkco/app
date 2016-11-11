@@ -4,7 +4,9 @@ var serverUtils = require('./utils/server');
 
 // Start our tests
 // DEV: If we encounter issues due to too many inputs, then switch to `/login` or `/settings`
-scenario('An HTTP request without a CSRF token', function () {
+scenario('An HTTP request without a CSRF token', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init()
     .save(serverUtils.getUrl('/add-application/save-for-later'))

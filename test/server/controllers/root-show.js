@@ -4,7 +4,9 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-scenario('A request to GET / from a logged out user', function () {
+scenario('A request to GET / from a logged out user', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/'), expectedStatusCode: 200});
 

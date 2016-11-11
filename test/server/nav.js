@@ -4,7 +4,9 @@ var httpUtils = require('./utils/http');
 var serverUtils = require('./utils/server');
 
 // Start our tests
-scenario('A request to /schedule from a logged out user', function () {
+scenario('A request to /schedule from a logged out user', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
@@ -31,7 +33,9 @@ scenario('A request to /schedule from a logged in user', function () {
   });
 });
 
-scenario('A request to a non-/schedule page from a logged out user', function () {
+scenario('A request to a non-/schedule page from a logged out user', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/add-application'), expectedStatusCode: 200});
 

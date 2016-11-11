@@ -69,7 +69,9 @@ scenario.skip('A request to GET /interview/:id that doesn\'t exist', function ()
   });
 });
 
-scenario.skip('A request to GET /interview/:id from a logged out user', function () {
+scenario.skip('A request to GET /interview/:id from a logged out user', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/interview/does-not-exist'),

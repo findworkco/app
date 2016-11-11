@@ -62,7 +62,9 @@ scenario.skip('A request to a POST /application/:id/received-offer from a non-ow
   });
 });
 
-scenario.skip('A request to a POST /application/:id/received-offer for a non-existant application', function () {
+scenario.skip('A request to a POST /application/:id/received-offer for a non-existant application', {
+  dbFixtures: null
+}, function () {
   // Log in (need to do) and make our request
   var applicationId = 'abcdef-sky-networks-uuid';
   httpUtils.session.init()

@@ -98,7 +98,9 @@ scenario.skip('A request to GET /application/:id from a non-owner user', functio
   });
 });
 
-scenario.skip('A request to GET /application/:id that doesn\'t exist', function () {
+scenario.skip('A request to GET /application/:id that doesn\'t exist', {
+  dbFixtures: null
+}, function () {
   // Log in (need to do) and make our request
   httpUtils.session.init().save({url: serverUtils.getUrl('/application/does-not-exist'), expectedStatusCode: 404});
 
@@ -107,7 +109,9 @@ scenario.skip('A request to GET /application/:id that doesn\'t exist', function 
   });
 });
 
-scenario.skip('A request to GET /application/:id from a logged out user', function () {
+scenario.skip('A request to GET /application/:id from a logged out user', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/application/does-not-exist'),

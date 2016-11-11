@@ -12,7 +12,9 @@ var scenarioInfoArr = [
   {url: '/add-application/received-offer'}
 ];
 scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
-  scenario('A request to GET ' + scenarioInfo.url + ' (generic)', function () {
+  scenario('A request to GET ' + scenarioInfo.url + ' (generic)', {
+    dbFixtures: null
+  }, function () {
     // Make our request
     httpUtils.session.init().save({url: serverUtils.getUrl(scenarioInfo.url), expectedStatusCode: 200});
 

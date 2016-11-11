@@ -20,7 +20,9 @@ scenario('A request to GET /settings from a logged in user', function () {
   });
 });
 
-scenario('A request to GET /settings from a logged out user', function () {
+scenario('A request to GET /settings from a logged out user', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/settings'),

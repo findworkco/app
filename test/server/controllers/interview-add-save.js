@@ -101,7 +101,9 @@ scenario.skip('A request to POST /application/:id/add-interview for an applicati
   });
 });
 
-scenario.skip('A request to POST /application/:id/add-interview from a logged out user', function () {
+scenario.skip('A request to POST /application/:id/add-interview from a logged out user', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/add-interview'),

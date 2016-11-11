@@ -6,7 +6,9 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-scenario('A request to GET /add-application/waiting-for-response (specific)', function () {
+scenario('A request to GET /add-application/waiting-for-response (specific)', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init()
     .save({url: serverUtils.getUrl('/add-application/waiting-for-response'), expectedStatusCode: 200});

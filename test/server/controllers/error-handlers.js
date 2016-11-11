@@ -7,7 +7,9 @@ var sinonUtils = require('../utils/sinon');
 var Response = require('express/lib/response');
 
 // Start our tests
-scenario('A request for a missing page', function () {
+scenario('A request for a missing page', {
+  dbFixtures: null
+}, function () {
   // Spy on Sentry and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   httpUtils.session.init().save({
@@ -30,7 +32,9 @@ scenario('A request for a missing page', function () {
   });
 });
 
-scenario('A request for a page with a server error', function () {
+scenario('A request for a page with a server error', {
+  dbFixtures: null
+}, function () {
   // Spy on Sentry, silence Winston, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   sinonUtils.stub(app.notWinston, 'error');
@@ -59,7 +63,9 @@ scenario('A request for a page with a server error', function () {
   });
 });
 
-scenario('A request for a page with a render error', function () {
+scenario('A request for a page with a render error', {
+  dbFixtures: null
+}, function () {
   // Spy on Sentry, silence Winston, force a render error, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   sinonUtils.stub(app.notWinston, 'error');
@@ -91,7 +97,9 @@ scenario('A request for a page with a render error', function () {
   });
 });
 
-scenario('A request for a page with a missing parameter', function () {
+scenario('A request for a page with a missing parameter', {
+  dbFixtures: null
+}, function () {
   // Spy on Sentry and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   httpUtils.session.init().save({
@@ -113,7 +121,9 @@ scenario('A request for a page with a missing parameter', function () {
   });
 });
 
-scenario('A request for a page with an unexposable yet expected error', function () {
+scenario('A request for a page with an unexposable yet expected error', {
+  dbFixtures: null
+}, function () {
   // Spy on Sentry and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
   httpUtils.session.init().save({

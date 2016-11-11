@@ -2,6 +2,7 @@
 var _ = require('underscore');
 var fakeGoogleFactory = require('./fake-google');
 var server = require('../../../server/index.js');
+var sequelize = server.app.sequelize;
 
 // DEV: This file is loaded directly by `mocha` first
 //   so we get fancy global behavior
@@ -19,6 +20,7 @@ function _scenario(key, describeStr, options, describeFn) {
 
   // Set up default options
   options = _.extend({
+    dbFixtures: [/* Use factoryFixtures.DEFAULT_FIXTURES */],
     // DEV: Later services might want to add/remove a single fixture
     //   We could support that via `{add: [], remove: [], removeAll: true}`
     //   Default behavior would be `[overrides] = {add: [overrides], removeAll: true}`
@@ -38,6 +40,20 @@ function _scenario(key, describeStr, options, describeFn) {
         serverIsListening = true;
       }
     });
+
+    // If we want to set up database fixtures, then clean our database and add fixtures
+    if (options.dbFixtures) {
+      before(function truncateDatabase (done) {
+        // http://docs.sequelizejs.com/en/v3/docs/raw-queries/
+        // https://www.postgresql.org/docs/9.3/static/sql-truncate.html
+        // DEV: PostgreSQL doesn't support truncating all tables via a `*`
+        // DEV: Our query is vulnerable to SQL injection but we can't use bind and trust our table names more/less
+        // var tableNames = _.pluck(_.values(sequelize.models), 'tableName');
+        var tableNames = ['candidates'];
+        sequelize.query('TRUNCATE TABLE ' + tableNames.join(', ')).asCallback(done);
+      });
+      // TODO: Add fixtures setup
+    }
 
     // If we have Google fixtures, then run a server
     if (options.googleFixtures && options.googleFixtures.length) {

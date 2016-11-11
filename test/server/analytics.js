@@ -5,7 +5,9 @@ var serverUtils = require('./utils/server');
 var app = require('./utils/server').app;
 
 // Start our tests
-scenario('An HTTP request to an analytics serving server', function () {
+scenario('An HTTP request to an analytics serving server', {
+  dbFixtures: null
+}, function () {
   // Toggle analytics and make our request
   before(function enableAnalytics () {
     expect(app.locals.serveAnalytics).to.equal(false);

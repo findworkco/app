@@ -62,7 +62,9 @@ scenario.skip('A request to a POST /application/:id/remove-offer from a non-owne
   });
 });
 
-scenario.skip('A request to a POST /application/:id/remove-offer for a non-existant application', function () {
+scenario.skip('A request to a POST /application/:id/remove-offer for a non-existant application', {
+  dbFixtures: null
+}, function () {
   // Log in (need to do) and make our request
   var applicationId = 'abcdef-black-mesa-uuid';
   httpUtils.session.init()

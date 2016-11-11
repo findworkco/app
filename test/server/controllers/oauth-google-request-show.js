@@ -5,7 +5,9 @@ var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
-scenario('A request to GET /oauth/google/request without an action', function () {
+scenario('A request to GET /oauth/google/request without an action', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/oauth/google/request'),
@@ -18,7 +20,9 @@ scenario('A request to GET /oauth/google/request without an action', function ()
   });
 });
 
-scenario('A request to GET /oauth/google/request with an invalid action', function () {
+scenario('A request to GET /oauth/google/request with an invalid action', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
@@ -34,7 +38,9 @@ scenario('A request to GET /oauth/google/request with an invalid action', functi
   });
 });
 
-scenario('A request to GET /oauth/google/request with a valid action', function () {
+scenario('A request to GET /oauth/google/request with a valid action', {
+  dbFixtures: null
+}, function () {
   // Make our request
   httpUtils.session.init().save({
     url: serverUtils.getUrl({
