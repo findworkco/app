@@ -47,22 +47,10 @@ module.exports = _.extend(sequelize.define('audit_log', {
   // DEV: We wanted to use JSONB since writes only occur once whereas reads can occur many times
   //   However, PostgreSQL@9.3 lacks JSONB =(
   //   https://www.postgresql.org/docs/9.3/static/datatype-json.html
-  // {id: abc, email: abc1, password: ***, ...}
-  previous_values: {
-    type: Sequelize.JSON, allowNull: false,
-    set: function (val) {
-      // TODO: Scrub audit logged value -- test in model itself
-      this.setDataValue('previous_values', val);
-    }
-  },
-  // {id: abc, email: abc2, password: ***, ...}
-  current_values: {
-    type: Sequelize.JSON, allowNull: false,
-    set: function (val) {
-      // TODO: Scrub audit logged value
-      this.setDataValue('current_values', val);
-    }
-  }
+  // {id: abc, email: abc1, password: hash1, ...}
+  previous_values: {type: Sequelize.JSON, allowNull: false},
+  // {id: abc, email: abc2, password: hash2, ...}
+  current_values: {type: Sequelize.JSON, allowNull: false}
 }, {
   validate: {
     requireSourceId: function () {

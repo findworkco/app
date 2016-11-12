@@ -124,6 +124,7 @@ module.exports = _.extend(function (modelName, attributes, options) {
         table_row_id: model.get('id'),
         action: 'create',
         timestamp: new Date(),
+        // TODO: Find our actual previous values and current values from model
         previous_values: {},
         current_values: {}
       });
