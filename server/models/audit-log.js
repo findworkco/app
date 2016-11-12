@@ -44,11 +44,12 @@ module.exports = _.extend(sequelize.define('audit_log', {
 
   // DEV: We could store `changed_values_previous` and `changed_values_current`
   //   but for simplicity of querying, we are storing all values
-  // DEV: We use JSONB since writes only occur once whereas reads can occur many times
-  //   https://www.postgresql.org/docs/9.4/static/datatype-json.html
+  // DEV: We wanted to use JSONB since writes only occur once whereas reads can occur many times
+  //   However, PostgreSQL@9.3 lacks JSONB =(
+  //   https://www.postgresql.org/docs/9.3/static/datatype-json.html
   // {id: abc, email: abc1, password: ***, ...}
   previous_values: {
-    type: Sequelize.JSONB, allowNull: false,
+    type: Sequelize.JSON, allowNull: false,
     set: function (val) {
       // TODO: Scrub audit logged value -- test in model itself
       this.setDataValue('previous_values', val);
@@ -56,10 +57,10 @@ module.exports = _.extend(sequelize.define('audit_log', {
   },
   // {id: abc, email: abc2, password: ***, ...}
   current_values: {
-    type: Sequelize.JSONB, allowNull: false,
+    type: Sequelize.JSON, allowNull: false,
     set: function (val) {
       // TODO: Scrub audit logged value
-      this.setDataValue('previous_values', val);
+      this.setDataValue('current_values', val);
     }
   }
 }, {
