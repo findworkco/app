@@ -4,6 +4,7 @@ var assert = require('assert');
 var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
 var sequelize = require('../index.js').app.sequelize;
+var AuditLog = require('./audit-log');
 
 // Define our custom types
 exports.MOMENT_DATEONLY = 'MOMENT_DATEONLY';
@@ -115,18 +116,18 @@ module.exports = _.extend(function (modelName, attributes, options) {
     afterCreate: function (model, options) {
       // http://stackoverflow.com/a/2015276
       var auditLog = AuditLog.build({
-        // TODO: Assert table row id, source, etc
-        source: model._source, // 'server', 'candidate'
-        // TODO: Validate source_id isn't null if not server
-        source_id: model._sourceId, // NULL (server), candidate.id
+        // // TODO: Assert table row id, source, etc
+        // source: model._source, // 'server', 'candidate'
+        // // TODO: Validate source_id isn't null if not server
+        // source_id: model._sourceId, // NULL (server), candidate.id
         table_name: model.tableName,
         table_row_id: model.get('id'),
         action: 'create',
-        timestamp: moment.utcnow(), // Need to verify this is ideal
-        // DEV: We could store `changed_values_previous` and `changed_values_current`
-        //   but for simplicity of querying, we are storing all values
-        previous_values: '', // Need to add, need to worry about scrubbing
-        current_values: '' // Need to add, need to worry about scrubbing
+        // timestamp: moment.utcnow(), // Need to verify this is ideal
+        // // DEV: We could store `changed_values_previous` and `changed_values_current`
+        // //   but for simplicity of querying, we are storing all values
+        // previous_values: '', // Need to add, need to worry about scrubbing
+        // current_values: '' // Need to add, need to worry about scrubbing
       });
       return auditLog.save();
     },
