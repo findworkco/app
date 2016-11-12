@@ -44,6 +44,8 @@ module.exports = _.extend(sequelize.define('audit_log', {
 
   // DEV: We could store `changed_values_previous` and `changed_values_current`
   //   but for simplicity of querying, we are storing all values
+  // DEV: We use JSONB since writes only occur once whereas reads can occur many times
+  //   https://www.postgresql.org/docs/9.4/static/datatype-json.html
   // {id: abc, email: abc1, password: ***, ...}
   previous_values: {
     type: Sequelize.JSONB, allowNull: false,
