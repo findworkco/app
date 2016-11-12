@@ -22,7 +22,17 @@ var goodAuditLog = {
   table_row_id: 'mock-candidate-uuid',
   timestamp: new Date()
 };
-describe.only('An audit log with an invalid action', function () {
+describe('An good audit log', function () {
+  it('receives no validation errors', function (done) {
+    var auditLog = AuditLog.build(_.clone(goodAuditLog));
+    auditLog.validate().asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+describe('An audit log with an invalid action', function () {
   it('receives validation errors', function (done) {
     var auditLog = AuditLog.build(_.defaults({
       action: 'invalid-action'

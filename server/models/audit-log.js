@@ -25,7 +25,7 @@ module.exports = _.extend(sequelize.define('audit_log', {
   // DEV: Validation for `source_id` being set for non-server type is in options
   source_type: {
     type: Sequelize.STRING(255), allowNull: false,
-    validate: {isIn: {args: exports.VALID_SOURCES, msg: 'Source must be server or candidates'}}
+    validate: {isIn: {args: [exports.VALID_SOURCES], msg: 'Source must be server or candidates'}}
   },
   source_id: {type: Sequelize.UUID, allowNull: true},
 
@@ -36,7 +36,7 @@ module.exports = _.extend(sequelize.define('audit_log', {
   // 'create', 'update', 'delete'
   action: {
     type: Sequelize.STRING(32), allowNull: false,
-    validate: {isIn: {args: exports.VALID_ACTIONS, msg: 'Action must be create, update, or delete'}}
+    validate: {isIn: {args: [exports.VALID_ACTIONS], msg: 'Action must be create, update, or delete'}}
   },
 
   // 2016-01-01T00:00:00Z
@@ -57,4 +57,4 @@ module.exports = _.extend(sequelize.define('audit_log', {
 
   // Disable `created_at`/`updated_at` timestamps
   timestamps: false
-}, exports));
+}), exports);
