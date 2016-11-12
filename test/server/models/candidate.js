@@ -9,7 +9,9 @@ describe('A Candidate model', function () {
     var candidate = Candidate.build({email: 'foo'});
     candidate.validate().asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
-      expect(validationErr).to.not.equal(null);
+      expect(validationErr.errors).to.have.length(1);
+      expect(validationErr.errors[0]).to.have.property('path', 'email');
+      expect(validationErr.errors[0]).to.have.property('message', 'Invalid email provided');
       done();
     });
   });

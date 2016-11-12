@@ -11,7 +11,7 @@ module.exports = _.extend(baseDefine('candidate', {
   // DEV: Sequelize interprets `unique` as an index key as well
   email: {
     type: Sequelize.STRING(255), unique: true, allowNull: false,
-    validate: {isEmail: true}
+    validate: {isEmail: {msg: 'Invalid email provided'}}
   },
   // Google is: xxxx.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
   //   but we are using 1024 to future proof in case this moves to another table
