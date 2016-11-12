@@ -17,6 +17,7 @@ describe('An audit log', function () {
 describe('An audit log with an invalid action', function () {
   it('receives validation errors', function (done) {
     var auditLog = AuditLog.build({
+      source: AuditLog.SOURCE_SERVER,
       action: 'invalid-action',
       table_name: 'candidates',
       table_row_id: 'mock-candidate-uuid',

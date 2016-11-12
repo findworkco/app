@@ -117,9 +117,9 @@ module.exports = _.extend(function (modelName, attributes, options) {
       // Resolve our model's constructor
       var Model = model.Model;
       var auditLog = AuditLog.build({
-        // // TODO: Assert table row id, source, etc
+        // TODO: Assert table row id, source, etc
         source_type: model._source, // 'server', 'candidate'
-        // // TODO: Validate source_id isn't null if not server
+        // TODO: Validate source_id isn't null if not server
         source_id: model._sourceId, // NULL (server), candidate.id
         table_name: Model.tableName,
         table_row_id: model.get('id'),
