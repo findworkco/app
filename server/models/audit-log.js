@@ -8,7 +8,7 @@ var sequelize = require('../index.js').app.sequelize;
 //   (e.g. no fancy getters, no audit hooks)
 module.exports = sequelize.define('audit_log', {
   id: {type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, primaryKey: true},
-  // source
+  // source_type
   // source_id
   table_name: {type: Sequelize.STRING(255), allowNull: false},
   table_row_id: {type: Sequelize.UUID, allowNull: false},
