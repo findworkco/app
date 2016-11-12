@@ -19,7 +19,8 @@ describe('An audit log with an invalid action', function () {
     var auditLog = AuditLog.build({
       action: 'invalid-action',
       table_name: 'candidates',
-      table_row_id: '000000-0000-0000',
+      table_row_id: 'mock-candidate-uuid',
+      timestamp: new Date()
     });
     auditLog.validate().asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);

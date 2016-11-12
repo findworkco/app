@@ -20,15 +20,13 @@ module.exports = _.extend(sequelize.define('audit_log', {
   // source_id
   table_name: {type: Sequelize.STRING(255), allowNull: false},
   table_row_id: {type: Sequelize.UUID, allowNull: false},
-  // TODO: Add validation that it's create, update, or delete (prob use constants)
   action: {
     type: Sequelize.STRING(32), allowNull: false,
     validate: {isIn: {args: exports.VALID_ACTIONS, msg: 'Action must be create, update, or delete'}}
-  }
-  // timestamp
+  },
+  timestamp: {type: Sequelize.DATE, allowNull: false}
   // previous_values
   // current_values
 }, {
-  // TODO: Verify disabling timestamps is respected
   timestamps: false
 }, exports));

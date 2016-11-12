@@ -12,8 +12,8 @@ exports.up = function (queryInterface) {
       table_name: {type: Sequelize.STRING(255), allowNull: false},
       table_row_id: {type: Sequelize.UUID, allowNull: false},
       // TODO: Add validation that it's create, update, or delete (prob use constants)
-      action: {type: Sequelize.STRING(32), allowNull: false}
-      // timestamp
+      action: {type: Sequelize.STRING(32), allowNull: false},
+      timestamp: {type: Sequelize.DATE, allowNull: false},
       // previous_values
       // current_values
     }, {transaction: t})

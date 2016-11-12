@@ -124,7 +124,7 @@ module.exports = _.extend(function (modelName, attributes, options) {
         table_name: Model.tableName,
         table_row_id: model.get('id'),
         action: 'create',
-        // timestamp: moment.utcnow(), // Need to verify this is ideal
+        timestamp: new Date(),
         // // DEV: We could store `changed_values_previous` and `changed_values_current`
         // //   but for simplicity of querying, we are storing all values
         // previous_values: '', // Need to add, need to worry about scrubbing
