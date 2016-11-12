@@ -116,8 +116,6 @@ module.exports = _.extend(function (modelName, attributes, options) {
     afterCreate: function (model, options) {
       // Resolve our model's constructor
       var Model = model.Model;
-
-      // http://stackoverflow.com/a/2015276
       var auditLog = AuditLog.build({
         // // TODO: Assert table row id, source, etc
         // source_type: model._source, // 'server', 'candidate'

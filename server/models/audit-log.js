@@ -6,6 +6,7 @@ var sequelize = require('../index.js').app.sequelize;
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
 // DEV: We don't use `baseDefine` as this isn't a typical model
 //   (e.g. no fancy getters, no audit hooks)
+// DEV: Based on memory, verified by http://stackoverflow.com/a/2015276
 module.exports = sequelize.define('audit_log', {
   id: {type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, primaryKey: true},
   // source_type
