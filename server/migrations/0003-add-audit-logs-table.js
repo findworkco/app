@@ -13,8 +13,8 @@ exports.up = function (queryInterface) {
       table_row_id: {type: Sequelize.UUID, allowNull: false},
       action: {type: Sequelize.STRING(32), allowNull: false},
       timestamp: {type: Sequelize.DATE, allowNull: false},
-      // previous_values
-      // current_values
+      previous_values: {type: Sequelize.JSONB, allowNull: false},
+      current_values: {type: Sequelize.JSONB, allowNull: false}
     }, {transaction: t})
   ]); });
 };

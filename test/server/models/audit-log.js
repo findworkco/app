@@ -20,7 +20,9 @@ var goodAuditLog = {
   action: 'create',
   table_name: 'candidates',
   table_row_id: 'mock-candidate-uuid',
-  timestamp: new Date()
+  timestamp: new Date(),
+  previous_values: {},
+  current_values: {}
 };
 describe('An good audit log', function () {
   it('receives no validation errors', function (done) {

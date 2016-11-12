@@ -117,18 +117,15 @@ module.exports = _.extend(function (modelName, attributes, options) {
       // Resolve our model's constructor
       var Model = model.Model;
       var auditLog = AuditLog.build({
-        // TODO: Assert table row id, source, etc
+        // TODO: Assert table row id, source, etc in base tests
         source_type: model._source, // 'server', 'candidate'
-        // TODO: Validate source_id isn't null if not server
         source_id: model._sourceId, // NULL (server), candidate.id
         table_name: Model.tableName,
         table_row_id: model.get('id'),
         action: 'create',
         timestamp: new Date(),
-        // // DEV: We could store `changed_values_previous` and `changed_values_current`
-        // //   but for simplicity of querying, we are storing all values
-        // previous_values: '', // Need to add, need to worry about scrubbing
-        // current_values: '' // Need to add, need to worry about scrubbing
+        previous_values: {},
+        current_values: {}
       });
       return auditLog.save();
     },

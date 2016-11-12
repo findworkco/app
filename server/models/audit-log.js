@@ -40,12 +40,26 @@ module.exports = _.extend(sequelize.define('audit_log', {
   },
 
   // 2016-01-01T00:00:00Z
-  timestamp: {type: Sequelize.DATE, allowNull: false}
+  timestamp: {type: Sequelize.DATE, allowNull: false},
 
+  // DEV: We could store `changed_values_previous` and `changed_values_current`
+  //   but for simplicity of querying, we are storing all values
   // {id: abc, email: abc1, password: ***, ...}
-  // previous_values
+  previous_values: {
+    type: Sequelize.JSONB, allowNull: false,
+    set: function (val) {
+      // TODO: Scrub audit logged value -- test in model itself
+      this.setDataValue('previous_values', val);
+    }
+  },
   // {id: abc, email: abc2, password: ***, ...}
-  // current_values
+  current_values: {
+    type: Sequelize.JSONB, allowNull: false,
+    set: function (val) {
+      // TODO: Scrub audit logged value
+      this.setDataValue('previous_values', val);
+    }
+  }
 }, {
   validate: {
     requireSourceId: function () {
