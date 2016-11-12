@@ -114,13 +114,16 @@ module.exports = _.extend(function (modelName, attributes, options) {
       throw new Error('Audit logging not supported for bulk deletion; either add support or use `create` directly');
     },
     afterCreate: function (model, options) {
+      // Resolve our model's constructor
+      var Model = model.Model;
+
       // http://stackoverflow.com/a/2015276
       var auditLog = AuditLog.build({
         // // TODO: Assert table row id, source, etc
         // source: model._source, // 'server', 'candidate'
         // // TODO: Validate source_id isn't null if not server
         // source_id: model._sourceId, // NULL (server), candidate.id
-        table_name: model.tableName,
+        table_name: Model.tableName,
         table_row_id: model.get('id'),
         action: 'create',
         // timestamp: moment.utcnow(), // Need to verify this is ideal
