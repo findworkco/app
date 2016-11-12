@@ -4,6 +4,7 @@ var moment = require('moment-timezone');
 var AuditLog = require('../../../server/models/audit-log.js');
 var Application = require('../../../server/models/application.js');
 var Candidate = require('../../../server/models/candidate.js');
+var scenario = require('../utils/test').scenario;
 
 // Start our tests
 describe('A Base model', function () {
@@ -15,7 +16,10 @@ describe('A Base model', function () {
 
 // These should be possible with hooks
 // http://docs.sequelizejs.com/en/v3/api/hooks/
-describe.only('A Base model being created', function () {
+scenario.only('A Base model being created', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
   before(function createCandidate (done) {
     var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
     candidate._source = 'server';

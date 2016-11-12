@@ -49,7 +49,7 @@ function _scenario(key, describeStr, options, describeFn) {
         // DEV: PostgreSQL doesn't support truncating all tables via a `*`
         // DEV: Our query is vulnerable to SQL injection but we can't use bind and trust our table names more/less
         // var tableNames = _.pluck(_.values(sequelize.models), 'tableName');
-        var tableNames = ['candidates'];
+        var tableNames = ['audit_logs', 'candidates'];
         sequelize.query('TRUNCATE TABLE ' + tableNames.join(', ')).asCallback(done);
       });
       // TODO: Add fixtures setup
