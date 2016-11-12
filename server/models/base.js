@@ -118,6 +118,7 @@ module.exports = _.extend(function (modelName, attributes, options) {
       var Model = model.Model;
       var auditLog = AuditLog.build({
         // TODO: Assert table row id, source, etc in base tests
+        // TODO: Add `source_type` skipped tests for candidate in base.js (requires candidate to be saved to db)
         source_type: model._source, // 'server', 'candidate'
         source_id: model._sourceId, // NULL (server), candidate.id
         table_name: Model.tableName,
