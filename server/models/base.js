@@ -124,9 +124,11 @@ module.exports = _.extend(function (modelName, attributes, options) {
         table_row_id: model.get('id'),
         action: 'create',
         timestamp: new Date(),
-        // TODO: Find our actual previous values and current values from model
-        previous_values: {},
-        current_values: {}
+        // TODO: Assert previous values hold as expected on an update when loading directly from db
+        // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L86-L87
+        // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L417-L433
+        previous_values: model._previousDataValues,
+        current_values: model.dataValues
       });
       return auditLog.save();
     },
