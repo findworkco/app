@@ -98,6 +98,37 @@ module.exports = _.extend(function (modelName, attributes, options) {
     }
   });
 
+  // Add hooks for audit logging
+  // http://docs.sequelizejs.com/en/v3/docs/hooks/#declaring-hooks
+  // http://docs.sequelizejs.com/en/v3/docs/hooks/#model-hooks
+  options.hooks = _.extend({
+    // TODO: Verify bulk hooks stop us
+    beforeBulkCreate: function () {
+      throw new Error('Audit logging not supported for bulk creation; either add support or use `create` directly');
+    },
+    beforeBulkUpdate: function () {
+      throw new Error('Audit logging not supported for bulk updates; either add support or use `create` directly');
+    },
+    beforeBulkDeletion: function () {
+      throw new Error('Audit logging not supported for bulk deletion; either add support or use `create` directly');
+    },
+    afterCreate: function (model, options) {
+      var auditLog = AuditLog.build({
+        // TODO: Assert table row id, source, etc
+        source: model._source, // 'server', 'candidate'
+        // TODO: Validate source_id isn't null if not server
+        source_id: model._sourceId, // NULL (server), candidate.id
+        table_name: model.tableName,
+        table_row_id: model.get('id'),
+        action: 'create',
+        timestamp: moment.utcnow(), // Need to verify this is ideal
+        changed_values_previous: '', // Need to add, need to worry about scrubbing
+        changed_values_current: '' // Need to add, need to worry about scrubbing
+      });
+      return auditLog.save();
+    }
+  }, options.hooks);
+
   // Build our class
   return sequelize.define(modelName, attributes, options);
 }, exports);
