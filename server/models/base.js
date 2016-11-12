@@ -113,6 +113,7 @@ module.exports = _.extend(function (modelName, attributes, options) {
       throw new Error('Audit logging not supported for bulk deletion; either add support or use `create` directly');
     },
     afterCreate: function (model, options) {
+      // http://stackoverflow.com/a/2015276
       var auditLog = AuditLog.build({
         // TODO: Assert table row id, source, etc
         source: model._source, // 'server', 'candidate'
@@ -128,6 +129,13 @@ module.exports = _.extend(function (modelName, attributes, options) {
         current_values: '' // Need to add, need to worry about scrubbing
       });
       return auditLog.save();
+    },
+    // TODO: Add support for audit logging update/delete
+    afterUpdate: function (model, options) {
+      throw new Error('Need to implement audit logging for update');
+    },
+    afterDelete: function (model, options) {
+      throw new Error('Need to implement audit logging for delete');
     }
   }, options.hooks);
 
