@@ -178,7 +178,7 @@ scenario('A request to GET /oauth/google/callback with no account email address'
   });
 });
 
-scenario.only('A request to GET /oauth/google/callback with a non-existant user', {
+scenario('A request to GET /oauth/google/callback with a non-existant user', {
   dbFixtures: [],
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
 }, function () {
