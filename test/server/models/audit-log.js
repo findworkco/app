@@ -15,7 +15,7 @@ describe('An audit log', function () {
   });
 });
 
-var goodAuditLog = {
+var validAuditLog = {
   source_type: 'server',
   action: 'create',
   table_name: 'candidates',
@@ -24,9 +24,9 @@ var goodAuditLog = {
   previous_values: {},
   current_values: {}
 };
-describe('A good audit log', function () {
+describe('A valid audit log', function () {
   it('receives no validation errors', function (done) {
-    var auditLog = AuditLog.build(_.clone(goodAuditLog));
+    var auditLog = AuditLog.build(_.clone(validAuditLog));
     auditLog.validate().asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr).to.equal(null);
@@ -38,7 +38,7 @@ describe('An audit log with an invalid source', function () {
   it('receives validation errors', function (done) {
     var auditLog = AuditLog.build(_.defaults({
       source_type: 'invalid-source'
-    }, goodAuditLog));
+    }, validAuditLog));
     auditLog.validate().asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors.length).to.be.at.least(1);
@@ -52,7 +52,7 @@ describe('An audit log with an non-server source and no id', function () {
   it('receives validation errors', function (done) {
     var auditLog = AuditLog.build(_.defaults({
       source_type: 'candidates'
-    }, goodAuditLog));
+    }, validAuditLog));
     auditLog.validate().asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
@@ -68,7 +68,7 @@ describe('An audit log with an non-server source and an id', function () {
     var auditLog = AuditLog.build(_.defaults({
       source_type: 'candidates',
       source_id: 'mock-candidate-id'
-    }, goodAuditLog));
+    }, validAuditLog));
     auditLog.validate().asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr).to.equal(null);
@@ -80,7 +80,7 @@ describe('An audit log with an invalid action', function () {
   it('receives validation errors', function (done) {
     var auditLog = AuditLog.build(_.defaults({
       action: 'invalid-action'
-    }, goodAuditLog));
+    }, validAuditLog));
     auditLog.validate().asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
