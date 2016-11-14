@@ -1,7 +1,7 @@
 # app [![wercker status](https://app.wercker.com/status/11dd669e8306e37c6bfbc982316d9267/s/master)](https://app.wercker.com/project/bykey/11dd669e8306e37c6bfbc982316d9267)
 Web application for https://findwork.co/
 
-TODO: Review all our TODOs
+TODO: Test audit logging on dev server, verify in db
 TODO: Uplodate audit log results to a gist
    Replace `candidate` with `user`
    Replace `../../` with simpler paths
