@@ -43,11 +43,12 @@ scenario('A Base model being created', {
   });
 });
 
-scenario.only('A Base model being updated', {
+scenario('A Base model being updated', {
   dbFixtures: [],
   googleFixtures: null
 }, function () {
   before(function createCandidate (done) {
+    // TODO: Move from creating candidate here to using fixtures
     var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
     candidate._sourceType = 'server';
     candidate.save().asCallback(done);
@@ -82,9 +83,43 @@ scenario.only('A Base model being updated', {
     });
   });
 });
-describe('A Base model being deleted', function () {
-  it.skip('is saved to an audit log', function () {
+
+scenario.only('A Base model being deleted', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  before(function createCandidate (done) {
+    // TODO: Move from creating candidate here to using fixtures
+    var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
+    candidate._sourceType = 'server';
+    candidate.save().asCallback(done);
+  });
+  before(function deleteCandidate (done) {
+    Candidate.find().asCallback(function handleFind (err, candidate) {
+      if (err) { return done(err); }
+      candidate._sourceType = 'candidates';
+      candidate._sourceId = candidate.get('id');
+      candidate.destroy().asCallback(done);
+    });
+  });
+
+  it('is saved to an audit log', function (done) {
     // Assert source user, table, id, previous, and new data
+    AuditLog.findAll({where: {source_type: 'candidates'}}).asCallback(function handleCandidates (err, auditLogs) {
+      if (err) { return done(err); }
+      expect(auditLogs).to.have.length(1);
+      expect(auditLogs[0].get('source_type')).to.equal('candidates');
+      expect(auditLogs[0].get('source_id')).to.be.a('String');
+      expect(auditLogs[0].get('table_name')).to.equal('candidates');
+      expect(auditLogs[0].get('table_row_id')).to.be.a('String');
+      expect(auditLogs[0].get('action')).to.equal('delete');
+      expect(auditLogs[0].get('timestamp')).to.be.a('Date');
+      expect(auditLogs[0].get('previous_values')).to.have.property('email',
+        'mock-email@mock-domain.test');
+      expect(auditLogs[0].get('current_values')).to.have.property('email',
+        'mock-email@mock-domain.test');
+      done();
+    });
   });
 });
 
