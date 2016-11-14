@@ -26,7 +26,7 @@ scenario('A Base model being created', {
 
   it('is saved to an audit log', function (done) {
     // Assert source user, table, id, previous, and new data
-    AuditLog.findAll().asCallback(function handleCandidates (err, auditLogs) {
+    AuditLog.findAll().asCallback(function handleAuditLogs (err, auditLogs) {
       if (err) { return done(err); }
       expect(auditLogs).to.have.length(1);
       expect(auditLogs[0].get('source_type')).to.equal('server');
@@ -66,7 +66,7 @@ scenario('A Base model being updated', {
 
   it('is saved to an audit log', function (done) {
     // Assert source user, table, id, previous, and new data
-    AuditLog.findAll({where: {source_type: 'candidates'}}).asCallback(function handleCandidates (err, auditLogs) {
+    AuditLog.findAll({where: {source_type: 'candidates'}}).asCallback(function handleAuditLogs (err, auditLogs) {
       if (err) { return done(err); }
       expect(auditLogs).to.have.length(1);
       expect(auditLogs[0].get('source_type')).to.equal('candidates');
@@ -105,7 +105,7 @@ scenario('A Base model being deleted', {
 
   it('is saved to an audit log', function (done) {
     // Assert source user, table, id, previous, and new data
-    AuditLog.findAll({where: {source_type: 'candidates'}}).asCallback(function handleCandidates (err, auditLogs) {
+    AuditLog.findAll({where: {source_type: 'candidates'}}).asCallback(function handleAuditLogs (err, auditLogs) {
       if (err) { return done(err); }
       expect(auditLogs).to.have.length(1);
       expect(auditLogs[0].get('source_type')).to.equal('candidates');
@@ -179,7 +179,7 @@ scenario.skip('A Base model being created with a candidate source', {
   });
 
   it('saves candidate source to its audit log', function (done) {
-    AuditLog.findAll().asCallback(function handleCandidates (err, auditLogs) {
+    AuditLog.findAll().asCallback(function handleAuditLogs (err, auditLogs) {
       if (err) { return done(err); }
       expect(auditLogs).to.have.length(1);
       expect(auditLogs[0].get('source_type')).to.equal('candidates');

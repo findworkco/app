@@ -106,7 +106,7 @@ module.exports = _.extend(function (modelName, attributes, options) {
     // Resolve our model's constructor
     var Model = model.Model;
     var auditLog = AuditLog.build({
-      source_type: model._sourceType, // 'server', 'candidate'
+      source_type: model._sourceType, // 'server', 'candidates'
       source_id: model._sourceId, // NULL (server), candidate.id
       table_name: Model.tableName,
       table_row_id: model.get('id'),
