@@ -113,8 +113,6 @@ module.exports = _.extend(function (modelName, attributes, options) {
       table_row_id: model.get('id'),
       action: action,
       timestamp: new Date(),
-      // TODO: Assert previous values hold as expected on an update when loading directly from db
-      //   That is -- we haven't yet verified how `_previousDataValues` are set so we want to do that...
       // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L86-L87
       // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L417-L433
       previous_values: model._previousDataValues,
