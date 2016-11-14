@@ -55,6 +55,7 @@ describe('A Base model being deleted', function () {
   });
 });
 
+// DEV: Test is currently skipped due to no applications in database
 scenario.skip('A Base model being created with a candidate source', {
   dbFixtures: [],
   googleFixtures: null
@@ -75,7 +76,6 @@ scenario.skip('A Base model being created with a candidate source', {
       done();
     });
   });
-
 });
 
 describe('A Base model with a moment-based dateonly field', function () {
