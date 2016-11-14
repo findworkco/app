@@ -102,6 +102,26 @@ module.exports = _.extend(function (modelName, attributes, options) {
   // Add hooks for audit logging
   // http://docs.sequelizejs.com/en/v3/docs/hooks/#declaring-hooks
   // http://docs.sequelizejs.com/en/v3/docs/hooks/#model-hooks
+  function saveAuditLog(action, model) {
+    // Resolve our model's constructor
+    var Model = model.Model;
+    var auditLog = AuditLog.build({
+      // TODO: Assert table row id, source, etc in base tests
+      source_type: model._sourceType, // 'server', 'candidate'
+      source_id: model._sourceId, // NULL (server), candidate.id
+      table_name: Model.tableName,
+      table_row_id: model.get('id'),
+      action: action,
+      timestamp: new Date(),
+      // TODO: Assert previous values hold as expected on an update when loading directly from db
+      //   That is -- we haven't yet verified how `_previousDataValues` are set so we want to do that...
+      // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L86-L87
+      // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L417-L433
+      previous_values: model._previousDataValues,
+      current_values: model.dataValues
+    });
+    return auditLog.save();
+  }
   options.hooks = _.extend({
     // TODO: Verify bulk hooks stop us
     beforeBulkCreate: function () {
@@ -114,32 +134,13 @@ module.exports = _.extend(function (modelName, attributes, options) {
       throw new Error('Audit logging not supported for bulk deletion; either add support or use `create` directly');
     },
     afterCreate: function (model, options) {
-      // Resolve our model's constructor
-      var Model = model.Model;
-      var auditLog = AuditLog.build({
-        // TODO: Assert table row id, source, etc in base tests
-        // TODO: Add `source_type` skipped tests for candidate in base.js (requires candidate to be saved to db)
-        source_type: model._sourceType, // 'server', 'candidate'
-        source_id: model._sourceId, // NULL (server), candidate.id
-        table_name: Model.tableName,
-        table_row_id: model.get('id'),
-        action: 'create',
-        timestamp: new Date(),
-        // TODO: Assert previous values hold as expected on an update when loading directly from db
-        //   That is -- we haven't yet verified how `_previousDataValues` are set so we want to do that...
-        // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L86-L87
-        // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L417-L433
-        previous_values: model._previousDataValues,
-        current_values: model.dataValues
-      });
-      return auditLog.save();
+      return saveAuditLog('create', model);
     },
-    // TODO: Add support for audit logging update/delete
     afterUpdate: function (model, options) {
-      throw new Error('Need to implement audit logging for update');
+      return saveAuditLog('update', model);
     },
     afterDelete: function (model, options) {
-      throw new Error('Need to implement audit logging for delete');
+      return saveAuditLog('delete', model);
     }
   }, options.hooks);
 
