@@ -24,7 +24,7 @@ var goodAuditLog = {
   previous_values: {},
   current_values: {}
 };
-describe('An good audit log', function () {
+describe('A good audit log', function () {
   it('receives no validation errors', function (done) {
     var auditLog = AuditLog.build(_.clone(goodAuditLog));
     auditLog.validate().asCallback(function handleError (err, validationErr) {
