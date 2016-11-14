@@ -106,7 +106,6 @@ module.exports = _.extend(function (modelName, attributes, options) {
     // Resolve our model's constructor
     var Model = model.Model;
     var auditLog = AuditLog.build({
-      // TODO: Assert table row id, source, etc in base tests
       source_type: model._sourceType, // 'server', 'candidate'
       source_id: model._sourceId, // NULL (server), candidate.id
       table_name: Model.tableName,
@@ -121,14 +120,14 @@ module.exports = _.extend(function (modelName, attributes, options) {
     return auditLog.save();
   }
   options.hooks = _.extend({
-    // TODO: Verify bulk hooks stop us
+    // DEV: We don't support bulk actions due to not knowing previous/current info for models
     beforeBulkCreate: function () {
       throw new Error('Audit logging not supported for bulk creation; either add support or use `create` directly');
     },
     beforeBulkUpdate: function () {
       throw new Error('Audit logging not supported for bulk updates; either add support or use `create` directly');
     },
-    beforeBulkDeletion: function () {
+    beforeBulkDelete: function () {
       throw new Error('Audit logging not supported for bulk deletion; either add support or use `create` directly');
     },
     afterCreate: function (model, options) {

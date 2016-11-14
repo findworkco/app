@@ -84,7 +84,7 @@ scenario('A Base model being updated', {
   });
 });
 
-scenario.only('A Base model being deleted', {
+scenario('A Base model being deleted', {
   dbFixtures: [],
   googleFixtures: null
 }, function () {
@@ -118,6 +118,49 @@ scenario.only('A Base model being deleted', {
         'mock-email@mock-domain.test');
       expect(auditLogs[0].get('current_values')).to.have.property('email',
         'mock-email@mock-domain.test');
+      done();
+    });
+  });
+});
+
+// http://docs.sequelizejs.com/en/v3/docs/instances/#working-in-bulk-creating-updating-and-destroying-multiple-rows-at-once
+scenario('A Base model being bulk created', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  it('is rejected due to lack of support', function (done) {
+    Candidate.bulkCreate([
+      {email: 'mock-email@mock-domain.test'}
+    ]).asCallback(function handleBulkCreate (err, candidates) {
+      expect(err.message).to.contain('Audit logging not supported for bulk creation');
+      done();
+    });
+  });
+});
+scenario('A Base model being bulk updated', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  it('is rejected due to lack of support', function (done) {
+    Candidate.update({
+      email: 'mock-email2@mock-domain2.test'
+    }, {
+      where: {email: 'mock-email@mock-domain.test'}
+    }).asCallback(function handleBulkUpdate (err, candidates) {
+      expect(err.message).to.contain('Audit logging not supported for bulk updates');
+      done();
+    });
+  });
+});
+scenario('A Base model being bulk deleted', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  it('is rejected due to lack of support', function (done) {
+    Candidate.destroy({
+      where: {email: 'mock-email@mock-domain.test'}
+    }).asCallback(function handleBulkDelete (err, candidates) {
+      expect(err.message).to.contain('Audit logging not supported for bulk deletion');
       done();
     });
   });
