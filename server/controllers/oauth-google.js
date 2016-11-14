@@ -67,9 +67,8 @@ passport.use(new GoogleStrategy({
       }
 
       // Otherwise, create our candidate
-      // TODO: Define _source via other means
       var candidate = Candidate.build({email: accountEmail, google_access_token: accessToken});
-      candidate._source = 'server';
+      candidate._sourceType = 'server';
       candidate.save().asCallback(function handleSave (err) {
         // If there was an error, callback with it
         if (err) { return cb(err); }

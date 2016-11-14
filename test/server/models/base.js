@@ -22,7 +22,7 @@ scenario.only('A Base model being created', {
 }, function () {
   before(function createCandidate (done) {
     var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
-    candidate._source = 'server';
+    candidate._sourceType = 'server';
     candidate.save().asCallback(done);
   });
 
