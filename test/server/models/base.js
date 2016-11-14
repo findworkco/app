@@ -55,6 +55,29 @@ describe('A Base model being deleted', function () {
   });
 });
 
+scenario.skip('A Base model being created with a candidate source', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  before(function createApplication (done) {
+    var application = Application.build({name: 'Candidate source application'});
+    application._sourceType = 'candidates';
+    application._sourceId = 'mock-candidate-id';
+    application.save().asCallback(done);
+  });
+
+  it('saves candidate source to its audit log', function (done) {
+    AuditLog.findAll().asCallback(function handleCandidates (err, auditLogs) {
+      if (err) { return done(err); }
+      expect(auditLogs).to.have.length(1);
+      expect(auditLogs[0].get('source_type')).to.equal('candidates');
+      expect(auditLogs[0].get('source_id')).to.equal('mock-candidate-id');
+      done();
+    });
+  });
+
+});
+
 describe('A Base model with a moment-based dateonly field', function () {
   describe('when date is null', function () {
     it('returns null as moment', function () {
