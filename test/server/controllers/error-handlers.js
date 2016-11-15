@@ -144,3 +144,36 @@ scenario('A request for a page with an unexposable yet expected error', {
     expect(captureErrorSpy.callCount).to.equal(0);
   });
 });
+
+scenario('A request for a page with a generic error', function () {
+  // Spy on Sentry, silence Winston, and make our request
+  sinonUtils.spy(app.sentryClient, 'captureError');
+  sinonUtils.stub(app.notWinston, 'error');
+  httpUtils.session.init().save({
+    url: serverUtils.getUrl('/error/sync-error'),
+    expectedStatusCode: 500
+  });
+
+  it('receives a 500 response', function () {
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
+  });
+
+  it('reports the error to Sentry without a candidate id', function () {
+    var captureErrorSpy = app.sentryClient.captureError;
+    expect(captureErrorSpy.callCount).to.equal(1);
+    expect(captureErrorSpy.args[0][1].user).to.deep.equal({id: null});
+  });
+
+  describe('when candidate is logged in', function () {
+    httpUtils.session.login().save({
+      url: serverUtils.getUrl('/error/sync-error'),
+      expectedStatusCode: 500
+    });
+
+    it('reports the error to Sentry with candidate id', function () {
+      var captureErrorSpy = app.sentryClient.captureError;
+      expect(captureErrorSpy.callCount).to.equal(2);
+      expect(captureErrorSpy.args[1][1].user.id).to.be.a('String');
+    });
+  });
+});

@@ -92,6 +92,9 @@ html
         |   environment: '#{ENV}',
         |   release: '#{gitRevision}'
         | }).install();
+        if locals.candidate
+          //- https://docs.sentry.io/learn/context/#capturing-the-user
+          | Raven.setUserContext({id: '#{candidate.id}'});
 
     //- If we are serving analytics, then output it
     if locals.serveAnalytics
