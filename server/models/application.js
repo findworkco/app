@@ -41,7 +41,10 @@ module.exports = _.extend(baseDefine('application', {
   follow_up_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
 
   // DEV: We allow url OR name in controller but url always backfills name
-  name: {type: Sequelize.STRING(255), allowNull: false},
+  name: {
+    type: Sequelize.STRING(255), allowNull: false,
+    validate: {notEmpty: {args: true, msg: 'Name cannot be empty'}}
+  },
 
   // Example: Website <a href="https://sky.net/">https://sky.net/</a>
   notes: {type: Sequelize.STRING(64 * 1024) /* 64kb */, defaultValue: '', allowNull: false},
@@ -56,7 +59,10 @@ module.exports = _.extend(baseDefine('application', {
 
   // TODO: Add validation for status
   // TODO: Probably add an index based on application status
-  status: {type: Sequelize.STRING(36), allowNull: false}
+  status: {
+    type: Sequelize.STRING(36), allowNull: false,
+    validate: {isIn: {args: [_.values(exports.APPLICATION_STATUSES)], msg: 'Invalid status provided'}}
+  }
 }, {
   getterMethods: {
     add_interview_url: function () {

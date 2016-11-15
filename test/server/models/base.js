@@ -310,7 +310,7 @@ describe('A Base model with a moment-based datetime/timezone field', function ()
     it('errors out', function (done) {
       var base = Application.build({
         name: 'invalid-timezone-app',
-        status: 'waiting-for-response',
+        status: 'waiting_for_response',
         archived_at_datetime: new Date('2016-02-05T14:00:00Z'),
         archived_at_timezone: 'America/Nowhere'
       });
