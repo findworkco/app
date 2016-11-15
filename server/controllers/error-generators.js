@@ -13,6 +13,11 @@ app.get('/error/async-error', function asyncErrorShow (req, res, next) {
     throw new Error('Async error');
   }, 100);
 });
+app.get('/error/non-critical-error', function nonCriticalErrorShow (req, res, next) {
+  var err = Error('Non critical error');
+  req.captureError(err);
+  res.send('Non-critical error captured');
+});
 
 // jscs:disable maximumLineLength
 // Test via:

@@ -57,7 +57,6 @@ module.exports = _.extend(baseDefine('application', {
   // DEV: This is never null, only an empty string (this gives us falsy consistency)
   posting_url: {type: Sequelize.STRING(1024), defaultValue: '', allowNull: false},
 
-  // TODO: Add validation for status
   // TODO: Probably add an index based on application status
   status: {
     type: Sequelize.STRING(36), allowNull: false,

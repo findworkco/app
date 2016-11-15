@@ -117,9 +117,13 @@ app.get('/settings', [
   }
 ]);
 app.post('/logout', function logoutSave (req, res, next) {
-  // Destroy our session and redirect to the homepage
+  // Destroy our session
   req.session.destroy(function handleDestroy (err) {
-    // TODO: Handle potential error
+    // If there wasn an error, capture it in a non-failing manner
+    // DEV: It's likely the error was talking to Redis but we still want to delete our cookies
+    if (err) { req.captureError(err); }
+
+    // Redirect to root
     res.redirect('/');
   });
 });
@@ -127,9 +131,13 @@ app.post('/delete-account', [
   ensureLoggedIn,
   function deleteAccountSave (req, res, next) {
     // TODO: Destroy our user/cascade destroy applications/interviews
-    // Destroy out session and redirect to the homepage
+    // Destroy our session
     req.session.destroy(function handleDestroy (err) {
-      // TODO: Handle potential error
+      // If there wasn an error, capture it in a non-failing manner
+      // DEV: It's likely the error was talking to Redis but we still want to delete our cookies
+      if (err) { req.captureError(err); }
+
+      // Redirect to root
       res.redirect('/');
     });
   }

@@ -14,6 +14,7 @@ var raven = require('raven');
 var redis = require('redis');
 // DEV: ORM evaluation -- https://gist.github.com/twolfson/13eeeb547271c8ee32707f7b02c2ed90
 var Sequelize = require('sequelize');
+var sentryUtils = require('./utils/sentry');
 var appLocals = {
   _: require('underscore'),
   assert: require('assert'),
@@ -178,6 +179,20 @@ function Server(config) {
   // Load various page configurations
   app.use(function configurePage (req, res, next) {
     res.locals.clean_css = req.session.cleanCss;
+    next();
+  });
+
+  // Add a middleware to report non-critical errors to Sentry
+  app.use(function addCaptureError (req, res, next) {
+    req.captureError = function (err) {
+      // Log our error
+      // TODO: Use actual Winston client
+      app.notWinston.error(err);
+
+      // Prepare and send our request for Sentry
+      var sentryKwargs = sentryUtils.parseRequest(req);
+      app.sentryClient.captureError(err, sentryKwargs);
+    };
     next();
   });
 }
