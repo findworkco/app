@@ -212,9 +212,20 @@ scenario('A request to GET /oauth/google/callback with a non-existant user', {
   });
 });
 
-scenario.skip('A request to GET /oauth/google/callback with an existant user', {
+scenario('A request to GET /oauth/google/callback with an existant user', {
+  dbFixtures: ['candidate-default'],
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
 }, function () {
+  // Verify we have a different access token
+  before(function assertAccessToken (done) {
+    Candidate.findAll().asCallback(function handleCandidates (err, candidates) {
+      if (err) { return done(err); }
+      expect(candidates).to.have.length(1);
+      expect(candidates[0].get('google_access_token')).to.equal('mock_access_token_fixtured');
+      done();
+    });
+  });
+
   // Make our request
   httpUtils.session.init().save({
     // Redirects to fake Google OAuth, then to `/oauth/google/callback`
@@ -227,12 +238,21 @@ scenario.skip('A request to GET /oauth/google/callback with an existant user', {
     expect(this.$('title').text()).to.equal('Schedule - Find Work');
   });
 
-  it.skip('doesn\'t create a new user', function () {
-    // TODO: Query PostgreSQL
+  it('doesn\'t create a new user', function (done) {
+    Candidate.findAll().asCallback(function handleCandidates (err, candidates) {
+      if (err) { return done(err); }
+      expect(candidates).to.have.length(1);
+      done();
+    });
   });
 
-  it.skip('updates Google access token', function () {
-    // TODO: Query PostgreSQL
+  it('updates Google access token', function (done) {
+    Candidate.findAll().asCallback(function handleCandidates (err, candidates) {
+      if (err) { return done(err); }
+      expect(candidates).to.have.length(1);
+      expect(candidates[0].get('google_access_token')).to.equal('mock_access_token');
+      done();
+    });
   });
 
   it.skip('doesn\'t send new user a welcome email', function () {

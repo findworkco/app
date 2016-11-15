@@ -105,6 +105,7 @@
     "mocha": "~2.4.5",
     "nodemon": "~1.9.2",
     "request": "~2.72.0",
+    "sequelize-fixtures": "~0.5.5",
     "sinon": "~1.17.6",
     "spy-server": "~1.0.0",
     "twolfson-style": "~1.6.0",

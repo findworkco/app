@@ -20,8 +20,7 @@ scenario('A Base model being created', {
 }, function () {
   before(function createCandidate (done) {
     var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
-    candidate._sourceType = 'server';
-    candidate.save().asCallback(done);
+    candidate.save({_sourceType: 'server'}).asCallback(done);
   });
 
   it('is saved to an audit log', function (done) {
@@ -44,22 +43,17 @@ scenario('A Base model being created', {
 });
 
 scenario('A Base model being updated', {
-  dbFixtures: [],
+  dbFixtures: ['candidate-default'],
   googleFixtures: null
 }, function () {
-  before(function createCandidate (done) {
-    // TODO: Move from creating candidate here to using fixtures
-    var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
-    candidate._sourceType = 'server';
-    candidate.save().asCallback(done);
-  });
   before(function updateCandidate (done) {
     Candidate.find().asCallback(function handleFind (err, candidate) {
       if (err) { return done(err); }
-      candidate._sourceType = 'candidates';
-      candidate._sourceId = candidate.get('id');
       candidate.update({
         email: 'mock-email2@mock-domain2.test'
+      }, {
+        _sourceType: 'candidates',
+        _sourceId: candidate.get('id')
       }).asCallback(done);
     });
   });
@@ -85,21 +79,16 @@ scenario('A Base model being updated', {
 });
 
 scenario('A Base model being deleted', {
-  dbFixtures: [],
+  dbFixtures: ['candidate-default'],
   googleFixtures: null
 }, function () {
-  before(function createCandidate (done) {
-    // TODO: Move from creating candidate here to using fixtures
-    var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
-    candidate._sourceType = 'server';
-    candidate.save().asCallback(done);
-  });
   before(function deleteCandidate (done) {
     Candidate.find().asCallback(function handleFind (err, candidate) {
       if (err) { return done(err); }
-      candidate._sourceType = 'candidates';
-      candidate._sourceId = candidate.get('id');
-      candidate.destroy().asCallback(done);
+      candidate.destroy({
+        _sourceType: 'candidates',
+        _sourceId: candidate.get('id')
+      }).asCallback(done);
     });
   });
 

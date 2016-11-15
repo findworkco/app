@@ -1,5 +1,7 @@
 // Load in our dependencies
 var _ = require('underscore');
+var sequelizeFixtures = require('sequelize-fixtures');
+var dbFixtures = require('./db-fixtures');
 var fakeGoogleFactory = require('./fake-google');
 var server = require('../../../server/index.js');
 var sequelize = server.app.sequelize;
@@ -20,7 +22,7 @@ function _scenario(key, describeStr, options, describeFn) {
 
   // Set up default options
   options = _.extend({
-    dbFixtures: [/* Use factoryFixtures.DEFAULT_FIXTURES */],
+    dbFixtures: dbFixtures.DEFAULT_FIXTURES,
     // DEV: Later services might want to add/remove a single fixture
     //   We could support that via `{add: [], remove: [], removeAll: true}`
     //   Default behavior would be `[overrides] = {add: [overrides], removeAll: true}`
@@ -52,7 +54,24 @@ function _scenario(key, describeStr, options, describeFn) {
         var tableNames = ['audit_logs', 'candidates'];
         sequelize.query('TRUNCATE TABLE ' + tableNames.join(', ')).asCallback(done);
       });
-      // TODO: Add fixtures setup
+      before(function installFixtures (done) {
+        // Resolve our fixtures
+        var selectedFixturesObj = _.pick(dbFixtures, options.dbFixtures);
+        var missingFixtures = _.difference(options.dbFixtures, Object.keys(selectedFixturesObj));
+        if (missingFixtures.length !== 0) {
+          throw new Error('We were unable to find database fixtures: ' + missingFixtures.join(', ') + '. ' +
+            'Please verify `options.dbFixtures` is correct');
+        }
+
+        // Resolve our fixtures, add in their source, and load into the db
+        var selectedFixtures = _.values(selectedFixturesObj);
+        selectedFixtures = selectedFixtures.map(function addBuildOptions (fixture) {
+          return _.defaults({
+            saveOptions: _.defaults({_sourceType: 'server'}, fixture.saveOptions)
+          }, fixture);
+        });
+        sequelizeFixtures.loadFixtures(selectedFixtures, sequelize.models).asCallback(done);
+      });
     }
 
     // If we have Google fixtures, then run a server

@@ -102,12 +102,12 @@ module.exports = _.extend(function (modelName, attributes, options) {
   // Add hooks for audit logging
   // http://docs.sequelizejs.com/en/v3/docs/hooks/#declaring-hooks
   // http://docs.sequelizejs.com/en/v3/docs/hooks/#model-hooks
-  function saveAuditLog(action, model) {
+  function saveAuditLog(action, model, options) {
     // Resolve our model's constructor
     var Model = model.Model;
     var auditLog = AuditLog.build({
-      source_type: model._sourceType, // 'server', 'candidates'
-      source_id: model._sourceId, // NULL (server), candidate.id
+      source_type: options._sourceType, // 'server', 'candidates'
+      source_id: options._sourceId, // NULL (server), candidate.id
       table_name: Model.tableName,
       table_row_id: model.get('id'),
       action: action,
@@ -131,13 +131,13 @@ module.exports = _.extend(function (modelName, attributes, options) {
       throw new Error('Audit logging not supported for bulk deletion; either add support or use `create` directly');
     },
     afterCreate: function (model, options) {
-      return saveAuditLog('create', model);
+      return saveAuditLog('create', model, options);
     },
     afterUpdate: function (model, options) {
-      return saveAuditLog('update', model);
+      return saveAuditLog('update', model, options);
     },
     afterDelete: function (model, options) {
-      return saveAuditLog('delete', model);
+      return saveAuditLog('delete', model, options);
     }
   }, options.hooks);
 
