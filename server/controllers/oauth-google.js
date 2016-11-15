@@ -5,6 +5,7 @@ var _ = require('underscore');
 var HttpError = require('http-errors');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var passport = require('passport');
+var AuditLog = require('../models/audit-log');
 var Candidate = require('../models/candidate');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
@@ -55,6 +56,7 @@ passport.use(new GoogleStrategy({
       // If we have a candidate
       if (_candidate) {
         // Update their access token (refresh token isn't defined for us)
+        _candidate._sourceType = AuditLog.SOURCE_SERVER;
         _candidate.update({google_access_token: accessToken})
             .asCallback(function handleUpdate (err) {
           // If there was an error, send it to Sentry (no need to bail)
@@ -68,6 +70,7 @@ passport.use(new GoogleStrategy({
 
       // Otherwise, create our candidate
       var candidate = Candidate.build({email: accountEmail, google_access_token: accessToken});
+      candidate._sourceType = AuditLog.SOURCE_SERVER;
       candidate.save().asCallback(function handleSave (err) {
         // If there was an error, callback with it
         if (err) { return cb(err); }

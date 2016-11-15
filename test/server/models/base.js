@@ -1,7 +1,10 @@
 // Load in our dependencies
 var expect = require('chai').expect;
 var moment = require('moment-timezone');
+var AuditLog = require('../../../server/models/audit-log.js');
 var Application = require('../../../server/models/application.js');
+var Candidate = require('../../../server/models/candidate.js');
+var scenario = require('../utils/test').scenario;
 
 // Start our tests
 describe('A Base model', function () {
@@ -11,21 +14,178 @@ describe('A Base model', function () {
   });
 });
 
-// These should be possible with hooks
-// http://docs.sequelizejs.com/en/v3/api/hooks/
-describe('A Base model being created', function () {
-  it.skip('is saved to an audit log', function () {
+scenario('A Base model being created', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  before(function createCandidate (done) {
+    var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
+    candidate._sourceType = 'server';
+    candidate.save().asCallback(done);
+  });
+
+  it('is saved to an audit log', function (done) {
     // Assert source user, table, id, previous, and new data
+    AuditLog.findAll().asCallback(function handleAuditLogs (err, auditLogs) {
+      if (err) { return done(err); }
+      expect(auditLogs).to.have.length(1);
+      expect(auditLogs[0].get('source_type')).to.equal('server');
+      expect(auditLogs[0].get('source_id')).to.equal(null);
+      expect(auditLogs[0].get('table_name')).to.equal('candidates');
+      expect(auditLogs[0].get('table_row_id')).to.be.a('String');
+      expect(auditLogs[0].get('action')).to.equal('create');
+      expect(auditLogs[0].get('timestamp')).to.be.a('Date');
+      expect(auditLogs[0].get('previous_values')).to.deep.equal({});
+      expect(auditLogs[0].get('current_values')).to.have.property('email',
+        'mock-email@mock-domain.test');
+      done();
+    });
   });
 });
-describe('A Base model being updated', function () {
-  it.skip('is saved to an audit log', function () {
+
+scenario('A Base model being updated', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  before(function createCandidate (done) {
+    // TODO: Move from creating candidate here to using fixtures
+    var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
+    candidate._sourceType = 'server';
+    candidate.save().asCallback(done);
+  });
+  before(function updateCandidate (done) {
+    Candidate.find().asCallback(function handleFind (err, candidate) {
+      if (err) { return done(err); }
+      candidate._sourceType = 'candidates';
+      candidate._sourceId = candidate.get('id');
+      candidate.update({
+        email: 'mock-email2@mock-domain2.test'
+      }).asCallback(done);
+    });
+  });
+
+  it('is saved to an audit log', function (done) {
     // Assert source user, table, id, previous, and new data
+    AuditLog.findAll({where: {source_type: 'candidates'}}).asCallback(function handleAuditLogs (err, auditLogs) {
+      if (err) { return done(err); }
+      expect(auditLogs).to.have.length(1);
+      expect(auditLogs[0].get('source_type')).to.equal('candidates');
+      expect(auditLogs[0].get('source_id')).to.be.a('String');
+      expect(auditLogs[0].get('table_name')).to.equal('candidates');
+      expect(auditLogs[0].get('table_row_id')).to.be.a('String');
+      expect(auditLogs[0].get('action')).to.equal('update');
+      expect(auditLogs[0].get('timestamp')).to.be.a('Date');
+      expect(auditLogs[0].get('previous_values')).to.have.property('email',
+        'mock-email@mock-domain.test');
+      expect(auditLogs[0].get('current_values')).to.have.property('email',
+        'mock-email2@mock-domain2.test');
+      done();
+    });
   });
 });
-describe('A Base model being deleted', function () {
-  it.skip('is saved to an audit log', function () {
+
+scenario('A Base model being deleted', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  before(function createCandidate (done) {
+    // TODO: Move from creating candidate here to using fixtures
+    var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
+    candidate._sourceType = 'server';
+    candidate.save().asCallback(done);
+  });
+  before(function deleteCandidate (done) {
+    Candidate.find().asCallback(function handleFind (err, candidate) {
+      if (err) { return done(err); }
+      candidate._sourceType = 'candidates';
+      candidate._sourceId = candidate.get('id');
+      candidate.destroy().asCallback(done);
+    });
+  });
+
+  it('is saved to an audit log', function (done) {
     // Assert source user, table, id, previous, and new data
+    AuditLog.findAll({where: {source_type: 'candidates'}}).asCallback(function handleAuditLogs (err, auditLogs) {
+      if (err) { return done(err); }
+      expect(auditLogs).to.have.length(1);
+      expect(auditLogs[0].get('source_type')).to.equal('candidates');
+      expect(auditLogs[0].get('source_id')).to.be.a('String');
+      expect(auditLogs[0].get('table_name')).to.equal('candidates');
+      expect(auditLogs[0].get('table_row_id')).to.be.a('String');
+      expect(auditLogs[0].get('action')).to.equal('delete');
+      expect(auditLogs[0].get('timestamp')).to.be.a('Date');
+      expect(auditLogs[0].get('previous_values')).to.have.property('email',
+        'mock-email@mock-domain.test');
+      expect(auditLogs[0].get('current_values')).to.have.property('email',
+        'mock-email@mock-domain.test');
+      done();
+    });
+  });
+});
+
+// http://docs.sequelizejs.com/en/v3/docs/instances/#working-in-bulk-creating-updating-and-destroying-multiple-rows-at-once
+scenario('A Base model being bulk created', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  it('is rejected due to lack of support', function (done) {
+    Candidate.bulkCreate([
+      {email: 'mock-email@mock-domain.test'}
+    ]).asCallback(function handleBulkCreate (err, candidates) {
+      expect(err.message).to.contain('Audit logging not supported for bulk creation');
+      done();
+    });
+  });
+});
+scenario('A Base model being bulk updated', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  it('is rejected due to lack of support', function (done) {
+    Candidate.update({
+      email: 'mock-email2@mock-domain2.test'
+    }, {
+      where: {email: 'mock-email@mock-domain.test'}
+    }).asCallback(function handleBulkUpdate (err, candidates) {
+      expect(err.message).to.contain('Audit logging not supported for bulk updates');
+      done();
+    });
+  });
+});
+scenario('A Base model being bulk deleted', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  it('is rejected due to lack of support', function (done) {
+    Candidate.destroy({
+      where: {email: 'mock-email@mock-domain.test'}
+    }).asCallback(function handleBulkDelete (err, candidates) {
+      expect(err.message).to.contain('Audit logging not supported for bulk deletion');
+      done();
+    });
+  });
+});
+
+// DEV: Test is currently skipped due to no applications in database
+scenario.skip('A Base model being created with a candidate source', {
+  dbFixtures: [],
+  googleFixtures: null
+}, function () {
+  before(function createApplication (done) {
+    var application = Application.build({name: 'Candidate source application'});
+    application._sourceType = 'candidates';
+    application._sourceId = 'mock-candidate-id';
+    application.save().asCallback(done);
+  });
+
+  it('saves candidate source to its audit log', function (done) {
+    AuditLog.findAll().asCallback(function handleAuditLogs (err, auditLogs) {
+      if (err) { return done(err); }
+      expect(auditLogs).to.have.length(1);
+      expect(auditLogs[0].get('source_type')).to.equal('candidates');
+      expect(auditLogs[0].get('source_id')).to.equal('mock-candidate-id');
+      done();
+    });
   });
 });
 

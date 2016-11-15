@@ -4,6 +4,7 @@ var assert = require('assert');
 var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
 var sequelize = require('../index.js').app.sequelize;
+var AuditLog = require('./audit-log');
 
 // Define our custom types
 exports.MOMENT_DATEONLY = 'MOMENT_DATEONLY';
@@ -97,6 +98,48 @@ module.exports = _.extend(function (modelName, attributes, options) {
       };
     }
   });
+
+  // Add hooks for audit logging
+  // http://docs.sequelizejs.com/en/v3/docs/hooks/#declaring-hooks
+  // http://docs.sequelizejs.com/en/v3/docs/hooks/#model-hooks
+  function saveAuditLog(action, model) {
+    // Resolve our model's constructor
+    var Model = model.Model;
+    var auditLog = AuditLog.build({
+      source_type: model._sourceType, // 'server', 'candidates'
+      source_id: model._sourceId, // NULL (server), candidate.id
+      table_name: Model.tableName,
+      table_row_id: model.get('id'),
+      action: action,
+      timestamp: new Date(),
+      // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L86-L87
+      // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L417-L433
+      previous_values: model._previousDataValues,
+      current_values: model.dataValues
+    });
+    return auditLog.save();
+  }
+  options.hooks = _.extend({
+    // DEV: We don't support bulk actions due to not knowing previous/current info for models
+    beforeBulkCreate: function () {
+      throw new Error('Audit logging not supported for bulk creation; either add support or use `create` directly');
+    },
+    beforeBulkUpdate: function () {
+      throw new Error('Audit logging not supported for bulk updates; either add support or use `create` directly');
+    },
+    beforeBulkDelete: function () {
+      throw new Error('Audit logging not supported for bulk deletion; either add support or use `create` directly');
+    },
+    afterCreate: function (model, options) {
+      return saveAuditLog('create', model);
+    },
+    afterUpdate: function (model, options) {
+      return saveAuditLog('update', model);
+    },
+    afterDelete: function (model, options) {
+      return saveAuditLog('delete', model);
+    }
+  }, options.hooks);
 
   // Build our class
   return sequelize.define(modelName, attributes, options);
