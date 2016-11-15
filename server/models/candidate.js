@@ -5,7 +5,6 @@ var baseDefine = require('./base.js');
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
-// TODO: Add in support for `audit_log`
 module.exports = _.extend(baseDefine('candidate', {
   id: {type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, primaryKey: true},
   // DEV: Sequelize interprets `unique` as an index key as well

@@ -5,12 +5,8 @@ var Application = require('./application');
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
-// TODO: Add in db properties like `created_at`/`updated_at` (prob handled via timestamps in `baseDefine`)
-// TODO: Add in support for `audit_log`
 module.exports = baseDefine('interview', {
-  // TODO: Switch over to Sequelize.UUIDV4
-  // TODO: Verify we make this a UNIQUE PRIMARY INDEX in SQL migrations
-  id: {type: Sequelize.STRING(36), primaryKey: true},
+  id: {type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, primaryKey: true},
 
   // TODO: Verify foreign key properly set up
   application_id: {

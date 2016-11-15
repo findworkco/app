@@ -3,8 +3,9 @@ var _ = require('underscore');
 var assert = require('assert');
 var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
-var sequelize = require('../index.js').app.sequelize;
 var AuditLog = require('./audit-log');
+var sequelize = require('../index.js').app.sequelize;
+var timezones = require('../utils/timezones');
 
 // Define our custom types
 exports.MOMENT_DATEONLY = 'MOMENT_DATEONLY';
@@ -55,15 +56,21 @@ module.exports = _.extend(function (modelName, attributes, options) {
         'Expected `_moment` suffix on "' + attributeKey + '" for "MOMENT_TZ" type');
       dateTimeKey = attributeKey.replace('_moment', '_datetime');
       timezoneKey = attributeKey.replace('_moment', '_timezone');
-      // TODO: Fix up validation for dateTime so we can have `<` or `>` other date times
+      // TODO: Isolate `datetime` validation from `timezone` validation
+      //   so we can have `<` or `>` other date times
       //   This is likely by not reusing validation for timezone
       attributes[dateTimeKey] = _.defaults({
         type: Sequelize.DATE
       }, attribute);
-      // TODO: Correct timezone with proper maximum IANA length
-      // TODO: Add validation timezone is not undefined and is proper timezone
+      // DEV: For safety, we will keep 255 characters -- we prob could do 64 but why risk it
+      // jscs:disable maximumLineLength
+      // DEV: Longest timezone in moment-timezone is 32 characters long
+      //   require('underscore').values(require('moment-timezone').tz._names).sort(function (a, b) { return a.length - b.length; });
+      //   Longest: America/Argentina/ComodRivadavia
+      // jscs:enable maximumLineLength
       attributes[timezoneKey] = _.defaults({
-        type: Sequelize.STRING(255)
+        type: Sequelize.STRING(255),
+        validate: {isIn: {args: [timezones], msg: 'Invalid timezone provided'}}
       }, attribute);
 
       // Add getter/setters

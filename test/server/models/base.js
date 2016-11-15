@@ -307,8 +307,20 @@ describe('A Base model with a moment-based datetime/timezone field', function ()
   });
 
   describe('when updating timezone to invalid timezone', function () {
-    it.skip('errors out', function () {
-      // Utilize validation to verify timezone validity
+    it('errors out', function (done) {
+      var base = Application.build({
+        name: 'invalid-timezone-app',
+        status: 'waiting-for-response',
+        archived_at_datetime: new Date('2016-02-05T14:00:00Z'),
+        archived_at_timezone: 'America/Nowhere'
+      });
+      base.validate().asCallback(function handleError (err, validationErr) {
+        expect(err).to.equal(null);
+        expect(validationErr.errors).to.have.length(1);
+        expect(validationErr.errors[0]).to.have.property('path', 'archived_at_timezone');
+        expect(validationErr.errors[0]).to.have.property('message', 'Invalid timezone provided');
+        done();
+      });
     });
   });
 });
