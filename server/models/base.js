@@ -1,6 +1,7 @@
 // Load in our dependencies
 var _ = require('underscore');
 var assert = require('assert');
+var inflection = require('inflection');
 var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
 var AuditLog = require('./audit-log');
@@ -54,8 +55,12 @@ module.exports = _.extend(function (modelName, attributes, options) {
       delete attributes[attributeKey];
       assert.notEqual(attributeKey.indexOf('_moment'), -1,
         'Expected `_moment` suffix on "' + attributeKey + '" for "MOMENT_TZ" type');
+      // archived_at_moment -> archived_at_datetime
+      // archived_at_moment -> archived_at_timezone
+      // archived_at_moment -> bothArchivedAtValuesOrNone
       dateTimeKey = attributeKey.replace('_moment', '_datetime');
       timezoneKey = attributeKey.replace('_moment', '_timezone');
+      var validateKey = inflection.camelize('both_' + attributeKey.replace('_moment', '_values_or_none'), true);
       // TODO: Isolate `datetime` validation from `timezone` validation
       //   so we can have `<` or `>` other date times
       //   This is likely by not reusing validation for timezone
@@ -73,10 +78,11 @@ module.exports = _.extend(function (modelName, attributes, options) {
         validate: {isIn: {args: [timezones], msg: 'Invalid timezone provided'}}
       }, attribute);
 
-      // Add getter/setters
+      // Add getter/setters and validation
       momentKey = attributeKey;
       options.getterMethods = options.getterMethods ? _.clone(options.getterMethods) : {};
       options.setterMethods = options.setterMethods ? _.clone(options.setterMethods) : {};
+      options.validate = options.validate ? _.clone(options.validate) : {};
       options.getterMethods[momentKey] = function () {
         var dateTimeVal = this.getDataValue(dateTimeKey);
         var timezoneVal = this.getDataValue(timezoneKey);
@@ -102,6 +108,11 @@ module.exports = _.extend(function (modelName, attributes, options) {
           this.setDataValue(dateTimeKey, null);
           this.setDataValue(timezoneKey, null);
         }
+      };
+      // http://docs.sequelizejs.com/en/v3/docs/models-definition/#model-validations
+      options.validate[validateKey] = function () {
+        // DEV: We reuse our getter as it already performs our assertions
+        void this.get(momentKey);
       };
     }
   });

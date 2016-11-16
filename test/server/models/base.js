@@ -234,38 +234,58 @@ describe('A Base model with a moment-based datetime/timezone field', function ()
   });
 
   describe('when datetime is null but timezone isn\'t', function () {
-    it('errors out on moment `get`', function () {
-      var base = Application.build({
+    before(function buildModel () {
+      this.base = Application.build({
+        name: 'Mock company', status: 'received_offer',
         archived_at_datetime: null,
         archived_at_timezone: 'America/Chicago'
       });
+    });
+    after(function cleanup () {
+      delete this.model;
+    });
+    it('errors out on moment `get`', function () {
+      var that = this;
       expect(function getArchivedAtMoment () {
-        base.get('archived_at_moment');
+        that.base.get('archived_at_moment');
       }).to.throw(/Expected "archived_at_datetime" to not be null/);
     });
-    it.skip('errors out when loaded via query', function () {
-      // Verify this when loaded from database (validation)
-    });
-    it.skip('errors out when saved to database', function () {
-      // Verify this when saved to database (validation)
+    it('generates a validation error', function (done) {
+      this.base.validate().asCallback(function handleError (err, validationErr) {
+        expect(err).to.equal(null);
+        expect(validationErr.errors).to.have.length(1);
+        expect(validationErr.errors[0]).to.have.property('path', 'bothArchivedAtValuesOrNone');
+        expect(validationErr.errors[0].message).to.have.contain('Expected "archived_at_datetime" to not be null');
+        done();
+      });
     });
   });
 
   describe('when datetime isn\'t null but timezone is', function () {
-    it('errors out on moment `get`', function () {
-      var base = Application.build({
-        archived_at_datetime: null,
-        archived_at_timezone: 'America/Chicago'
+    before(function buildModel () {
+      this.base = Application.build({
+        name: 'Mock company', status: 'received_offer',
+        archived_at_datetime: new Date('2016-02-05T14:00:00Z'),
+        archived_at_timezone: null
       });
+    });
+    after(function cleanup () {
+      delete this.model;
+    });
+    it('errors out on moment `get`', function () {
+      var that = this;
       expect(function getArchivedAtMoment () {
-        base.get('archived_at_moment');
-      }).to.throw(/Expected "archived_at_datetime" to not be null/);
+        that.base.get('archived_at_moment');
+      }).to.throw(/Expected "archived_at_timezone" to not be null/);
     });
-    it.skip('errors out when loaded via query', function () {
-      // Verify this when loaded from database (validation)
-    });
-    it.skip('errors out when saved to database', function () {
-      // Verify this when saved to database (validation)
+    it('generates a validation error', function (done) {
+      this.base.validate().asCallback(function handleError (err, validationErr) {
+        expect(err).to.equal(null);
+        expect(validationErr.errors).to.have.length(1);
+        expect(validationErr.errors[0]).to.have.property('path', 'bothArchivedAtValuesOrNone');
+        expect(validationErr.errors[0].message).to.have.contain('Expected "archived_at_timezone" to not be null');
+        done();
+      });
     });
   });
 
