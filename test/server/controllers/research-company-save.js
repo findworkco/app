@@ -108,7 +108,7 @@ scenario('A request to "Save for later" from POST /research-company', function (
     expect(this.$('title').text()).to.equal('Job application - Mock company - Find Work');
   });
 
-  it.skip('creates saved for later application with company name', function () {
+  it.skip('creates saved for later application with name and company name', function () {
     // Assert against database and verify 200 response
   });
 });
@@ -132,6 +132,7 @@ scenario('A request to "Apply to company" from POST /research-company', {
 
   it('opens "Waiting for response" form with company name prefilled', function () {
     expect(this.$('title').text()).to.equal('Add job application - Waiting for response - Find Work');
+    expect(this.$('input[name="name"]').val()).to.equal('Mock company');
     expect(this.$('input[name="company_name"]').val()).to.equal('Mock company');
   });
 });

@@ -30,6 +30,7 @@ block content
       +company-name-input().invisible.small-hidden
       form.form--inline.push--right(method="POST", action="/add-application/save-for-later")
         +csrf-input()
+        input(type="hidden", name="name", value=company_name)
         input(type="hidden", name="company_name", value=company_name)
         button.btn.btn--default(type="submit", disabled=!company_name) Save for later
       //- DEV: We use a form (even though this could be a link) to support disabled behavior elegantly
