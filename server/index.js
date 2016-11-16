@@ -15,6 +15,7 @@ var redis = require('redis');
 // DEV: ORM evaluation -- https://gist.github.com/twolfson/13eeeb547271c8ee32707f7b02c2ed90
 var Sequelize = require('sequelize');
 var sentryUtils = require('./utils/sentry');
+var tzLocales = require('./utils/tz-locales');
 var appLocals = {
   _: require('underscore'),
   assert: require('assert'),
@@ -22,8 +23,7 @@ var appLocals = {
   countryData: require('country-data'),
   moment: require('moment-timezone'),
   sanitizeHtml: require('sanitize-html'),
-  timezoneAbbrs: require('./utils/timezone-abbrs.js'),
-  timezonesByCountryCode: require('../vendor/tz-locales.json')
+  timezoneAbbrs: require('./utils/timezone-abbrs.js')
 };
 
 // DEV: Historically I (@twolfson) have built Node.js servers that aren't singleton based
@@ -41,6 +41,12 @@ appLocals.googleAnalyticsId = config.googleAnalyticsId;
 appLocals.gitRevision = config.gitRevision;
 appLocals.sentryBrowserDSN = config.sentry.browserDSN;
 appLocals.serveAnalytics = config.serveAnalytics;
+
+// Save time-dependent locals
+appLocals.timezonesByCountryCode = tzLocales.getCurrent();
+setInterval(function updateTimezoneByCountryCode () {
+  appLocals.timezonesByCountryCode = tzLocales.getCurrent();
+}, 1000 * 60 * 60 /* 1 hour */);
 
 // Define our server constructor
 function Server(config) {
