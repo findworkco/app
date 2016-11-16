@@ -22,10 +22,10 @@ app.get('/_dev/setup', function devSetupShow (req, res, next) {
   // Override current session with mock user info
   // Example usage: `/_dev/schedule?logged_in=true`
   if (req.query.get('logged_in') === 'true') {
-    req.session.passport = {user: 'dev-user@findwork.test'};
+    req.session.passport = {user: '00000000-0000-0000-0000-000000000001'};
   }
   if (req.query.get('screenshot') === 'true') {
-    req.session.passport = {user: 'todd@findwork.co'};
+    req.session.passport = {user: '00000000-0000-0000-0000-000000000000'};
   }
 
   // If there is a request for clean CSS, set it up
