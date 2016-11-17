@@ -3,7 +3,7 @@ var expect = require('chai').expect;
 var Interview = require('../../../server/models/interview.js');
 
 // Start our tests
-describe('An Interview model', function () {
+scenario.model('An Interview model', function () {
   it.skip('requires `date_time` to be non-empty', function () {
     var interview = Interview.build({});
     expect(interview).to.equal(false);

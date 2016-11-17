@@ -308,6 +308,10 @@ app.post('/application/:id/add-interview', function interviewAddSave (req, res, 
 });
 app.get('/interview/:id', function interviewEditShow (req, res, next) {
   var mockInterview = interviewMockData.getById(req.params.id);
+  // TODO: Load interview before controller via all-in-one loader and handle 404 there
+  if (mockInterview === null) {
+    return next();
+  }
   res.render('interview-edit-show.jade', {
     selectedApplication: mockInterview.application,
     selectedInterview: mockInterview

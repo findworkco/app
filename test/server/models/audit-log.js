@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 var AuditLog = require('../../../server/models/audit-log.js');
 
 // Start our tests
-describe('An audit log', function () {
+scenario.model('An audit log', function () {
   it('doesn\'t have created_at/updated_at timestamps', function () {
     expect(AuditLog.attributes).to.not.have.property('created_at');
     expect(AuditLog.attributes).to.not.have.property('updated_at');
@@ -24,7 +24,7 @@ var validAuditLog = {
   previous_values: {},
   current_values: {}
 };
-describe('A valid audit log', function () {
+scenario.model('A valid audit log', function () {
   it('receives no validation errors', function (done) {
     var auditLog = AuditLog.build(_.clone(validAuditLog));
     auditLog.validate().asCallback(function handleError (err, validationErr) {
@@ -34,7 +34,7 @@ describe('A valid audit log', function () {
     });
   });
 });
-describe('An audit log with an invalid source', function () {
+scenario.model('An audit log with an invalid source', function () {
   it('receives validation errors', function (done) {
     var auditLog = AuditLog.build(_.defaults({
       source_type: 'invalid-source'
@@ -48,7 +48,7 @@ describe('An audit log with an invalid source', function () {
     });
   });
 });
-describe('An audit log with an non-server source and no id', function () {
+scenario.model('An audit log with an non-server source and no id', function () {
   it('receives validation errors', function (done) {
     var auditLog = AuditLog.build(_.defaults({
       source_type: 'candidates'
@@ -63,7 +63,7 @@ describe('An audit log with an non-server source and no id', function () {
     });
   });
 });
-describe('An audit log with an non-server source and an id', function () {
+scenario.model('An audit log with an non-server source and an id', function () {
   it('receives no validation errors', function (done) {
     var auditLog = AuditLog.build(_.defaults({
       source_type: 'candidates',
@@ -76,7 +76,7 @@ describe('An audit log with an non-server source and an id', function () {
     });
   });
 });
-describe('An audit log with an invalid action', function () {
+scenario.model('An audit log with an invalid action', function () {
   it('receives validation errors', function (done) {
     var auditLog = AuditLog.build(_.defaults({
       action: 'invalid-action'

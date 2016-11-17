@@ -7,17 +7,14 @@ var Candidate = require('../../../server/models/candidate.js');
 var scenario = require('../utils/test').scenario;
 
 // Start our tests
-describe('A Base model', function () {
+scenario.model('A Base model', function () {
   it('has timestamp fields', function () {
     expect(Application.attributes).to.have.property('created_at');
     expect(Application.attributes).to.have.property('updated_at');
   });
 });
 
-scenario('A Base model being created', {
-  dbFixtures: [],
-  googleFixtures: null
-}, function () {
+scenario.model('A Base model being created', function () {
   before(function createCandidate (done) {
     var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
     candidate.save({_sourceType: 'server'}).asCallback(done);
@@ -42,9 +39,8 @@ scenario('A Base model being created', {
   });
 });
 
-scenario('A Base model being updated', {
-  dbFixtures: ['candidate-default'],
-  googleFixtures: null
+scenario.model('A Base model being updated', {
+  dbFixtures: ['candidate-default']
 }, function () {
   before(function updateCandidate (done) {
     Candidate.find().asCallback(function handleFind (err, candidate) {
@@ -78,9 +74,8 @@ scenario('A Base model being updated', {
   });
 });
 
-scenario('A Base model being deleted', {
-  dbFixtures: ['candidate-default'],
-  googleFixtures: null
+scenario.model('A Base model being deleted', {
+  dbFixtures: ['candidate-default']
 }, function () {
   before(function deleteCandidate (done) {
     Candidate.find().asCallback(function handleFind (err, candidate) {
@@ -113,10 +108,7 @@ scenario('A Base model being deleted', {
 });
 
 // http://docs.sequelizejs.com/en/v3/docs/instances/#working-in-bulk-creating-updating-and-destroying-multiple-rows-at-once
-scenario('A Base model being bulk created', {
-  dbFixtures: [],
-  googleFixtures: null
-}, function () {
+scenario.model('A Base model being bulk created', function () {
   it('is rejected due to lack of support', function (done) {
     Candidate.bulkCreate([
       {email: 'mock-email@mock-domain.test'}
@@ -126,10 +118,7 @@ scenario('A Base model being bulk created', {
     });
   });
 });
-scenario('A Base model being bulk updated', {
-  dbFixtures: [],
-  googleFixtures: null
-}, function () {
+scenario.model('A Base model being bulk updated', function () {
   it('is rejected due to lack of support', function (done) {
     Candidate.update({
       email: 'mock-email2@mock-domain2.test'
@@ -141,10 +130,7 @@ scenario('A Base model being bulk updated', {
     });
   });
 });
-scenario('A Base model being bulk deleted', {
-  dbFixtures: [],
-  googleFixtures: null
-}, function () {
+scenario.model('A Base model being bulk deleted', function () {
   it('is rejected due to lack of support', function (done) {
     Candidate.destroy({
       where: {email: 'mock-email@mock-domain.test'}
@@ -156,10 +142,7 @@ scenario('A Base model being bulk deleted', {
 });
 
 // DEV: Test is currently skipped due to no applications in database
-scenario.skip('A Base model being created with a candidate source', {
-  dbFixtures: [],
-  googleFixtures: null
-}, function () {
+scenario.model.skip('A Base model being created with a candidate source', function () {
   before(function createApplication (done) {
     var application = Application.build({name: 'Candidate source application'});
     application._sourceType = 'candidates';
@@ -178,7 +161,7 @@ scenario.skip('A Base model being created with a candidate source', {
   });
 });
 
-describe('A Base model with a moment-based dateonly field', function () {
+scenario.model('A Base model with a moment-based dateonly field', function () {
   describe('when date is null', function () {
     it('returns null as moment', function () {
       var base = Application.build({application_date_date: null});
@@ -211,7 +194,7 @@ describe('A Base model with a moment-based dateonly field', function () {
   });
 });
 
-describe('A Base model with a moment-based datetime/timezone field', function () {
+scenario.model('A Base model with a moment-based datetime/timezone field', function () {
   describe('when datetime and timezone are null', function () {
     it('returns null as moment', function () {
       var base = Application.build({

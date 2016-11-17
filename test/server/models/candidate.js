@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 var Candidate = require('../../../server/models/candidate.js');
 
 // Start our tests
-describe('A Candidate model', function () {
+scenario.model('A Candidate model', function () {
   it('requires `email` to be an email', function (done) {
     var candidate = Candidate.build({email: 'foo'});
     candidate.validate().asCallback(function handleError (err, validationErr) {
@@ -17,7 +17,7 @@ describe('A Candidate model', function () {
   });
 });
 
-describe('candidates table', function () {
+scenario.model('candidates table', function () {
   it('has expected relationships', function (done) {
     // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/model.js#L996-L1005
     Candidate.QueryInterface.showIndex('candidates').asCallback(function handleQuery (err, indexes) {

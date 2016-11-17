@@ -178,7 +178,7 @@ scenario('A request to GET /oauth/google/callback with no account email address'
   });
 });
 
-scenario('A request to GET /oauth/google/callback with a non-existant user', {
+scenario('A request to GET /oauth/google/callback with a non-existent user', {
   dbFixtures: [],
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
 }, function () {
@@ -212,7 +212,7 @@ scenario('A request to GET /oauth/google/callback with a non-existant user', {
   });
 });
 
-scenario('A request to GET /oauth/google/callback with an existant user', {
+scenario('A request to GET /oauth/google/callback with an existent user', {
   dbFixtures: ['candidate-default'],
   googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
 }, function () {

@@ -62,7 +62,7 @@ scenario.skip('A request to a POST /application/:id/received-offer from a non-ow
   });
 });
 
-scenario.skip('A request to a POST /application/:id/received-offer for a non-existant application', {
+scenario.skip('A request to a POST /application/:id/received-offer for a non-existent application', {
   dbFixtures: null
 }, function () {
   // Log in (need to do) and make our request
