@@ -12,6 +12,12 @@ var serverUtils = require('./server');
 // DEV: We use copy/paste as it's easier to integrate Cheerio parsing
 exports._save = function (options) {
   return function _saveFn (done) {
+    // If we haven't decided on following a redirect, default to nope
+    // DEV: This prevents us following redirect to login accidentally with a 200
+    if (options.followRedirect === undefined) {
+      options.followRedirect = false;
+    }
+
     // If there is a form generator, then run it
     if (options.htmlForm) {
       // Verify we have a body to base on

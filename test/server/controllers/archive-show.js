@@ -21,7 +21,7 @@ scenario.route('A request to GET /archive', function () {
   });
 
   scenario.nonExistent.skip('from a logged in user with no applications', function () {
-    // Log in our user (need to add) and make our request
+    // Log in (need to add) and make our request
     httpUtils.session.init().save({url: serverUtils.getUrl('/archive'), expectedStatusCode: 200});
 
     // DEV: We test these again to make sure logged in/logged out users receive same treatment

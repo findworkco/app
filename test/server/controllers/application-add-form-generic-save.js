@@ -18,7 +18,7 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
     scenario.routeTest('for a logged in user', function () {
       // Login and make our request
       // TODO: Complete form for test
-      httpUtils.session.init()
+      httpUtils.session.init().login()
         .save(serverUtils.getUrl(scenarioInfo.url))
         .save({
           method: 'POST', url: serverUtils.getUrl(scenarioInfo.url),
@@ -44,16 +44,13 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
       });
     });
 
-    scenario.loggedOut.skip('for a logged out user', function () {
+    scenario.loggedOut('for a logged out user', function () {
       // Make our request
-      // TODO: Complete form for test
-      httpUtils.session.init()
-        .save(serverUtils.getUrl(scenarioInfo.url))
-        .save({
-          method: 'POST', url: serverUtils.getUrl(scenarioInfo.url),
-          htmlForm: true, followRedirect: false,
-          expectedStatusCode: 302
-        });
+      httpUtils.session.init().save({
+        method: 'POST', url: serverUtils.getUrl(scenarioInfo.url),
+        csrfForm: true, followRedirect: false,
+        expectedStatusCode: 302
+      });
 
       it('redirects to sign up page', function () {
         expect(this.res.headers).to.have.property('location', '/login');

@@ -9,9 +9,10 @@ scenario.route('A request to GET /application/:id (received offer)', {
   requiredTests: {loggedOut: false, nonExistent: false, nonOwner: false}
 }, function () {
   scenario.routeTest('from the owner user', function () {
-    // Log in (need to do) and make our request
+    // Log in and make our request
     var applicationId = 'abcdef-black-mesa-uuid';
-    httpUtils.session.init().save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
 
     it.skip('sets status to "Received offer"', function () {
       // Assert application status

@@ -6,10 +6,10 @@ var serverUtils = require('../utils/server');
 // Start our tests
 scenario.route('A request to POST /interview/:id', function () {
   scenario.routeTest('from the owner user', function () {
-    // Log in (need to do) and make our request
+    // Log in and make our request
     // TODO: Complete form for test
     var interviewId = 'abcdef-sky-networks-interview-uuid';
-    httpUtils.session.init()
+    httpUtils.session.init().login()
       .save(serverUtils.getUrl('/interview/' + interviewId))
       .save({
         method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
@@ -103,33 +103,30 @@ scenario.route('A request to POST /interview/:id', function () {
     });
   });
 
-  scenario.nonExistent.skip('that doesn\'t exist', function () {
-    // Log in (need to do) and make our request
-    httpUtils.session.init()
-      .save(serverUtils.getUrl('/interview/does-not-exist'))
-      .save({
-        method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'),
-        htmlForm: true, followRedirect: false,
-        expectedStatusCode: 404
-      });
+  scenario.nonExistent('that doesn\'t exist', function () {
+    // Log in and make our request
+    httpUtils.session.init().login().save({
+      method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'),
+      csrfForm: true, followRedirect: false,
+      expectedStatusCode: 404
+    });
 
     it('recieves a 404', function () {
       // Asserted by `expectedStatusCode` in `httpUtils.save()`
     });
   });
 
-  scenario.loggedOut.skip('from a logged out user', function () {
+  scenario.loggedOut('from a logged out user', function () {
     // Make our request
-    httpUtils.session.init()
-      .save({
-        method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'),
-        htmlForm: true, followRedirect: false,
-        expectedStatusCode: 302
-      });
+    httpUtils.session.init().save({
+      method: 'POST', url: serverUtils.getUrl('/interview/does-not-exist'),
+      csrfForm: true, followRedirect: false,
+      expectedStatusCode: 302
+    });
 
     // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
     it('recieves a prompt to log in', function () {
-      expect(this.res.headers).to.have.property('Location', '/login');
+      expect(this.res.headers).to.have.property('location', '/login');
     });
   });
 });

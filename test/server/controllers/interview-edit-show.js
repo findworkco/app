@@ -8,7 +8,7 @@ scenario.route('A request to GET /interview/:id', function () {
   scenario.routeTest('from the owner user', function () {
     // Log in (need to do) and make our request
     var interviewId = 'abcdef-sky-networks-interview-uuid';
-    httpUtils.session.init().save({
+    httpUtils.session.init().login().save({
       url: serverUtils.getUrl('/interview/' + interviewId),
       expectedStatusCode: 200
     });
@@ -58,7 +58,7 @@ scenario.route('A request to GET /interview/:id', function () {
   });
 
   scenario.nonExistent('that doesn\'t exist', function () {
-    // Log in (need to do) and make our request
+    // Log in and make our request
     httpUtils.session.init().login().save({
       url: serverUtils.getUrl('/interview/does-not-exist'),
       expectedStatusCode: 404
@@ -69,7 +69,7 @@ scenario.route('A request to GET /interview/:id', function () {
     });
   });
 
-  scenario.loggedOut.skip('from a logged out user', function () {
+  scenario.loggedOut('from a logged out user', function () {
     // Make our request
     httpUtils.session.init().save({
       url: serverUtils.getUrl('/interview/does-not-exist'),
@@ -79,7 +79,7 @@ scenario.route('A request to GET /interview/:id', function () {
 
     // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
     it('recieves a prompt to log in', function () {
-      expect(this.res.headers).to.have.property('Location', '/login');
+      expect(this.res.headers).to.have.property('location', '/login');
     });
   });
 });

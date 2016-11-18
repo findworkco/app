@@ -17,8 +17,9 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
     requiredTests: {nonExistent: false, loggedOut: false}
   }, function () {
     scenario.routeTest('from the owner user', function () {
-      // Log in (need to do) and make our request
-      httpUtils.session.init().save({url: serverUtils.getUrl(scenarioInfo.url), expectedStatusCode: 200});
+      // Log in and make our request
+      httpUtils.session.init().login()
+        .save({url: serverUtils.getUrl(scenarioInfo.url), expectedStatusCode: 200});
 
       it('recieves the application page', function () {
         expect(this.$('.content__heading').text()).to.equal('Job application');
@@ -52,16 +53,17 @@ scenario.route('A request to GET /application/:id (generic)', {
   // DEV: nonOwner is taken care of in above `forEach`
   requiredTests: {nonOwner: false}
 }, function () {
-  scenario.nonExistent.skip('that doesn\'t exist', function () {
-    // Log in (need to do) and make our request
-    httpUtils.session.init().save({url: serverUtils.getUrl('/application/does-not-exist'), expectedStatusCode: 404});
+  scenario.nonExistent('that doesn\'t exist', function () {
+    // Log in and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/does-not-exist'), expectedStatusCode: 404});
 
     it('recieves a 404', function () {
       // Asserted by `expectedStatusCode` in `httpUtils.save()`
     });
   });
 
-  scenario.loggedOut.skip('from a logged out user', function () {
+  scenario.loggedOut('from a logged out user', function () {
     // Make our request
     httpUtils.session.init().save({
       url: serverUtils.getUrl('/application/does-not-exist'),
@@ -71,13 +73,14 @@ scenario.route('A request to GET /application/:id (generic)', {
 
     // DEV: We require log in for any application to prevent sniffing for which URLs have applications/not
     it('recieves a prompt to log in', function () {
-      expect(this.res.headers).to.have.property('Location', '/login');
+      expect(this.res.headers).to.have.property('location', '/login');
     });
   });
 
   scenario.routeTest('with a company name', function () {
     var applicationId = 'abcdef-sky-networks-uuid';
-    httpUtils.session.init().save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
 
     it.skip('renders non-extended company research data', function () {
       expect(this.$('#company-results').text()).to.contain('Website: mock-domain.test');

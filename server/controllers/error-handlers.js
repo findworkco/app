@@ -16,10 +16,7 @@ var GENERIC_ERROR_MESSAGE = 'We encountered an unexpected error. ' +
 // DEV: We have verified both `use` and `all('*')` work for no controllers at all
 //   and `next()` misses (e.g. no matching id)
 app.use(function handle404Error (req, res, next) {
-  res.status(404).render('error.jade', {
-    message: 'We were unable to find the requested page.',
-    title: 'Page not found'
-  });
+  next(new HttpError.NotFound());
 });
 
 app.use(function handleHttpError (err, req, res, next) {
@@ -28,6 +25,15 @@ app.use(function handleHttpError (err, req, res, next) {
   if (err instanceof MultiDictKeyError) {
     err = new HttpError.BadRequest(
       'Missing query string/body parameter: "' + err.key + '"');
+  }
+
+  // If the error is a NotFound error, render a 404 normally
+  // DEV: Without this call, we render "Error encountered" title
+  if (err instanceof HttpError.NotFound) {
+    return res.status(404).render('error.jade', {
+      message: 'We were unable to find the requested page.',
+      title: 'Page not found'
+    });
   }
 
   // If there is no status, then continue to our generic error handler
