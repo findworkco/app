@@ -53,29 +53,41 @@ scenario.skip('A request to a POST /application/:id/restore from a non-owner use
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/restore'),
-      htmlForm: true, followRedirect: true,
-      expectedStatusCode: 200
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it.skip('receives a 404', function () {
-    // Assert redirect location
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
-scenario.skip('A request to a POST /application/:id/restore for a non-existent application', {
-  dbFixtures: null
-}, function () {
+scenario.skip('A request to a POST /application/:id/restore for a non-existent application', function () {
   // Log in (need to do) and make our request
-  var applicationId = 'abcdef-monstromart-uuid';
   httpUtils.session.init()
-    .save(serverUtils.getUrl('/application/' + applicationId))
+    .save(serverUtils.getUrl('/application/does-not-exist'))
     .save({
-      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/restore'),
-      htmlForm: true, followRedirect: true,
-      expectedStatusCode: 200
+      method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/restore'),
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it.skip('receives a 404', function () {
-    // Assert redirect location
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
+  });
+});
+
+scenario.skip('A request to a POST /application/:id/restore from a logged out user', function () {
+  // Make our request
+  httpUtils.session.init()
+    .save(serverUtils.getUrl('/application/does-not-exist'))
+    .save({
+      method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/restore'),
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
+    });
+
+  it('recieves a prompt to log in', function () {
+    expect(this.res.headers).to.have.property('Location', '/login');
   });
 });

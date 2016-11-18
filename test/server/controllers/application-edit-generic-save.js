@@ -34,66 +34,6 @@ scenario('A request to POST /application/:id to update fields from the owner use
   });
 });
 
-scenario.skip('A request to POST /application/:id for "Received offer" action from the owner user', function () {
-  // Log in (need to do) and make our request
-  // TODO: Submit proper form
-  var applicationId = 'abcdef-sky-networks-uuid';
-  httpUtils.session.init()
-    .save(serverUtils.getUrl('/application/' + applicationId))
-    .save({
-      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
-      htmlForm: true, followRedirect: false,
-      expectedStatusCode: 302
-    });
-
-  it('redirects to the application page', function () {
-    expect(this.res.headers.location).to.equal('/application/' + applicationId);
-  });
-
-  it.skip('updates our application in the database', function () {
-    // Verify data in PostgreSQL
-  });
-
-  describe('on redirect completion', function () {
-    httpUtils.session.save(serverUtils.getUrl('/schedule'));
-
-    it('notifies user of update success', function () {
-      expect(this.$('#notification-content > [data-notification=success]').text())
-        .to.equal('Application status updated to: Offer recieved');
-    });
-  });
-});
-
-scenario.skip('A request to POST /application/:id to "Archive" action from the owner user', function () {
-  // Log in (need to do) and make our request
-  // TODO: Submit proper form
-  var applicationId = 'abcdef-sky-networks-uuid';
-  httpUtils.session.init()
-    .save(serverUtils.getUrl('/application/' + applicationId))
-    .save({
-      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
-      htmlForm: true, followRedirect: false,
-      expectedStatusCode: 302
-    });
-
-  it('redirects to the schedule page', function () {
-    expect(this.res.headers.location).to.equal('/schedule');
-  });
-
-  it.skip('updates our application in the database', function () {
-    // Verify data in PostgreSQL
-  });
-
-  describe('on redirect completion', function () {
-    httpUtils.session.save(serverUtils.getUrl('/schedule'));
-
-    it('notifies user of update success', function () {
-      expect(this.$('#notification-content > [data-notification=success]').text())
-        .to.equal('Application archived');
-    });
-  });
-});
-
 scenario.skip('A request to POST /application/:id from a non-owner user', function () {
   // Log in (need to do) and make our request
   var applicationId = 'abcdef-uuid';

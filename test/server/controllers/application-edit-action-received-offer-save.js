@@ -48,34 +48,45 @@ scenario.skip('A request to a POST /application/:id/received-offer from an archi
 
 scenario.skip('A request to a POST /application/:id/received-offer from a non-owner user', function () {
   // Log in (need to do) and make our request
-  var applicationId = 'abcdef-sky-networks-uuid';
   httpUtils.session.init()
-    .save(serverUtils.getUrl('/application/' + applicationId))
+    .save(serverUtils.getUrl('/application/does-not-exist'))
     .save({
-      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/received-offer'),
-      htmlForm: true, followRedirect: true,
-      expectedStatusCode: 200
+      method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/received-offer'),
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it.skip('receives a 404', function () {
-    // Assert redirect location
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
-scenario.skip('A request to a POST /application/:id/received-offer for a non-existent application', {
-  dbFixtures: null
-}, function () {
+scenario.skip('A request to a POST /application/:id/received-offer for a non-existent application', function () {
   // Log in (need to do) and make our request
-  var applicationId = 'abcdef-sky-networks-uuid';
   httpUtils.session.init()
-    .save(serverUtils.getUrl('/application/' + applicationId))
+    .save(serverUtils.getUrl('/application/does-not-exist'))
     .save({
-      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/received-offer'),
-      htmlForm: true, followRedirect: true,
-      expectedStatusCode: 200
+      method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/received-offer'),
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it.skip('receives a 404', function () {
-    // Assert redirect location
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
+  });
+});
+
+scenario.skip('A request to a POST /application/:id/received-offer from a logged out user', function () {
+  // Make our request
+  httpUtils.session.init()
+    .save(serverUtils.getUrl('/application/does-not-exist'))
+    .save({
+      method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/received-offer'),
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
+    });
+
+  it('recieves a prompt to log in', function () {
+    expect(this.res.headers).to.have.property('Location', '/login');
   });
 });

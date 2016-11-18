@@ -37,12 +37,17 @@ scenario('A request to a POST /application/:id/archive from a non-saved for late
     // Assert redirect location
   });
 
-  it.skip('has a flash message about archiving', function () {
-    expect(true).to.equal(false);
-  });
-
   it.skip('updates application to archived in database', function () {
     // Assert updated status
+  });
+
+  describe.skip('on redirect completion', function () {
+    httpUtils.session.save(serverUtils.getUrl('/schedule'));
+
+    it('notifies user of update success', function () {
+      expect(this.$('#notification-content > [data-notification=success]').text())
+        .to.equal('Application archived');
+    });
   });
 });
 
@@ -53,29 +58,41 @@ scenario.skip('A request to a POST /application/:id/archive from a non-owner use
     .save(serverUtils.getUrl('/application/' + applicationId))
     .save({
       method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/archive'),
-      htmlForm: true, followRedirect: true,
-      expectedStatusCode: 200
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it.skip('receives a 404', function () {
-    // Assert redirect location
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
   });
 });
 
-scenario.skip('A request to a POST /application/:id/archive for a non-existent application', {
-  dbFixtures: null
-}, function () {
+scenario.skip('A request to a POST /application/:id/archive for a non-existent application', function () {
   // Log in (need to do) and make our request
-  var applicationId = 'abcdef-sky-networks-uuid';
   httpUtils.session.init()
-    .save(serverUtils.getUrl('/application/' + applicationId))
+    .save(serverUtils.getUrl('/application/does-not-exist'))
     .save({
-      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/archive'),
-      htmlForm: true, followRedirect: true,
-      expectedStatusCode: 200
+      method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/archive'),
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 404
     });
 
   it.skip('receives a 404', function () {
-    // Assert redirect location
+    // Asserted by `expectedStatusCode` in `httpUtils.save()`
+  });
+});
+
+scenario.skip('A request to a POST /application/:id/archive from a logged out user', function () {
+  // Make our request
+  httpUtils.session.init()
+    .save(serverUtils.getUrl('/application/does-not-exist'))
+    .save({
+      method: 'POST', url: serverUtils.getUrl('/application/does-not-exist/archive'),
+      htmlForm: true, followRedirect: false,
+      expectedStatusCode: 302
+    });
+
+  it('recieves a prompt to log in', function () {
+    expect(this.res.headers).to.have.property('Location', '/login');
   });
 });
