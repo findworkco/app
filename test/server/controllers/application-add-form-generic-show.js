@@ -12,20 +12,23 @@ var scenarioInfoArr = [
   {url: '/add-application/received-offer'}
 ];
 scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
-  scenario('A request to GET ' + scenarioInfo.url + ' (generic)', {
-    dbFixtures: null
+  scenario.route('A request to GET ' + scenarioInfo.url + ' (generic)', {
+    requiredTests: {nonExistent: false, nonOwner: false}
   }, function () {
-    // Make our request
-    httpUtils.session.init().save({url: serverUtils.getUrl(scenarioInfo.url), expectedStatusCode: 200});
+    scenario.loggedOut('from a logged out user', function () {
+      // Make our request
+      httpUtils.session.init()
+        .save({url: serverUtils.getUrl(scenarioInfo.url), expectedStatusCode: 200});
 
-    it('recieves the add application page', function () {
-      expect(this.$('.content__heading').text()).to.equal('Add job application');
-    });
+      it('recieves the add application page', function () {
+        expect(this.$('.content__heading').text()).to.equal('Add job application');
+      });
 
-    // Test that all fields exist
-    it.skip('has our expected fields', function () {
-      // Name, posting URL, notes, research company, back button
-      expect(this.$('input[name=...]').val()).to.equal('Test me');
+      // Test that all fields exist
+      it.skip('has our expected fields', function () {
+        // Name, posting URL, notes, research company, back button
+        expect(this.$('input[name=...]').val()).to.equal('Test me');
+      });
     });
   });
 });

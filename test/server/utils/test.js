@@ -135,6 +135,12 @@ exports.scenario = getDescribeWrapper(DEFAULT_ROUTE_TEST_OPTIONS,
 });
 
 // Define route + ACL wrappers
+// DEV: In future iterations, we may allow `route` to host parent options to route tests
+// scenario.route('A request to GET /item/:id',  {
+//   dbFixtures: ['item-default'].concat(dbFixtures.DEFAULT_FIXTURES)
+//   url: serverUtils.getUrl('/item/' + itemId)
+// }, function () {
+//   this.scenarioUrl = urlDefinedAbove
 exports.scenario.route = getDescribeWrapper({} /* Doesn't use base setup */,
     function _scenarioRouteWrapper (describeStr, options, describeFn) {
   return function scenarioRouteFn () {
