@@ -51,6 +51,7 @@
     "csurf": "~1.9.0",
     "express": "~4.13.4",
     "express-session": "~1.13.0",
+    "extract-values": "~0.1.2",
     "http-errors": "~1.5.0",
     "inflection": "~1.10.0",
     "jade": "~1.11.0",
@@ -99,7 +100,6 @@
   "devDependencies": {
     "chai": "~3.5.0",
     "cheerio": "git://github.com/twolfson/cheerio.git#e65ad72",
-    "extract-values": "~0.1.2",
     "gemini": "~3.0.2",
     "gemini-gui": "~3.0.0",
     "jscs": "~3.0.7",
