@@ -1,10 +1,25 @@
 // Load in our dependencies
 var HttpError = require('http-errors');
 var app = require('../index.js').app;
+var emails = require('../emails');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Bind our controllers
 // Site-wide bindings:
+app.get('/_dev/email/test', [
+  function devEmailTest (req, res, next) {
+    // Send a test email
+    emails.test({
+      to: 'todd@findwork.co'
+    }, {
+      url: 'welcome.com'
+    }, next);
+  },
+  function handleSend (req, res, next) {
+    res.send('OK');
+  }
+]);
+
 app.get('/_dev/notification', function devNotificationShow (req, res, next) {
   // Create a notification from our parameters
   var notificationType = req.query.get('type', NOTIFICATION_TYPES.LOG);

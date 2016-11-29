@@ -6,7 +6,6 @@ var app = require('../index.js').app;
 var config = require('../index.js').config;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var applicationMockData = require('../models/application-mock-data');
-var emails = require('../emails');
 var Application = require('../models/application');
 var companyMockData = require('../models/company-mock-data');
 var interviewMockData = require('../models/interview-mock-data');
@@ -83,21 +82,6 @@ app.get('/', function rootShow (req, res, next) {
     res.render('landing.jade');
   }
 });
-
-// TODO: Remove development route altogether once we get sign up emails working
-app.get('/_dev/email/test', [
-  function devEmailTest (req, res, next) {
-    // Send a test email
-    emails.test({
-      to: 'todd@findwork.co'
-    }, {
-      url: 'welcome.com'
-    }, next);
-  },
-  function handleSend (req, res, next) {
-    res.send('OK');
-  }
-]);
 
 function handleAuthError(req, res, next) {
   // If we have a login error, then update our status and send it to the render
