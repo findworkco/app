@@ -2,10 +2,11 @@
 var url = require('url');
 var _ = require('underscore');
 var server = require('../../../server/index.js');
+var sinonUtils = require('./sinon');
 
 // Define our exports
-exports.app = server.app;
-exports.config = server.config;
+var app = exports.app = server.app;
+var config = exports.config = server.config;
 
 /**
  * Retrieve a URL for our running server
@@ -21,5 +22,21 @@ exports.getUrl = function (params) {
   }
 
   // Return our formatted URL
-  return url.format(_.defaults(params, server.config.url.internal));
+  return url.format(_.defaults(params, config.url.internal));
+};
+
+// Allow stubbing emails
+exports.stubEmails = function () {
+  // https://github.com/nodemailer/nodemailer/tree/v2.6.4#transports
+  sinonUtils.stub(app.emailClient.transporter, 'send', function handleSend (mail, callback) {
+    // On the next tick, callback
+    // DEV: We use next tick to prevent zalgo
+    process.nextTick(callback);
+  });
+  before(function defineEmailSpy () {
+    this.emailSendStub = app.emailClient.transporter.send;
+  });
+  after(function cleanup () {
+    delete this.emailSendStub;
+  });
 };

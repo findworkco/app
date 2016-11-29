@@ -7,6 +7,7 @@ var connectFlash = require('connect-flash');
 var csurf = require('csurf');
 var express = require('express');
 var expressSession = require('express-session');
+var nodemailer = require('nodemailer');
 var passport = require('passport');
 var qsMultiDict = require('querystring-multidict');
 var RedisSessionStore = require('connect-redis')(expressSession);
@@ -106,6 +107,9 @@ function Server(config) {
       underscored: true
     }
   });
+
+  // Create an email client
+  app.emailClient = nodemailer.createTransport(config.email);
 
   // Set up development 500 error
   // DEV: We perform this before most `app.use` to emphasize not all `res.locals` will be available in case of error
