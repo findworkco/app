@@ -1,6 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
 var domain = require('domain');
+var url = require('url');
 var _ = require('underscore');
 var bodyParserMultiDict = require('body-parser-multidict');
 var connectFlash = require('connect-flash');
@@ -214,6 +215,22 @@ Server.prototype.close = function (cb) {
   assert.notEqual(this._app, undefined, 'No server was found to `close`');
   this._app.close(cb);
   delete this._app;
+};
+/**
+ * Retrieve a URL for our running server
+ * @param params {Object|String} Information for URL
+ *   If this is a string, we will assume it's the URL path
+ *   Otherwise (object), we will treat it as `url.format` parameters
+ * @returns URL string (e.g. `https://findwork.co/hello`)
+ */
+Server.prototype.getExternalUrl = function (params) {
+  // If the parameter is a string, upcast it to an object
+  if (typeof params === 'string') {
+    params = {pathname: params};
+  }
+
+  // Return our formatted URL
+  return url.format(_.defaults(params, config.url.external));
 };
 
 // Export a new server

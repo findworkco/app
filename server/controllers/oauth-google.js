@@ -9,6 +9,7 @@ var AuditLog = require('../models/audit-log');
 var Candidate = require('../models/candidate');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
+var tasks = require('../tasks');
 
 // DEV: Google set up instructions
 //   https://developers.google.com/identity/protocols/OAuth2WebServer
@@ -39,8 +40,8 @@ passport.use(new GoogleStrategy({
     // profile = {id: '1234', ..., emails: [{value: 'todd@findwork.co', type: 'account'}, ...]}
     // DEV: For full profile info, see `nine-track` recordings
     // DEV: There is only 1 account (main) email per account
-    var emails = profile.emails || [];
-    var accountEmail = (_.findWhere(emails, {type: 'account'}) || {}).value;
+    var profileEmails = profile.emails || [];
+    var accountEmail = (_.findWhere(profileEmails, {type: 'account'}) || {}).value;
 
     // If there is no account email, then error out
     // DEV: Error will be sent back to corresponding `next` handler eventually
@@ -64,6 +65,8 @@ passport.use(new GoogleStrategy({
           // If there was an error, send it to Sentry (no need to bail)
           if (err) { app.sentryClient.captureError(err); }
 
+          // TODO: Should we have any flash message (e.g. Welcome back to Find Work!)
+
           // Callback with the candidate
           return cb(null, _candidate);
         });
@@ -81,7 +84,16 @@ passport.use(new GoogleStrategy({
         // If there was an error, callback with it
         if (err) { return cb(err); }
 
-        // TODO: Send a welcome email to candidate
+        // Send a welcome email to candidate
+        // DEV: We perform this async from candidate creation as it's non-critical
+        // TODO: Start a job queue task instead of sending an email synchronously
+        tasks.sendWelcomeEmail(candidate, function handleSendWelcomeEmail (err) {
+          // If there was an error, send it to Sentry
+          if (err) {
+            app.sentryClient.captureError(err);
+          }
+        });
+
         // TODO: Should we have any flash message (e.g. Welcome to Find Work!)
 
         // Callback with our candidate

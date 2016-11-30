@@ -60,6 +60,7 @@
     "moment-timezone": "~0.5.3",
     "multiline": "~1.0.2",
     "nodemailer": "~2.6.4",
+    "nodemailer-html-to-text": "~2.1.0",
     "passport": "~0.3.2",
     "passport-google-oauth20": "~1.0.0",
     "pg": "~6.1.0",

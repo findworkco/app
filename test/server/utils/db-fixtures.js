@@ -6,6 +6,16 @@ exports['candidate-default'] = {
   model: 'candidate',
   data: {
     email: 'mock-email@mock-domain.test',
-    google_access_token: 'mock_access_token_fixtured'
+    google_access_token: 'mock_access_token_fixtured',
+    welcome_email_sent: true
+  }
+};
+
+exports['candidate-new'] = {
+  model: 'candidate',
+  data: {
+    email: 'mock-email@mock-domain.test',
+    google_access_token: 'mock_access_token_fixtured',
+    welcome_email_sent: false
   }
 };

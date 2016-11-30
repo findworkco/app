@@ -224,7 +224,7 @@ exports.scenario.nonOwner = getDescribeWrapper(DEFAULT_ROUTE_TEST_OPTIONS,
   };
 });
 
-// Define model wrappers
+// Define model wrapper
 exports.scenario.model = getDescribeWrapper({
   // Truncate all fixtures
   dbFixtures: [],
@@ -234,6 +234,22 @@ exports.scenario.model = getDescribeWrapper({
   startServer: false
 }, function _scenarioModelWrapper (describeStr, options, describeFn) {
   return function scenarioModelFn () {
+    // Run describe actions
+    _scenarioBaseSetup.call(this, describeStr, options, describeFn);
+    describeFn.call(this);
+  };
+});
+
+// Define task wrapper
+exports.scenario.task = getDescribeWrapper({
+  // Truncate all fixtures
+  dbFixtures: [],
+  // Don't set up Google server as we don't log in
+  googleFixtures: [],
+  // Don't start our server
+  startServer: false
+}, function _scenarioTaskWrapper (describeStr, options, describeFn) {
+  return function scenarioTaskFn () {
     // Run describe actions
     _scenarioBaseSetup.call(this, describeStr, options, describeFn);
     describeFn.call(this);

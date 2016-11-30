@@ -1,4 +1,5 @@
 {
+  "excludeFiles": ["server/emails/index.js"],
   "requireCurlyBraces": [
     "if",
     "else",
@@ -58,7 +59,7 @@
   "requireLineFeedAtFileEnd": true,
   "maximumLineLength": {
     "value": 120,
-    "allowUrlComments": true
+    "allExcept": ["urlComments"]
   },
   "requireDotNotation": true,
   "disallowYodaConditions": true,
