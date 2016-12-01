@@ -2,7 +2,7 @@
 var expect = require('chai').expect;
 var Candidate = require('../../../server/models/candidate');
 var serverUtils = require('../utils/server');
-var tasks = require('../../../server/tasks');
+var queue = require('../../../server/queue');
 
 // Start our tests
 scenario.task('A welcome email being sent for the first time', {
@@ -18,7 +18,7 @@ scenario.task('A welcome email being sent for the first time', {
       expect(candidates[0].get('welcome_email_sent')).equal(false);
 
       // Perform our task and callback
-      tasks.sendWelcomeEmail(candidates[0], done);
+      queue.sendWelcomeEmail(candidates[0], done);
     });
   });
 
@@ -66,7 +66,7 @@ scenario.task('A welcome email being sent for the second time', {
       expect(candidates[0].get('welcome_email_sent')).equal(true);
 
       // Perform our task and callback
-      tasks.sendWelcomeEmail(candidates[0], done);
+      queue.sendWelcomeEmail(candidates[0], done);
     });
   });
 

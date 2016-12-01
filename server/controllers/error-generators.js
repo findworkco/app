@@ -1,5 +1,6 @@
 // Load in our dependencies
 var app = require('../index.js').app;
+var queue = require('../queue');
 
 // Define our controllers
 // Test via: curl http://localhost:9000/error/sync-error
@@ -18,6 +19,28 @@ app.get('/error/non-critical-error', function nonCriticalErrorShow (req, res, ne
   req.captureError(err);
   res.send('Non-critical error captured');
 });
+// Test via: curl http://localhost:9000/error/queue/sync-error
+app.get('/error/queue/sync-error', [
+  function queueSyncErrorShow (req, res, next) {
+    queue.create(queue.JOBS.GENERATE_SYNC_ERROR, {
+      title: 'queueSyncError'
+    }).save(next);
+  },
+  function sendResponse (req, res, next) {
+    res.send('OK');
+  }
+]);
+// Test via: curl http://localhost:9000/error/queue/async-error
+app.get('/error/queue/async-error', [
+  function asyncErrorShow (req, res, next) {
+    queue.create(queue.JOBS.GENERATE_ASYNC_ERROR, {
+      title: 'queueAsyncError'
+    }).save(next);
+  },
+  function sendResponse (req, res, next) {
+    res.send('OK');
+  }
+]);
 
 // jscs:disable maximumLineLength
 // Test via:

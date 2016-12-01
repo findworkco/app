@@ -100,6 +100,13 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
     });
   }
 
+  // If we want to flush Redis, then flush it
+  if (options.flushRedis) {
+    before(function flushRedisFn (done) {
+      server.app.redisClient.flushdb(done);
+    });
+  }
+
   // If we have Google fixtures, then run a server
   if (options.googleFixtures && options.googleFixtures.length) {
     fakeGoogleFactory.run(options.googleFixtures);
@@ -116,6 +123,7 @@ function _scenarioRouteTestBaseSetup(describeStr, options, describeFn) {
 // Set up common options
 var DEFAULT_ROUTE_TEST_OPTIONS = {
   dbFixtures: dbFixtures.DEFAULT_FIXTURES,
+  flushRedis: true,
   // DEV: Later services might want to add/remove a single fixture
   //   We could support that via `{add: [], remove: [], removeAll: true}`
   //   Default behavior would be `[overrides] = {add: [overrides], removeAll: true}`

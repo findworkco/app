@@ -2,6 +2,7 @@
 var HttpError = require('http-errors');
 var app = require('../index.js').app;
 var emails = require('../emails');
+var queue = require('../queue');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Bind our controllers
@@ -16,6 +17,20 @@ app.get('/_dev/email/test', [
     }, next);
   },
   function handleSend (req, res, next) {
+    res.send('OK');
+  }
+]);
+
+app.get('/_dev/email/queue/test', [
+  function devEmailQueueTest (req, res, next) {
+    // Register our new task
+    // https://github.com/Automattic/kue#creating-jobs
+    queue.create(queue.JOBS.SEND_TEST_EMAIL, {
+      title: 'devQueueTest',
+      to: 'todd@findwork.co'
+    }).save(next);
+  },
+  function handleCreate (req, res, next) {
     res.send('OK');
   }
 ]);

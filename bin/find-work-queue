@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+// Enable our environment flag
+process.env.KUE = '1';
+
+// Load in our jobs which auto-register/start due to environment flag
+void require('../server/queue');
+
+// Notify the user that the queue is running
+console.log('Queue process is running');
+
+// When we encounter an uncaught exception, log it
+// TODO: When we have load balanced servers and can tolerate dropped connections
+//   then hard fail this server in production so it can reboot fresh
+//   https://github.com/Automattic/kue/tree/v0.11.5#graceful-shutdown
+process.on('uncaughtException', function handleUncaughtException (err) {
+  // TODO: Move to Winston or Sentry for logging
+  console.error(err);
+});

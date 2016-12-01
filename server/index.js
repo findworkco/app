@@ -8,6 +8,7 @@ var connectFlash = require('connect-flash');
 var csurf = require('csurf');
 var express = require('express');
 var expressSession = require('express-session');
+var kue = require('kue');
 var nodemailer = require('nodemailer');
 var passport = require('passport');
 var qsMultiDict = require('querystring-multidict');
@@ -107,6 +108,13 @@ function Server(config) {
       timestamps: true,
       underscored: true
     }
+  });
+
+  // Create a queue
+  // https://github.com/Automattic/kue/tree/v0.11.5#redis-connection-settings
+  app.kueQueue = kue.createQueue({
+    prefix: 'kue',
+    redis: config.redisUrl
   });
 
   // Create an email client

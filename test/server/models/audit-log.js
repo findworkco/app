@@ -58,7 +58,7 @@ scenario.model('An audit log with an non-server source and no id', function () {
       expect(validationErr.errors).to.have.length(1);
       expect(validationErr.errors[0]).to.have.property('path', 'requireSourceId');
       expect(validationErr.errors[0]).to.have.property('message',
-        'source_id required for non-server sources in audit log');
+        'source_id required for non-server/non-queue sources in audit log');
       done();
     });
   });

@@ -9,7 +9,7 @@ var AuditLog = require('../models/audit-log');
 var Candidate = require('../models/candidate');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
-var tasks = require('../tasks');
+var queue = require('../queue');
 
 // DEV: Google set up instructions
 //   https://developers.google.com/identity/protocols/OAuth2WebServer
@@ -87,7 +87,7 @@ passport.use(new GoogleStrategy({
         // Send a welcome email to candidate
         // DEV: We perform this async from candidate creation as it's non-critical
         // TODO: Start a job queue task instead of sending an email synchronously
-        tasks.sendWelcomeEmail(candidate, function handleSendWelcomeEmail (err) {
+        queue.sendWelcomeEmail(candidate, function handleSendWelcomeEmail (err) {
           // If there was an error, send it to Sentry
           if (err) {
             app.sentryClient.captureError(err);
