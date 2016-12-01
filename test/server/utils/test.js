@@ -1,6 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
+var async = require('async');
 var sequelizeFixtures = require('sequelize-fixtures');
 var dbFixtures = require('./db-fixtures');
 var fakeGoogleFactory = require('./fake-google');
@@ -73,12 +74,13 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
   if (options.dbFixtures) {
     before(function truncateDatabase (done) {
       // http://docs.sequelizejs.com/en/v3/docs/raw-queries/
-      // https://www.postgresql.org/docs/9.3/static/sql-truncate.html
-      // DEV: PostgreSQL doesn't support truncating all tables via a `*`
+      // DEV: We use DELETE over TRUNCATE as it's faster (speed up from 20s to 14s)
       // DEV: Our query is vulnerable to SQL injection but we can't use bind and trust our table names more/less
       // var tableNames = _.pluck(_.values(sequelize.models), 'tableName');
       var tableNames = ['audit_logs', 'candidates'];
-      sequelize.query('TRUNCATE TABLE ' + tableNames.join(', ')).asCallback(done);
+      async.each(tableNames, function handleEach (tableName, cb) {
+        sequelize.query('DELETE FROM ' + tableName).asCallback(cb);
+      }, done);
     });
     before(function installFixtures (done) {
       // Resolve our fixtures
