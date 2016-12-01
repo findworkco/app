@@ -1,6 +1,5 @@
 // Load in our dependencies
 var emailClient = require('../index').app.emailClient;
-var nodemailerHtmlToText = require('nodemailer-html-to-text').htmlToText;
 var multiline = require('multiline');
 
 // Define email constants
@@ -8,10 +7,6 @@ var DEFAULT_FROM_EMAIL = {
   name: 'Todd Wolfson',
   address: 'todd@findwork.co'
 };
-
-// Configure Nodemailer to use `html-to-text` plugin
-// https://github.com/andris9/nodemailer-html-to-text
-emailClient.use('compile', nodemailerHtmlToText());
 
 // Define our email templates
 // https://github.com/nodemailer/nodemailer/tree/v2.6.4#using-templates

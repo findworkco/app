@@ -86,8 +86,9 @@ passport.use(new GoogleStrategy({
 
         // Send a welcome email to candidate
         // DEV: We perform this async from candidate creation as it's non-critical
-        // TODO: Start a job queue task instead of sending an email synchronously
-        queue.sendWelcomeEmail(candidate, function handleSendWelcomeEmail (err) {
+        queue.create(queue.JOBS.SEND_WELCOME_EMAIL, {
+          candidateId: candidate.get('id')
+        }).save(function handleSendWelcomeEmail (err) {
           // If there was an error, send it to Sentry
           if (err) {
             app.sentryClient.captureError(err);

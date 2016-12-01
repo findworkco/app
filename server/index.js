@@ -8,8 +8,10 @@ var connectFlash = require('connect-flash');
 var csurf = require('csurf');
 var express = require('express');
 var expressSession = require('express-session');
+// DEV: Job queue evaluation -- https://gist.github.com/twolfson/a8e5bca55ad825ff49305e457fbf46ca
 var kue = require('kue');
 var nodemailer = require('nodemailer');
+var nodemailerHtmlToText = require('nodemailer-html-to-text').htmlToText;
 var passport = require('passport');
 var qsMultiDict = require('querystring-multidict');
 var RedisSessionStore = require('connect-redis')(expressSession);
@@ -118,7 +120,9 @@ function Server(config) {
   });
 
   // Create an email client
+  // https://github.com/andris9/nodemailer-html-to-text
   app.emailClient = nodemailer.createTransport(config.email);
+  app.emailClient.use('compile', nodemailerHtmlToText());
 
   // Set up development 500 error
   // DEV: We perform this before most `app.use` to emphasize not all `res.locals` will be available in case of error

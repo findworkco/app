@@ -38,7 +38,7 @@ scenario('A successful job', {
       }
 
       // Otherwise, verify we have/don't have our expected keys
-      // DEV: These keys also verify that the task indeed succeeded as expected
+      // DEV: These keys also verify that the job indeed succeeded as expected
       expect(keys).to.contain('kue:jobs:sendTestEmail:complete');
       expect(keys).to.not.contain('kue:jobs:sendTestEmail:failed');
       var jobKeys = keys.filter(function isJobKey (key) {
@@ -89,7 +89,7 @@ scenario('A failed job', {
       }
 
       // Otherwise, verify we have/don't have our expected keys
-      // DEV: These keys also verify that the task indeed failed as expected
+      // DEV: These keys also verify that the job indeed failed as expected
       expect(keys).to.contain('kue:jobs:generateSyncError:failed');
       expect(keys).to.not.contain('kue:jobs:generateSyncError:complete');
       var jobKeys = keys.filter(function isJobKey (key) {

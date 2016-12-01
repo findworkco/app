@@ -248,8 +248,8 @@ exports.scenario.model = getDescribeWrapper({
   };
 });
 
-// Define task wrapper
-exports.scenario.task = getDescribeWrapper({
+// Define job wrapper
+exports.scenario.job = getDescribeWrapper({
   // Truncate all fixtures
   dbFixtures: [],
   // Don't set up Google server as we don't log in

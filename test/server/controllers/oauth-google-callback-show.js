@@ -187,7 +187,8 @@ scenario.route('A request to GET /oauth/google/callback', {
     googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
   }, function () {
     // Make our request
-    sinonUtils.stub(queue, 'sendWelcomeEmail');
+    sinonUtils.spy(queue, 'create');
+    serverUtils.stubEmails();
     httpUtils.session.init().save({
       // Redirects to fake Google OAuth, then to `/oauth/google/callback`
       url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
@@ -213,9 +214,12 @@ scenario.route('A request to GET /oauth/google/callback', {
     });
 
     it('sends new user a welcome email', function () {
-      var sendWelcomeEmailStub = queue.sendWelcomeEmail;
-      expect(sendWelcomeEmailStub.callCount).to.equal(1);
-      expect(sendWelcomeEmailStub.args[0][0].get('email')).to.equal('mock-email@mock-domain.test');
+      var queueCreateSpy = queue.create;
+      expect(queueCreateSpy.callCount).to.equal(1);
+      var emailSendStub = this.emailSendStub;
+      expect(emailSendStub.callCount).to.equal(1);
+      expect(emailSendStub.args[0][0].data.to).to.equal('mock-email@mock-domain.test');
+      expect(emailSendStub.args[0][0].data.subject).to.equal('Welcome to Find Work!');
     });
   });
 
@@ -234,7 +238,8 @@ scenario.route('A request to GET /oauth/google/callback', {
     });
 
     // Make our request
-    sinonUtils.stub(queue, 'sendWelcomeEmail');
+    sinonUtils.spy(queue, 'create');
+    serverUtils.stubEmails();
     httpUtils.session.init().save({
       // Redirects to fake Google OAuth, then to `/oauth/google/callback`
       url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
@@ -264,8 +269,10 @@ scenario.route('A request to GET /oauth/google/callback', {
     });
 
     it('doesn\'t send new user a welcome email', function () {
-      var sendWelcomeEmailStub = queue.sendWelcomeEmail;
-      expect(sendWelcomeEmailStub.callCount).to.equal(0);
+      var queueCreateSpy = queue.create;
+      expect(queueCreateSpy.callCount).to.equal(0);
+      var emailSendStub = this.emailSendStub;
+      expect(emailSendStub.callCount).to.equal(0);
     });
   });
 });

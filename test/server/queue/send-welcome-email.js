@@ -5,7 +5,7 @@ var serverUtils = require('../utils/server');
 var queue = require('../../../server/queue');
 
 // Start our tests
-scenario.task('A welcome email being sent for the first time', {
+scenario.job('A welcome email being sent for the first time', {
   dbFixtures: ['candidate-new']
 }, function () {
   serverUtils.stubEmails();
@@ -17,8 +17,11 @@ scenario.task('A welcome email being sent for the first time', {
       expect(candidates).to.have.length(1);
       expect(candidates[0].get('welcome_email_sent')).equal(false);
 
-      // Perform our task and callback
-      queue.sendWelcomeEmail(candidates[0], done);
+      // Perform our job and callback
+      var job = queue.create(queue.JOBS.SEND_WELCOME_EMAIL, {
+        candidateId: candidates[0].get('id')
+      }).save(function (err) { if (err) { throw err; } });
+      job.on('complete', function (jobData) { done(); });
     });
   });
 
@@ -53,7 +56,7 @@ scenario.task('A welcome email being sent for the first time', {
   });
 });
 
-scenario.task('A welcome email being sent for the second time', {
+scenario.job('A welcome email being sent for the second time', {
   dbFixtures: ['candidate-default']
 }, function () {
   serverUtils.stubEmails();
@@ -65,8 +68,11 @@ scenario.task('A welcome email being sent for the second time', {
       expect(candidates).to.have.length(1);
       expect(candidates[0].get('welcome_email_sent')).equal(true);
 
-      // Perform our task and callback
-      queue.sendWelcomeEmail(candidates[0], done);
+      // Perform our job and callback
+      var job = queue.create(queue.JOBS.SEND_WELCOME_EMAIL, {
+        candidateId: candidates[0].get('id')
+      }).save(function (err) { if (err) { throw err; } });
+      job.on('complete', function (jobData) { done(); });
     });
   });
 
