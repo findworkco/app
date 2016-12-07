@@ -6,14 +6,20 @@ block title
 
 block content
   if archivedApplications.length
+    //- TODO: Display content heading to all pages
+    .medium-and-down-hidden
+       h1.content__heading(style="font-weight: normal") Archived applications
     +schedule-selection-content()
   else
-    p.alpha.text--center.push-double--top(style="line-height: 1.3")
-      span.alpha
-        | You have no archived applications.
-      br
-      span.gamma
-        | To archive an application, click the "Archive" button on its page.
-    p.gamma.text--center.push-double--top
-      a(href="/schedule")
-        | Click here to return to active applications.
+    .medium-and-down-hidden
+      p.alpha.text--center.push-double--top(style="line-height: 1.3")
+        span.alpha
+          | You have no archived applications.
+        br
+        span.gamma
+          | To archive an application, click the "Archive" button on its page.
+      p.gamma.text--center.push-double--top
+        a(href="/schedule")
+          | Click here to return to active applications.
+    .large-hidden
+      +schedule-selection-content()

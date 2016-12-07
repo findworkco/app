@@ -84,7 +84,7 @@ block base-content
                       = " / "
                       a.link--inherit-color(href="/login") Log in
         //- On non-schedule for medium/small pages, hide our schedule listing
-        div(class={'medium-and-down-hidden': !(isSchedule || isArchive)})
+        .medium-and-down-hidden
           if !useArchiveSchedule
             .grid.nav__schedule-actions
               .grid__item.one-whole.medium-and-down-one-half.nav-btn__container
@@ -255,7 +255,7 @@ block base-content
           //- Footer
           +footer({largeWide: false})
 
-      #content.grid__item.one-whole.large-three-quarters(class={'medium-and-down-hidden': isSchedule || isArchive})
+      #content.grid__item.one-whole.large-three-quarters
         block content
 
         //- DEV: On small screens, show a footer after our content

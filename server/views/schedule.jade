@@ -8,19 +8,25 @@ block title
 
 block content
   if hasActiveApplications
+    //- TODO: Display content heading to all pages
+    .medium-and-down-hidden
+       h1.content__heading(style="font-weight: normal") Schedule
     +schedule-selection-content()
   else
-    p.alpha.text--center.push-double--top(style="line-height: 1.3")
-      span.alpha
-        | You have no active job applications.
-      br
-      span.gamma
-        | Choose one of the actions below to get started:
-    p.text--center
-      a.btn.btn--primary.btn--big(href="/add-application")
-        span(aria-hidden="true")= "+ "
-        | Add a job application
-    p.alpha.text--center
-      span.alpha or
-    p.text--center
-      a.btn.btn--primary.btn--big(href="/research-company") Research a company
+    .medium-and-down-hidden
+      p.alpha.text--center.push-double--top(style="line-height: 1.3")
+        span.alpha
+          | You have no active job applications.
+        br
+        span.gamma
+          | Choose one of the actions below to get started:
+      p.text--center
+        a.btn.btn--primary.btn--big(href="/add-application")
+          span(aria-hidden="true")= "+ "
+          | Add a job application
+      p.alpha.text--center
+        span.alpha or
+      p.text--center
+        a.btn.btn--primary.btn--big(href="/research-company") Research a company
+    .large-hidden
+      +schedule-selection-content()
