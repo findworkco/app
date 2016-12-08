@@ -116,23 +116,19 @@ html
     - var timepickerFormat = 'HH:mm';
 
     //- Define footer for all pages
-    mixin footer(options)
+    mixin footer()
       div.push--top.text--center.muted
         hr.push-half--bottom
         p.push-half--bottom
           = "Made with "
           span(aria-label="love")= "<3"
-          = " by"
-          br(class=options.largeWide ? "hidden" : "medium-and-down-hidden")
-          span(class=options.largeWide ? "" : "large-hidden")= " "
-          | Shoulders of Titans LLC
+          = " by Shoulders of Titans LLC"
         p
           //- TODO: Create about, privacy, and terms pages
           //-  https://trello.com/c/BbhzXH5B/15-create-about-privacy-and-terms-pages
           a.footer-link(href="/about") About
           a.footer-link(href="/privacy") Privacy
           a.footer-link(href="/terms") Terms
-          br(class=options.largeWide ? "hidden" : "medium-and-down-hidden")
           a.footer-link(href="/blog") Blog
           a.footer-link(href="http://twitter.com/findworkco") Twitter
           a.footer-link(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Find Work support question')) Support

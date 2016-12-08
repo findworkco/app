@@ -1,12 +1,13 @@
 //- DEV: Designed after
-//-   Large: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
-//-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a13b4d4ec
-//-   Small (nav 1): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/ab1c48bc9
-//-   Small (nav 2): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/aeef2d023
-//-   Small (non-nav): https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a541249ff
+//-   Large: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/aa09fc46a
+//-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a998d45b2
+//-   Small: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/af53ee2d9
 extends layout-base
 
 block base-content
+  - var isSchedule = locals.isSchedule === true;
+  - var isArchive = locals.isArchive === true;
+  - var useArchiveSchedule = locals.isArchive === true || (locals.selectedApplication && locals.selectedApplication.status === APPLICATION_STATUSES.ARCHIVED);
   mixin nav-row(options)
     - var el = options.el || 'div';
     #{el}.nav-row(class={'nav-row--selected': options.selected})&attributes(attributes)
@@ -19,245 +20,212 @@ block base-content
     +nav-row(options).nav-link&attributes(attributes)
       block
 
-  //- Start our HTML
-  - var isSchedule = locals.isSchedule === true;
-  - var isArchive = locals.isArchive === true;
-  - var useArchiveSchedule = locals.isArchive === true || (locals.selectedApplication && locals.selectedApplication.status === APPLICATION_STATUSES.ARCHIVED);
+  mixin nav-content()
+    p
+      if locals.candidate
+        a.link--unstyled.muted(href="/settings")
+          | Signed in: #{candidate.email}
+      else
+        a.link--inherit-color(href="/sign-up") Sign up
+        = " / "
+        a.link--inherit-color(href="/login") Log in
+    div
+      if !useArchiveSchedule
+        +nav-row--link({selected: false})(href="/add-application")
+          span(aria-hidden="true")= "+ "
+          | Add job application
+        +nav-row--link({selected: false})(href="/research-company")
+          | Research company
+      else
+        +nav-row--link({selected: false}).medium-and-down-hidden.push-half--bottom(href="/schedule") Back to active applications
+
+      //- Define mixins for our upcoming content
+      mixin nav-info__icon(application)
+        .nav-info__icon&attributes(attributes)
+          //- DEV: We set no tab index to skip redundant links
+          a.link--unstyled(href=application.url, tabindex="-1", aria-hidden="true")
+            block
+
+      mixin nav-info__content(application)
+        .nav-info__content&attributes(attributes)
+          //- DEV: We set no tab index to skip redundant links
+          a.link--unstyled(href=application.url, tabindex="-1")
+            block
+
+      mixin nav-row--application(application, type, params)
+        +nav-row({selected: (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application
+          h4.text--normal.flush--bottom
+            a.link--unstyled(href=application.url)
+              strong= application.name
+          .grid
+            .grid__item.one-whole.medium-one-half
+              //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
+              .nav-info
+                +nav-info__icon(application)
+                  if type == APPLICATION_STATUSES.UPCOMING_INTERVIEW
+                    +calendar-2x-with-date(params.interview.date_time_moment.format('D'))
+                  else if type == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+                    i.fa.fa-2x.fa-envelope-o
+                  else if type == APPLICATION_STATUSES.ARCHIVED
+                    i.fa.fa-2x.fa-calendar-o
+                  else
+                    - throw new Error('Unrecognized application type')
+                +nav-info__content(application)
+                  if type == APPLICATION_STATUSES.UPCOMING_INTERVIEW
+                    //- Mon Mar 14 at 2:00PM CST
+                    = params.interview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+                  else if type == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+                    //- Tue Feb 16
+                    = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
+                  else if type == APPLICATION_STATUSES.ARCHIVED
+                    //- Archived on: Mon Mar 14
+                    = "Archived on: "
+                    = application.archived_at_moment.format('ddd MMM D')
+                  else
+                    - throw new Error('Unrecognized application type')
+
+              if type != APPLICATION_STATUSES.ARCHIVED
+                .nav-info
+                  +nav-info__icon(application)
+                    if type == APPLICATION_STATUSES.UPCOMING_INTERVIEW
+                      i.fa.fa-2x.fa-info-circle
+                    else if type == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+                      i.fa.fa-2x.fa-reply
+                    else
+                      - throw new Error('Unrecognized application type')
+                  +nav-info__content(application)
+                    if type == APPLICATION_STATUSES.UPCOMING_INTERVIEW
+                      //- TODO: Be sure to sanitize details
+                      if params.interview.details
+                        != params.interview.details
+                      else
+                        i Nothing provided
+                    else if type == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+                      if application.follow_up_reminder_moment
+                        //- Tue Feb 23
+                        = "Follow-up on: " + application.follow_up_reminder_moment.format('ddd MMM D')
+                      else
+                        i TODO: Add placeholder text for no reminder set
+                    else
+                      - throw new Error('Unrecognized application type')
+            .grid__item.small-hidden.large-hidden.medium-one-half
+              //- DESIGN: Make sure links are clickable in textarea
+              //- TODO: Limit height and force scrolling
+              div Notes:
+              div.nav-notes.push-half--bottom
+                if application.notes
+                  != sanitizeHtml(application.notes)
+                else
+                  i No notes recorded
+          //- On small/medium screens, provide a link to the application's page
+          .large-hidden
+            a.btn.btn--default.one-whole.nav-btn--standalone(href=application.url) View/edit job application
+
+      //- If we aren't on an archive page, then display normal schedule
+      if !useArchiveSchedule
+        //- Upcoming interviews section
+        //- DEV: `locals.upcomingInterviews` isn't necessarily defined when we encounter a 500
+        if locals.upcomingInterviews
+          h3.flush--bottom(style="font-weight: normal") Upcoming interviews
+          //- DEV: This is actually a 1.5x push due to extra padding for link border
+          #nav__upcoming-interviews.push--bottom
+            if upcomingInterviews.length
+              each upcomingInterview in upcomingInterviews
+                +nav-row--application(upcomingInterview.application, APPLICATION_STATUSES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
+            else if hasActiveApplications
+              p
+                i TODO: Set up placeholder text and tests (visual, server)
+                //- i No upcoming interviews.
+            else
+              p
+                i No interviews scheduled.
+                br.medium-and-down-hidden
+                span.large-hidden= " "
+                i
+                  a(href="/add-application") Add a job application
+                  = " or "
+                  a(href="/research-company") research a company
+                  = " to get started."
+
+        //- Waiting for response section
+        //- DEV: `locals.waitingForResponseApplications` isn't necessarily defined when we encounter a 500
+        if locals.waitingForResponseApplications
+          h3.flush--bottom(style="font-weight: normal") Waiting for response
+          #nav__waiting-for-response.push--bottom
+            if waitingForResponseApplications.length
+              each waitingForResponseApplication in waitingForResponseApplications
+                +nav-row--application(waitingForResponseApplication, APPLICATION_STATUSES.WAITING_FOR_RESPONSE)
+            else if hasActiveApplications
+              p
+                i TODO: Set up placeholder text and tests (visual, server)
+                //- i Not waiting for any responses.
+            else
+              p
+                i No active job applications.
+                br.medium-and-down-hidden
+                span.large-hidden= " "
+                i
+                  a(href="/add-application") Add a job application
+                  = " or "
+                  a(href="/research-company") research a company
+                  = " to get started."
+      else
+        //- Otherwise, display archived applications
+        //- DEV: `locals.archivedApplications` isn't necessarily defined when we encounter a 500
+        if locals.archivedApplications
+          h3.flush--bottom(style="font-weight: normal") Archived applications
+          #nav__archived.push--bottom
+            if archivedApplications.length
+              each archivedApplication in archivedApplications
+                +nav-row--application(archivedApplication, APPLICATION_STATUSES.ARCHIVED)
+            else
+              p
+                i No archived applications.
+                br.medium-and-down-hidden
+                span.large-hidden= " "
+                i To archive an application, click the "Archive" button on its page.
+              p.large-hidden
+                i
+                  a(href="/schedule") Click here to return to active applications.
+
+      //- Nav links
+      if !useArchiveSchedule
+        +nav-row--link({selected: locals.isArchive === true})(href="/archive") Archived applications
+      +nav-row--link({selected: locals.isSettings === true})(href="/settings",
+        class={'medium-and-down-hidden': useArchiveSchedule}) Settings
+
+  //- Top bar
+  //- DEV: We could consolidate this with the landing page nav
+  //-   but they are just different enough that it's not worth it
+  //- DEV: We don't provide Sign up/Log in buttons as they will require a logged in state which won't fit on small screens
+  header.section--brand-dark.cf.push--bottom
+    .container.large-hidden(style="position: absolute;")
+      //- DEV: Half width padding doubles as alignment with grid as well as increasing hit area for button
+      button.text--link.link--inherit-color.soft-half(aria-label="Open menu", data-toggle="menu", style="line-height: 29px; display: inline-block") Menu
+    .container.text--center
+      a.link--unstyled(href="/schedule")
+        .soft-half--ends
+          img.layout__logo(alt="Find Work", src="/dist/images/white-logo.svg")
+
+  //- Navigation menu and content
+  .layout__menu__overlay(data-toggle="menu") &nbsp;
   .container
     .grid
-      #nav.grid__item.one-whole.large-one-quarter(role="navigation")
-        header
-          //- DEV: Negative margins are to extend the boundary of our blue background to the gutter
-          .nav__top.section--brand-dark(style="margin-left: -9px; margin-right: -9px; padding: 0 9px")
-            //- On large screens and schedule page for small screens, always display logo in full
-            .medium-hidden.text--center(class={'small-hidden': !isSchedule})
-              a(href="/schedule")
-                img.nav__logo(alt="Find Work logo", src="/dist/images/white-logo.svg", style="width: 198px")
-              p.flush--bottom.soft-half--bottom
-                if locals.candidate
-                  a.link--unstyled.muted(href="/settings")= candidate.email
-                else
-                  a.link--inherit-color(href="/sign-up") Sign up
-                  = " / "
-                  a.link--inherit-color(href="/login") Log in
-            //- On medium screens, show logo with major links
-            .small-hidden.large-hidden
-              .grid.soft--ends
-                .grid__item
-                  a(href="/schedule")
-                    img.nav__logo(alt="Find Work logo", src="/dist/images/white-logo.svg", style="height: 26px")
-                .grid__item(style="margin-top: 6px")
-                  - var isSelected = locals.isSchedule === true || (locals.selectedApplication && !useArchiveSchedule);
-                  a.delta.link--unstyled(href="/schedule", style=isSelected ? "text-decoration: underline" : "") Schedule
-                .grid__item(style="margin-top: 6px")
-                  - var isSelected = locals.isArchive === true || (locals.selectedApplication && useArchiveSchedule);
-                  a.delta.link--unstyled(href="/archive", style=isSelected ? "text-decoration: underline" : "") Archive
-                .float--right.grid__item.text--right(style="margin-top: 6px")
-                  span.delta
-                    if locals.candidate
-                      //- DESIGN: Links in dropdown are "Settings", "Log out"
-                      //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a03ef4dcc
-                      span= candidate.email
-                      = " "
-                      i.fa.fa-caret-down(style="position: relative; top: 1px")
-                    else
-                      a.link--inherit-color(href="/sign-up") Sign up
-                      = " / "
-                      a.link--inherit-color(href="/login") Log in
-            //- On non-schedule small screens, display thin bar with back button
-            if !isSchedule
-              .medium-and-up-hidden
-                .grid.soft-half--ends
-                  .grid__item.one-quarter
-                    //- TODO: Reconsider having a "Back" button as most mobile devices have some equivalent for this
-                    //- Maybe do a full "Nav" via slide out...
-                    a.link--unstyled(href="javascript:history.go(-1);")
-                      b.fa.fa-angle-left(style="font-size: 34px")
-                      = " "
-                      span.delta(style="position: relative; top: -4px") Back
-                  //- DEV: Same line height as `.fa-angle-left`
-                  .grid__item.three-quarters.text--right(style="line-height: 34px")
-                    if locals.candidate
-                      a.link--unstyled.muted(href="/settings")= candidate.email
-                    else
-                      a.link--inherit-color(href="/sign-up") Sign up
-                      = " / "
-                      a.link--inherit-color(href="/login") Log in
-        //- On non-schedule for medium/small pages, hide our schedule listing
-        .medium-and-down-hidden
-          if !useArchiveSchedule
-            .grid.nav__schedule-actions
-              .grid__item.one-whole.medium-and-down-one-half.nav-btn__container
-                a.btn.btn--wide.btn--default.nav-btn--side-by-side(href="/add-application")
-                  span(aria-hidden="true")= "+ "
-                  | Add job application
-              .grid__item.one-whole.medium-and-down-one-half.nav-btn__container
-                a.btn.btn--wide.btn--default.nav-btn--side-by-side(href="/research-company")
-                  | Research company
-          else
-            +nav-row--link({selected: false}).medium-and-down-hidden.push-half--bottom(href="/schedule") Back to active applications
-
-          //- Define mixins for our upcoming content
-          mixin nav-info__icon(application)
-            .nav-info__icon&attributes(attributes)
-              //- DEV: We set no tab index to skip redundant links
-              a.link--unstyled(href=application.url, tabindex="-1", aria-hidden="true")
-                block
-
-          mixin nav-info__content(application)
-            .nav-info__content&attributes(attributes)
-              //- DEV: We set no tab index to skip redundant links
-              a.link--unstyled(href=application.url, tabindex="-1")
-                block
-
-          mixin nav-row--application(application, type, params)
-            +nav-row({selected: (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application
-              h4.text--normal.flush--bottom
-                a.link--unstyled(href=application.url)
-                  strong= application.name
-              .grid
-                .grid__item.one-whole.medium-one-half
-                  //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
-                  .nav-info
-                    +nav-info__icon(application)
-                      if type == APPLICATION_STATUSES.UPCOMING_INTERVIEW
-                        +calendar-2x-with-date(params.interview.date_time_moment.format('D'))
-                      else if type == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-                        i.fa.fa-2x.fa-envelope-o
-                      else if type == APPLICATION_STATUSES.ARCHIVED
-                        i.fa.fa-2x.fa-calendar-o
-                      else
-                        - throw new Error('Unrecognized application type')
-                    +nav-info__content(application)
-                      if type == APPLICATION_STATUSES.UPCOMING_INTERVIEW
-                        //- Mon Mar 14 at 2:00PM CST
-                        = params.interview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
-                      else if type == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-                        //- Tue Feb 16
-                        = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
-                      else if type == APPLICATION_STATUSES.ARCHIVED
-                        //- Archived on: Mon Mar 14
-                        = "Archived on: "
-                        = application.archived_at_moment.format('ddd MMM D')
-                      else
-                        - throw new Error('Unrecognized application type')
-
-                  if type != APPLICATION_STATUSES.ARCHIVED
-                    .nav-info
-                      +nav-info__icon(application)
-                        if type == APPLICATION_STATUSES.UPCOMING_INTERVIEW
-                          i.fa.fa-2x.fa-info-circle
-                        else if type == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-                          i.fa.fa-2x.fa-reply
-                        else
-                          - throw new Error('Unrecognized application type')
-                      +nav-info__content(application)
-                        if type == APPLICATION_STATUSES.UPCOMING_INTERVIEW
-                          //- TODO: Be sure to sanitize details
-                          if params.interview.details
-                            != params.interview.details
-                          else
-                            i Nothing provided
-                        else if type == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-                          if application.follow_up_reminder_moment
-                            //- Tue Feb 23
-                            = "Follow-up on: " + application.follow_up_reminder_moment.format('ddd MMM D')
-                          else
-                            i TODO: Add placeholder text for no reminder set
-                        else
-                          - throw new Error('Unrecognized application type')
-                .grid__item.small-hidden.large-hidden.medium-one-half
-                  //- DESIGN: Make sure links are clickable in textarea
-                  //- TODO: Limit height and force scrolling
-                  div Notes:
-                  div.nav-notes.push-half--bottom
-                    if application.notes
-                      != sanitizeHtml(application.notes)
-                    else
-                      i No notes recorded
-              //- On small/medium screens, provide a link to the application's page
-              .large-hidden
-                a.btn.btn--default.one-whole.nav-btn--standalone(href=application.url) View/edit job application
-
-          //- If we aren't on an archive page, then display normal schedule
-          if !useArchiveSchedule
-            //- Upcoming interviews section
-            //- DEV: `locals.upcomingInterviews` isn't necessarily defined when we encounter a 500
-            if locals.upcomingInterviews
-              h3.flush--bottom(style="font-weight: normal") Upcoming interviews
-              //- DEV: This is actually a 1.5x push due to extra padding for link border
-              #nav__upcoming-interviews.push--bottom
-                if upcomingInterviews.length
-                  each upcomingInterview in upcomingInterviews
-                    +nav-row--application(upcomingInterview.application, APPLICATION_STATUSES.UPCOMING_INTERVIEW, {interview: upcomingInterview})
-                else if hasActiveApplications
-                  p
-                    i TODO: Set up placeholder text and tests (visual, server)
-                    //- i No upcoming interviews.
-                else
-                  p
-                    i No interviews scheduled.
-                    br.medium-and-down-hidden
-                    span.large-hidden= " "
-                    i
-                      a(href="/add-application") Add a job application
-                      = " or "
-                      a(href="/research-company") research a company
-                      = " to get started."
-
-            //- Waiting for response section
-            //- DEV: `locals.waitingForResponseApplications` isn't necessarily defined when we encounter a 500
-            if locals.waitingForResponseApplications
-              h3.flush--bottom(style="font-weight: normal") Waiting for response
-              #nav__waiting-for-response.push--bottom
-                if waitingForResponseApplications.length
-                  each waitingForResponseApplication in waitingForResponseApplications
-                    +nav-row--application(waitingForResponseApplication, APPLICATION_STATUSES.WAITING_FOR_RESPONSE)
-                else if hasActiveApplications
-                  p
-                    i TODO: Set up placeholder text and tests (visual, server)
-                    //- i Not waiting for any responses.
-                else
-                  p
-                    i No active job applications.
-                    br.medium-and-down-hidden
-                    span.large-hidden= " "
-                    i
-                      a(href="/add-application") Add a job application
-                      = " or "
-                      a(href="/research-company") research a company
-                      = " to get started."
-          else
-            //- Otherwise, display archived applications
-            //- DEV: `locals.archivedApplications` isn't necessarily defined when we encounter a 500
-            if locals.archivedApplications
-              h3.flush--bottom(style="font-weight: normal") Archived applications
-              #nav__archived.push--bottom
-                if archivedApplications.length
-                  each archivedApplication in archivedApplications
-                    +nav-row--application(archivedApplication, APPLICATION_STATUSES.ARCHIVED)
-                else
-                  p
-                    i No archived applications.
-                    br.medium-and-down-hidden
-                    span.large-hidden= " "
-                    i To archive an application, click the "Archive" button on its page.
-                  p.large-hidden
-                    i
-                      a(href="/schedule") Click here to return to active applications.
-
-          //- Nav links
-          if !useArchiveSchedule
-            +nav-row--link({selected: locals.isArchive === true})(href="/archive") Archived applications
-          +nav-row--link({selected: locals.isSettings === true})(href="/settings",
-            class={'medium-and-down-hidden': useArchiveSchedule}) Settings
-
-          //- Footer
-          +footer({largeWide: false})
-
-      #content.grid__item.one-whole.large-three-quarters
+      nav#nav.grid__item.layout__menu(aria-role="navigation")
+        .large-hidden.soft--top
+          .float--right
+            //- DEV: Padding is to increase hit location for button
+            //- DEV: Negative right margin is to offset padding
+            //- DEV: Negative top margin is to move text to same height as h4 due to being lowercase
+            button.btn--unstyled.btn--focusable.delta(aria-label="Close menu", data-toggle="menu", style="font-size: 2em; line-height: 1em; margin-top: -0.35em; padding: 0 9px; display: block") &times;
+          h4.push-half--bottom(style="font-weight: normal")
+            | Menu
+        +nav-content()
+      #content.grid__item.layout__content
         block content
 
-        //- DEV: On small screens, show a footer after our content
-        .large-hidden
-          +footer({largeWide: false})
+  //- Footer
+  .container
+    .grid
+      .grid__item.one-whole
+        +footer()

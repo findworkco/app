@@ -6,44 +6,92 @@
   padding: $base-spacing-unit;
 }
 
-.nav__top {
-  margin-bottom: $base-spacing-unit;
-}
-
-@include media-query(medium-and-down) {
-  .nav__top {
-    margin-bottom: $half-spacing-unit;
-  }
-}
-
-.nav__logo {
-  margin-top: $base-spacing-unit;
-}
-
-@include media-query(medium) {
-  .nav__logo {
-    margin-top: 0;
-  }
-}
-
-@include media-query(small) {
-  .nav__logo {
-    margin-top: $half-spacing-unit;
-  }
-}
-
+// Layout styles
 .nav-notes {
   @include well();
   padding: $half-spacing-unit;
 }
 
-.content__heading {
-  margin-top: $base-spacing-unit;
+.layout__logo {
+  height: 33px;
+}
+@include media-query(small) {
+  .layout__logo {
+    height: 29px;
+  }
+}
+
+.layout__menu {
+  width: 25%; // 1/4
+}
+.layout__menu__overlay {
+  display: none;
+}
+
+.layout__content {
+  width: 75%; // 3/4
 }
 
 @include media-query(medium-and-down) {
+  $menu-transition-duration: 0.2s;
+  .layout__menu {
+    top: 0;
+    // DEV: In addition to setting height here, we set it via JS to `scrollHeight`
+    height: 100%;
+    position: absolute;
+    z-index: 100;
+    background: white;
+    $width: 85%;
+    width: $width;
+
+    // Continuously slide on open/close
+    left: -1 * $width;
+    transition: left ease-in-out $menu-transition-duration;
+  }
+  .layout__menu.open {
+    left: 0;
+  }
+
+  .layout__menu__overlay {
+    display: block;
+    top: 0;
+    height: 100%;
+    position: fixed;
+    z-index: 99;
+    background: transparent;
+    background: rgba(0, 0, 0, 0.6);
+    $width: 100%;
+    width: $width;
+
+    // When we are closing menu
+    left: -1 * $width;
+    opacity: 0;
+    transition:
+      // Jump to left: -100% at end
+      // https://developer.mozilla.org/en-US/docs/Web/CSS/single-transition-timing-function#step-start
+      left step-end $menu-transition-duration,
+      // Continuously fade out
+      opacity ease-in-out $menu-transition-duration;
+  }
+  .layout__menu__overlay.open {
+    // When we are opening menu
+    left: 0;
+    opacity: 1;
+    transition:
+      // Jump to left: 0% at start
+      left step-start $menu-transition-duration,
+      // Continuously fade in
+      opacity ease-in-out $menu-transition-duration;
+  }
+
+  .layout__content {
+    width: 100%; // 3/4
+  }
+}
+
+// Content styles
+@include media-query(medium-and-down) {
   .content__heading {
-    margin-top: 0;
     margin-bottom: $half-spacing-unit;
   }
 }

@@ -11,6 +11,7 @@ void require('../../bower_components/chosen/chosen.jquery.js');
 var autosizeInput = require('./autosize-input');
 var errorGenerators = require('./error-generators');
 var notifications = require('./notifications');
+var menu = require('./menu');
 var wysiwyg = require('./wysiwyg');
 
 // TODO: Construct an autosave mechanism for `data-autosave`
@@ -65,6 +66,7 @@ $(function handleReady () {
   autosizeInput.init();
   errorGenerators.init();
   notifications.init();
+  menu.init();
   wysiwyg.init();
 
   // If we are on a page with a `?grid` query parameter, then render a grid

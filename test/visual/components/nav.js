@@ -4,32 +4,20 @@ var geminiUtils = require('../utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('components/nav', function (suite) {
+  // TODO: Restore nav tests when refactor is complete
+  suite.skip();
   gemini.suite('login-status', function (child) {
-    var navTopSelector = '.nav__top';
-    gemini.suite('schedule-logged-out', function (child) {
+    var navSelector = '#nav';
+    gemini.suite('logged-out', function (child) {
       child.load('/schedule', geminiUtils.SETUPS.LOGGED_OUT)
-        .setCaptureElements(navTopSelector)
+        .setCaptureElements(navSelector)
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
         .capture('default-small', geminiUtils.resizeSmall);
     });
-    gemini.suite('schedule-logged-in', function (child) {
+    gemini.suite('logged-in', function (child) {
       child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
-        .setCaptureElements(navTopSelector)
-        .capture('default-large', geminiUtils.resizeLarge)
-        .capture('default-medium', geminiUtils.resizeMedium)
-        .capture('default-small', geminiUtils.resizeSmall);
-    });
-    gemini.suite('non-schedule-logged-out', function (child) {
-      child.load('/add-application', geminiUtils.SETUPS.LOGGED_OUT)
-        .setCaptureElements(navTopSelector)
-        .capture('default-large', geminiUtils.resizeLarge)
-        .capture('default-medium', geminiUtils.resizeMedium)
-        .capture('default-small', geminiUtils.resizeSmall);
-    });
-    gemini.suite('non-schedule-logged-in', function (child) {
-      child.load('/add-application', geminiUtils.SETUPS.DEFAULT)
-        .setCaptureElements(navTopSelector)
+        .setCaptureElements(navSelector)
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
         .capture('default-small', geminiUtils.resizeSmall);

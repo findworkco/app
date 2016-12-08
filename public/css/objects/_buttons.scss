@@ -59,6 +59,19 @@
   @include button-variant($brand-light, $brand-dark, $brand-light);
 }
 
+// Custom lack of styling
+.btn--unstyled {
+  background: inherit;
+  border: 0;
+  padding: 0;
+}
+.btn--focusable {
+  &:focus,
+  &.focus {
+    @include tab-focus();
+  }
+}
+
 // Emulate button group
 // https://github.com/twbs/bootstrap/blob/v3.3.6/less/button-groups.less
 // DEV: We have classes instead of first-child/last-child for use when our buttons are nested in forms

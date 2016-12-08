@@ -228,6 +228,32 @@ If we have manually edited the SVG, then update its template via:
 bin/build-screenshot-template.sh
 ```
 
+### Mobile device access
+During development, we might want to preview changes on a mobile device (e.g. phone, tablet). To do this, run the following:
+
+```bash
+# Determine Vagrant IP address
+ps ax | grep redir | grep cport=9000
+# Example:
+#   redir --laddr=127.0.0.1 --lport=9000 --caddr=10.0.1.4 --cport=9000
+#   Host address is 10.0.1.4
+
+# Determine local IP address
+ifconfig | grep wlan -A 10
+# Example:
+#   wlan0     Link encap:Ethernet  HWaddr xx:xx:xx:xx:xx:xx
+#             inet addr:10.0.0.1  Bcast:10.0.0.255  Mask:255.255.255.0
+#   Local address is 10.0.0.1
+
+# Set up a port redirect to allow any incoming connections
+# DEV: Don't run this too long as it exposes the local service to the world
+redir --laddr=0.0.0.0 --lport=9001 --caddr={{host_address}} --cport 9000
+# Example: redir --laddr=0.0.0.0 --lport=9001 --caddr=10.0.1.4 --cport 9000
+
+# Now open the local IP address on the mobile device
+# Example: http://10.0.0.1:9001/
+```
+
 ### Setting up a production database
 We are currently running our database on the same server as our application. As a result, we can use `bin/create-local-db.sh`. Here's an example provisioning:
 
