@@ -1,100 +1,13 @@
-.nav-row {
-  display: block;
-  //- DEV: We use a non-standard width as 9px padding seems like too much spacing when an application isn't selected
-  //- DEV: We use padded half ends to give top/bottom padding for the selected border
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-@include media-query(large) {
-  .nav-row:hover,
-  .nav-row:focus,
-  .nav-row--selected {
-    // Calculate the offset to use to give ourselves a border
-    $nav-row-margin-width: $half-spacing-unit;
-    $nav-row-border-width: 6px;
-    $nav-row-padding-width: 4px;
-
-    border-left: $nav-row-border-width solid $nav-row-border-color;
-    margin-left: -1 * ($nav-row-border-width + $nav-row-padding-width);
-    padding-left: $nav-row-padding-width;
-  }
-}
-
-@include media-query(medium-and-down) {
-  .nav-row {
-    padding-top: 0;
-    padding-bottom: $base-spacing-unit;
-  }
-}
-
-// DEV: Fun fact: This is a bespoke media object =D
 .nav-info {
   display: table;
-  padding: 0.2em 0;
 }
 
 .nav-info__icon {
-  width: 2.4em;
+  width: 1.3em;
 }
 
 .nav-info__icon,
 .nav-info__content {
   display: table-cell;
-  vertical-align: middle;
-}
-
-.nav-link {
-  color: inherit;
-  font-weight: bold;
-
-  &:active,
-  &:visited {
-    color: inherit;
-  }
-}
-
-@include media-query(large) {
-  .nav-btn__container {
-    margin-bottom: $half-spacing-unit;
-    text-align: center;
-  }
-}
-@include media-query(medium-and-down) {
-  .nav-btn__container {
-    text-align: right;
-  }
-  .nav-btn__container + .nav-btn__container {
-    text-align: left;
-  }
-}
-
-@include media-query(medium-and-down) {
-  .nav__schedule-actions {
-    margin-bottom: $half-spacing-unit;
-  }
-}
-
-@include media-query(small) {
-  .nav-btn--side-by-side {
-    // DEV: Definitely going to have overflow issues in i18n but good enough for now
-    width: 100%;
-    padding-left: 0;
-    padding-right: 0;
-  }
-}
-
-@include media-query(medium) {
-  .nav-btn--standalone {
-    display: block;
-    width: 66.666%; // 8/12
-    margin: auto;
-  }
-}
-
-@include media-query(medium-and-down) {
-  .nav-btn--standalone {
-    padding-top: 13px;
-    padding-bottom: 13px;
-  }
+  vertical-align: top;
 }

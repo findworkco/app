@@ -50,19 +50,26 @@ app.all('*', function loadNavData (req, res, next) {
   //   (or maybe history.pushState like Trello)
   // TODO: When we add model loading, make this a queued action so we load all models in parallel
   // DEV: We fetch active applications separately so we can add limits to each type
-  var upcomingInterviews, waitingForResponseApplications;
+  var archivedApplications, upcomingInterviews, waitingForResponseApplications;
   if (req.candidate) {
     // TODO: Be sure to sort queries by upcoming date
     // TODO: Warn ourselves if we see a date that was before today for upcoming interviews
-    res.locals.archivedApplications = applicationMockData.getArchivedApplications();
+    archivedApplications = res.locals.archivedApplications = applicationMockData.getArchivedApplications();
     upcomingInterviews = res.locals.upcomingInterviews = interviewMockData.getUpcomingInterviews();
     waitingForResponseApplications = res.locals.waitingForResponseApplications =
       applicationMockData.getWaitingForResponseApplications();
+    // TODO: Use session data for recently viewed applications
+    res.locals.recentlyViewedApplications = [
+      applicationMockData.getById(upcomingInterviews[0].application.id),
+      applicationMockData.getById(waitingForResponseApplications[0].id),
+      applicationMockData.getById(archivedApplications[0].id)
+    ];
   // Otherwise, provide no mock applications
   } else {
     res.locals.archivedApplications = [];
     upcomingInterviews = res.locals.upcomingInterviews = [];
     waitingForResponseApplications = res.locals.waitingForResponseApplications = [];
+    res.locals.recentlyViewedApplications = [];
   }
 
   // Prepare aggregate data

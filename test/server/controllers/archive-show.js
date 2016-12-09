@@ -12,9 +12,6 @@ scenario.route('A request to GET /archive', function () {
     it('recieves the archive page', function () {
       expect(this.$('title').text()).to.equal('Archived applications - Find Work');
     });
-    it('has information in nav about how to archive', function () {
-      expect(this.$('#nav__archived').text()).to.contain('click the "Archive" button on its page');
-    });
     it('has information in large content about how to archive', function () {
       expect(this.$('#content').text()).to.contain('click the "Archive" button on its page');
     });
@@ -27,9 +24,6 @@ scenario.route('A request to GET /archive', function () {
     // DEV: We test these again to make sure logged in/logged out users receive same treatment
     it('recieves the archive page', function () {
       expect(this.$('title').text()).to.equal('Archived applications - Find Work');
-    });
-    it('has information in nav about how to archive', function () {
-      expect(this.$('#nav__archived').text()).to.contain('click the "Archive" button on its page');
     });
     it('has information in large content about how to archive', function () {
       expect(this.$('#content').text()).to.contain('click the "Archive" button on its page');

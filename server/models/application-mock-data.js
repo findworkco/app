@@ -29,6 +29,7 @@ function buildApplication(applicationAttributes) {
   retVal.upcoming_interviews = interviews.filter(function isUpcomingInterview (interview) {
     return interview.date_time_datetime >= now;
   });
+  retVal.closest_upcoming_interview = retVal.upcoming_interviews[0];
 
   // Construct last contact moment
   // TODO: Resolve inside of `Application` model, maybe save as its own column for independent querying

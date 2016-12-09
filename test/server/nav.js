@@ -17,6 +17,10 @@ scenario('A request to a page from a logged out user', {
     // DEV: As a sanity check, we verify all content (not only nav) lacks placeholder text
     expect(this.$('body').text()).to.not.contain('@findwork.co');
   });
+
+  it('has a disabled logout button', function () {
+    expect(this.$('#nav form[action="/logout"] button').attr('disabled')).to.equal('disabled');
+  });
 });
 
 scenario('A request to a page from a logged in user', function () {
@@ -30,5 +34,9 @@ scenario('A request to a page from a logged in user', function () {
       .to.contain('mock-email@mock-domain.test');
     expect(this.$('#nav a[href="/sign-up"]')).to.have.length(0);
     expect(this.$('#nav a[href="/login"]')).to.have.length(0);
+  });
+
+  it('has an enabled logout button', function () {
+    expect(this.$('#nav form[action="/logout"] button').attr('disabled')).to.equal(undefined);
   });
 });

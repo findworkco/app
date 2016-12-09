@@ -12,12 +12,6 @@ scenario.route('A request to GET /schedule', function () {
     it('recieves the schedule page', function () {
       expect(this.$('title').text()).to.equal('Schedule - Find Work');
     });
-    it('has calls to action in nav for creating a new application or performing research', function () {
-      expect(this.$('#nav__upcoming-interviews a').eq(0).text()).to.equal('Add a job application');
-      expect(this.$('#nav__upcoming-interviews a').eq(1).text()).to.equal('research a company');
-      expect(this.$('#nav__waiting-for-response a').eq(0).text()).to.equal('Add a job application');
-      expect(this.$('#nav__waiting-for-response a').eq(1).text()).to.equal('research a company');
-    });
     it('has calls to action in large content for creating a new application or performing research', function () {
       expect(this.$('#content a').eq(0).text()).to.equal('+ Add a job application');
       expect(this.$('#content a').eq(1).text()).to.equal('Research a company');

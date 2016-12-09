@@ -59,7 +59,8 @@ interviews.push({
   application_id: applications[applications.length - 1].id,
   // Wed Jan 20 at 2:00PM CST
   date_time_moment: moment.tz('2022-01-20T14:00', 'America/Chicago'),
-  details: 'Go to <a href="https://maps.google.com">1200 Lake St, Suite 303, Chicago</a>'
+  // Go to <a href="https://maps.google.com">1200 Lake St...</a>
+  details: 'Go to 1200 Lake St, Suite 303, Chicago'
 });
 applications.push({
   id: 'abcdef-globo-gym-uuid',

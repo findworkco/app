@@ -45,7 +45,7 @@ assert(DEVELOPMENT_SECRET);
 exports.development = {
   session: _.defaults({
     cookie: _.defaults({
-      domain: staticUrl.development.url.external.hostname,
+      domain: null, // Allow IP or `localhost` (used for mobile dev)
       secure: staticUrl.development.url.external.protocol === 'https'
     }, exports.common.session.cookie),
     secret: DEVELOPMENT_SECRET
