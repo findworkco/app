@@ -1,8 +1,16 @@
-html,
-body {
+// Setup body heights
+// DEV: We use `html { height: 100% }` so the menu can fill vertically
+//   We use `body { min-height: 100% }` so we don't truncate body on long pages (e.g. landing)
+//   yet still fill menu vertically
+html {
   height: 100%;
 }
+body {
+  min-height: 100%;
+}
 
+// Set up base color
+// DEV: Keep this separate from `min-height` rule for grouping intent
 body {
   color: $body-color;
 }

@@ -1,7 +1,6 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
-var moment = require('moment-timezone');
 var Application = require('./application');
 var Interview = require('./interview');
 var genericMockData = require('./generic-mock-data');
@@ -33,17 +32,4 @@ function buildInterview(interviewAttributes) {
 // Export interview mock data resolver
 exports.getById = function (id) {
   return interviewsById.hasOwnProperty(id) ? buildInterview(interviewsById[id]) : null;
-};
-exports.getUpcomingInterviews = function () {
-  // Construct our interviews so we can access `moment` attributes consistently
-  var interviews = genericMockData.interviews.map(buildInterview);
-
-  // Find upcoming interviews
-  var now = moment();
-  var upcomingInterviews = interviews.filter(function filterUpcomingInterviews (interview) {
-    return interview.date_time_moment.isAfter(now);
-  });
-
-  // Return our upcoming interviews
-  return upcomingInterviews;
 };

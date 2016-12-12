@@ -2,11 +2,10 @@
 mixin csrf-input()
   input(type="hidden", name="x-csrf-token", value=csrfToken)
 
-mixin calendar-2x-with-date(date)
-  //- Font stacking via: http://blog.fontawesome.io/2014/05/19/stacking-text-and-icons/
-  span.fa-stack
-    i.fa.fa-stack-2x.fa-calendar-o
-    strong.fa-stack-1x(style="margin-top: 0.3em", aria-hidden="true")= date
+mixin logout-form()
+  form(method="POST", action="/logout")&attributes(attributes)
+    +csrf-input()
+    button.text--link(type="submit") Log out
 
 mixin datepicker(moment)
   //- DEV: We use 2020 as our cap since that's where moment stops

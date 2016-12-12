@@ -15,6 +15,8 @@ exports.init = function () {
 
     // Force height to match entire body height
     // DEV: Without this, we will only cover top of page
+    // DEV: overlay[0] setter is for when scrolling on mobile (background lags)
     $menu[0].style.height = document.body.scrollHeight + 'px';
+    $overlay[0].style.height = document.body.scrollHeight + 'px';
   });
 };

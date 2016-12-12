@@ -1,0 +1,13 @@
+// Naming based on https://github.com/csswizardry/inuit.css/blob/v5.0.1/objects/_this-or-this.scss
+//   Implementation came separately
+.v-this-or-this__container {
+  display: table;
+}
+
+.v-this-or-this__row {
+  display: table-row;
+}
+
+.v-this-or-this__cell {
+  display: table-cell;
+}

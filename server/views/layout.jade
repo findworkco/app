@@ -17,6 +17,13 @@ block base-content
     +nav-row(options).nav-link&attributes(attributes)
       block
 
+  mixin nav-info(params)
+    .nav-info
+      .nav-info__icon
+        i.fa(class=params.icon)
+      .nav-info__content
+        block
+
   mixin nav-row--application(application)
     - var status = application.status;
     +nav-row({selected: (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application.push--bottom
@@ -25,99 +32,34 @@ block base-content
       div Status: #{application.human_status}
       //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
       if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
-        .nav-info
-          .nav-info__icon
-            i.fa.fa-calendar-o
-          .nav-info__content
-            //- Mon Mar 14 at 2:00PM CST
-            - var closestInterview = application.closest_upcoming_interview;
-            a(href=closestInterview.url)
-              = closestInterview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
-        .nav-info
-          .nav-info__icon
-            i.fa.fa-info-circle
-          .nav-info__content
-            //- TODO: Sanitize and linkify details (e.g. map)
-            if application.closest_upcoming_interview.details
-              = application.closest_upcoming_interview.details
-            else
-              i Nothing provided
+        - var closestInterview = application.closest_upcoming_interview;
+        +nav-info({icon: 'fa-calendar-o'})
+          //- Mon Mar 14 at 2:00PM CST
+          a(href=closestInterview.url)
+            = closestInterview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+        +nav-info({icon: 'fa-info-circle'})
+          //- TODO: Sanitize and linkify details (e.g. map)
+          if closestInterview.details
+            = closestInterview.details
+          else
+            i Nothing provided
       else if status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-        .nav-info
-          .nav-info__icon
-            i.fa.fa-envelope-o
-          .nav-info__content
-            //- Tue Feb 16
-            = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
-        .nav-info
-          .nav-info__icon
-            i.fa.fa-reply
-          .nav-info__content
-            if application.follow_up_reminder_moment
-              //- Tue Feb 23
-              = "Follow-up on: " + application.follow_up_reminder_moment.format('ddd MMM D')
-            else
-              i TODO: Add placeholder text for no reminder set
+        +nav-info({icon: 'fa-envelope-o'})
+          //- Tue Feb 16
+          = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
+        +nav-info({icon: 'fa-reply'})
+          if application.follow_up_reminder_moment
+            //- Tue Feb 23
+            = "Follow-up on: " + application.follow_up_reminder_moment.format('ddd MMM D')
+          else
+            i TODO: Add placeholder text for no reminder set
       else if status == APPLICATION_STATUSES.ARCHIVED
-        .nav-info
-          .nav-info__icon
-            i.fa.fa-calendar-o
-          .nav-info__content
-            //- Archived on: Mon Mar 14
-            = "Archived on: "
-            = application.archived_at_moment.format('ddd MMM D')
+        +nav-info({icon: 'fa-calendar-o'})
+          //- Archived on: Mon Mar 14
+          = "Archived on: "
+          = application.archived_at_moment.format('ddd MMM D')
       else
         - throw new Error('Unrecognized application status')
-
-  mixin nav-content()
-    //- Signed in status
-    p.nav-row
-      if locals.candidate
-        a.link--unstyled.muted(href="/settings")
-          | Signed in: #{candidate.email}
-      else
-        a(href="/sign-up") Sign up
-        = " / "
-        a(href="/login") Log in
-
-    //- Page links
-    //- DEV: Push "Recent applications" by 1.5 base units as 1x feels too little and 2x feels too much
-    div(style="margin-bottom:27px")
-      p
-        +nav-row--link({selected: false})(href="/schedule") Schedule
-      .push--left
-        p
-          +nav-row--link({selected: false})(href="/add-application")
-            span(aria-hidden="true")= "+ "
-            | Add job application
-        p
-          +nav-row--link({selected: false})(href="/research-company")
-            | Research company
-      p
-        +nav-row--link({selected: false})(href="/archive") Archived applications
-      p
-        +nav-row--link({selected: false})(href="/settings") Settings
-
-    //- Recent applications
-    //- DEV: We check `locals.recentlyViewedApplications` as we could have a 500 with no data
-    if locals.recentlyViewedApplications
-      .push-double--bottom
-        p.flush--bottom
-          strong Recent applications
-        //- DESIGN: We initially had recent active and archived applications separately stored but we prob don't want that. We should use the same list
-        if recentlyViewedApplications.length
-          for recentlyViewedApplication in recentlyViewedApplications
-            +nav-row--application(recentlyViewedApplication)
-        else
-          p
-            i No applications have been recently viewed.
-
-    p
-      form(method="POST", action="/logout")
-        +csrf-input()
-        - var isLoggedOut = !locals.candidate;
-        button.text--link(type="submit", class={muted: isLoggedOut}, disabled=isLoggedOut)
-          | Log out
 
   //- Top bar
   //- DEV: We could consolidate this with the landing page nav
@@ -126,10 +68,11 @@ block base-content
   header.section--brand-dark.cf.push--bottom
     .container.large-hidden(style="position: absolute;")
       //- DEV: Half width padding doubles as alignment with grid as well as increasing hit area for button
-      button.text--link.link--inherit-color.soft-half(aria-label="Open menu", data-toggle="menu", style="line-height: 29px; display: inline-block") Menu
+      button.text--link.link--inherit-color.soft-half(aria-label="Open menu", data-toggle="menu", style="line-height: 25px") Menu
     .container.text--center
       a.link--unstyled(href="/schedule")
-        .soft-half--ends
+        //- DEV: We use a custom nav bar padding to not take up too much space
+        div(style="padding: 5px 0;")
           img.layout__logo(alt="Find Work", src="/dist/images/white-logo.svg")
 
   //- Navigation menu and content
@@ -145,7 +88,54 @@ block base-content
             button.btn--unstyled.btn--focusable.delta(aria-label="Close menu", data-toggle="menu", style="font-size: 2em; line-height: 1em; margin-top: -0.35em; padding: 0 9px; display: block") &times;
           h4.push-half--bottom(style="font-weight: normal")
             | Menu
-        +nav-content()
+
+        //- Signed in status
+        p.nav-row
+          if locals.candidate
+            a.link--unstyled.muted(href="/settings")
+              | Signed in: #{candidate.email}
+          else
+            a(href="/sign-up") Sign up
+            = " / "
+            a(href="/login") Log in
+
+        //- Page links
+        //- DEV: Push "Recent applications" by 1.5 base units as 1x feels too little and 2x feels too much
+        div(style="margin-bottom:27px")
+          p
+            +nav-row--link({selected: false})(href="/schedule") Schedule
+          .push--left
+            p
+              +nav-row--link({selected: false})(href="/add-application")
+                span(aria-hidden="true")= "+ "
+                | Add job application
+            p
+              +nav-row--link({selected: false})(href="/research-company")
+                | Research company
+          p
+            +nav-row--link({selected: false})(href="/archive") Archived applications
+          p
+            +nav-row--link({selected: false})(href="/settings") Settings
+
+        //- Recent applications
+        //- DEV: We check `locals.recentlyViewedApplications` as we could have a 500 with no data
+        if locals.recentlyViewedApplications
+          .push-double--bottom
+            p.flush--bottom
+              strong Recent applications
+            //- DESIGN: We initially had recent active and archived applications separately stored but we prob don't want that. We should use the same list
+            if recentlyViewedApplications.length
+              for recentlyViewedApplication in recentlyViewedApplications
+                +nav-row--application(recentlyViewedApplication)
+            else
+              p
+                i No applications have been recently viewed.
+
+        //- Logout link
+        //- DEV: We explored showing a muted link on logged out but with a muted footer, we get 2 meanings for muted links
+        if locals.candidate
+          p
+            +logout-form()
       #content.grid__item.layout__content
         block content
 

@@ -1,5 +1,6 @@
 //- DEV: Designed after:
-//-   Large: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a8e34dc3e
+//-   Large empty: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a322cfccf
+//-   Large full: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/af3edd9a2
 extends layout
 include schedule-mixins
 
@@ -7,26 +8,57 @@ block title
   title Schedule - Find Work
 
 block content
+  h1.content__heading.push-half--bottom(style="font-weight: normal") Schedule
   if hasActiveApplications
-    //- TODO: Display content heading to all pages
-    .medium-and-down-hidden
-       h1.content__heading(style="font-weight: normal") Schedule
-    +schedule-selection-content()
-  else
-    .medium-and-down-hidden
-      p.alpha.text--center.push-double--top(style="line-height: 1.3")
-        span.alpha
-          | You have no active job applications.
-        br
-        span.gamma
-          | Choose one of the actions below to get started:
-      p.text--center
-        a.btn.btn--primary.btn--big(href="/add-application")
+    .grid.schedule-actions
+      //- DEV: `.push-half--bottom` is to provide spacing between buttons on wrap
+      //- DEV: `.push--bottom` is to space out next element
+      .grid__item.push-half--bottom
+        a.btn.btn--default(href="/add-application")
           span(aria-hidden="true")= "+ "
-          | Add a job application
-      p.alpha.text--center
-        span.alpha or
-      p.text--center
-        a.btn.btn--primary.btn--big(href="/research-company") Research a company
-    .large-hidden
-      +schedule-selection-content()
+          | Add job application
+      .grid__item.push--bottom
+        a.btn.btn--default(href="/research-company")
+          | Research company
+
+    //- Upcoming interviews section
+    h3.flush--bottom(style="font-weight: normal") Upcoming interviews
+    //- DEV: This is actually a 1.5x push due to extra padding for link border
+    #schedule__upcoming-interviews.push--bottom
+      if upcomingInterviewApplications.length
+        each upcomingInterviewApplication in upcomingInterviewApplications
+          +schedule-row--application(upcomingInterviewApplication)
+      else
+        p
+          i TODO: Set up placeholder text and tests (visual, server)
+          //- i No upcoming interviews.
+
+    //- Waiting for response section
+    h3.flush--bottom(style="font-weight: normal") Waiting for response
+    #schedule__waiting-for-response.push--bottom
+      if waitingForResponseApplications.length
+        each waitingForResponseApplication in waitingForResponseApplications
+          +schedule-row--application(waitingForResponseApplication)
+      else
+        p
+          i TODO: Set up placeholder text and tests (visual, server)
+          //- i Not waiting for any responses.
+  else
+    h2.content__subheading.flush--bottom(style="font-weight: normal")
+      | You have no active job applications.
+    h3(style="font-weight: normal")
+      | Choose one of the actions below to get started:
+    .v-this-or-this__container
+      .v-this-or-this__row
+        .v-this-or-this__cell.soft--bottom
+          //- DEV: We use `one-whole` to fill to width of table cell (i.e. longest of buttons)
+          a.btn.btn--primary.btn--big.one-whole(href="/add-application")
+            span(aria-hidden="true")= "+ "
+            | Add a job application
+      .v-this-or-this__row
+        .v-this-or-this__cell.soft--bottom.text--center
+          span.beta or
+      .v-this-or-this__row
+        .v-this-or-this__cell.soft--bottom
+          //- DEV: We use `one-whole` to fill to width of table cell (i.e. longest of buttons)
+          a.btn.btn--primary.btn--big.one-whole(href="/research-company") Research a company

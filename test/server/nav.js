@@ -18,8 +18,8 @@ scenario('A request to a page from a logged out user', {
     expect(this.$('body').text()).to.not.contain('@findwork.co');
   });
 
-  it('has a disabled logout button', function () {
-    expect(this.$('#nav form[action="/logout"] button').attr('disabled')).to.equal('disabled');
+  it('has no logout button', function () {
+    expect(this.$('#nav form[action="/logout"]')).to.have.length(0);
   });
 });
 
@@ -36,7 +36,7 @@ scenario('A request to a page from a logged in user', function () {
     expect(this.$('#nav a[href="/login"]')).to.have.length(0);
   });
 
-  it('has an enabled logout button', function () {
-    expect(this.$('#nav form[action="/logout"] button').attr('disabled')).to.equal(undefined);
+  it('has a logout button', function () {
+    expect(this.$('#nav form[action="/logout"]')).to.have.length(1);
   });
 });

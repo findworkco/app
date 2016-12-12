@@ -46,6 +46,11 @@ function buildApplication(applicationAttributes) {
 exports.getById = function (id) {
   return applicationsById.hasOwnProperty(id) ? buildApplication(applicationsById[id]) : null;
 };
+exports.getUpcomingInterviewApplications = function () {
+  return _.where(genericMockData.applications, {
+    status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
+  }).map(buildApplication);
+};
 exports.getWaitingForResponseApplications = function () {
   return _.where(genericMockData.applications, {
     status: Application.APPLICATION_STATUSES.WAITING_FOR_RESPONSE
