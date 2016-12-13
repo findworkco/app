@@ -4,32 +4,30 @@ block title
   title Log in - Find Work
 
 block content
-  .grid
-    .grid__item.one-whole
-      h1.content__heading.text--center.push--bottom(style="font-weight: normal") Log in
-      if locals.auth_error
-        p.text--center
-          span.notification.notification--error= auth_error
-      //- DESIGN: If we get AngelList support, build Sign up/Log in with AngelList
-      p.text--center
-        //- DEV: `id` is for testing purposes only
-        +google-button()#login_with_google(href="/oauth/google/request?action=login")
-          = "Log in with Google"
-        br
-        em
-          small
-            //- TODO: Make sure this is valid legalese speak
-            = "By signing up for Find Work, you hereby consent to our "
-            a(href="/privacy") Privacy policy
-            = " and "
-            a(href="/terms") Terms of use
-            = "."
-      p.text--center.landmark
-        = "Don't have an account yet? "
-        a(href="/sign-up") Click here to sign up
-      p.text--center
-        = "Having issues logging in? Contact us at "
-        a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Find Work support question')) todd@findwork.co
-      p.text--center
-        = "Want to log in with a different service (e.g. Twitter)? Tell us at "
-        a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Log in service support request')) todd@findwork.co
+  h1.content__heading.push--bottom(style="font-weight: normal") Log in
+  if locals.auth_error
+    p
+      span.notification.notification--error= auth_error
+  //- DESIGN: If we get AngelList support, build Sign up/Log in with AngelList
+  p
+    //- DEV: `id` is for testing purposes only
+    +google-button()#login_with_google.push-half--bottom(href="/oauth/google/request?action=login")
+      = "Log in with Google"
+    br
+    em
+      small
+        //- TODO: Make sure this is valid legalese speak
+        = "By signing up for Find Work, you hereby consent to our "
+        a(href="/privacy") Privacy policy
+        = " and "
+        a(href="/terms") Terms of use
+        = "."
+  p.landmark
+    = "Don't have an account yet? "
+    a(href="/sign-up") Click here to sign up
+  p
+    = "Having issues logging in? Contact us at "
+    a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Find Work support question')) todd@findwork.co
+  p
+    = "Want to log in with a different service (e.g. Twitter)? Tell us at "
+    a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Log in service support request')) todd@findwork.co

@@ -2,6 +2,7 @@
 //-   Large: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a42d82575
 //-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a26513724
 //-   Small: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a72c9658e
+//-   We have left aligned it to make it consistent with other pages
 
 extends layout
 
@@ -11,11 +12,8 @@ block title
   title #{title} - Find Work
 
 block content
-  .grid
-    .grid__item.small-hidden.medium-two-twelfths.large-two-ninths &nbsp;
-    .grid__item.one-whole.medium-eight-twelfths.large-five-ninths
-      h1.content__heading.text--center(style="font-weight: normal")= title
-      //- DEV: `#_error` id is only for debugging in tests
-      p#_error.text--center= message
-      p.text--center
-        a(href="javascript:window.history.go(-1);") Click here to return to the previous page
+  h1.content__heading(style="font-weight: normal")= title
+  //- DEV: `#_error` id is only for debugging in tests
+  p#_error= message
+  p
+    a(href="javascript:window.history.go(-1);") Click here to return to the previous page

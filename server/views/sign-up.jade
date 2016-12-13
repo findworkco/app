@@ -4,47 +4,43 @@ block title
   title Sign up - Find Work
 
 block content
-  .grid
-    .grid__item.one-whole
-      h1.content__heading.text--center.push--bottom(style="font-weight: normal") Sign up
-      if locals.auth_error
-        p.text--center
-          span.notification.notification--error= auth_error
-      //- DESIGN: If we get AngelList support, build Sign up/Log in with AngelList
-      p.text--center
-        //- DEV: `id` is for testing purposes only
-        +google-button()#sign_up_with_google(href="/oauth/google/request?action=sign_up")
-          = "Sign up with Google"
-        br
-        em
-          small
-            //- TODO: Make sure this is valid legalese speak
-            = "By signing up for Find Work, you hereby consent to our "
-            a(href="/privacy") Privacy Policy
-            = " and "
-            a(href="/terms") Terms of Use
-            = "."
-      p.text--center.landmark
-        = "Already have an account? "
-        a(href="/login") Click here to log in
-      //- https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/edit
-      form.landmark(method="POST", action="https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/formResponse", target="_blank")
-        p.text--center.push-half--bottom
-          | We are in the process of adding email/password sign up.
-          br.small-hidden
-          span.medium-and-up-hidden= " "
-          | To get notified when we complete support, submit your email below.
-        .grid
-          .grid__item.one-third.medium-one-quarter.small-one-sixth &nbsp;
-          .grid__item.one-third.medium-one-half.small-two-thirds
-            .form-group.push-half--bottom
-              //- Field name pulled from https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/viewform
-              label(for="email") Email:
-              input#email.form-control.input--block(name="entry.1063922439", type="email", placeholder="todd@findwork.co", required="true")
-            button.btn.btn--default.one-whole(type="submit") Notify me
-      p.text--center
-        = "Having issues signing up? Contact us at "
-        a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Find Work support question')) todd@findwork.co
-      p.text--center
-        = "Want to sign up with a different service (e.g. Twitter)? Tell us at "
-        a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Log in service support request')) todd@findwork.co
+  h1.content__heading.push--bottom(style="font-weight: normal") Sign up
+  if locals.auth_error
+    p
+      span.notification.notification--error= auth_error
+  //- DESIGN: If we get AngelList support, build Sign up/Log in with AngelList
+  p
+    //- DEV: `id` is for testing purposes only
+    +google-button()#sign_up_with_google.push-half--bottom(href="/oauth/google/request?action=sign_up")
+      = "Sign up with Google"
+    br
+    em
+      small
+        //- TODO: Make sure this is valid legalese speak
+        = "By signing up for Find Work, you hereby consent to our "
+        a(href="/privacy") Privacy Policy
+        = " and "
+        a(href="/terms") Terms of Use
+        = "."
+  p.landmark
+    = "Already have an account? "
+    a(href="/login") Click here to log in
+  //- https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/edit
+  form.landmark(method="POST", action="https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/formResponse", target="_blank")
+    p.push-half--bottom
+      | We are in the process of adding email/password sign up.
+      br.small-hidden
+      span.medium-and-up-hidden= " "
+      | To get notified when we complete support, submit your email below.
+    .one-third.medium-one-half.small-two-thirds
+      .form-group.push-half--bottom
+        //- Field name pulled from https://docs.google.com/a/findwork.co/forms/d/1zP2RQARxMiciaoHOODheheE9ZLv7dsLKgvJWctKUEo0/viewform
+        label(for="email") Email:
+        input#email.form-control.input--block(name="entry.1063922439", type="email", placeholder="todd@findwork.co", required="true")
+      button.btn.btn--default.one-whole(type="submit") Notify me
+  p
+    = "Having issues signing up? Contact us at "
+    a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Find Work support question')) todd@findwork.co
+  p
+    = "Want to sign up with a different service (e.g. Twitter)? Tell us at "
+    a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Log in service support request')) todd@findwork.co
