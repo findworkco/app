@@ -119,6 +119,8 @@ block base-content
 
         //- Recent applications
         //- DEV: We check `locals.recentlyViewedApplications` as we could have a 500 with no data
+        //- DESIGN: We list recent applications to show relevant glancable data to the user
+        //-   Schedule is too bulky up front and this does the trick well
         if locals.recentlyViewedApplications
           .push-double--bottom
             p.flush--bottom

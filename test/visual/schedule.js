@@ -14,6 +14,7 @@ gemini.suite('schedule', function (suite) {
   });
 
   // DEV: Edge cases are handled by server tests (e.g. logged in with no applications, no other user's applications)
+  // DEV: This also tests overflowing notes are wrapped
   gemini.suite('non-empty', function (child) {
     child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')

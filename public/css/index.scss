@@ -20,7 +20,8 @@
 @import "generic/reset";
 
 // Base styles
-@import "base/body";
+// DEV: `base/main` intentionally comes first so others can override it
+@import "base/main";
 @import "base/container";
 @import "base/forms";
 

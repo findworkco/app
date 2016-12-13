@@ -9,6 +9,13 @@ body {
   min-height: 100%;
 }
 
+// Unset overzealous `overflow-y` setting
+// https://github.com/csswizardry/inuit.css/blob/v5.0.1/base/_main.scss#L6
+// DEV: Keep this separate from `height` rule for grouping intent
+html {
+  overflow-y: auto;
+}
+
 // Set up base color
 // DEV: Keep this separate from `min-height` rule for grouping intent
 body {

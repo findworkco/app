@@ -2,29 +2,60 @@
 var gemini = require('gemini');
 var geminiUtils = require('../utils/gemini').bind(gemini);
 
+// Define test helpers
+function expandNav(actions, find) {
+  actions.executeJS(function triggerJQueryNavClick (window) {
+    window.jQuery('header button[aria-label="Open menu"]').click();
+  });
+}
+
 // Define our visual tests
 gemini.suite('components/nav', function (suite) {
-  // TODO: Restore nav tests when refactor is complete
-  suite.skip();
   gemini.suite('login-status', function (child) {
-    var navSelector = '#nav';
     gemini.suite('logged-out', function (child) {
-      child.load('/schedule', geminiUtils.SETUPS.LOGGED_OUT)
-        .setCaptureElements(navSelector)
-        .capture('default-large', geminiUtils.resizeLarge)
-        .capture('default-medium', geminiUtils.resizeMedium)
-        .capture('default-small', geminiUtils.resizeSmall);
+      // DEV: On small screens, logo was previously getting squished
+      gemini.suite('collapsed', function (child) {
+        child.load('/schedule', geminiUtils.SETUPS.LOGGED_OUT)
+          .setCaptureElements('body')
+          .capture('default-large', geminiUtils.resizeLarge)
+          .capture('default-medium', geminiUtils.resizeMedium)
+          .capture('default-small', geminiUtils.resizeSmall);
+      });
+      // DEV: We include `large` in `expanded` to verify no media query regressions are introduced
+      //   This has already caught a footer dropping to bottom of page
+      gemini.suite('expanded', function (child) {
+        child.load('/schedule', geminiUtils.SETUPS.LOGGED_OUT)
+          .setCaptureElements('body')
+          .before(expandNav)
+          .capture('default-large', geminiUtils.resizeLarge)
+          .capture('default-medium', geminiUtils.resizeMedium)
+          .capture('default-small', geminiUtils.resizeSmall);
+      });
     });
     gemini.suite('logged-in', function (child) {
-      child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
-        .setCaptureElements(navSelector)
-        .capture('default-large', geminiUtils.resizeLarge)
-        .capture('default-medium', geminiUtils.resizeMedium)
-        .capture('default-small', geminiUtils.resizeSmall);
+      gemini.suite('collapsed', function (child) {
+        child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
+          .setCaptureElements('body')
+          .capture('default-large', geminiUtils.resizeLarge)
+          .capture('default-medium', geminiUtils.resizeMedium)
+          .capture('default-small', geminiUtils.resizeSmall);
+      });
+      // DEV: We include `large` in `expanded` to verify no media query regressions are introduced
+      //   This has already caught a footer dropping to bottom of page
+      gemini.suite('expanded', function (child) {
+        child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
+          .setCaptureElements('body')
+          .before(expandNav)
+          .capture('default-large', geminiUtils.resizeLarge)
+          .capture('default-medium', geminiUtils.resizeMedium)
+          .capture('default-small', geminiUtils.resizeSmall);
+      });
     });
   });
 
   gemini.suite('nav-row', function (child) {
+    // TODO: Restore when we have decided on nav hover implementation (or remove if not)
+    child.skip();
     child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT);
 
     gemini.suite('selected', function (child) {

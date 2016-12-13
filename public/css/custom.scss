@@ -22,6 +22,15 @@
   width: 75%; // 3/4
 }
 
+@include media-query(large) {
+  // DEV: When resizing from small screen to medium screen with expanded menu
+  //   The height property of nav sticks as an attribute so this fixes it
+  //   Otherwise we get the footer pushed to the bottom
+  .layout__menu {
+    height: auto !important;
+  }
+}
+
 @include media-query(medium-and-down) {
   $menu-transition-duration: 0.2s;
   .layout__menu {
