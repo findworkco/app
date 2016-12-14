@@ -13,6 +13,7 @@ function expandNav(actions, find) {
 gemini.suite('components/nav', function (suite) {
   gemini.suite('login-status', function (child) {
     gemini.suite('logged-out', function (child) {
+      // DEV: This covers both sidebar and top nav
       // DEV: On small screens, logo was previously getting squished
       gemini.suite('collapsed', function (child) {
         child.load('/schedule', geminiUtils.SETUPS.LOGGED_OUT)

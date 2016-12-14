@@ -7,6 +7,16 @@ mixin logout-form()
     +csrf-input()
     button.text--link(type="submit") Log out
 
+mixin avatar-img(email, size)
+  //- http://en.gravatar.com/site/implement/images/
+  //- DEV: We use HTTPS so we have external privacy :tada:
+  //-   https://github.com/sindresorhus/gravatar-url/blob/v1.1.0/index.js#L4
+  //- DEV: We use `identicon` to be visually friendly and not `retro` to avoid phallic shapes
+  //- DEV: We use width/height to placehold image location as it loads (thanks Trello!)
+  - assert(size);
+  - var url = gravatarUrl(email, {d: 'identicon', s: size});
+  img(src=url, width=size, height=size, alt="#{email} avatar")&attributes(attributes)
+
 mixin datepicker(moment)
   //- DEV: We use 2020 as our cap since that's where moment stops
   //- DEV: We use `min/max` to fix slowness bug

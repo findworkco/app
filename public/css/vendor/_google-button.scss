@@ -13,6 +13,16 @@ state) ***/
 
   /* Declare button as inline-block (in case we are using a link) */
   display: inline-block;
+
+  /* Override border radius */
+  -webkit-border-radius: $btn-border-radius !important;
+  border-radius: $btn-border-radius !important;
+}
+
+/* Continue overriding border radius (this time for logo outline) */
+.abcRioButtonIcon {
+  -webkit-border-radius: $btn-border-radius 0 0 $btn-border-radius !important;
+  border-radius: $btn-border-radius 0 0 $btn-border-radius !important;
 }
 
 /* Remove :visited link coloring */

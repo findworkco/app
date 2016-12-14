@@ -26,6 +26,7 @@ var appLocals = {
   assert: require('assert'),
   ACCEPTABLE_NOTIFICATION_TYPES: require('./utils/notifications').ACCEPTABLE_TYPES,
   countryData: require('country-data'),
+  gravatarUrl: require('gravatar-url'),
   moment: require('moment-timezone'),
   sanitizeHtml: require('sanitize-html'),
   timezoneAbbrs: require('./utils/timezone-abbrs.js')

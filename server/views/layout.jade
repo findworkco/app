@@ -64,16 +64,43 @@ block base-content
   //- Top bar
   //- DEV: We could consolidate this with the landing page nav
   //-   but they are just different enough that it's not worth it
-  //- DEV: We don't provide Sign up/Log in buttons as they will require a logged in state which won't fit on small screens
-  header.section--brand-dark.cf.push--bottom
-    .container.large-hidden(style="position: absolute;")
-      //- DEV: Half width padding doubles as alignment with grid as well as increasing hit area for button
-      button.text--link.link--inherit-color.soft-half(aria-label="Open menu", data-toggle="menu", style="line-height: 25px") Menu
-    .container.text--center
-      a.link--unstyled(href="/schedule")
-        //- DEV: We use a custom nav bar padding to not take up too much space
-        div(style="padding: 5px 0;")
-          img.layout__logo(alt="Find Work", src="/dist/images/white-logo.svg")
+  //- DEV: We use `.container(style="position: relative")` to prevent buttons for moving out of container on large screens
+  //- DEV: Top bar id is for testing only
+  header#topbar.section--brand-dark.cf.push--bottom
+    .container(style="position: relative")
+      //- DEV: We use `width: auto` to prevent blocking clicks to logo due to overexpansion
+      - var logoPadding = '5px';
+      .large-hidden(style="position: absolute; left: 0; width: auto")
+        //- DEV: Half width padding doubles as alignment with grid as well as increasing hit area for button
+        button.text--link.link--inherit-color.soft-half(aria-label="Open menu", data-toggle="menu", style="line-height: 25px") Menu
+      .layout-top-btn__container__container
+        .layout-top-btn__container
+          if !locals.candidate
+            .float--right
+              //- DEV: We hide "Sign up" on small screens due to sheer size (it would wrap)
+              //- DEV: We use negative margin to offset initial gutter padding
+              //-   We have initial gutter padding for logged in buttons
+              a.link--inherit-color.layout-top-link.layout-top-link--hideable(href="/sign-up", style="padding: #{logoPadding} 9px;") Sign up
+              a.link--inherit-color.layout-top-link(href="/login", style="display: inline-block; margin-right: -9px; padding: #{logoPadding} 9px;") Log In
+          else
+            //- DEV: We use tables for setup as it allows for link to group image and text
+            //-   If that weren't the case, we could use a setup like Trello's
+            a(href="/settings", style="margin-top: #{logoPadding}").link--inherit-color.layout-top-avatar-btn
+              .layout-top-avatar-btn__avatar
+                +avatar-img(candidate.email, 29).img
+              .layout-top-avatar-btn__text
+                //- DEV: Use `soft-half--sides` to pad link and negative margin to recover lost space
+                //- DEV: `float` breaks content out of flow so it can observe `line-height`
+                //- DEV: `text-decoration` is due to `float` and `inline-block` erasing underline
+                //- DEV: We wanted to use email address but ran into `max-width` issues and then ran out of time
+                //-   If you move to email, add long email visual tests
+                .layout-top-link.layout-top-link--hideable.soft-half--sides(style="float: right; margin-right: -9px; text-decoration: underline") Settings
+      .text--center
+        a.link--unstyled(href="/schedule")
+          //- DEV: We use custom padding to not take up too much vertical space
+          //- DEV: We use `inline-block` to prevent making entire nav link to schedule
+          div(style="display: inline-block; padding: #{logoPadding};")
+            img.layout__logo(alt="Find Work", src="/dist/images/white-logo.svg")
 
   //- Navigation menu and content
   .layout__menu__overlay(data-toggle="menu") &nbsp;

@@ -6,9 +6,52 @@
   padding: $base-spacing-unit;
 }
 
+// Define logo constants for calculation
+$LOGO_WIDTH: 758px;
+$LOGO_HEIGHT: 128px;
+
 // Layout styles
+$layout-logo-height: 29px;
+$layout-logo-width: $LOGO_WIDTH * $layout-logo-height / $LOGO_HEIGHT;
 .layout__logo {
-  height: 29px;
+  height: $layout-logo-height;
+}
+
+.layout-top-btn__container__container {
+  position: absolute;
+  left: 50%;
+  right: 0;
+}
+.layout-top-btn__container {
+  position: absolute;
+  //- Left: Right half of logo + half gutter
+  left: ($layout-logo-width/2) + $half-spacing-unit;
+  //- Right: Half gutter from edge
+  right: $half-spacing-unit;
+}
+.layout-top-link {
+  // DEV: We add 1px as it looks better aesthetically
+  line-height: $layout-logo-height + 1px;
+  display: inline-block;
+}
+// DEV: `.small-hidden` doesn't overtake `display: inline-block` so we make it
+@include media-query(small) {
+  .layout-top-link--hideable {
+    display: none;
+  }
+}
+.layout-top-avatar-btn {
+  // Set up table for shared content box
+  display: table;
+
+  // Position avatar button on right with half gutter spacing
+  float: right;
+}
+.layout-top-avatar-btn__avatar {
+  display: table-cell;
+}
+.layout-top-avatar-btn__text {
+  display: table-cell;
 }
 
 .layout__menu {

@@ -10,10 +10,23 @@ block content
     p
       +google-button({el: 'button', disabled: true})
         = "Connected with Google"
-    .form-group.push-double--bottom
+    .form-group
       //- DESIGN: When we add back email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
       label(for="email") Email (from Google):
       input#email.form-control.input--block(name="email", disabled, value=candidate.email, style="max-width: 220px")
+    .form-group.push-double--bottom
+      //- DEV: We chose to use Gravatar due to its simplicity
+      //-   We understand it's not the best choice due to privacy concerns (e.g. Gravatar/Wordpress can track usage)
+      //-   Known alternatives are: https://www.avatars.io/, https://help.github.com/enterprise/2.0/admin/guides/user-management/enabling-avatars-and-identicons/
+      .label Gravatar (determined by email):
+      .form-control--fake
+        //- DEV: Use `grid` to avoid struggling with image/text alignment
+        //-   Use `hard--right` to not space out image/text too much
+        .grid
+          .grid__item.hard--right
+            +avatar-img(candidate.email, 64).img
+          .grid__item
+            a.btn.btn--default(href="https://gravatar.com/") Edit Gravatar
   +logout-form().push-double--bottom
   //- TODO: Use a modal with confirmation of email address for deletion
   form(method="POST", action="/delete-account", onsubmit="javascript:return confirm('Are you sure you would like to delete the \"#{candidate.email}\" Find Work account?')")
