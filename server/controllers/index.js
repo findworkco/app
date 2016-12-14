@@ -154,16 +154,10 @@ app.post('/delete-account', [
 ]);
 
 app.get('/schedule', function scheduleShow (req, res, next) {
-  res.render('schedule.jade', {
-    // DEV: We use `isSchedule` over direct URL comparisons to allow `/_dev` routes
-    isSchedule: true
-  });
+  res.render('schedule.jade');
 });
 app.get('/archive', function archiveShow (req, res, next) {
-  res.render('archive.jade', {
-    // DEV: We use `isArchive` over direct URL comparisons to allow `/_dev` routes
-    isArchive: true
-  });
+  res.render('archive.jade');
 });
 
 app.get('/research-company', function researchCompanyShow (req, res, next) {

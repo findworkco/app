@@ -206,6 +206,12 @@ function Server(config) {
     next();
   });
 
+  // Expose pathname for navigation
+  app.use(function exposePageUrl (req, res, next) {
+    res.locals.pageUrl = req.url;
+    next();
+  });
+
   // Add a middleware to report non-critical errors to Sentry
   app.use(function addCaptureError (req, res, next) {
     req.captureError = function (err) {

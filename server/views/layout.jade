@@ -117,7 +117,8 @@ block base-content
             | Menu
 
         //- Signed in status
-        p.nav-row
+        //- DEV: We don't use `nav-row` to prevent hover border
+        p
           if locals.candidate
             a.link--unstyled.muted(href="/settings")
               | Signed in: #{candidate.email}
@@ -130,19 +131,19 @@ block base-content
         //- DEV: Push "Recent applications" by 1.5 base units as 1x feels too little and 2x feels too much
         div(style="margin-bottom:27px")
           p
-            +nav-row--link({selected: false})(href="/schedule") Schedule
+            +nav-row--link({selected: locals.pageUrl === '/schedule'})(href="/schedule") Schedule
           .push--left
             p
-              +nav-row--link({selected: false})(href="/add-application")
+              +nav-row--link({selected: /^\/add-application/.test(locals.pageUrl)})(href="/add-application")
                 span(aria-hidden="true")= "+ "
                 | Add job application
             p
-              +nav-row--link({selected: false})(href="/research-company")
+              +nav-row--link({selected: locals.pageUrl === '/research-company'})(href="/research-company")
                 | Research company
           p
-            +nav-row--link({selected: false})(href="/archive") Archived applications
+            +nav-row--link({selected: locals.pageUrl === '/archive'})(href="/archive") Archived applications
           p
-            +nav-row--link({selected: false})(href="/settings") Settings
+            +nav-row--link({selected: locals.pageUrl === '/settings'})(href="/settings") Settings
 
         //- Recent applications
         //- DEV: We check `locals.recentlyViewedApplications` as we could have a 500 with no data

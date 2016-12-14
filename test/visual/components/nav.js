@@ -55,45 +55,87 @@ gemini.suite('components/nav', function (suite) {
   });
 
   gemini.suite('nav-row', function (child) {
-    // TODO: Restore when we have decided on nav hover implementation (or remove if not)
-    child.skip();
-    child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT);
+    // DEV: Specific selection tests should be done by non-nav tests
+    child.setCaptureElements('#nav');
 
-    gemini.suite('selected', function (child) {
+    gemini.suite('selected-link', function (child) {
       // DEV: This verifies we add a left border to selected nav rows
-      child.setCaptureElements('.nav-row--selected').capture('selected');
+      //   and the leftmost nav style
+      child
+        .load('/schedule', geminiUtils.SETUPS.DEFAULT)
+        .before(expandNav)
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
+
+    gemini.suite('selected-nested-link', function (child) {
+      child
+        .load('/add-application', geminiUtils.SETUPS.DEFAULT)
+        .before(expandNav)
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
+
+    gemini.suite('selected-application', function (child) {
+      child
+        .load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
+        .before(expandNav)
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
     });
 
     gemini.suite('hover', function (child) {
       // DEV: This verifies we add a left border on hovering a nav row
-      var unselectedRowSelector = '.nav-row:not(.nav-row--selected)';
       child
-        .setCaptureElements(unselectedRowSelector)
+        .load('/404', geminiUtils.SETUPS.LOGGED_OUT)
         .capture('default')
         .capture('hover', function hoverEl (actions, find) {
-          actions.mouseMove(find(unselectedRowSelector));
+          actions.mouseMove(find('.nav-row:not(.nav-row--selected)'));
         });
     });
 
     gemini.suite('focus', function (child) {
-      // DEV: This verifies we add a left border on focusing a nav link row
-      var unselectedLinkRowSelector = 'a.nav-row:not(.nav-row--selected)';
       child
-        .setCaptureElements(unselectedLinkRowSelector)
+        .load('/404', geminiUtils.SETUPS.LOGGED_OUT)
         .capture('default')
         .capture('focus', function focusEl (actions, find) {
-          actions.focus(find(unselectedLinkRowSelector));
+          actions.focus(find('.nav-row:not(.nav-row--selected)'));
         });
     });
 
     gemini.suite('active', function (child) {
-      // DEV: This verifies we don't color nav links red on active
-      var navLinkSelector = 'a.nav-row';
+      // DEV: This verifies we outline both link and border
       child
-        .setCaptureElements(navLinkSelector)
+        .load('/404', geminiUtils.SETUPS.LOGGED_OUT)
         .capture('default')
         .capture('active', function focusEl (actions, find) {
-          actions.mouseDown(find(navLinkSelector));
+          actions.mouseDown(find('a.nav-row'));
+        });
+    });
+
+    // Edge case: Verify non-hoverable links don't get styled
+    gemini.suite('sign-up-hover', function (child) {
+      child
+        .load('/404', geminiUtils.SETUPS.LOGGED_OUT)
+        .capture('hover', function hoverEl (actions, find) {
+          actions.mouseMove(find('#nav a[href="/sign-up"]'));
+        });
+    });
+    gemini.suite('logged-in-hover', function (child) {
+      child
+        .load('/404', geminiUtils.SETUPS.DEFAULT)
+        .capture('hover', function hoverEl (actions, find) {
+          actions.mouseMove(find('#nav a[href="/settings"]'));
+        });
+    });
+    gemini.suite('logout-hover', function (child) {
+      child
+        .load('/404', geminiUtils.SETUPS.DEFAULT)
+        .capture('hover', function hoverEl (actions, find) {
+          actions.mouseMove(find('#nav form[action="/logout"] button'));
         });
     });
   });

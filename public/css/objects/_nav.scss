@@ -11,3 +11,18 @@
   display: table-cell;
   vertical-align: top;
 }
+
+.nav-row:hover,
+.nav-row:focus,
+.nav-row--selected {
+  // Calculate the offset to use to give ourselves a border
+  // DEV: We use `margin-width` as a hard left to fill the half gutter
+  //   Slide out menus have no excess space beyond half gutter
+  $nav-row-margin-width: $half-spacing-unit;
+  $nav-row-border-width: 6px;
+  $nav-row-padding-width: $nav-row-margin-width - $nav-row-border-width;
+
+  border-left: $nav-row-border-width solid $nav-row-border-color;
+  margin-left: -1 * ($nav-row-border-width + $nav-row-padding-width);
+  padding-left: $nav-row-padding-width;
+}
