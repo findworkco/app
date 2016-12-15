@@ -4,6 +4,7 @@ var MultiDictKeyError = require('querystring-multidict').MultiDictKeyError;
 var statuses = require('statuses');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
+var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
 var sentryUtils = require('../utils/sentry');
 
 // Define our constants
@@ -15,9 +16,13 @@ var GENERIC_ERROR_MESSAGE = 'We encountered an unexpected error. ' +
 // DEV: We use 404 handler before generic error handler in case something is wrong in 404 controller
 // DEV: We have verified both `use` and `all('*')` work for no controllers at all
 //   and `next()` misses (e.g. no matching id)
-app.use(function handle404Error (req, res, next) {
-  next(new HttpError.NotFound());
-});
+app.use([
+  // DEV: Load navigation as a developer convenience
+  resolveModelsAsLocals({nav: true}),
+  function handle404Error (req, res, next) {
+    next(new HttpError.NotFound());
+  }
+]);
 
 app.use(function handleHttpError (err, req, res, next) {
   // If the error is a MultiDictKeyError, then replace it with an HttpError

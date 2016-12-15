@@ -5,6 +5,12 @@
 extends layout-base
 
 block base-content
+  //- Verify `resolveModelsAsLocals()` was used
+  //- DEV: For pages to exempt themselves (e.g. 500 errors), they can overwrite this block
+  block assert-models-loaded
+    if !locals._loadedModels
+      - throw new Error('Expected `resolveModelsAsLocals()` to be used but it wasn\'t. Please include it in the controller middleware');
+
   mixin nav-row(options)
     - var el = options.el || 'div';
     #{el}.nav-row(class={'nav-row--selected': options.selected})&attributes(attributes)

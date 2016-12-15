@@ -11,6 +11,9 @@ block title
     - throw new Error('No title was specified for page');
   title #{title} - Find Work
 
+block assert-models-loaded
+  //- Ignore assertion for loading models although 404 should use it still
+
 block content
   h1.content__heading(style="font-weight: normal")= title
   //- DEV: `#_error` id is only for debugging in tests

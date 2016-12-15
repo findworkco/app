@@ -1,8 +1,8 @@
 // Load in our dependencies
-var _ = require('underscore');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
+var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
 var applicationMockData = require('../models/application-mock-data');
 var Application = require('../models/application');
 var companyMockData = require('../models/company-mock-data');
@@ -15,34 +15,9 @@ app.all('*', function loadNavData (req, res, next) {
   res.locals.APPLICATION_ADD_HUMAN_STATUSES = Application.APPLICATION_ADD_HUMAN_STATUSES;
   res.locals.APPLICATION_EDIT_HUMAN_STATUSES = Application.APPLICATION_EDIT_HUMAN_STATUSES;
 
-  // If our endpoint is exempt (e.g. `/`), then don't load data
-  if (['/'].indexOf(req.url) !== -1) {
-    return next();
-  }
-
-  // If our endpoint isn't GET and non-exempt, then don't load data
-  if (req.method !== 'GET' && ['/research-company'].indexOf(req.url) === -1) {
-    return next();
-  }
-
   // Set up default timezone
   // TODO: Resolve our user's timezone from IP or their settings
   res.locals.timezone = 'America/Chicago';
-
-  // Define our mock data
-  // If the user is logged in, provide mock applications
-  // TODO: When we add model loading, make this a queued action so we load all models in parallel
-  if (req.candidate) {
-    // TODO: Use session data for recently viewed applications
-    res.locals.recentlyViewedApplications = [
-      applicationMockData.getById('abcdef-umbrella-corp-uuid'),
-      applicationMockData.getById('abcdef-sky-networks-uuid'),
-      applicationMockData.getById('abcdef-monstromart-uuid')
-    ];
-  // Otherwise, provide no mock applications
-  } else {
-    res.locals.recentlyViewedApplications = [];
-  }
 
   // Continue
   next();
@@ -50,6 +25,7 @@ app.all('*', function loadNavData (req, res, next) {
 
 // Bind our controllers
 app.get('/', [
+  // No models need to be loaded here
   function rootShow (req, res, next) {
     // If the user is logged in, then redirect them to `/schedule`
     if (req.candidate) {
@@ -76,12 +52,14 @@ function handleAuthError(req, res, next) {
 }
 app.get('/login', [
   handleAuthError,
+  resolveModelsAsLocals({nav: true}),
   function loginShow (req, res, next) {
     res.render('login.jade');
   }
 ]);
 app.get('/sign-up', [
   handleAuthError,
+  resolveModelsAsLocals({nav: true}),
   function signUpShow (req, res, next) {
     res.render('sign-up.jade');
   }
@@ -89,14 +67,17 @@ app.get('/sign-up', [
 
 app.get('/settings', [
   ensureLoggedIn,
+  resolveModelsAsLocals({nav: true}),
   function settingsShow (req, res, next) {
     res.render('settings.jade', {
       isSettings: true
     });
   }
 ]);
+
 app.post('/logout', [
-    function logoutSave (req, res, next) {
+  // No models need to be loaded
+  function logoutSave (req, res, next) {
     // Destroy our session
     req.session.destroy(function handleDestroy (err) {
       // If there wasn an error, capture it in a non-failing manner
@@ -108,8 +89,10 @@ app.post('/logout', [
     });
   }
 ]);
+
 app.post('/delete-account', [
   ensureLoggedIn,
+  // No models need to be loaded
   function deleteAccountSave (req, res, next) {
     // TODO: Destroy our user/cascade destroy applications/interviews
     // Destroy our session
@@ -125,39 +108,50 @@ app.post('/delete-account', [
 ]);
 
 app.get('/schedule', [
-  function scheduleShow (req, res, next) {
+  resolveModelsAsLocals({nav: true}, function scheduleShowResolve (req) {
     // DEV: We fetch active applications separately so we can add limits to each type
     // TODO: Be sure to sort queries by upcoming date
     // TODO: Warn ourselves if we see a date that was before today for upcoming interviews
-    res.render('schedule.jade', {
-      upcomingInterviewApplications: req.candidate ? applicationMockData.getUpcomingInterviewApplications() : [],
-      waitingForResponseApplications: req.candidate ? applicationMockData.getWaitingForResponseApplications() : []
-    });
+    return {
+      upcomingInterviewApplications: req.candidate ?
+        applicationMockData.getUpcomingInterviewApplications() : [],
+      waitingForResponseApplications: req.candidate ?
+        applicationMockData.getWaitingForResponseApplications() : []
+    };
+  }),
+  function scheduleShow (req, res, next) {
+    res.render('schedule.jade');
   }
 ]);
 app.get('/archive', [
+  resolveModelsAsLocals({nav: true}, function archiveShowResolve (req) {
+    return {
+      archivedApplications: req.candidate ?
+        applicationMockData.getArchivedApplications() : []
+    };
+  }),
   function archiveShow (req, res, next) {
-    res.render('archive.jade', {
-      archivedApplications: req.candidate ? applicationMockData.getArchivedApplications() : []
-    });
+    res.render('archive.jade');
   }
 ]);
 
 app.get('/research-company', [
+  resolveModelsAsLocals({nav: true}),
   function researchCompanyShow (req, res, next) {
     res.render('research-company-show.jade');
   }
 ]);
 app.post('/research-company', [
-  function researchCompanySave (req, res, next) {
+  // DEV: Despite being POST, we still render the page so we need nav models
+  resolveModelsAsLocals({nav: true}, function researchCompanySaveResolve (req) {
     // Collect our company research info
     var companyName = req.body.fetch('company_name');
-    var renderData = _.extend({
-      company_name: companyName
-    }, companyMockData.getByName(companyName, true));
-
-    // Render our page
-    res.render('research-company-show.jade', renderData);
+    return companyMockData.getByName(companyName, true);
+  }),
+  function researchCompanySave (req, res, next) {
+    res.render('research-company-show.jade', {
+      company_name: req.body.fetch('company_name')
+    });
   }
 ]);
 
@@ -173,11 +167,13 @@ void require('./oauth-google.js');
 //   https://console.developers.google.com/apis/credentials/consent?project=app-development-144900
 //   https://console.developers.google.com/apis/credentials/consent?project=app-production-144901
 app.get('/privacy', [
+  resolveModelsAsLocals({nav: true}),
   function privacyShow (req, res, next) {
     res.render('privacy.jade');
   }
 ]);
 app.get('/terms', [
+  resolveModelsAsLocals({nav: true}),
   function termsShow (req, res, next) {
     res.render('terms.jade');
   }
