@@ -9,6 +9,8 @@ block title
 
 block content
   h1.content__heading.push-half--bottom(style="font-weight: normal") Schedule
+  - var hasActiveApplications = upcomingInterviewApplications.length !== 0;
+  - hasActiveApplications = hasActiveApplications || waitingForResponseApplications.length !== 0;
   if hasActiveApplications
     .grid.schedule-actions
       //- DEV: `.push-half--bottom` is to provide spacing between buttons on wrap
