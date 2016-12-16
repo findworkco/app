@@ -37,7 +37,7 @@ gemini.suite('application-edit-show', function (suite) {
       .capture('default-small', geminiUtils.resizeSmall);
   });
   gemini.suite('archive', function (child) {
-    // DEV: We include nav to make sure we have archived nav and selected the proper link
+    // DEV: We include nav to make sure we selected the proper link
     child.load('/application/abcdef-monstromart-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)

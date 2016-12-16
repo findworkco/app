@@ -38,7 +38,15 @@ block base-content
       div Status: #{application.human_status}
       //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
       if status == APPLICATION_STATUSES.RECEIVED_OFFER
-        i TODO: Add support for received offer application in nav
+        +nav-info({icon: 'fa-envelope-o'})
+          //- Tue Feb 16
+          = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
+        +nav-info({icon: 'fa-reply'})
+          if application.offer_response_reminder_moment
+            //- Tue Feb 23
+            = "Respond on: " + application.offer_response_reminder_moment.format('ddd MMM D')
+          else
+            i TODO: Add placeholder text for no reminder set
       else if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
         - var closestInterview = application.closest_upcoming_interview;
         +nav-info({icon: 'fa-calendar-o'})
@@ -62,7 +70,15 @@ block base-content
           else
             i TODO: Add placeholder text for no reminder set
       else if status == APPLICATION_STATUSES.SAVED_FOR_LATER
-        i TODO: Add support for saved for later application in nav
+        +nav-info({icon: 'fa-calendar-o'})
+          //- Tue Feb 16
+          = "Saved on: " + moment(application.created_at).tz(timezone).format('ddd MMM D')
+        +nav-info({icon: 'fa-reply'})
+          if application.application_reminder_moment
+            //- Tue Feb 23
+            = "Apply on: " + application.application_reminder_moment.format('ddd MMM D')
+          else
+            i TODO: Add placeholder text for no reminder set
       else if status == APPLICATION_STATUSES.ARCHIVED
         +nav-info({icon: 'fa-calendar-o'})
           //- Archived on: Mon Mar 14
