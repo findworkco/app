@@ -1,8 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
-var _ = require('underscore');
-var Application = require('./application');
 var Interview = require('./interview');
+var applicationMockData = require('./application-mock-data');
 var genericMockData = require('./generic-mock-data');
 
 // Generate interviews map by ids
@@ -18,12 +17,10 @@ function buildInterview(interviewAttributes) {
   var retVal = Interview.build(interviewAttributes).get({plain: true, clone: true});
 
   // Resolve our application by its id
-  var applicationAttributes = _.findWhere(genericMockData.applications, {
-    id: interviewAttributes.application_id
-  });
-  assert(applicationAttributes, 'Expected `interview.application_id` "' + interviewAttributes.application_id + '" ' +
+  // DEV: We use `getById` so we have full data for recently viewed applications
+  retVal.application = applicationMockData.getById(interviewAttributes.application_id);
+  assert(retVal.application, 'Expected `interview.application_id` "' + interviewAttributes.application_id + '" ' +
     'to match an application but it didn\'t');
-  retVal.application = Application.build(applicationAttributes).get({plain: true, clone: true});
 
   // Return our retVal
   return retVal;

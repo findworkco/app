@@ -37,7 +37,9 @@ block base-content
         a(href=application.url)= application.name
       div Status: #{application.human_status}
       //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
-      if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
+      if status == APPLICATION_STATUSES.RECEIVED_OFFER
+        i TODO: Add support for received offer application in nav
+      else if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
         - var closestInterview = application.closest_upcoming_interview;
         +nav-info({icon: 'fa-calendar-o'})
           //- Mon Mar 14 at 2:00PM CST
@@ -59,6 +61,8 @@ block base-content
             = "Follow-up on: " + application.follow_up_reminder_moment.format('ddd MMM D')
           else
             i TODO: Add placeholder text for no reminder set
+      else if status == APPLICATION_STATUSES.SAVED_FOR_LATER
+        i TODO: Add support for saved for later application in nav
       else if status == APPLICATION_STATUSES.ARCHIVED
         +nav-info({icon: 'fa-calendar-o'})
           //- Archived on: Mon Mar 14
@@ -155,6 +159,9 @@ block base-content
         //- DEV: We check `locals.recentlyViewedApplications` as we could have a 500 with no data
         //- DESIGN: We list recent applications to show relevant glancable data to the user
         //-   Schedule is too bulky up front and this does the trick well
+        //-   We include current application to prevent unexpected content change
+        //-   when navigating away from application and visual consistency/ability to glance
+        //-   when moving into an application's interviews
         if locals.recentlyViewedApplications
           .push-double--bottom
             p.flush--bottom

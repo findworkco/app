@@ -63,6 +63,15 @@ app.get('/_dev/setup', function devSetupShow (req, res, next) {
     req.session.cleanCss = req.query.get('clean_css') === 'true';
   }
 
+  // If there is a request for recently viewed applications, set our defaults
+  if (req.query.get('recently_viewed_applications') === 'true') {
+    req.session.recentlyViewedApplicationIds = [
+      'abcdef-umbrella-corp-uuid',
+      'abcdef-sky-networks-uuid',
+      'abcdef-monstromart-uuid'
+    ];
+  }
+
   // If there's a redirect URI, use it
   var redirectUri = req.query.get('redirect_uri');
   if (redirectUri) {

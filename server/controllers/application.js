@@ -135,6 +135,9 @@ app.get('/application/:id', _.flatten([
   ensureLoggedIn,
   resolveApplicationById({nav: true}),
   function applicationEditShow (req, res, next) {
+    // Record our application as recently viewed
+    req.addRecentlyViewedApplication(req.models.selectedApplication);
+
     // TODO: Determine if we want to load company results in series or on page (no way to do it in parallel)
     var selectedApplication = req.models.selectedApplication;
     var renderData = selectedApplication.company_name ?

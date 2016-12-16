@@ -62,8 +62,13 @@ app.get('/interview/:id', _.flatten([
   ensureLoggedIn,
   resolveInterviewById({nav: true}),
   function interviewEditShow (req, res, next) {
+    // Record our application as recently viewed
+    var selectedApplication = req.models.selectedInterview.application;
+    req.addRecentlyViewedApplication(selectedApplication);
+
+    // Render our content
     res.render('interview-edit-show.jade', {
-      selectedApplication: req.models.selectedInterview.application
+      selectedApplication: selectedApplication
     });
   }
 ]));

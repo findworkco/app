@@ -8,14 +8,16 @@ var Response = require('express/lib/response');
 
 // Start our tests
 scenario('A request for a missing page', {
-  dbFixtures: null
+  dbFixtures: [/* Application goes here */]
 }, function () {
-  // Spy on Sentry and make our request
+  // Spy on Sentry, set up user with recent application, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
-  httpUtils.session.init().login().save({
-    url: serverUtils.getUrl('/_dev/404'),
-    expectedStatusCode: 404
-  });
+  httpUtils.session.init().login()
+    .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
+    .save({
+      url: serverUtils.getUrl('/_dev/404'),
+      expectedStatusCode: 404
+    });
 
   it('receives a 404 response', function () {
     // Asserted by `expectedStatusCode` in `httpUtils.save()`
@@ -27,6 +29,7 @@ scenario('A request for a missing page', {
   });
 
   it('loads navigation content', function () {
+    // Recently viewed applications
     expect(this.$('#nav').text()).to.contain('Umbrella Corporation');
   });
 

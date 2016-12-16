@@ -99,7 +99,8 @@ exports._save = function (options) {
             try {
               var errorMsg = cheerio.load(body)('#_error').text();
               assertionMsg = 'Expected status code "' + expectedStatusCode + '" but ' +
-              'received "' + res.statusCode + '" , error "' + errorMsg + '", and body "' + body.slice(0, 300) + '..."';
+              'received "' + res.statusCode + '" at URL "' + (options.url || options)  + '", ' +
+              'error "' + errorMsg + '", and body "' + body.slice(0, 300) + '..."';
             } catch (loadErr) {
               // Ignore error (assuming we can't parse body or find error
             }

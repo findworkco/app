@@ -6,6 +6,12 @@ var serverUtils = require('./utils/server');
 var sinonUtils = require('./utils/sinon');
 
 // Start our tests
+function addRecentlyViewedApplications() {
+  httpUtils.session
+    .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
+    .save(serverUtils.getUrl('/application/abcdef-globo-gym-uuid'))
+    .save(serverUtils.getUrl('/application/abcdef-monstromart-uuid'));
+}
 scenario('A request to a page from a logged out user', {
   dbFixtures: null
 }, function () {
@@ -56,9 +62,10 @@ scenario('A request to a page from a logged in user', function () {
 
 scenario.route('A request to a page which loads navigation', function () {
   scenario.routeTest('from a logged in user with applications', function () {
-    // Log in our user, spy on our database connection, and make our request
+    // Log in our user, add recently viewed applications, spy on our database connection, and make our request
     // DEV: We login first to avoid counting it hitting nav as we login
     httpUtils.session.init().login();
+    addRecentlyViewedApplications();
     sinonUtils.spy(applicationMockData, 'getById');
     // DEV: We use 404 to isolate navigation only requests
     httpUtils.session.save({url: serverUtils.getUrl('/404'), expectedStatusCode: 404});
@@ -116,13 +123,17 @@ scenario.route('A request to a page which doesn\'t load navigation', {
   requiredTests: {nonExistent: false, nonOwner: false, loggedOut: false}
 }, function () {
   scenario.routeTest('from a logged in user with applications', function () {
-    // Log in our user, spy on our database connection, and make our request
+    // Log in our user, add recently viewed applications, load our page
     // DEV: We login and load page first to avoid counting it hitting nav as we login
     // TODO: Complete form for test
     var interviewId = 'abcdef-sky-networks-interview-uuid';
-    httpUtils.session.init().login().save(serverUtils.getUrl('/interview/' + interviewId));
-    sinonUtils.spy(applicationMockData, 'getById');
+    httpUtils.session.init().login();
+    addRecentlyViewedApplications();
+    httpUtils.session.save(serverUtils.getUrl('/interview/' + interviewId));
+
+    // Spy on our database connection and make our request
     // DEV: We use interview page to isolate navigation only requests (i.e. applications)
+    sinonUtils.spy(applicationMockData, 'getById');
     httpUtils.session.save({
       method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId + '/delete'),
       htmlForm: true, followRedirect: false,
@@ -130,8 +141,9 @@ scenario.route('A request to a page which doesn\'t load navigation', {
     });
 
     it('doesn\'t load any models', function () {
+      // DEV: We would expect 0 but `interviewMockData` loads application via `getById`
       var getByIdSpy = applicationMockData.getById;
-      expect(getByIdSpy.callCount).to.equal(0);
+      expect(getByIdSpy.callCount).to.equal(1);
     });
   });
 });

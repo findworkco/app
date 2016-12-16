@@ -161,7 +161,7 @@ exports.scenario.route = getDescribeWrapper({} /* Doesn't use base setup */,
     describeFn.call(this);
 
     // Fallback our options
-    options = _.extend({
+    options = _.defaults({
       requiredTests: _.extend({
         loggedOut: true,
         nonExistent: true,
