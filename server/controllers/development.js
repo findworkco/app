@@ -63,7 +63,12 @@ app.get('/_dev/setup', function devSetupShow (req, res, next) {
     req.session.cleanCss = req.query.get('clean_css') === 'true';
   }
 
-  // If there is a request for recently viewed applications, set our defaults
+  // If there is a request to use mocks, set it up
+  if (req.query.get('use_mocks') === 'true') {
+    req.session.useMocks = true;
+  }
+
+  // If there is a request to backfill recently viewed applications, set it up
   if (req.query.get('recently_viewed_applications') === 'true') {
     req.session.recentlyViewedApplicationIds = [
       'abcdef-umbrella-corp-uuid',

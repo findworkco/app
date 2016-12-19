@@ -1,5 +1,6 @@
 // Load in our dependencies
 var _ = require('underscore');
+var HttpError = require('http-errors');
 var Application = require('./application');
 var Interview = require('./interview');
 var genericMockData = require('./generic-mock-data');
@@ -45,6 +46,18 @@ function buildApplication(applicationAttributes) {
 // Export application mock data resolver
 exports.getById = function (id) {
   return applicationsById.hasOwnProperty(id) ? buildApplication(applicationsById[id]) : null;
+};
+exports.getByIdOr404 = function (id) {
+  // Resolve our application
+  var application = exports.getById(id);
+
+  // If the application doesn't exist, then 404
+  if (application === null) {
+    throw new HttpError.NotFound();
+  }
+
+  // Otherwise, return our application
+  return application;
 };
 exports.getUpcomingInterviewApplications = function () {
   return _.where(genericMockData.applications, {

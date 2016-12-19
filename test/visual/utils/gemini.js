@@ -6,13 +6,15 @@ var url = require('url');
 exports.SETUPS = {
   DEFAULT: {
     logged_in: 'true',
-    recently_viewed_applications: 'true'
+    recently_viewed_applications: 'true',
+    use_mocks: 'true'
   },
   // DEV: LOGGED_OUT setup isn't necessary but nice for being explicit
   LOGGED_OUT: {},
   SCREENSHOT: {
     recently_viewed_applications: 'true',
-    screenshot: 'true'
+    screenshot: 'true',
+    use_mocks: 'true'
   }
 };
 

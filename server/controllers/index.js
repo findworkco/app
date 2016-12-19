@@ -109,14 +109,29 @@ app.post('/delete-account', [
 
 app.get('/schedule', [
   resolveModelsAsLocals({nav: true}, function scheduleShowResolve (req) {
+    // If there's no candidate, return nothing
+    if (!req.candidate) {
+      return {
+        upcomingInterviewApplications: [],
+        waitingForResponseApplications: []
+      };
+    }
+
+    // If we are loading mock data, return mock data
+    if (this.useMocks) {
+      return {
+        upcomingInterviewApplications: applicationMockData.getUpcomingInterviewApplications(),
+        waitingForResponseApplications: applicationMockData.getWaitingForResponseApplications()
+      };
+    }
+
+    // Return Sequelize queries
     // DEV: We fetch active applications separately so we can add limits to each type
     // TODO: Be sure to sort queries by upcoming date
     // TODO: Warn ourselves if we see a date that was before today for upcoming interviews
     return {
-      upcomingInterviewApplications: req.candidate ?
-        applicationMockData.getUpcomingInterviewApplications() : [],
-      waitingForResponseApplications: req.candidate ?
-        applicationMockData.getWaitingForResponseApplications() : []
+      upcomingInterviewApplications: applicationMockData.getUpcomingInterviewApplications(),
+      waitingForResponseApplications: applicationMockData.getWaitingForResponseApplications()
     };
   }),
   function scheduleShow (req, res, next) {
@@ -125,9 +140,21 @@ app.get('/schedule', [
 ]);
 app.get('/archive', [
   resolveModelsAsLocals({nav: true}, function archiveShowResolve (req) {
+    // If there's no candidate, return nothing
+    if (!req.candidate) {
+      return {archivedApplications: []};
+    }
+
+    // If we are loading mock data, return mock data
+    if (this.useMocks) {
+      return {
+        archivedApplications: applicationMockData.getArchivedApplications()
+      };
+    }
+
+    // Return Sequelize queries
     return {
-      archivedApplications: req.candidate ?
-        applicationMockData.getArchivedApplications() : []
+      archivedApplications: applicationMockData.getArchivedApplications()
     };
   }),
   function archiveShow (req, res, next) {
@@ -144,8 +171,13 @@ app.get('/research-company', [
 app.post('/research-company', [
   // DEV: Despite being POST, we still render the page so we need nav models
   resolveModelsAsLocals({nav: true}, function researchCompanySaveResolve (req) {
-    // Collect our company research info
+    // If we loading mock data, return mock data
     var companyName = req.body.fetch('company_name');
+    if (this.useMocks) {
+      return companyMockData.getByName(companyName, true);
+    }
+
+    // Return query against company databases
     return companyMockData.getByName(companyName, true);
   }),
   function researchCompanySave (req, res, next) {

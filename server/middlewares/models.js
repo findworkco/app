@@ -1,6 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
+var config = require('../index.js').config;
 var applicationMockData = require('../models/application-mock-data');
 
 // TODO: Move to pattern with multiple functions;
@@ -28,6 +29,19 @@ exports.resolveModelsAsLocals = function (params, resolver) {
     // DEV: When we move to Sequelize, we will load from a promise via `.asCallback()` and update the object
     var models = {};
 
+    // Determine if we want to use mocks/not
+    var resolverContext = {useMocks: false};
+    if (req.session.useMocks === true) {
+      // If we don't allow mock usage, bail as something is seriously wrong
+      if (config.allowMocks !== true) {
+        return next(new Error('`req.session.useMocks` was set to `true` but ' +
+          '`config.allowMocks` was set to `false'));
+      }
+
+      // Otherwise, update context
+      resolverContext.useMocks = true;
+    }
+
     // If we want to load nav content
     if (params.nav !== false) {
       // If the user is logged in, provide mock applications
@@ -40,7 +54,11 @@ exports.resolveModelsAsLocals = function (params, resolver) {
 
         // Resolve our current set of application ids
         // TODO: When we move to Sequelize, use user id in query
-        models.recentlyViewedApplications = recentlyViewedApplicationIds.map(applicationMockData.getById);
+        if (resolverContext.useMocks) {
+          models.recentlyViewedApplications = recentlyViewedApplicationIds.map(applicationMockData.getById);
+        } else {
+          models.recentlyViewedApplications = recentlyViewedApplicationIds.map(applicationMockData.getById);
+        }
 
         // If any of the models have been deleted, update our ids
         var updateRecentlyViewedApplicationIds = function () {
@@ -84,7 +102,7 @@ exports.resolveModelsAsLocals = function (params, resolver) {
     // DEV: `res.locals` is a bit dangerous as we could overwrite an attribute like `candidate`
     //   but it avoids rewrite noise with `render` and annoying namespaces in views (e.g. `models.applications`)
     //   We are attempting to save ourselves by naming `asLocals` in function
-    req.models = models = _.defaults(models, resolver.call(this, req));
+    req.models = models = _.defaults(models, resolver.call(resolverContext, req));
     _.extend(res.locals, models);
 
     // Flag our locals as using `resolveModelsAsLocals`

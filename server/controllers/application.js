@@ -1,7 +1,6 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
-var HttpError = require('http-errors');
 var app = require('../index.js').app;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
@@ -54,21 +53,19 @@ var applicationAddFormShowFns = [
 ];
 var applicationAddFormSaveFns = [
   // DEV: We resolve `nav` in case of there being a validation error
-  resolveModelsAsLocals({nav: true}, function resolveApplicationAddFormSave (req) {
+  resolveModelsAsLocals({nav: true}),
+  function applicationAddFormSave (req, res, next) {
+    // Create our application (currently mocked)
     var mockApplication = mockApplicationsByStatus[req.statusKey];
     assert(mockApplication, 'No redirect application found with status key "' + req.statusKey + '"');
-    return {
-      mockApplication: mockApplication
-    };
-  }),
-  function applicationAddFormSave (req, res, next) {
+
     // TODO: On save, show "Job application successfully created!" and go to its edit page (if user logged in)
     // jscs:disable maximumLineLength
     // TODO: If user logged out, provide messaging on log in page like: "Sorry, you’ll need an account before we can save the job application. Don’t worry, we will finish saving it when you are done."
     // jscs:enable maximumLineLength
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application saved');
     // TODO: Redirect to saved application
-    res.redirect(req.models.mockApplication.url);
+    res.redirect(mockApplication.url);
   }
 ];
 
@@ -113,23 +110,19 @@ app.post('/add-application/received-offer', _.flatten([
 ]));
 
 var resolveApplicationById = exports.resolveApplicationById = function (params) {
-  return [
-    resolveModelsAsLocals(params, function resolveApplicationByIdFn (req) {
+  return resolveModelsAsLocals(params, function resolveApplicationByIdFn (req) {
+    // If we are loading mock data, return mock data
+    if (this.useMocks) {
       return {
-        selectedApplication: applicationMockData.getById(req.params.id)
+        selectedApplication: applicationMockData.getByIdOr404(req.params.id)
       };
-    }),
-    // TODO: Monkey patch a `findOr404` onto `sequelize?
-    function verifyApplicationFound (req, res, next) {
-      // If we can't find the model, then 404
-      if (req.models.selectedApplication === null) {
-        return next(new HttpError.NotFound());
-      }
-
-      // Otherwise, continue
-      next();
     }
-  ];
+
+    // Otherwise, return Sequelize queries
+    return {
+      selectedApplication: applicationMockData.getByIdOr404(req.params.id)
+    };
+  });
 };
 app.get('/application/:id', _.flatten([
   ensureLoggedIn,

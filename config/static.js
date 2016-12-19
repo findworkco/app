@@ -17,12 +17,14 @@ exports.common = {
 };
 
 exports.development = {
+  allowMocks: true,
   loadDevelopmentRoutes: true,
   throwGenericErrors: true,
   viewCache: false
 };
 
 exports.test = {
+  allowMocks: true,
   loadDevelopmentRoutes: true,
   redisUrl: 'redis://127.0.0.1:6401',
   throwGenericErrors: false,
@@ -30,6 +32,7 @@ exports.test = {
 };
 
 exports.production = {
+  allowMocks: false,
   loadDevelopmentRoutes: false,
   throwGenericErrors: false,
   viewCache: true

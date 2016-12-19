@@ -1,6 +1,5 @@
 // Load in our dependencies
 var _ = require('underscore');
-var HttpError = require('http-errors');
 var app = require('../index.js').app;
 var resolveApplicationById = require('./application').resolveApplicationById;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
@@ -20,23 +19,19 @@ var mockApplicationsByStatus = {
 
 // Define our controllers
 function resolveInterviewById(params) {
-  return [
-    resolveModelsAsLocals(params, function resolveInterviewByIdFn (req) {
+  return resolveModelsAsLocals(params, function resolveInterviewByIdFn (req) {
+    // If we loading mock data, return mock data
+    if (this.useMocks) {
       return {
-        selectedInterview: interviewMockData.getById(req.params.id)
+        selectedInterview: interviewMockData.getByIdOr404(req.params.id)
       };
-    }),
-    // TODO: Monkey patch a `findOr404` onto `sequelize?
-    function verifyInterviewFound (req, res, next) {
-      // If we can't find the model, then 404
-      if (req.models.selectedInterview === null) {
-        return next(new HttpError.NotFound());
-      }
-
-      // Otherwise, continue
-      next();
     }
-  ];
+
+    // Return Sequelize queries
+    return {
+      selectedInterview: interviewMockData.getByIdOr404(req.params.id)
+    };
+  });
 }
 app.get('/application/:id/add-interview', _.flatten([
   ensureLoggedIn,

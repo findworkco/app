@@ -1,5 +1,6 @@
 // Load in our dependencies
 var assert = require('assert');
+var HttpError = require('http-errors');
 var Interview = require('./interview');
 var applicationMockData = require('./application-mock-data');
 var genericMockData = require('./generic-mock-data');
@@ -29,4 +30,16 @@ function buildInterview(interviewAttributes) {
 // Export interview mock data resolver
 exports.getById = function (id) {
   return interviewsById.hasOwnProperty(id) ? buildInterview(interviewsById[id]) : null;
+};
+exports.getByIdOr404 = function (id) {
+  // Resolve our interview
+  var interview = exports.getById(id);
+
+  // If the interview doesn't exist, then 404
+  if (interview === null) {
+    throw new HttpError.NotFound();
+  }
+
+  // Otherwise, return our interview
+  return interview;
 };
