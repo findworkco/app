@@ -14,7 +14,9 @@ mixin application-date(values)
       = "Applied on: "
       i.fa.fa-calendar-o(style="font-size: 1.5em")
     //- If there is no application date moment, then default to today
-    - var applicationDateMoment = values.application_date_moment || moment().tz(timezone);
+    - var applicationDateMoment = values.application_date_moment || moment();
+    //- Add in timezone (we don't set one in the database)
+    - applicationDateMoment = applicationDateMoment.tz(timezone);
     +datepicker(applicationDateMoment)#application_date.form-control(name="application_date")
 
 mixin application-reminder(values, options)

@@ -1,0 +1,58 @@
+mixin application-info(mixin, application)
+  //- DEV: Ideally we would have separate `nav-info` and `schedule-info` mixins for flexibility without sacrificing legibility
+  //-   However during prototyping it helps that they are shared
+  //- TODO: Screenshot edge case: Overflowing lines stay with centered icon (both nav and schedule)
+  - var status = application.status;
+  if status == APPLICATION_STATUSES.RECEIVED_OFFER
+    +#{mixin}({icon: 'fa-envelope-o'})
+      //- Tue Feb 16
+      = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
+    +#{mixin}({icon: 'fa-reply'})
+      if application.offer_response_reminder_moment
+        //- Tue Feb 23
+        = "Respond by: " + application.offer_response_reminder_moment.format('ddd MMM D')
+      else
+        i TODO: Add placeholder text for no reminder set
+        //- i No reminder set
+  else if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
+    - var closestInterview = application.closest_upcoming_interview;
+    +#{mixin}({icon: 'fa-calendar-o', iconContent: closestInterview.date_time_moment.format('D')})
+      //- Mon Mar 14 at 2:00PM CST
+      a(href=closestInterview.url)
+        = closestInterview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+    +#{mixin}({icon: 'fa-info-circle'})
+      //- TODO: Sanitize and linkify details (e.g. map)
+      if closestInterview.details
+        = closestInterview.details
+      else
+        i No details provided
+  else if status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+    +#{mixin}({icon: 'fa-envelope-o'})
+      //- Tue Feb 16
+      = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
+    +#{mixin}({icon: 'fa-reply'})
+      if application.follow_up_reminder_moment
+        //- Tue Feb 23
+        = "Follow-up on: " + application.follow_up_reminder_moment.format('ddd MMM D')
+      else
+        i TODO: Add placeholder text for no reminder set
+        //- i No reminder set
+  else if status == APPLICATION_STATUSES.SAVED_FOR_LATER
+    - var createdAtMoment = moment(application.created_at).tz(timezone);
+    +#{mixin}({icon: 'fa-calendar-o', iconContent: createdAtMoment.format('D')})
+      //- Tue Feb 16
+      = "Saved on: " + createdAtMoment.format('ddd MMM D')
+    +#{mixin}({icon: 'fa-reply'})
+      if application.application_reminder_moment
+        //- Tue Feb 23
+        = "Apply by: " + application.application_reminder_moment.format('ddd MMM D')
+      else
+        i TODO: Add placeholder text for no reminder set
+        //- i No reminder set
+  else if status == APPLICATION_STATUSES.ARCHIVED
+    - var archivedAtMoment = application.archived_at_moment.tz(timezone);
+    +#{mixin}({icon: 'fa-calendar-o', iconContent: archivedAtMoment.format('D')})
+      //- Archived on: Mon Mar 14
+      = "Archived on: " + archivedAtMoment.format('ddd MMM D')
+  else
+    - throw new Error('Unrecognized application status')

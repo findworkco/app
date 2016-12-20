@@ -31,7 +31,8 @@ module.exports = _.extend(baseDefine('application', {
   application_date_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
   // TODO: Reminders should be in their own table =/
   application_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
-  archived_at_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
+  // DEV: We don't use timezone for archived at as this is set by our system so user has no timezone setting
+  archived_at_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
 
   // Example: Sky Networks
   // DEV: This is never null, only an empty string (this gives us falsy consistency)

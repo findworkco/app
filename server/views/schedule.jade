@@ -9,8 +9,11 @@ block title
 
 block content
   h1.content__heading.push-half--bottom(style="font-weight: normal") Schedule
-  - var hasActiveApplications = upcomingInterviewApplications.length !== 0;
+  - var hasActiveApplications = false;
+  - hasActiveApplications = hasActiveApplications || receivedOfferApplications.length !== 0;
+  - hasActiveApplications = hasActiveApplications || upcomingInterviewApplications.length !== 0;
   - hasActiveApplications = hasActiveApplications || waitingForResponseApplications.length !== 0;
+  - hasActiveApplications = hasActiveApplications || savedForLaterApplications.length !== 0;
   if hasActiveApplications
     .grid.schedule-actions
       //- DEV: `.push-half--bottom` is to provide spacing between buttons on wrap
@@ -23,17 +26,23 @@ block content
         a.btn.btn--default(href="/research-company")
           | Research company
 
+    //- Received offer section
+    if receivedOfferApplications.length
+      h3.flush--bottom(style="font-weight: normal") Received offer
+      //- DEV: This is actually a 1.5x push due to extra padding for link border
+      #schedule__received-offer.push--bottom
+        each receivedOfferApplication in receivedOfferApplications
+          +schedule-row--application(receivedOfferApplication)
+
     //- Upcoming interviews section
     h3.flush--bottom(style="font-weight: normal") Upcoming interviews
-    //- DEV: This is actually a 1.5x push due to extra padding for link border
     #schedule__upcoming-interviews.push--bottom
       if upcomingInterviewApplications.length
         each upcomingInterviewApplication in upcomingInterviewApplications
           +schedule-row--application(upcomingInterviewApplication)
       else
         p
-          i TODO: Set up placeholder text and tests (visual, server)
-          //- i No upcoming interviews.
+          i No upcoming interviews.
 
     //- Waiting for response section
     h3.flush--bottom(style="font-weight: normal") Waiting for response
@@ -43,8 +52,15 @@ block content
           +schedule-row--application(waitingForResponseApplication)
       else
         p
-          i TODO: Set up placeholder text and tests (visual, server)
-          //- i Not waiting for any responses.
+          i Not waiting for any responses.
+
+    //- Saved for later section
+    if savedForLaterApplications.length
+      h3.flush--bottom(style="font-weight: normal") Saved for later
+      //- DEV: This is actually a 1.5x push due to extra padding for link border
+      #schedule__saved-for-later.push--bottom
+        each savedForLaterApplication in savedForLaterApplications
+          +schedule-row--application(savedForLaterApplication)
   else
     h2.content__subheading.flush--bottom(style="font-weight: normal")
       | You have no active job applications.

@@ -3,6 +3,7 @@
 //-   Medium: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a998d45b2
 //-   Small: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/af53ee2d9
 extends layout-base
+include layout-mixins
 
 block base-content
   //- Verify `resolveModelsAsLocals()` was used
@@ -31,61 +32,11 @@ block base-content
         block
 
   mixin nav-row--application(application)
-    - var status = application.status;
     +nav-row({selected: (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application.push--bottom
       div
         a(href=application.url)= application.name
       div Status: #{application.human_status}
-      //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
-      if status == APPLICATION_STATUSES.RECEIVED_OFFER
-        +nav-info({icon: 'fa-envelope-o'})
-          //- Tue Feb 16
-          = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
-        +nav-info({icon: 'fa-reply'})
-          if application.offer_response_reminder_moment
-            //- Tue Feb 23
-            = "Respond on: " + application.offer_response_reminder_moment.format('ddd MMM D')
-          else
-            i TODO: Add placeholder text for no reminder set
-      else if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
-        - var closestInterview = application.closest_upcoming_interview;
-        +nav-info({icon: 'fa-calendar-o'})
-          //- Mon Mar 14 at 2:00PM CST
-          a(href=closestInterview.url)
-            = closestInterview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
-        +nav-info({icon: 'fa-info-circle'})
-          //- TODO: Sanitize and linkify details (e.g. map)
-          if closestInterview.details
-            = closestInterview.details
-          else
-            i Nothing provided
-      else if status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-        +nav-info({icon: 'fa-envelope-o'})
-          //- Tue Feb 16
-          = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
-        +nav-info({icon: 'fa-reply'})
-          if application.follow_up_reminder_moment
-            //- Tue Feb 23
-            = "Follow-up on: " + application.follow_up_reminder_moment.format('ddd MMM D')
-          else
-            i TODO: Add placeholder text for no reminder set
-      else if status == APPLICATION_STATUSES.SAVED_FOR_LATER
-        +nav-info({icon: 'fa-calendar-o'})
-          //- Tue Feb 16
-          = "Saved on: " + moment(application.created_at).tz(timezone).format('ddd MMM D')
-        +nav-info({icon: 'fa-reply'})
-          if application.application_reminder_moment
-            //- Tue Feb 23
-            = "Apply on: " + application.application_reminder_moment.format('ddd MMM D')
-          else
-            i TODO: Add placeholder text for no reminder set
-      else if status == APPLICATION_STATUSES.ARCHIVED
-        +nav-info({icon: 'fa-calendar-o'})
-          //- Archived on: Mon Mar 14
-          = "Archived on: "
-          = application.archived_at_moment.format('ddd MMM D')
-      else
-        - throw new Error('Unrecognized application status')
+      +application-info('nav-info', application)
 
   //- Top bar
   //- DEV: We could consolidate this with the landing page nav

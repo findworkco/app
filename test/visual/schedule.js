@@ -23,50 +23,30 @@ gemini.suite('schedule', function (suite) {
       .capture('default-small', geminiUtils.resizeSmall);
   });
 
-  // DEV: Currently skipped due to no support for one-off fixtures
-  gemini.suite('active-no-upcoming', function (child) {
-    child.skip();
-    child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
+  // Specific application types
+  gemini.suite('received-offer', function (child) {
+    child.load('/schedule?received_offer=true', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)
       .capture('default-small', geminiUtils.resizeSmall);
   });
-  gemini.suite('active-no-waiting', function (child) {
-    child.skip();
-    child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
+  gemini.suite('no-upcoming-interviews', function (child) {
+    child.load('/schedule?upcoming_interviews=false', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)
       .capture('default-small', geminiUtils.resizeSmall);
   });
-  gemini.suite('offer-received', function (child) {
-    child.skip();
-    child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
+  gemini.suite('no-waiting-for-response', function (child) {
+    child.load('/schedule?waiting_for_response=false', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)
       .capture('default-small', geminiUtils.resizeSmall);
   });
-  gemini.suite('upcoming-interview', function (child) {
-    child.skip();
-    child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
-      .setCaptureElements('body')
-      .capture('default-large', geminiUtils.resizeLarge)
-      .capture('default-medium', geminiUtils.resizeMedium)
-      .capture('default-small', geminiUtils.resizeSmall);
-  });
-  gemini.suite('waiting-for-response', function (child) {
-    child.skip();
-    child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
-      .setCaptureElements('body')
-      .capture('default-large', geminiUtils.resizeLarge)
-      .capture('default-medium', geminiUtils.resizeMedium)
-      .capture('default-small', geminiUtils.resizeSmall);
-  });
-  gemini.suite('have-not-applied', function (child) {
-    child.skip();
-    child.load('/schedule', geminiUtils.SETUPS.DEFAULT)
+  gemini.suite('saved-for-later', function (child) {
+    child.load('/schedule?saved_for_later=true', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)

@@ -12,6 +12,17 @@ var timezones = require('../utils/timezones');
 exports.MOMENT_DATEONLY = 'MOMENT_DATEONLY';
 exports.MOMENT_TZ = 'MOMENT_TZ';
 
+// Override moment to check timezones
+var _momentFormat = moment.prototype.format;
+moment.prototype.format = function () {
+  // Verify we have a timezone
+  assert(this.tz(), '`moment.format` expected to have a timezone defined but none was. ' +
+    'Please set a timezone via `tz` before using `format`');
+
+  // Call our normal function
+  return _momentFormat.apply(this, arguments);
+};
+
 // Define our model definer
 // https://github.com/sequelize/sequelize/blob/v3.24.6/lib/sequelize.js#L602
 module.exports = _.extend(function (modelName, attributes, options) {

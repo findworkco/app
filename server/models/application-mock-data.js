@@ -59,6 +59,11 @@ exports.getByIdOr404 = function (id) {
   // Otherwise, return our application
   return application;
 };
+exports.getReceivedOfferApplications = function () {
+  return _.where(genericMockData.applications, {
+    status: Application.APPLICATION_STATUSES.RECEIVED_OFFER
+  }).map(buildApplication);
+};
 exports.getUpcomingInterviewApplications = function () {
   return _.where(genericMockData.applications, {
     status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
@@ -67,6 +72,11 @@ exports.getUpcomingInterviewApplications = function () {
 exports.getWaitingForResponseApplications = function () {
   return _.where(genericMockData.applications, {
     status: Application.APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+  }).map(buildApplication);
+};
+exports.getSavedForLaterApplications = function () {
+  return _.where(genericMockData.applications, {
+    status: Application.APPLICATION_STATUSES.SAVED_FOR_LATER
   }).map(buildApplication);
 };
 exports.getArchivedApplications = function () {

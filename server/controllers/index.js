@@ -112,16 +112,24 @@ app.get('/schedule', [
     // If there's no candidate, return nothing
     if (!req.candidate) {
       return {
+        receivedOfferApplications: [],
         upcomingInterviewApplications: [],
-        waitingForResponseApplications: []
+        waitingForResponseApplications: [],
+        savedForLaterApplications: []
       };
     }
 
     // If we are loading mock data, return mock data
     if (this.useMocks) {
       return {
-        upcomingInterviewApplications: applicationMockData.getUpcomingInterviewApplications(),
-        waitingForResponseApplications: applicationMockData.getWaitingForResponseApplications()
+        receivedOfferApplications: req.query.get('received_offer') === 'true' ?
+          applicationMockData.getReceivedOfferApplications() : [],
+        upcomingInterviewApplications: req.query.get('upcoming_interviews') !== 'false' ?
+          applicationMockData.getUpcomingInterviewApplications() : [],
+        waitingForResponseApplications: req.query.get('waiting_for_response') !== 'false' ?
+          applicationMockData.getWaitingForResponseApplications() : [],
+        savedForLaterApplications: req.query.get('saved_for_later') === 'true' ?
+          applicationMockData.getSavedForLaterApplications() : []
       };
     }
 
@@ -130,8 +138,10 @@ app.get('/schedule', [
     // TODO: Be sure to sort queries by upcoming date
     // TODO: Warn ourselves if we see a date that was before today for upcoming interviews
     return {
+      receivedOfferApplications: [],
       upcomingInterviewApplications: applicationMockData.getUpcomingInterviewApplications(),
-      waitingForResponseApplications: applicationMockData.getWaitingForResponseApplications()
+      waitingForResponseApplications: applicationMockData.getWaitingForResponseApplications(),
+      savedForLaterApplications: []
     };
   }),
   function scheduleShow (req, res, next) {

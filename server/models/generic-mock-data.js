@@ -129,6 +129,7 @@ applications.push({
   id: 'abcdef-intertrode-uuid',
   application_date_moment: null,
   archived_at_moment: null,
+  created_at: moment.tz('2015-12-19T12:00', 'America/Chicago').toDate(),
   name: 'Intertrode',
   // Mon Jan 25
   application_reminder_moment: moment.tz('2016-06-20T12:00', 'America/Chicago'),

@@ -1,3 +1,5 @@
+include layout-mixins
+
 mixin schedule-row()
   .schedule-row&attributes(attributes)
     block
@@ -22,36 +24,7 @@ mixin schedule-row--application(application)
       a(href=application.url)= application.name
     .grid
       .grid__item.one-half.small-one-whole
-        //- TODO: Screenshot edge case: Overflowing lines stay with centered icon
-        if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
-          - var closestInterview = application.closest_upcoming_interview;
-          +schedule-info({icon: 'fa-calendar-o', iconContent: closestInterview.date_time_moment.format('D')})
-            //- Mon Mar 14 at 2:00PM CST
-            a(href=closestInterview.url)
-              = closestInterview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
-          +schedule-info({icon: 'fa-info-circle'})
-            //- TODO: Sanitize and linkify details (e.g. map)
-            if closestInterview.details
-              = closestInterview.details
-            else
-              i Nothing provided
-        else if status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-          +schedule-info({icon: 'fa-envelope-o'})
-            //- Tue Feb 16
-            = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
-          +schedule-info({icon: 'fa-reply'})
-            if application.follow_up_reminder_moment
-              //- Tue Feb 23
-              = "Follow-up on: " + application.follow_up_reminder_moment.format('ddd MMM D')
-            else
-              i TODO: Add placeholder text for no reminder set
-        else if status == APPLICATION_STATUSES.ARCHIVED
-          +schedule-info({icon: 'fa-calendar-o'})
-            //- Archived on: Mon Mar 14
-            = "Archived on: "
-            = application.archived_at_moment.format('ddd MMM D')
-        else
-          - throw new Error('Unrecognized application status')
+        +application-info('schedule-info', application)
       //- DEV: `.push-half--bottom` is for spacing with buttons on small screens
       .grid__item.one-half.small-one-whole.schedule-notes__container.push-half--bottom
         //- DESIGN: Make sure links are clickable in textarea
@@ -63,15 +36,23 @@ mixin schedule-row--application(application)
             i No notes recorded
     div
       .grid
-        if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
+        if status == APPLICATION_STATUSES.RECEIVED_OFFER
           //- DEV: `.push-half--bottom` is to provide spacing between buttons on wrap
           //- DEV: `.push--bottom` is to space out next element
+          .grid__item.push--bottom
+            a.btn.btn--default(href=application.url) View job application
+        else if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
           - var closestInterview = application.closest_upcoming_interview;
           .grid__item.push-half--bottom
             a.btn.btn--default(href=application.url) View job application
           .grid__item.push--bottom
             a.btn.btn--default(href=closestInterview.url) View interview
         else if status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+          .grid__item.push-half--bottom
+            a.btn.btn--default(href=application.url) View job application
+          .grid__item.push--bottom
+            a.btn.btn--default(href=application.add_interview_url) Add interview
+        else if status == APPLICATION_STATUSES.SAVED_FOR_LATER
           .grid__item.push-half--bottom
             a.btn.btn--default(href=application.url) View job application
           .grid__item.push--bottom
