@@ -28,6 +28,8 @@ box: findworkco/wercker-app:1.0.0
 
 # sudo apt-get install -y firefox
 
+# sudo apt-get install -y fonts-dejavu fonts-dejavu-extra fonts-droid fonts-freefont-ttf fonts-kacst fonts-kacst-one fonts-khmeros-core fonts-lao fonts-liberation fonts-lklug-sinhala fonts-mathjax fonts-nanum fonts-noto fonts-opensymbol fonts-sil-abyssinica fonts-sil-padauk fonts-takao-pgothic fonts-thai-tlwg fonts-tibetan-machine fonts-tlwg-garuda fonts-tlwg-kinnari fonts-tlwg-loma fonts-tlwg-mono fonts-tlwg-norasi fonts-tlwg-purisa fonts-tlwg-sawasdee fonts-tlwg-typewriter fonts-tlwg-typist fonts-tlwg-typo fonts-tlwg-umpush fonts-tlwg-waree gsfonts ttf-dejavu ttf-dejavu-core ttf-dejavu-extra ttf-indic-fonts-core ttf-punjabi-fonts ttf-ubuntu-font-family ttf-wqy-microhei xfonts-mathml xfonts-scalable
+
 # Reference:
 #   Tab 1:
 #   docker exec -it find_work_scripts /bin/bash
