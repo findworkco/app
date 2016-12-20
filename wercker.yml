@@ -38,6 +38,8 @@ box: findworkco/wercker-app:1.0.0
 #   gsfonts for content, fonts-liberation for Google buttons
 #   sudo apt-get install -y gsfonts fonts-liberation
 
+# Had issues with clear formatting button but saying fuck it and using overkill
+
 # Reference:
 #   Tab 1:
 #   docker exec -it find_work_scripts /bin/bash
