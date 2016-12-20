@@ -10,11 +10,9 @@ genericMockData.candidates.forEach(function saveCandidateById (candidate) {
 
 // Define application builder
 function buildCandidate(candidateAttributes) {
-  // Build our candidate
-  // http://docs.sequelizejs.com/en/latest/docs/instances/#values-of-an-instance
-  var retVal = Candidate.build(candidateAttributes).get({plain: true, clone: true});
-
-  // Return our retVal
+  // Build and return our candidate
+  // DEV: Unlike other mock data, we don't serialize here so it's 1:1 with main code
+  var retVal = Candidate.build(candidateAttributes);
   return retVal;
 }
 
