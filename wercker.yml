@@ -17,6 +17,17 @@ box: findworkco/wercker-app:1.0.0
 
 # sudo apt-get install -y xvfb default-jre-headless
 
+# libgtk-3.so.0: cannot open shared object file: No such file or directory
+# sudo apt-get install -y libgtk-3-common
+
+# libasound.so.2: cannot open shared object file: No such file or directory
+# sudo apt-get install -y libasound2
+
+# libdbus-glib-1.so.2: cannot open shared object file: No such file or directory
+# sudo apt-get ...
+
+# sudo apt-get install -y firefox
+
 # Reference:
 #   Tab 1:
 #   docker exec -it find_work_scripts /bin/bash

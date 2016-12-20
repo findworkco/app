@@ -1,6 +1,8 @@
 # app [![wercker status](https://app.wercker.com/status/11dd669e8306e37c6bfbc982316d9267/s/master)](https://app.wercker.com/project/bykey/11dd669e8306e37c6bfbc982316d9267)
 Web application for https://findwork.co/
 
+TODO: Output wercker.yml config to gist
+
 ## Getting Started
 To get a local copy running, run the following within the [scripts][] repo:
 
