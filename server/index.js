@@ -268,7 +268,15 @@ passport.deserializeUser(function handleDeserializeUser (id, cb) {
   var deserializeDomain = domain.create();
   deserializeDomain.on('error', cb);
   deserializeDomain.run(function handleRun () {
-    Candidate.findById(id).asCallback(cb);
+    var candidate = Candidate.build({
+      id: '00000000-0000-0000-0000-000000000001',
+      email: 'dev-test@find-test.com',
+      welcome_email_sent: true
+    });
+    process.nextTick(function handleNextTick () {
+      cb(null, candidate);
+    });
+    // Candidate.findById(id).asCallback(cb);
   });
 });
 
