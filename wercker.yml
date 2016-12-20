@@ -33,7 +33,12 @@ box: findworkco/wercker-app:1.0.0
 #   docker exec -it find_work_scripts /bin/bash
 #   cd /vagrant/app
 #   npm run webdriver-start
-#   Tab 2: (same except last step)
+#   Tab 2:
+#   redis-server --port 6400
+#   Tab 3
+#   cd /vagrant/app
+#   bin/quick-start.sh
+#   Tab 4: (same except last step)
 #   npm run gemini-test
 
 # Define our build steps (e.g. test steps)
