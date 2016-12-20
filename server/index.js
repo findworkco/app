@@ -268,16 +268,26 @@ passport.deserializeUser(function handleDeserializeUser (req, id, cb) {
   var deserializeDomain = domain.create();
   deserializeDomain.on('error', cb);
   deserializeDomain.run(function handleRun () {
-    console.log(req.session.useMocks);
-    var candidate = Candidate.build({
-      id: '00000000-0000-0000-0000-000000000001',
-      email: 'dev-test@find-test.com',
-      welcome_email_sent: true
-    });
-    process.nextTick(function handleNextTick () {
-      cb(null, candidate);
-    });
-    // Candidate.findById(id).asCallback(cb);
+    // If we are using mocks
+    if (req.session.useMocks === true) {
+      // If we don't allow mock usage, bail as something is seriously wrong
+      if (config.allowMocks !== true) {
+        return next(new Error('`req.session.useMocks` was set to `true` but ' +
+          '`config.allowMocks` was set to `false'));
+      }
+
+      // Otherwise, resolve our candidate by their id
+      // DEV: We use `nextTick` to prevent zalgo
+      var candidate = candidateMockData.getById(id);
+      process.nextTick(function handleNextTick () {
+        if (candidate === null) { return cb(new Error('Unable to find mock candidate by id')); }
+        cb(null, candidate);
+      });
+      return;
+    }
+
+    // Otherwise, resolve our user from the database
+    Candidate.findById(id).asCallback(cb);
   });
 });
 
