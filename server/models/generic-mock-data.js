@@ -4,9 +4,20 @@ var Application = require('./application');
 
 // DEV: We define all our mock data side by side for easy tweaking'
 
-// Define collection for applications and interviews
+// Define collection for data
+var candidates = exports.candidates = [];
 var applications = exports.applications = [];
 var interviews = exports.interviews = [];
+
+// Candidates
+candidates.push({
+  id: 'todd0000-0000-0000-0000-000000000000',
+  email: 'todd@findwork.co'
+});
+candidates.push({
+  id: 'devuser0-0000-0000-0000-000000000000',
+  email: 'dev-user@findwork.test'
+});
 
 // Received offer applications
 applications.push({

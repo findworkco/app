@@ -2,6 +2,7 @@
 Web application for https://findwork.co/
 
 TODO: Output wercker.yml config to gist
+TODO: Remove old database setup
 
 ## Getting Started
 To get a local copy running, run the following within the [scripts][] repo:

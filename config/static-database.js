@@ -11,7 +11,7 @@ exports.common = {
   postgresql: {
     // DEV: We use the same naming scheme as Sequelize so we can reuse these objects for migrations
     host: '127.0.0.1',
-    port: '5500',
+    port: '5900',
     database: undefined, // OVERRIDE: Need to override in each environment
     // DEV: PostgreSQL uses `user` but Sequalize users `username`
     username: 'find_work',

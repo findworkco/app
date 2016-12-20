@@ -258,6 +258,7 @@ module.exports = new Server(config);
 // Configure saving/loading users by their session
 // http://passportjs.org/docs#sessions
 // DEV: We load `Candidate` model here due to needing `app.sequelize` to be loaded
+var candidateMockData = require('./models/candidate-mock-data');
 var Candidate = require('./models/candidate');
 passport.serializeUser(function handleSerializeUser (candidate, cb) {
   cb(null, candidate.get('id'));
