@@ -258,16 +258,36 @@ module.exports = new Server(config);
 // Configure saving/loading users by their session
 // http://passportjs.org/docs#sessions
 // DEV: We load `Candidate` model here due to needing `app.sequelize` to be loaded
+var candidateMockData = require('./models/candidate-mock-data');
 var Candidate = require('./models/candidate');
 passport.serializeUser(function handleSerializeUser (candidate, cb) {
   cb(null, candidate.get('id'));
 });
-passport.deserializeUser(function handleDeserializeUser (id, cb) {
+passport.deserializeUser(function handleDeserializeUser (req, id, cb) {
   // DEV: Domains are overkill here as this is within a domain-wrapped controller
   //   However, we use it here for clarity
   var deserializeDomain = domain.create();
   deserializeDomain.on('error', cb);
   deserializeDomain.run(function handleRun () {
+    // If we are using mocks
+    if (req.session.useMocks === true) {
+      // If we don't allow mock usage, bail as something is seriously wrong
+      if (config.allowMocks !== true) {
+        return cb(new Error('`req.session.useMocks` was set to `true` but ' +
+          '`config.allowMocks` was set to `false'));
+      }
+
+      // Otherwise, resolve our candidate by their id
+      // DEV: We use `nextTick` to prevent zalgo
+      var candidate = candidateMockData.getById(id);
+      process.nextTick(function handleNextTick () {
+        if (candidate === null) { return cb(new Error('Unable to find mock candidate by id')); }
+        cb(null, candidate);
+      });
+      return;
+    }
+
+    // Otherwise, resolve our user from the database
     Candidate.findById(id).asCallback(cb);
   });
 });
