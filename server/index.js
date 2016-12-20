@@ -272,7 +272,7 @@ passport.deserializeUser(function handleDeserializeUser (req, id, cb) {
     if (req.session.useMocks === true) {
       // If we don't allow mock usage, bail as something is seriously wrong
       if (config.allowMocks !== true) {
-        return next(new Error('`req.session.useMocks` was set to `true` but ' +
+        return cb(new Error('`req.session.useMocks` was set to `true` but ' +
           '`config.allowMocks` was set to `false'));
       }
 
