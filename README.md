@@ -3,6 +3,9 @@ Web application for https://findwork.co/
 
 TODO: Output wercker.yml config to gist
 TODO: Remove old database setup
+TODO: Fix up log in, settings, sign up
+TODO: Remove other TODOs
+TODO: Break up PR -- using mocks in passport, adding screenshot support
 
 ## Getting Started
 To get a local copy running, run the following within the [scripts][] repo:
