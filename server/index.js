@@ -262,12 +262,13 @@ var Candidate = require('./models/candidate');
 passport.serializeUser(function handleSerializeUser (candidate, cb) {
   cb(null, candidate.get('id'));
 });
-passport.deserializeUser(function handleDeserializeUser (id, cb) {
+passport.deserializeUser(function handleDeserializeUser (req, id, cb) {
   // DEV: Domains are overkill here as this is within a domain-wrapped controller
   //   However, we use it here for clarity
   var deserializeDomain = domain.create();
   deserializeDomain.on('error', cb);
   deserializeDomain.run(function handleRun () {
+    console.log(req.session.useMocks);
     var candidate = Candidate.build({
       id: '00000000-0000-0000-0000-000000000001',
       email: 'dev-test@find-test.com',

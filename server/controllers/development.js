@@ -49,6 +49,11 @@ app.get('/_dev/notification', function devNotificationShow (req, res, next) {
 //   Here is our reasoning: https://gist.github.com/twolfson/ee2714442655ff106cb640ab096cb4a3
 //   If we ever want to move to a test server, see: https://trello.com/c/ApF5t4SA/140-explore-using-test-server-for-gemini-instead-of-development-routes
 app.get('/_dev/setup', function devSetupShow (req, res, next) {
+  // If there is a request to use mocks, set it up
+  if (req.query.get('use_mocks') === 'true') {
+    req.session.useMocks = true;
+  }
+
   // Override current session with mock user info
   // Example usage: `/_dev/schedule?logged_in=true`
   if (req.query.get('logged_in') === 'true') {
@@ -61,11 +66,6 @@ app.get('/_dev/setup', function devSetupShow (req, res, next) {
   // If there is a request for clean CSS, set it up
   if (req.query.get('clean_css')) {
     req.session.cleanCss = req.query.get('clean_css') === 'true';
-  }
-
-  // If there is a request to use mocks, set it up
-  if (req.query.get('use_mocks') === 'true') {
-    req.session.useMocks = true;
   }
 
   // If there is a request to backfill recently viewed applications, set it up
