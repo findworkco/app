@@ -4,6 +4,7 @@ var HttpError = require('http-errors');
 var Application = require('./application');
 var Interview = require('./interview');
 var genericMockData = require('./generic-mock-data');
+var reminderMockData = require('./reminder-mock-data');
 
 // Generate application map by ids
 var applicationsById = {};
@@ -38,6 +39,12 @@ function buildApplication(applicationAttributes) {
   retVal.last_contact_moment = pastInterviewMoments.reduce(function findLatestInterview (momentA, momentB) {
     return momentA.isAfter(momentB) ? momentA : momentB;
   }, retVal.application_date_moment);
+
+  // Construct our reminders
+  retVal.saved_for_later_reminder = reminderMockData.getById(applicationAttributes.saved_for_later_reminder_id);
+  retVal.waiting_for_response_reminder =
+    reminderMockData.getById(applicationAttributes.waiting_for_response_reminder_id);
+  retVal.received_offer_reminder = reminderMockData.getById(applicationAttributes.received_offer_reminder_id);
 
   // Return our retVal
   return retVal;

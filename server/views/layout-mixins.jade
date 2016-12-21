@@ -8,9 +8,9 @@ mixin application-info(mixin, application)
       //- Tue Feb 16
       = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
     +#{mixin}({icon: 'fa-reply'})
-      if application.received_offer_reminder_moment
+      if application.received_offer_reminder.is_enabled
         //- Tue Feb 23
-        = "Respond by: " + application.received_offer_reminder_moment.format('ddd MMM D')
+        = "Respond by: " + application.received_offer_reminder.date_time_moment.format('ddd MMM D')
       else
         i TODO: Add placeholder text for no reminder set
         //- i No reminder set
@@ -31,9 +31,9 @@ mixin application-info(mixin, application)
       //- Tue Feb 16
       = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
     +#{mixin}({icon: 'fa-reply'})
-      if application.waiting_for_response_reminder_moment
+      if application.waiting_for_response_reminder.is_enabled
         //- Tue Feb 23
-        = "Follow-up on: " + application.waiting_for_response_reminder_moment.format('ddd MMM D')
+        = "Follow-up on: " + application.waiting_for_response_reminder.date_time_moment.format('ddd MMM D')
       else
         i TODO: Add placeholder text for no reminder set
         //- i No reminder set
@@ -43,9 +43,9 @@ mixin application-info(mixin, application)
       //- Tue Feb 16
       = "Saved on: " + createdAtMoment.format('ddd MMM D')
     +#{mixin}({icon: 'fa-reply'})
-      if application.saved_for_later_reminder_moment
+      if application.saved_for_later_reminder.is_enabled
         //- Tue Feb 23
-        = "Apply by: " + application.saved_for_later_reminder_moment.format('ddd MMM D')
+        = "Apply by: " + application.saved_for_later_reminder.date_time_moment.format('ddd MMM D')
       else
         i TODO: Add placeholder text for no reminder set
         //- i No reminder set

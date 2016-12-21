@@ -1,6 +1,7 @@
 // Load in our dependencies
 var moment = require('moment-timezone');
 var Application = require('./application');
+var Reminder = require('./reminder');
 
 // DEV: We define all our mock data side by side for easy tweaking'
 
@@ -8,6 +9,7 @@ var Application = require('./application');
 var candidates = exports.candidates = [];
 var applications = exports.applications = [];
 var interviews = exports.interviews = [];
+var reminders = exports.reminders = [];
 
 // Candidates
 candidates.push({
@@ -28,12 +30,20 @@ applications.push({
   company_name: 'Black Mesa',
   name: 'Black Mesa',
   // Mon Jan 25
-  received_offer_reminder_moment: moment.tz('2016-01-01T12:00', 'America/Chicago'),
+  received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid',
   notes: '300 employees, all engineers/scientists',
   // past_interviews: [], // Filled out by `applicationMockData`
   posting_url: 'http://www.nature.com/naturejobs/science/jobs/123456-researcher',
   status: Application.APPLICATION_STATUSES.RECEIVED_OFFER
   // upcoming_interviews: [], // Filled out by `applicationMockData`
+});
+reminders.push({
+  id: applications[applications.length - 1].received_offer_reminder_id,
+  parent_id: applications[applications.length - 1].id,
+  parent_type: Reminder.PARENT_TYPES.APPLICATION,
+  type: Reminder.TYPES.RECEIVED_OFFER,
+  date_time_moment: moment.tz('2016-01-01T12:00', 'America/Chicago'),
+  is_enabled: true
 });
 interviews.push({
   id: 'abcdef-black-mesa-interview-uuid',
@@ -116,7 +126,7 @@ applications.push({
   archived_at_moment: null,
   company_name: 'Sky Networks',
   // Mon Jan 25
-  waiting_for_response_reminder_moment: moment.tz('2016-01-25T12:00', 'America/Chicago'),
+  waiting_for_response_reminder_id: 'abcdef-sky-networks-reminder-uuid',
   // past_interviews: [], // Filled out by `applicationMockData`
   posting_url: 'https://github.com/about/jobs',
   name: 'Sky Networks',
@@ -125,14 +135,38 @@ applications.push({
   status: Application.APPLICATION_STATUSES.WAITING_FOR_RESPONSE
   // upcoming_interviews: [], // Filled out by `applicationMockData`
 });
+reminders.push({
+  id: applications[applications.length - 1].waiting_for_response_reminder_id,
+  parent_id: applications[applications.length - 1].id,
+  parent_type: Reminder.PARENT_TYPES.APPLICATION,
+  type: Reminder.TYPES.WAITING_FOR_RESPONSE,
+  date_time_moment: moment.tz('2016-01-25T12:00', 'America/Chicago'),
+  is_enabled: true
+});
 interviews.push({
   id: 'abcdef-sky-networks-interview-uuid',
   application_id: applications[applications.length - 1].id,
   // Fri Jan 15 at 9:00AM PST
   date_time_moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
   details: 'Call 555-123-4567',
-  pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
-  post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles')
+  pre_interview_reminder_id: 'abcdef-sky-networks-interview-pre-reminder-uuid',
+  post_interview_reminder_id: 'abcdef-sky-networks-interview-post-reminder-uuid'
+});
+reminders.push({
+  id: interviews[interviews.length - 1].pre_interview_reminder_id,
+  parent_id: interviews[interviews.length - 1].id,
+  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
+  type: Reminder.TYPES.PRE_INTERVIEW,
+  date_time_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
+  is_enabled: true
+});
+reminders.push({
+  id: interviews[interviews.length - 1].post_interview_reminder_id,
+  parent_id: interviews[interviews.length - 1].id,
+  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
+  type: Reminder.TYPES.POST_INTERVIEW,
+  date_time_moment:  moment.tz('2016-01-15T11:00', 'America/Los_Angeles'),
+  is_enabled: true
 });
 
 // Saved for later applications
@@ -143,12 +177,20 @@ applications.push({
   created_at: moment.tz('2015-12-19T12:00', 'America/Chicago').toDate(),
   name: 'Intertrode',
   // Mon Jan 25
-  saved_for_later_reminder_moment: moment.tz('2016-06-20T12:00', 'America/Chicago'),
+  saved_for_later_reminder_id: 'abcdef-intertrode-reminder-uuid',
   notes: '',
   // past_interviews: [], // Filled out by `applicationMockData`
   posting_url: 'https://www.dice.com/jobs/detail/Business-Systems-Analyst-Springfield-USA-12345/1234567/123456',
   status: Application.APPLICATION_STATUSES.SAVED_FOR_LATER
   // upcoming_interviews: [], // Filled out by `applicationMockData`
+});
+reminders.push({
+  id: applications[applications.length - 1].saved_for_later_reminder_id,
+  parent_id: applications[applications.length - 1].id,
+  parent_type: Reminder.PARENT_TYPES.APPLICATION,
+  type: Reminder.TYPES.SAVED_FOR_LATER,
+  date_time_moment: moment.tz('2016-06-20T12:00', 'America/Chicago'),
+  is_enabled: true
 });
 
 // Archived applications
@@ -172,6 +214,22 @@ interviews.push({
   // Fri Jan 15 at 9:00AM PST
   date_time_moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
   details: 'Wait for call from Bob',
-  pre_interview_reminder_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
-  post_interview_reminder_moment: moment.tz('2016-01-15T11:00', 'America/Los_Angeles')
+  pre_interview_reminder_id: 'abcdef-monstromart-interview-pre-reminder-uuid',
+  post_interview_reminder_id: 'abcdef-monstromart-interview-post-reminder-uuid'
+});
+reminders.push({
+  id: interviews[interviews.length - 1].pre_interview_reminder_id,
+  parent_id: interviews[interviews.length - 1].id,
+  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
+  type: Reminder.TYPES.PRE_INTERVIEW,
+  date_time_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
+  is_enabled: true
+});
+reminders.push({
+  id: interviews[interviews.length - 1].post_interview_reminder_id,
+  parent_id: interviews[interviews.length - 1].id,
+  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
+  type: Reminder.TYPES.POST_INTERVIEW,
+  date_time_moment:  moment.tz('2016-01-15T11:00', 'America/Los_Angeles'),
+  is_enabled: true
 });

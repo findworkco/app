@@ -28,8 +28,8 @@ mixin saved-for-later-reminder(values, options)
     if options.showInfo
       .section--info.push-half--ends We will send you a reminder email to apply to this posting
     //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
-    - var savedForLaterReminderMoment = values.saved_for_later_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
-    +reminderpicker("saved_for_later_reminder", savedForLaterReminderMoment)
+    - var savedForLaterDefaultMoment = moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    +reminderpicker("saved_for_later_reminder", values, savedForLaterDefaultMoment)
 
 mixin waiting-for-response-reminder(values, options)
   .form-group
@@ -40,8 +40,8 @@ mixin waiting-for-response-reminder(values, options)
     if options.showInfo
       .section--info.push-half--ends We will send you a reminder email to follow up to this posting
     //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
-    - var waitingForResponseReminderMoment = values.waiting_for_response_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
-    +reminderpicker("waiting_for_response_reminder", waitingForResponseReminderMoment)
+    - var waitingForResponseDefaultMoment = moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    +reminderpicker("waiting_for_response_reminder", values, waitingForResponseDefaultMoment)
 
 mixin received-offer-reminder(values, options)
   .form-group
@@ -52,8 +52,8 @@ mixin received-offer-reminder(values, options)
     if options.showInfo
       .section--info.push-half--ends We will send you a reminder email to respond to your offer
     //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
-    - var receivedOfferReminderMoment = values.received_offer_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
-    +reminderpicker("received_offer_reminder", receivedOfferReminderMoment)
+    - var receivedOfferDefaultMoment = moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    +reminderpicker("received_offer_reminder", values, receivedOfferDefaultMoment)
 
 mixin company-notes-and-research(values)
   .form-group

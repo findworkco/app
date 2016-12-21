@@ -54,12 +54,7 @@ module.exports = _.extend(baseDefine('application', {
   status: {
     type: Sequelize.STRING(36), allowNull: false,
     validate: {isIn: {args: [_.values(exports.APPLICATION_STATUSES)], msg: 'Invalid status provided'}}
-  },
-
-  // TODO: Reminders should be in their own table =/
-  saved_for_later_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
-  waiting_for_response_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
-  received_offer_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true}
+  }
 }, {
   getterMethods: {
     add_interview_url: function () {

@@ -62,18 +62,21 @@ mixin datetimepicker(name, moment, options)
   div
     +timezonepicker(moment).form-control(name="#{name}#{delimiter}timezone")
 
-mixin reminderpicker(name, moment)
-  - var hasReminder = !!moment;
+mixin reminderpicker(name, values, defaultMoment)
+  //- Determine if the reminder is enabled and its moment (default to `true` if there is none)
+  - var reminder = values[name];
+  - var isEnabled = reminder ? reminder.is_enabled : true;
+  - var moment = reminder ? reminder.date_time_moment : defaultMoment;
   div(style="display: table")
     div(style="display: table-cell; vertical-align: middle")
-      input(name="#{name}_enabled", type="radio", checked=hasReminder, value="yes")
+      input(name="#{name}_enabled", type="radio", checked=isEnabled, value="yes")
       | &nbsp;
     div(style="display: table-cell; vertical-align: middle; padding: 3px")
       //- TODO: When any of the date picker elements are clicked/changed, select our radio
       +datetimepicker(name, moment)(id=name)
   div(style="display: table")
     div(style="display: table-cell; vertical-align: middle")
-      input(id="#{name}_enabled_no", name="#{name}_enabled", type="radio", checked=!hasReminder, value="no")
+      input(id="#{name}_enabled_no", name="#{name}_enabled", type="radio", checked=!isEnabled, value="no")
       | &nbsp;
     div(style="display: table-cell; vertical-align: middle; padding: 3px")
       label(for="#{name}_enabled_no") No reminder

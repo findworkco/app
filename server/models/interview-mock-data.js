@@ -4,6 +4,7 @@ var HttpError = require('http-errors');
 var Interview = require('./interview');
 var applicationMockData = require('./application-mock-data');
 var genericMockData = require('./generic-mock-data');
+var reminderMockData = require('./reminder-mock-data');
 
 // Generate interviews map by ids
 var interviewsById = {};
@@ -22,6 +23,10 @@ function buildInterview(interviewAttributes) {
   retVal.application = applicationMockData.getById(interviewAttributes.application_id);
   assert(retVal.application, 'Expected `interview.application_id` "' + interviewAttributes.application_id + '" ' +
     'to match an application but it didn\'t');
+
+  // Resolve and build our reminders
+  retVal.pre_interview_reminder = reminderMockData.getById(interviewAttributes.pre_interview_reminder_id);
+  retVal.post_interview_reminder = reminderMockData.getById(interviewAttributes.post_interview_reminder_id);
 
   // Return our retVal
   return retVal;
