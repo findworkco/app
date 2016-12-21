@@ -29,17 +29,12 @@ module.exports = _.extend(baseDefine('application', {
 
   // Example: 2016-01-08, no time
   application_date_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
-  // TODO: Reminders should be in their own table =/
-  application_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
   // DEV: We don't use timezone for archived at as this is set by our system so user has no timezone setting
   archived_at_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
 
   // Example: Sky Networks
   // DEV: This is never null, only an empty string (this gives us falsy consistency)
   company_name: {type: Sequelize.STRING(255), defaultValue: '', allowNull: false},
-
-  // TODO: Reminders should be in their own table =/
-  follow_up_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
 
   // DEV: We allow url OR name in controller but url always backfills name
   name: {
@@ -50,9 +45,6 @@ module.exports = _.extend(baseDefine('application', {
   // Example: Website <a href="https://sky.net/">https://sky.net/</a>
   notes: {type: Sequelize.STRING(64 * 1024) /* 64kb */, defaultValue: '', allowNull: false},
 
-  // TODO: Reminders should be in their own table =/
-  offer_response_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
-
   // DEV: GET URL limit is 2083 but 1024 is simpler
   // http://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
   // DEV: This is never null, only an empty string (this gives us falsy consistency)
@@ -62,7 +54,12 @@ module.exports = _.extend(baseDefine('application', {
   status: {
     type: Sequelize.STRING(36), allowNull: false,
     validate: {isIn: {args: [_.values(exports.APPLICATION_STATUSES)], msg: 'Invalid status provided'}}
-  }
+  },
+
+  // TODO: Reminders should be in their own table =/
+  saved_for_later_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
+  waiting_for_response_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true},
+  received_offer_reminder_moment: {type: baseDefine.MOMENT_TZ, defaultValue: null, allowNull: true}
 }, {
   getterMethods: {
     add_interview_url: function () {

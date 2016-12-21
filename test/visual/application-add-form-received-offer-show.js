@@ -11,8 +11,8 @@ gemini.suite('application-add-form-received-offer-show', function (suite) {
       // Reset date/time inputs to consistent time
       actions.executeJS(function handleExecuteJS (window) {
         window.document.querySelector('[name=application_date]').value = '2016-05-19';
-        window.document.querySelector('[name=offer_response_reminder_date]').value = '2016-05-20';
-        window.document.querySelector('[name=offer_response_reminder_time]').value = '7:00PM';
+        window.document.querySelector('[name=received_offer_reminder_date]').value = '2016-05-20';
+        window.document.querySelector('[name=received_offer_reminder_time]').value = '7:00PM';
       });
     })
     .capture('default-large', geminiUtils.resizeLarge)

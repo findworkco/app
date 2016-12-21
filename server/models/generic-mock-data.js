@@ -28,7 +28,7 @@ applications.push({
   company_name: 'Black Mesa',
   name: 'Black Mesa',
   // Mon Jan 25
-  offer_response_reminder_moment: moment.tz('2016-01-01T12:00', 'America/Chicago'),
+  received_offer_reminder_moment: moment.tz('2016-01-01T12:00', 'America/Chicago'),
   notes: '300 employees, all engineers/scientists',
   // past_interviews: [], // Filled out by `applicationMockData`
   posting_url: 'http://www.nature.com/naturejobs/science/jobs/123456-researcher',
@@ -116,7 +116,7 @@ applications.push({
   archived_at_moment: null,
   company_name: 'Sky Networks',
   // Mon Jan 25
-  follow_up_reminder_moment: moment.tz('2016-01-25T12:00', 'America/Chicago'),
+  waiting_for_response_reminder_moment: moment.tz('2016-01-25T12:00', 'America/Chicago'),
   // past_interviews: [], // Filled out by `applicationMockData`
   posting_url: 'https://github.com/about/jobs',
   name: 'Sky Networks',
@@ -143,7 +143,7 @@ applications.push({
   created_at: moment.tz('2015-12-19T12:00', 'America/Chicago').toDate(),
   name: 'Intertrode',
   // Mon Jan 25
-  application_reminder_moment: moment.tz('2016-06-20T12:00', 'America/Chicago'),
+  saved_for_later_reminder_moment: moment.tz('2016-06-20T12:00', 'America/Chicago'),
   notes: '',
   // past_interviews: [], // Filled out by `applicationMockData`
   posting_url: 'https://www.dice.com/jobs/detail/Business-Systems-Analyst-Springfield-USA-12345/1234567/123456',

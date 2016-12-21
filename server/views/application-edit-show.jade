@@ -92,15 +92,15 @@ block content
         .grid__item.one-whole.medium-one-half.large-four-ninths
           if selectedApplication.status === APPLICATION_STATUSES.SAVED_FOR_LATER
             //- TODO: Only show info if someone has never saved a "Saved for later" application before
-            +application-reminder(selectedApplication, {showInfo: false})
+            +saved-for-later-reminder(selectedApplication, {showInfo: false})
           else if selectedApplication.status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
             //- TODO: Only show info if someone has never saved a "Waiting for response" application before
-            +follow-up-reminder(selectedApplication, {showInfo: false})
+            +waiting-for-response-reminder(selectedApplication, {showInfo: false})
           else if selectedApplication.status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
             //- Nothing goes here (no visible reminders)
           else if selectedApplication.status === APPLICATION_STATUSES.RECEIVED_OFFER
             //- TODO: Only show info if someone has never saved a "Offer received" application before
-            +offer-response-reminder(selectedApplication, {showInfo: false})
+            +received-offer-reminder(selectedApplication, {showInfo: false})
           else if selectedApplication.status == APPLICATION_STATUSES.ARCHIVED
             //- Nothing goes here (no visible reminders)
           else

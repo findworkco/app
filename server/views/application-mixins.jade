@@ -19,7 +19,7 @@ mixin application-date(values)
     - applicationDateMoment = applicationDateMoment.tz(timezone);
     +datepicker(applicationDateMoment)#application_date.form-control(name="application_date")
 
-mixin application-reminder(values, options)
+mixin saved-for-later-reminder(values, options)
   .form-group
     h4.flush--bottom(style="font-weight: normal")
       = "Application reminder: "
@@ -27,11 +27,11 @@ mixin application-reminder(values, options)
         i.fa.fa-reply(style="font-size: 1.5em")
     if options.showInfo
       .section--info.push-half--ends We will send you a reminder email to apply to this posting
-    //- If there is no application reminder, then default to 1 week from today (raised to nearest hour)
-    - var applicationReminderMoment = values.application_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
-    +reminderpicker("application_reminder", applicationReminderMoment)
+    //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
+    - var savedForLaterReminderMoment = values.saved_for_later_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    +reminderpicker("saved_for_later_reminder", savedForLaterReminderMoment)
 
-mixin follow-up-reminder(values, options)
+mixin waiting-for-response-reminder(values, options)
   .form-group
     h4.flush--bottom(style="font-weight: normal")
       = "Follow up reminder: "
@@ -39,11 +39,11 @@ mixin follow-up-reminder(values, options)
         i.fa.fa-reply(style="font-size: 1.5em")
     if options.showInfo
       .section--info.push-half--ends We will send you a reminder email to follow up to this posting
-    //- If there is no follow up reminder, then default to 1 week from today (raised to nearest hour)
-    - var followUpReminderMoment = values.follow_up_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
-    +reminderpicker("follow_up_reminder", followUpReminderMoment)
+    //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
+    - var waitingForResponseReminderMoment = values.waiting_for_response_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    +reminderpicker("waiting_for_response_reminder", waitingForResponseReminderMoment)
 
-mixin offer-response-reminder(values, options)
+mixin received-offer-reminder(values, options)
   .form-group
     h4.flush--bottom(style="font-weight: normal")
       = "Response reminder: "
@@ -51,9 +51,9 @@ mixin offer-response-reminder(values, options)
         i.fa.fa-reply(style="font-size: 1.5em")
     if options.showInfo
       .section--info.push-half--ends We will send you a reminder email to respond to your offer
-    //- If there is no offer received reminder, then default to 1 week from today (raised to nearest hour)
-    - var offerResponseMoment = values.offer_response_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
-    +reminderpicker("offer_response_reminder", offerResponseMoment)
+    //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
+    - var receivedOfferReminderMoment = values.received_offer_reminder_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    +reminderpicker("received_offer_reminder", receivedOfferReminderMoment)
 
 mixin company-notes-and-research(values)
   .form-group

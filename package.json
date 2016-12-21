@@ -24,7 +24,7 @@
     "develop": "gulp build-clean && gulp develop",
     "lint": "twolfson-style lint server/ test/",
     "_gemini-gui-comment": "By using `trap`, we kick off visual update script on SIGINT (keyboard interrupt)",
-    "gemini-gui": "trap bin/test-visual-update-signature.sh INT; serve dist",
+    "gemini-gui": "trap bin/test-visual-update-signature.sh INT; gemini-gui test/visual",
     "_gemini-update-comment": "By using `trap`, we allow additional arguments via `--` with `npm run`",
     "gemini-update": "trap bin/test-visual-update-signature.sh EXIT; npm run verify-webdriver-running && gemini update test/visual",
     "gemini-test": "trap bin/test-visual-update-signature.sh EXIT; npm run verify-webdriver-running && gemini test --reporter html --reporter flat test/visual",

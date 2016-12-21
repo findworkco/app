@@ -36,13 +36,13 @@ scenario.route('A request to GET /add-application/waiting-for-response (specific
       expect(this.$('input[name=application_date]').val()).to.equal(expectedInfo.date);
     });
 
-    it('sets follow up reminder to 1 week from now', function () {
+    it('sets reminder to 1 week from now', function () {
       var expectedDate = dateUtils.startOfHour(dateUtils.nowInChicago() + dateUtils.oneWeek() + dateUtils.oneHour());
       var expectedDateStr = new Date(expectedDate).toISOString();
       var expectedInfo = extractValues(expectedDateStr, '{date}T{time}:00.000Z');
-      expect(this.$('input[name=follow_up_reminder_date]').val()).to.equal(expectedInfo.date);
-      expect(this.$('input[name=follow_up_reminder_time]').val()).to.equal(expectedInfo.time);
-      expect(this.$('select[name=follow_up_reminder_timezone]').val()).to.equal('US-America/Chicago');
+      expect(this.$('input[name=waiting_for_response_reminder_date]').val()).to.equal(expectedInfo.date);
+      expect(this.$('input[name=waiting_for_response_reminder_time]').val()).to.equal(expectedInfo.time);
+      expect(this.$('select[name=waiting_for_response_reminder_timezone]').val()).to.equal('US-America/Chicago');
     });
   });
 });

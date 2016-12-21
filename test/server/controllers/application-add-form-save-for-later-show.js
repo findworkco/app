@@ -33,9 +33,9 @@ scenario.route('A request to GET /add-application/save-for-later (specific)', {
       var expectedDate = dateUtils.startOfHour(dateUtils.nowInChicago() + dateUtils.oneWeek() + dateUtils.oneHour());
       var expectedDateStr = new Date(expectedDate).toISOString();
       var expectedInfo = extractValues(expectedDateStr, '{date}T{time}:00.000Z');
-      expect(this.$('input[name=application_reminder_date]').val()).to.equal(expectedInfo.date);
-      expect(this.$('input[name=application_reminder_time]').val()).to.equal(expectedInfo.time);
-      expect(this.$('select[name=application_reminder_timezone]').val()).to.equal('US-America/Chicago');
+      expect(this.$('input[name=saved_for_later_reminder_date]').val()).to.equal(expectedInfo.date);
+      expect(this.$('input[name=saved_for_later_reminder_time]').val()).to.equal(expectedInfo.time);
+      expect(this.$('select[name=saved_for_later_reminder_timezone]').val()).to.equal('US-America/Chicago');
     });
   });
 });

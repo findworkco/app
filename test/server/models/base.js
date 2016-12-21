@@ -3,6 +3,7 @@ var expect = require('chai').expect;
 var moment = require('moment-timezone');
 var AuditLog = require('../../../server/models/audit-log.js');
 var Application = require('../../../server/models/application.js');
+var Interview = require('../../../server/models/interview.js');
 var Candidate = require('../../../server/models/candidate.js');
 var scenario = require('../utils/test').scenario;
 
@@ -197,31 +198,31 @@ scenario.model('A Base model with a moment-based dateonly field', function () {
 scenario.model('A Base model with a moment-based datetime/timezone field', function () {
   describe('when datetime and timezone are null', function () {
     it('returns null as moment', function () {
-      var base = Application.build({
-        application_reminder_datetime: null,
-        application_reminder_timezone: null
+      var base = Interview.build({
+        date_time_datetime: null,
+        date_time_timezone: null
       });
-      expect(base.get('application_reminder_moment')).to.equal(null);
+      expect(base.get('date_time_moment')).to.equal(null);
     });
   });
 
   describe('when datetime and timezone are not null', function () {
     it('returns a moment instance', function () {
-      var base = Application.build({
-        application_reminder_datetime: new Date('2016-02-05T14:00:00Z'),
-        application_reminder_timezone: 'America/Chicago'
+      var base = Interview.build({
+        date_time_datetime: new Date('2016-02-05T14:00:00Z'),
+        date_time_timezone: 'America/Chicago'
       });
       var expectedMoment = moment.tz('2016-02-05T14:00:00Z', 'America/Chicago');
-      expect(base.get('application_reminder_moment').isSame(expectedMoment)).to.equal(true);
+      expect(base.get('date_time_moment').isSame(expectedMoment)).to.equal(true);
     });
   });
 
   describe('when datetime is null but timezone isn\'t', function () {
     before(function buildModel () {
-      this.base = Application.build({
-        name: 'Mock company', status: 'received_offer',
-        application_reminder_datetime: null,
-        application_reminder_timezone: 'America/Chicago'
+      this.base = Interview.build({
+        application_id: 'mock-id', details: 'mock details',
+        date_time_datetime: null,
+        date_time_timezone: 'America/Chicago'
       });
     });
     after(function cleanup () {
@@ -229,17 +230,19 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
     });
     it('errors out on moment `get`', function () {
       var that = this;
-      expect(function getArchivedAtMoment () {
-        that.base.get('application_reminder_moment');
-      }).to.throw(/Expected "application_reminder_datetime" to not be null/);
+      expect(function getDateTimeMoment () {
+        that.base.get('date_time_moment');
+      }).to.throw(/Expected "date_time_datetime" to not be null/);
     });
     it('generates a validation error', function (done) {
       this.base.validate().asCallback(function handleError (err, validationErr) {
         expect(err).to.equal(null);
-        expect(validationErr.errors).to.have.length(1);
-        expect(validationErr.errors[0]).to.have.property('path', 'bothApplicationReminderValuesOrNone');
-        expect(validationErr.errors[0].message).to.have.contain(
-          'Expected "application_reminder_datetime" to not be null');
+        // DEV: Ideally we wouldn't test for 2 errors (e.g. allow moment to be null) but there are no matching models =/
+        expect(validationErr.errors).to.have.length(2);
+        expect(validationErr.errors[0]).to.have.property('message', 'date_time_datetime cannot be null');
+        expect(validationErr.errors[1]).to.have.property('path', 'bothDateTimeValuesOrNone');
+        expect(validationErr.errors[1].message).to.have.contain(
+          'Expected "date_time_datetime" to not be null');
         done();
       });
     });
@@ -247,10 +250,10 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
 
   describe('when datetime isn\'t null but timezone is', function () {
     before(function buildModel () {
-      this.base = Application.build({
-        name: 'Mock company', status: 'received_offer',
-        application_reminder_datetime: new Date('2016-02-05T14:00:00Z'),
-        application_reminder_timezone: null
+      this.base = Interview.build({
+        application_id: 'mock-id', details: 'mock details',
+        date_time_datetime: new Date('2016-02-05T14:00:00Z'),
+        date_time_timezone: null
       });
     });
     after(function cleanup () {
@@ -258,17 +261,19 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
     });
     it('errors out on moment `get`', function () {
       var that = this;
-      expect(function getArchivedAtMoment () {
-        that.base.get('application_reminder_moment');
-      }).to.throw(/Expected "application_reminder_timezone" to not be null/);
+      expect(function getDateTimeMoment () {
+        that.base.get('date_time_moment');
+      }).to.throw(/Expected "date_time_timezone" to not be null/);
     });
     it('generates a validation error', function (done) {
       this.base.validate().asCallback(function handleError (err, validationErr) {
         expect(err).to.equal(null);
-        expect(validationErr.errors).to.have.length(1);
-        expect(validationErr.errors[0]).to.have.property('path', 'bothApplicationReminderValuesOrNone');
-        expect(validationErr.errors[0].message).to.have.contain(
-          'Expected "application_reminder_timezone" to not be null');
+        // DEV: Ideally we wouldn't test for 2 errors (e.g. allow moment to be null) but there are no matching models =/
+        expect(validationErr.errors).to.have.length(2);
+        expect(validationErr.errors[0]).to.have.property('message', 'date_time_timezone cannot be null');
+        expect(validationErr.errors[1]).to.have.property('path', 'bothDateTimeValuesOrNone');
+        expect(validationErr.errors[1].message).to.have.contain(
+          'Expected "date_time_timezone" to not be null');
         done();
       });
     });
@@ -276,53 +281,52 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
 
   describe('when updating moment to null', function () {
     it('has null as datetime and timezone', function () {
-      var base = Application.build({
-        application_reminder_datetime: new Date('2016-02-05T14:00:00Z'),
-        application_reminder_timezone: 'America/Chicago'
+      var base = Interview.build({
+        date_time_datetime: new Date('2016-02-05T14:00:00Z'),
+        date_time_timezone: 'America/Chicago'
       });
-      base.set('application_reminder_moment', null);
-      expect(base.get('application_reminder_datetime')).to.equal(null);
-      expect(base.get('application_reminder_timezone')).to.equal(null);
+      base.set('date_time_moment', null);
+      expect(base.get('date_time_datetime')).to.equal(null);
+      expect(base.get('date_time_timezone')).to.equal(null);
     });
   });
 
   describe('when updating moment to not null', function () {
     it('has a datetime and timezone', function () {
-      var base = Application.build({
-        application_reminder_datetime: null,
-        application_reminder_timezone: null
+      var base = Interview.build({
+        date_time_datetime: null,
+        date_time_timezone: null
       });
       // DEV: We exclude `Z` suffix which indicates UTC and offset time appropriately for America/Chicago
-      base.set('application_reminder_moment', moment.tz('2016-02-05T08:00:00', 'America/Chicago'));
-      expect(base.get('application_reminder_datetime')).to.deep.equal(new Date('2016-02-05T14:00:00Z'));
-      expect(base.get('application_reminder_timezone')).to.equal('America/Chicago');
+      base.set('date_time_moment', moment.tz('2016-02-05T08:00:00', 'America/Chicago'));
+      expect(base.get('date_time_datetime')).to.deep.equal(new Date('2016-02-05T14:00:00Z'));
+      expect(base.get('date_time_timezone')).to.equal('America/Chicago');
     });
   });
 
   describe('when updating moment to a moment without a timezone', function () {
     it('errors out about lack of timezone', function () {
-      var base = Application.build({
-        application_reminder_datetime: null,
-        application_reminder_timezone: null
+      var base = Interview.build({
+        date_time_datetime: null,
+        date_time_timezone: null
       });
-      expect(function getArchivedAtMoment () {
-        base.set('application_reminder_moment', moment('2016-02-05T14:00:00Z'));
-      }).to.throw(/Expected timezone to be set for "application_reminder_moment"/);
+      expect(function getDateTimeMoment () {
+        base.set('date_time_moment', moment('2016-02-05T14:00:00Z'));
+      }).to.throw(/Expected timezone to be set for "date_time_moment"/);
     });
   });
 
   describe('when updating timezone to invalid timezone', function () {
     it('errors out', function (done) {
-      var base = Application.build({
-        name: 'invalid-timezone-app',
-        status: 'waiting_for_response',
-        application_reminder_datetime: new Date('2016-02-05T14:00:00Z'),
-        application_reminder_timezone: 'America/Nowhere'
+      var base = Interview.build({
+        application_id: 'mock-id', details: 'mock details',
+        date_time_datetime: new Date('2016-02-05T14:00:00Z'),
+        date_time_timezone: 'America/Nowhere'
       });
       base.validate().asCallback(function handleError (err, validationErr) {
         expect(err).to.equal(null);
         expect(validationErr.errors).to.have.length(1);
-        expect(validationErr.errors[0]).to.have.property('path', 'application_reminder_timezone');
+        expect(validationErr.errors[0]).to.have.property('path', 'date_time_timezone');
         expect(validationErr.errors[0]).to.have.property('message', 'Invalid timezone provided');
         done();
       });
