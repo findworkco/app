@@ -221,6 +221,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
     before(function buildModel () {
       this.base = Interview.build({
         application_id: 'mock-id', details: 'mock details',
+        pre_interview_reminder_id: 'mock-pre-reminder-id', post_interview_reminder_id: 'mock-post-reminder-id',
         date_time_datetime: null,
         date_time_timezone: 'America/Chicago'
       });
@@ -252,6 +253,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
     before(function buildModel () {
       this.base = Interview.build({
         application_id: 'mock-id', details: 'mock details',
+        pre_interview_reminder_id: 'mock-pre-reminder-id', post_interview_reminder_id: 'mock-post-reminder-id',
         date_time_datetime: new Date('2016-02-05T14:00:00Z'),
         date_time_timezone: null
       });
@@ -320,6 +322,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
     it('errors out', function (done) {
       var base = Interview.build({
         application_id: 'mock-id', details: 'mock details',
+        pre_interview_reminder_id: 'mock-pre-reminder-id', post_interview_reminder_id: 'mock-post-reminder-id',
         date_time_datetime: new Date('2016-02-05T14:00:00Z'),
         date_time_timezone: 'America/Nowhere'
       });

@@ -141,9 +141,8 @@ scenario.route('A request to a page which doesn\'t load navigation', {
     });
 
     it('doesn\'t load any models', function () {
-      // DEV: We would expect 0 but `interviewMockData` loads application via `getById`
       var getByIdSpy = applicationMockData.getById;
-      expect(getByIdSpy.callCount).to.equal(1);
+      expect(getByIdSpy.callCount).to.equal(0);
     });
   });
 });

@@ -2,6 +2,7 @@
 var _ = require('underscore');
 var Sequelize = require('sequelize');
 var baseDefine = require('./base.js');
+var Reminder = require('./reminder');
 
 // Define constants for our applications
 exports.APPLICATION_STATUSES = {
@@ -24,7 +25,7 @@ exports.APPLICATION_EDIT_HUMAN_STATUSES = _.defaults({
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
-module.exports = _.extend(baseDefine('application', {
+var Application = module.exports = _.extend(baseDefine('application', {
   id: {type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, primaryKey: true},
 
   // Example: 2016-01-08, no time
@@ -54,6 +55,20 @@ module.exports = _.extend(baseDefine('application', {
   status: {
     type: Sequelize.STRING(36), allowNull: false,
     validate: {isIn: {args: [_.values(exports.APPLICATION_STATUSES)], msg: 'Invalid status provided'}}
+  },
+
+  // Define our reminders
+  saved_for_later_reminder_id: {
+    type: Sequelize.UUID, allowNull: true,
+    references: {model: Reminder, key: 'id'}
+  },
+  waiting_for_response_reminder_id: {
+    type: Sequelize.UUID, allowNull: true,
+    references: {model: Reminder, key: 'id'}
+  },
+  received_offer_reminder_id: {
+    type: Sequelize.UUID, allowNull: true,
+    references: {model: Reminder, key: 'id'}
   }
 }, {
   getterMethods: {
@@ -65,12 +80,50 @@ module.exports = _.extend(baseDefine('application', {
       // Example: /application/abcdef-sky-networks-uuid/archive
       return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/archive';
     },
+    closest_upcoming_interview: function () {
+      var upcomingInterviews = this.get('upcoming_interviews');
+      if (upcomingInterviews && upcomingInterviews.length) {
+        // TODO: Sort upcoming interviews and fetch latest one
+        //   Also consider making this into a query
+        return upcomingInterviews[0];
+      }
+      return null;
+    },
     delete_url: function () {
       // Example: /application/abcdef-sky-networks-uuid/delete
       return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/delete';
     },
     human_status: function () {
       return exports.APPLICATION_EDIT_HUMAN_STATUSES[this.get('status_key')];
+    },
+    last_contact_moment: function () {
+      // Verify we have both past interviews and application date resolved
+      var pastInterviews = this.get('past_interviews');
+      var applicationDateMomemt = this.get('application_date_moment');
+      if (!pastInterviews || !applicationDateMomemt) {
+        return null;
+      }
+
+      // Resolve our past interview moments
+      var pastInterviewMoments = pastInterviews.map(function getDateTimeMoment (pastInterview) {
+        return pastInterview.get('date_time_moment');
+      });
+
+      // Find the most recent moment
+      return pastInterviewMoments.reduce(function findLatestInterview (momentA, momentB) {
+        return momentA.isAfter(momentB) ? momentA : momentB;
+      }, applicationDateMomemt);
+    },
+    past_interviews: function () {
+      // TODO: Consider fetching past interviews as a query
+      var interviews = this.get('interviews');
+      if (interviews) {
+        var now = new Date();
+        return interviews.filter(function isPastInterview (interview) {
+          return interview.date_time_datetime < now;
+        });
+      }
+      return null;
     },
     received_offer_url: function () {
       // Example: /application/abcdef-sky-networks-uuid/received-offer
@@ -87,9 +140,34 @@ module.exports = _.extend(baseDefine('application', {
     status_key: function () {
       return this.getDataValue('status').toUpperCase();
     },
+    upcoming_interviews: function () {
+      // TODO: Consider fetching past interviews as a query
+      var interviews = this.get('interviews');
+      if (interviews) {
+        var now = new Date();
+        return interviews.filter(function isUpcomingInterview (interview) {
+          return interview.date_time_datetime >= now;
+        });
+      }
+      return null;
+    },
     url: function () {
       // Example: /application/abcdef-sky-networks-uuid
       return '/application/' + encodeURIComponent(this.getDataValue('id'));
     }
   }
 }), exports);
+
+// DEV: Reminder has no strict parent so we can only define parent to child
+Application.hasOne(Reminder, {
+  as: 'saved_for_later_reminder',
+  foreignKey: 'saved_for_later_reminder_id'
+});
+Application.hasOne(Reminder, {
+  as: 'waiting_for_response_reminder',
+  foreignKey: 'waiting_for_response_reminder_id'
+});
+Application.hasOne(Reminder, {
+  as: 'received_offer_reminder',
+  foreignKey: 'received_offer_reminder_id'
+});

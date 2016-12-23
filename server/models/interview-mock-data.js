@@ -1,10 +1,11 @@
 // Load in our dependencies
-var assert = require('assert');
+var _ = require('underscore');
 var HttpError = require('http-errors');
+var Application = require('./application');
 var Interview = require('./interview');
+var Reminder = require('./reminder');
 var applicationMockData = require('./application-mock-data');
 var genericMockData = require('./generic-mock-data');
-var reminderMockData = require('./reminder-mock-data');
 
 // Generate interviews map by ids
 var interviewsById = {};
@@ -13,20 +14,25 @@ genericMockData.interviews.forEach(function saveInterviewById (interview) {
 });
 
 // Define interview builder
-function buildInterview(interviewAttributes) {
-  // Build our interview
-  // http://docs.sequelizejs.com/en/latest/docs/instances/#values-of-an-instance
-  var retVal = Interview.build(interviewAttributes).get({plain: true, clone: true});
-
-  // Resolve our application by its id
-  // DEV: We use `getById` so we have full data for recently viewed applications
-  retVal.application = applicationMockData.getById(interviewAttributes.application_id);
-  assert(retVal.application, 'Expected `interview.application_id` "' + interviewAttributes.application_id + '" ' +
-    'to match an application but it didn\'t');
-
-  // Resolve and build our reminders
-  retVal.pre_interview_reminder = reminderMockData.getById(interviewAttributes.pre_interview_reminder_id);
-  retVal.post_interview_reminder = reminderMockData.getById(interviewAttributes.post_interview_reminder_id);
+var applicationMocks = genericMockData.applications;
+var reminderMocks = genericMockData.reminders;
+function buildInterview(attrs) {
+  // Build our interview with its application (and its interviews) and reminders
+  // http://docs.sequelizejs.com/en/v3/docs/associations/#creating-with-associations
+  var applicationAttrs = applicationMockData._buildApplicationAttrs(
+    _.findWhere(applicationMocks, {id: attrs.application_id}));
+  var retVal = Interview.build(_.extend({}, attrs, {
+    application: applicationAttrs,
+    pre_interview_reminder: _.findWhere(reminderMocks, {id: attrs.pre_interview_reminder_id}),
+    post_interview_reminder: _.findWhere(reminderMocks, {id: attrs.post_interview_reminder_id})
+  }), {
+    // TODO: Relocate include calls to controllers
+    include: [
+      {model: Application, include: applicationMockData._buildApplicationInclude(applicationAttrs)},
+      {model: Reminder, as: 'pre_interview_reminder'},
+      {model: Reminder, as: 'post_interview_reminder'}
+    ]
+  }).get({plain: true});
 
   // Return our retVal
   return retVal;

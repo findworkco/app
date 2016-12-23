@@ -3,8 +3,8 @@ var _ = require('underscore');
 var HttpError = require('http-errors');
 var Application = require('./application');
 var Interview = require('./interview');
+var Reminder = require('./reminder');
 var genericMockData = require('./generic-mock-data');
-var reminderMockData = require('./reminder-mock-data');
 
 // Generate application map by ids
 var applicationsById = {};
@@ -13,38 +13,31 @@ genericMockData.applications.forEach(function saveApplicationById (application) 
 });
 
 // Define application builder
-function buildApplication(applicationAttributes) {
+// http://docs.sequelizejs.com/en/v3/docs/associations/#creating-with-associations
+var interviewMocks = genericMockData.interviews;
+var reminderMocks = genericMockData.reminders;
+exports._buildApplicationAttrs = function (attrs) {
+  return _.extend({}, attrs, {
+    interviews: _.where(interviewMocks, {application_id: attrs.id}),
+    saved_for_later_reminder: _.findWhere(reminderMocks, {id: attrs.saved_for_later_reminder_id}),
+    waiting_for_response_reminder: _.findWhere(reminderMocks, {id: attrs.waiting_for_response_reminder_id}),
+    received_offer_reminder: _.findWhere(reminderMocks, {id: attrs.received_offer_reminder_id})
+  });
+};
+exports._buildApplicationInclude = function (attrs) {
+  // DEV: We use `_.flatten` and empty arrays to skip non-included data
+  return _.flatten([
+    {model: Interview},
+    attrs.saved_for_later_reminder_id ? {model: Reminder, as: 'saved_for_later_reminder'} : [],
+    attrs.waiting_for_response_reminder_id ? {model: Reminder, as: 'waiting_for_response_reminder'} : [],
+    attrs.received_offer_reminder_id ? {model: Reminder, as: 'received_offer_reminder'} : []
+  ]);
+};
+function buildApplication(attrs) {
   // Build our application
-  // http://docs.sequelizejs.com/en/latest/docs/instances/#values-of-an-instance
-  var retVal = Application.build(applicationAttributes).get({plain: true, clone: true});
-
-  // Resolve and add on our past interviews
-  var interviews = _.where(genericMockData.interviews, {
-    application_id: applicationAttributes.id
-  }).map(function buildInterview (interviewAttributes) {
-    return Interview.build(interviewAttributes).get({plain: true, clone: true});
-  });
-  var now = new Date();
-  retVal.past_interviews = interviews.filter(function isPastInterview (interview) {
-    return interview.date_time_datetime < now;
-  });
-  retVal.upcoming_interviews = interviews.filter(function isUpcomingInterview (interview) {
-    return interview.date_time_datetime >= now;
-  });
-  retVal.closest_upcoming_interview = retVal.upcoming_interviews[0];
-
-  // Construct last contact moment
-  // TODO: Resolve inside of `Application` model, maybe save as its own column for independent querying
-  var pastInterviewMoments = _.pluck(retVal.past_interviews, 'date_time_moment');
-  retVal.last_contact_moment = pastInterviewMoments.reduce(function findLatestInterview (momentA, momentB) {
-    return momentA.isAfter(momentB) ? momentA : momentB;
-  }, retVal.application_date_moment);
-
-  // Construct our reminders
-  retVal.saved_for_later_reminder = reminderMockData.getById(applicationAttributes.saved_for_later_reminder_id);
-  retVal.waiting_for_response_reminder =
-    reminderMockData.getById(applicationAttributes.waiting_for_response_reminder_id);
-  retVal.received_offer_reminder = reminderMockData.getById(applicationAttributes.received_offer_reminder_id);
+  var retVal = Application.build(exports._buildApplicationAttrs(attrs), {
+    include: exports._buildApplicationInclude(attrs)
+  }).get({plain: true});
 
   // Return our retVal
   return retVal;

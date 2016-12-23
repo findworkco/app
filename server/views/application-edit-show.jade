@@ -140,7 +140,8 @@ block content
                 //- DEV: Label is consistent with "Archived on" in nav
                 = "Archived on: "
                 i.fa.fa-calendar-o(style="font-size: 1.5em")
-              span= selectedApplication.archived_at_moment.format('ddd MMM D [at] h:mmA zz')
+              - var archivedAtMoment = selectedApplication.archived_at_moment.tz(timezone);
+              span= archivedAtMoment.format('ddd MMM D [at] h:mmA zz')
           p.large-hidden(style="margin-top: -18px")
             //- DEV: On small screens, display "All changes saved" close to content
             i.muted(data-autosave) All changes saved
