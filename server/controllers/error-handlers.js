@@ -67,15 +67,16 @@ app.use(function handleHttpError (err, req, res, next) {
 
 // DEV: This error handler always comes last in case other error handlers are broken
 app.use(function handleGenericError (err, req, res, next) {
-  // Log our error
-  // TODO: Use actual Winston client
-  app.notWinston.error(err);
-
   // If we should throw our error (caught/rendered by Express in dev), then throw it
   // DEV: We have `dontThrow` flag for testing generic errors in Gemini
+  // DEV: `throw` also logs so we don't need both due to double logging
   if (config.throwGenericErrors && !err.dontThrow) {
     throw err;
   }
+
+  // Log our error
+  // TODO: Use actual Winston client
+  app.notWinston.error(err);
 
   // Prepare and send our request for Sentry
   var sentryKwargs = sentryUtils.parseRequest(req);

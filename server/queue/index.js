@@ -7,6 +7,7 @@ var emails = require('../emails');
 var app = require('../index.js').app;
 var kueQueue = require('../index.js').app.kueQueue;
 var getExternalUrl = require('../index.js').getExternalUrl;
+var sentryClient = exports.sentryClient = app.sentryClient;
 
 // If we are in a Kue environment, enable cleanup
 // https://github.com/Automattic/kue/tree/v0.11.5#unstable-redis-connections
@@ -46,7 +47,7 @@ function registerJob(name, concurrency, fn) {
         // Report/log our error
         // DEV: We could throw errors in testing but they won't be caught due to being async
         app.notWinston.error(err);
-        app.sentryClient.captureError(err, getSentryKwargsForJob(job));
+        sentryClient.captureError(err, getSentryKwargsForJob(job));
 
         // Callback with our error
         done(err);
@@ -73,7 +74,7 @@ exports.create = function () {
       // If there was an error, record it
       if (err) {
         app.notWinston.error(err);
-        app.sentryClient.captureError(err, getSentryKwargsForJob(job));
+        sentryClient.captureError(err, getSentryKwargsForJob(job));
       }
     });
   }

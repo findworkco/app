@@ -11,7 +11,17 @@ app.get('/error/sync-error', function syncErrorShow (req, res, next) {
 // Test via: curl http://localhost:9000/error/async-error
 app.get('/error/async-error', function asyncErrorShow (req, res, next) {
   setTimeout(function handleSetTimeout () {
-    throw new Error('Async error');
+    throw new Error('Async error (get)');
+  }, 100);
+});
+app.all('/error/async-error/all', function asyncErrorAllShow (req, res, next) {
+  setTimeout(function handleSetTimeout () {
+    throw new Error('Async error (all)');
+  }, 100);
+});
+app.use('/error/async-error/use', function asyncErrorUseShow (req, res, next) {
+  setTimeout(function handleSetTimeout () {
+    throw new Error('Async error (use)');
   }, 100);
 });
 app.get('/error/non-critical-error', function nonCriticalErrorShow (req, res, next) {
