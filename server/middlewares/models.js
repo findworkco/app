@@ -61,8 +61,13 @@ exports.resolveModelsAsLocals = function (params, resolver) {
         }
 
         // If any of the models have been deleted, update our ids
+        var getApplicationIds = function (applications) {
+          return applications.map(function getApplicationId (application) {
+            return application.get('id');
+          });
+        };
         var updateRecentlyViewedApplicationIds = function () {
-          req.session.recentlyViewedApplicationIds = _.pluck(models.recentlyViewedApplications, 'id');
+          req.session.recentlyViewedApplicationIds = getApplicationIds(models.recentlyViewedApplications);
         };
         if (models.recentlyViewedApplications.length !== recentlyViewedApplicationIds.length) {
           updateRecentlyViewedApplicationIds();
@@ -75,8 +80,8 @@ exports.resolveModelsAsLocals = function (params, resolver) {
           // If our application already exists in the array, remove it from the array
           // DEV: We could use `recentlyViewedApplicationIds` but this insulates us from out of sync data structures
           // DEV: We could skip index 0 but adds unnecessary complication to our code
-          var recentlyViewedApplicationIds = _.pluck(models.recentlyViewedApplications, 'id');
-          var existingIndex = recentlyViewedApplicationIds.indexOf(application.id);
+          var recentlyViewedApplicationIds = getApplicationIds(models.recentlyViewedApplications);
+          var existingIndex = recentlyViewedApplicationIds.indexOf(application.get('id'));
           if (existingIndex !== -1) {
             models.recentlyViewedApplications.splice(existingIndex, 1);
           }
@@ -98,15 +103,41 @@ exports.resolveModelsAsLocals = function (params, resolver) {
       }
     }
 
-    // Extend and save/expose our models
-    // DEV: `res.locals` is a bit dangerous as we could overwrite an attribute like `candidate`
-    //   but it avoids rewrite noise with `render` and annoying namespaces in views (e.g. `models.applications`)
-    //   We are attempting to save ourselves by naming `asLocals` in function
+    // Extend and save our models
     req.models = models = _.defaults(models, resolver.call(resolverContext, req));
-    _.extend(res.locals, models);
+    var _render = res.render;
+    res.render = function () {
+      // Serialize our models
+      var serializedModels = _.mapObject(models, function serializeModelsObj (modelOrModels, key) {
+        function serializeModel(model) {
+          // If our model is serialization exempt, return it as is
+          if (model._serializeExempt) {
+            return model;
+          }
 
-    // Flag our locals as using `resolveModelsAsLocals`
-    res.locals._loadedModels = true;
+          // Serialize our model
+          assert(model.$modelOptions, '`resolveModelsAsLocals` expected "' + key + '" to be a model but it wasn\'t');
+          return model.get({plain: true});
+        }
+        if (Array.isArray(modelOrModels)) {
+          return modelOrModels.map(serializeModel);
+        } else {
+          return serializeModel(modelOrModels);
+        }
+      });
+
+      // Expose our serializations onto res.locals
+      // DEV: `res.locals` is a bit dangerous as we could overwrite an attribute like `candidate`
+      //   but it avoids rewrite noise with `render` and annoying namespaces in views (e.g. `models.applications`)
+      //   We are attempting to save ourselves by naming `asLocals` in function
+      _.extend(res.locals, serializedModels);
+
+      // Flag our locals as using `resolveModelsAsLocals`
+      res.locals._loadedModels = true;
+
+      // Call our normal render function
+      return _render.apply(this, arguments);
+    };
 
     // Continue
     next();

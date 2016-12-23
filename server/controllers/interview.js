@@ -1,4 +1,5 @@
 // Load in our dependencies
+var assert = require('assert');
 var _ = require('underscore');
 var app = require('../index.js').app;
 var resolveApplicationById = require('./application').resolveApplicationById;
@@ -49,7 +50,7 @@ app.post('/application/:id/add-interview', _.flatten([
     // var mockApplication = req.models.selectedApplication;
     var mockApplication = mockApplicationsByStatus.UPCOMING_INTERVIEW;
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Interview saved');
-    res.redirect(mockApplication.url);
+    res.redirect(mockApplication.get('url'));
   }
 ]));
 
@@ -58,7 +59,8 @@ app.get('/interview/:id', _.flatten([
   resolveInterviewById({nav: true}),
   function interviewEditShow (req, res, next) {
     // Record our application as recently viewed
-    var selectedApplication = req.models.selectedInterview.application;
+    var selectedApplication = req.models.selectedInterview.get('application');
+    assert(selectedApplication);
     req.addRecentlyViewedApplication(selectedApplication);
 
     // Render our content
@@ -75,7 +77,7 @@ app.post('/interview/:id', _.flatten([
     var mockInterview = req.models.selectedInterview;
     // TODO: Update applicaiton status if interview is upcoming
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Changes saved');
-    res.redirect(mockInterview.url);
+    res.redirect(mockInterview.get('url'));
   }
 ]));
 
@@ -85,9 +87,10 @@ app.post('/interview/:id/delete', _.flatten([
   resolveInterviewById({nav: false}),
   function interviewDeleteSave (req, res, next) {
     var mockInterview = req.models.selectedInterview;
-    var mockApplication = mockInterview.application;
+    var mockApplication = mockInterview.get('application');
+    assert(mockApplication);
     // TODO: Update applicaiton status if interview was upcoming
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Interview deleted');
-    res.redirect(mockApplication.url);
+    res.redirect(mockApplication.get('url'));
   }
 ]));

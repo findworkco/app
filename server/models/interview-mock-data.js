@@ -32,7 +32,7 @@ function buildInterview(attrs) {
       {model: Reminder, as: 'pre_interview_reminder'},
       {model: Reminder, as: 'post_interview_reminder'}
     ]
-  }).get({plain: true});
+  });
 
   // Return our retVal
   return retVal;

@@ -37,7 +37,7 @@ function buildApplication(attrs) {
   // Build our application
   var retVal = Application.build(exports._buildApplicationAttrs(attrs), {
     include: exports._buildApplicationInclude(attrs)
-  }).get({plain: true});
+  });
 
   // Return our retVal
   return retVal;

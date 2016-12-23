@@ -65,7 +65,7 @@ var applicationAddFormSaveFns = [
     // jscs:enable maximumLineLength
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application saved');
     // TODO: Redirect to saved application
-    res.redirect(mockApplication.url);
+    res.redirect(mockApplication.get('url'));
   }
 ];
 
@@ -133,8 +133,8 @@ app.get('/application/:id', _.flatten([
 
     // TODO: Determine if we want to load company results in series or on page (no way to do it in parallel)
     var selectedApplication = req.models.selectedApplication;
-    var renderData = selectedApplication.company_name ?
-      companyMockData.getByName(selectedApplication.company_name, false) : {};
+    var companyName = selectedApplication.get('company_name');
+    var renderData = companyName ? companyMockData.getByName(companyName, false) : {};
     res.render('application-edit-show.jade', renderData);
   }
 ]));
@@ -150,7 +150,7 @@ app.post('/application/:id', _.flatten([
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Changes saved');
 
     // Redirect to the same page to render flash messages and prevent double submissions
-    res.redirect(mockApplication.url);
+    res.redirect(mockApplication.get('url'));
   }
 ]));
 
@@ -164,7 +164,7 @@ app.post('/application/:id/received-offer', _.flatten([
     var mockApplication = mockApplicationsByStatus.RECEIVED_OFFER;
     req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
     // req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application status updated to "Offer received"');
-    res.redirect(mockApplication.url);
+    res.redirect(mockApplication.get('url'));
   }
 ]));
 
@@ -177,7 +177,7 @@ app.post('/application/:id/remove-offer', _.flatten([
     // var mockApplication = req.models.selectedApplication;
     var mockApplication = mockApplicationsByStatus.WAITING_FOR_RESPONSE;
     req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
-    res.redirect(mockApplication.url);
+    res.redirect(mockApplication.get('url'));
   }
 ]));
 
@@ -201,7 +201,7 @@ app.post('/application/:id/restore', _.flatten([
     // var mockApplication = req.models.selectedApplication;
     var mockApplication = mockApplicationsByStatus.WAITING_FOR_RESPONSE;
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application restored');
-    res.redirect(mockApplication.url);
+    res.redirect(mockApplication.get('url'));
   }
 ]));
 

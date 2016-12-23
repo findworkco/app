@@ -10,6 +10,8 @@ exports.getByName = function (companyName, extendedResults) {
 
   // Save Glassdoor info
   retVal.glassdoorResult = {
+    _serializeExempt: true,
+
     id: 12345,
     name: 'IBM',
     website: 'www.ibm.com',
@@ -34,6 +36,8 @@ exports.getByName = function (companyName, extendedResults) {
 
   // Save AngelList info
   retVal.angelListResult = {
+    _serializeExempt: true,
+
     id: 67890,
     name: 'AngelList',
     website: 'http://angel.co',

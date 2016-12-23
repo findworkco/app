@@ -11,7 +11,6 @@ genericMockData.candidates.forEach(function saveCandidateById (candidate) {
 // Define candidate builder
 function buildCandidate(candidateAttributes) {
   // Build and return our candidate
-  // DEV: Unlike other mock data, we don't serialize here so it's 1:1 with main code
   var retVal = Candidate.build(candidateAttributes);
   return retVal;
 }
