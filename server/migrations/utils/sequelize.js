@@ -1,5 +1,12 @@
 // Load in our dependencies
 var Sequelize = require('sequelize');
+var QueryInterface = require('sequelize/lib/query-interface');
+var baseDefine = require('../../models/base');
+
+// Expose base define constants
+Sequelize.ID = baseDefine.ID;
+Sequelize.MOMENT_DATEONLY = baseDefine.MOMENT_DATEONLY;
+Sequelize.MOMENT_TZ = baseDefine.MOMENT_TZ;
 
 // Monkey patch Sequelize to require transactions
 var _query = Sequelize.prototype.query;
@@ -22,6 +29,17 @@ Sequelize.prototype.query = function (sql, options) {
 
   // Otherwise, run our normal function
   return _query.apply(this, arguments);
+};
+
+// Monkey patch QueryInterface to expand moment columns
+// https://github.com/sequelize/sequelize/blob/v3.28.0/lib/query-interface.js#L73
+var _createTable = QueryInterface.prototype.createTable;
+QueryInterface.prototype.createTable = function (tableName, attributes, schemaOptions, model) {
+  // Expand our moment columns with placeholder options
+  baseDefine.expandMomentAttributes(attributes, {});
+
+  // Call our original _createTable
+  return _createTable.call(this, tableName, attributes, schemaOptions, model);
 };
 
 // Export patched Sequelize

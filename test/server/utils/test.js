@@ -76,8 +76,7 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
       // http://docs.sequelizejs.com/en/v3/docs/raw-queries/
       // DEV: We use DELETE over TRUNCATE as it's faster (speed up from 20s to 14s)
       // DEV: Our query is vulnerable to SQL injection but we can't use bind and trust our table names more/less
-      // var tableNames = _.pluck(_.values(sequelize.models), 'tableName');
-      var tableNames = ['audit_logs', 'candidates'];
+      var tableNames = _.pluck(_.values(sequelize.models), 'tableName');
       async.each(tableNames, function handleEach (tableName, cb) {
         sequelize.query('DELETE FROM ' + tableName).asCallback(cb);
       }, done);

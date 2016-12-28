@@ -4,8 +4,6 @@ var assert = require('assert');
 var inflection = require('inflection');
 var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
-var AuditLog = require('./audit-log');
-var sequelize = require('../index.js').app.sequelize;
 var timezones = require('../utils/tz-stable.js');
 var customTypes = require('./utils/custom-types');
 
@@ -39,10 +37,7 @@ timezones.forEach(function extractTimezoneValues (timezone) {
 
 // Define our model definer
 // https://github.com/sequelize/sequelize/blob/v3.24.6/lib/sequelize.js#L602
-module.exports = _.extend(function (modelName, attributes, options) {
-  // Fallback/clone our options (prevents contamination)
-  options = options ? _.clone(options) : {};
-
+exports.expandMomentAttributes = function (attributes, options) {
   // Walk over our attributes
   Object.keys(attributes).forEach(function handleAttribute (attributeKey) {
     // If the attribute is a moment with no timezone
@@ -141,6 +136,22 @@ module.exports = _.extend(function (modelName, attributes, options) {
       };
     }
   });
+};
+
+// Define would-be dependencies for reuse
+var AuditLog, sequelize;
+module.exports = _.extend(function (modelName, attributes, options) {
+  // Lazy load our dependencies to prevent circular dependencies
+  // DEV: We have circular dependency when loading `baseDefine` from migrations
+  //   We opted for this setup instead of separate files for easier maintenance
+  AuditLog = AuditLog || require('./audit-log');
+  sequelize = sequelize || require('../index.js').app.sequelize;
+
+  // Fallback/clone our options (prevents contamination)
+  options = options ? _.clone(options) : {};
+
+  // Expand our moment attributes
+  exports.expandMomentAttributes(attributes, options);
 
   // Add hooks for audit logging
   // http://docs.sequelizejs.com/en/v3/docs/hooks/#declaring-hooks
