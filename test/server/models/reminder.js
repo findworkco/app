@@ -6,6 +6,7 @@ var Reminder = require('../../../server/models/reminder.js');
 
 // Start our tests
 var validReminder = {
+  candidate_id: 'mock-candidate-id',
   // https://github.com/chriso/validator.js/blob/6.2.0/src/lib/isUUID.js#L5
   // A9911CA7105 = "APPLICATION" in our attempted 1337 speak
   parent_id: 'A9911CA7-1050-4000-8000-000000000000',

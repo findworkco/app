@@ -234,7 +234,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
   describe('when datetime is null but timezone isn\'t', function () {
     before(function buildModel () {
       this.base = Interview.build({
-        application_id: 'mock-id', details: 'mock details',
+        application_id: 'mock-application-id', candidate_id: 'mock-candidate-id', details: 'mock details',
         pre_interview_reminder_id: 'mock-pre-reminder-id', post_interview_reminder_id: 'mock-post-reminder-id',
         date_time_datetime: null,
         date_time_timezone: 'US-America/Chicago'
@@ -266,7 +266,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
   describe('when datetime isn\'t null but timezone is', function () {
     before(function buildModel () {
       this.base = Interview.build({
-        application_id: 'mock-id', details: 'mock details',
+        application_id: 'mock-application-id', candidate_id: 'mock-candidate-id', details: 'mock details',
         pre_interview_reminder_id: 'mock-pre-reminder-id', post_interview_reminder_id: 'mock-post-reminder-id',
         date_time_datetime: new Date('2016-02-05T14:00:00Z'),
         date_time_timezone: null
@@ -335,7 +335,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
   describe('when updating timezone to invalid timezone', function () {
     it('errors out', function (done) {
       var base = Interview.build({
-        application_id: 'mock-id', details: 'mock details',
+        application_id: 'mock-application-id', candidate_id: 'mock-candidate-id', details: 'mock details',
         pre_interview_reminder_id: 'mock-pre-reminder-id', post_interview_reminder_id: 'mock-post-reminder-id',
         date_time_datetime: new Date('2016-02-05T14:00:00Z'),
         date_time_timezone: 'America/Nowhere'

@@ -2,6 +2,7 @@
 var _ = require('underscore');
 var assert = require('assert');
 var baseDefine = require('./base.js');
+var Candidate = require('./candidate');
 var Sequelize = require('sequelize');
 
 // Define our constants
@@ -23,10 +24,14 @@ exports.TYPES = _.extend({}, APPLICATION_TYPES, INTERVIEW_TYPES);
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
-module.exports = _.extend(baseDefine('reminder', {
+var Reminder = module.exports = _.extend(baseDefine('reminder', {
   id: {
     type: baseDefine.ID, defaultValue: Sequelize.UUIDV4, primaryKey: true,
     validate: {isUUID: 4}
+  },
+  candidate_id: {
+    type: baseDefine.ID, allowNull: false,
+    references: {model: Candidate, key: 'id'}
   },
 
   // TODO: Create a non-unique index with PARENT_TYPE and PARENT_ID (multiple reminders per application)
@@ -63,3 +68,6 @@ module.exports = _.extend(baseDefine('reminder', {
     }
   }
 }), exports);
+// DEV: To prevent circular dependencies, we define parent/child relationships in model where foreign key is
+Reminder.belongsTo(Candidate);
+Candidate.hasMany(Reminder);

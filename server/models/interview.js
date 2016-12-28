@@ -2,6 +2,7 @@
 var baseDefine = require('./base.js');
 var Sequelize = require('sequelize');
 var Application = require('./application');
+var Candidate = require('./candidate');
 var Reminder = require('./reminder');
 
 // Define and export our model
@@ -11,8 +12,11 @@ var Interview = module.exports = baseDefine('interview', {
     type: baseDefine.ID, defaultValue: Sequelize.UUIDV4, primaryKey: true,
     validate: {isUUID: 4}
   },
+  candidate_id: {
+    type: baseDefine.ID, allowNull: false,
+    references: {model: Candidate, key: 'id'}
+  },
 
-  // TODO: Verify foreign key properly set up
   application_id: {
     type: baseDefine.ID, allowNull: false,
     references: {model: Application, key: 'id'}
@@ -50,12 +54,10 @@ var Interview = module.exports = baseDefine('interview', {
 // DEV: To prevent circular dependencies, we define parent/child relationships in model where foreign key is
 Interview.belongsTo(Application);
 Application.hasMany(Interview);
+Interview.belongsTo(Candidate);
+Candidate.hasMany(Interview);
 // DEV: Reminder has no strict parent so we can only define parent to child
-Interview.hasOne(Reminder, {
-  as: 'pre_interview_reminder',
-  foreignKey: 'pre_interview_reminder_id'
-});
-Interview.hasOne(Reminder, {
-  as: 'post_interview_reminder',
-  foreignKey: 'post_interview_reminder_id'
-});
+// DEV: Due to reminder's foreign key being located on other tables we need to use `belongsTo` instead of `hasOne`
+//   Otherwise, Sequelize would attempt a JOIN with `application.id = reminders.application_id`
+Interview.belongsTo(Reminder, {as: 'pre_interview_reminder'});
+Interview.belongsTo(Reminder, {as: 'post_interview_reminder'});

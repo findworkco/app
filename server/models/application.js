@@ -1,7 +1,9 @@
 // Load in our dependencies
+var assert = require('assert');
 var _ = require('underscore');
 var Sequelize = require('sequelize');
 var baseDefine = require('./base.js');
+var Candidate = require('./candidate');
 var Reminder = require('./reminder');
 
 // Define constants for our applications
@@ -29,6 +31,10 @@ var Application = module.exports = _.extend(baseDefine('application', {
   id: {
     type: baseDefine.ID, defaultValue: Sequelize.UUIDV4, primaryKey: true,
     validate: {isUUID: 4}
+  },
+  candidate_id: {
+    type: baseDefine.ID, allowNull: false,
+    references: {model: Candidate, key: 'id'}
   },
 
   // Example: 2016-01-08, no time
@@ -74,6 +80,28 @@ var Application = module.exports = _.extend(baseDefine('application', {
     references: {model: Reminder, key: 'id'}
   }
 }, {
+  validate: {
+    statusHasMatchingReminder: function () {
+      // If we have a status that expects a reminder, then verify it exists
+      var status = this.getDataValue('status');
+      if (status === exports.APPLICATION_STATUSES.SAVED_FOR_LATER) {
+        assert(this.getDataValue('saved_for_later_reminder_id'),
+          'Expected "saved_for_later" application to have a saved for later reminder set');
+      } else if (status === exports.APPLICATION_STATUSES.WAITING_FOR_RESPONSE) {
+        assert(this.getDataValue('waiting_for_response_reminder_id'),
+          'Expected "waiting_for_response" application to have a waiting for response reminder set');
+      } else if (status === exports.APPLICATION_STATUSES.UPCOMING_INTERVIEW) {
+        // No assertions necessary (handled by interview)
+      } else if (status === exports.APPLICATION_STATUSES.RECEIVED_OFFER) {
+        assert(this.getDataValue('received_offer_reminder_id'),
+          'Expected "received_offer" application to have a received offer reminder set');
+      } else if (status === exports.APPLICATION_STATUSES.ARCHIVED) {
+        // No assertions necessary
+      } else {
+        throw new Error('Unexpected status received');
+      }
+    }
+  },
   getterMethods: {
     add_interview_url: function () {
       // Example: /application/abcdef-sky-networks-uuid/add-interview
@@ -160,17 +188,12 @@ var Application = module.exports = _.extend(baseDefine('application', {
     }
   }
 }), exports);
-
+// DEV: To prevent circular dependencies, we define parent/child relationships in model where foreign key is
+Application.belongsTo(Candidate);
+Candidate.hasMany(Application);
 // DEV: Reminder has no strict parent so we can only define parent to child
-Application.hasOne(Reminder, {
-  as: 'saved_for_later_reminder',
-  foreignKey: 'saved_for_later_reminder_id'
-});
-Application.hasOne(Reminder, {
-  as: 'waiting_for_response_reminder',
-  foreignKey: 'waiting_for_response_reminder_id'
-});
-Application.hasOne(Reminder, {
-  as: 'received_offer_reminder',
-  foreignKey: 'received_offer_reminder_id'
-});
+// DEV: Due to reminder's foreign key being located on other tables we need to use `belongsTo` instead of `hasOne`
+//   Otherwise, Sequelize would attempt a JOIN with `application.id = reminders.application_id`
+Application.belongsTo(Reminder, {as: 'saved_for_later_reminder'});
+Application.belongsTo(Reminder, {as: 'waiting_for_response_reminder'});
+Application.belongsTo(Reminder, {as: 'received_offer_reminder'});
