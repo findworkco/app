@@ -1,10 +1,11 @@
 // Load in our dependencies
+var assert = require('assert');
 var expect = require('chai').expect;
 var moment = require('moment-timezone');
-var AuditLog = require('../../../server/models/audit-log.js');
-var Application = require('../../../server/models/application.js');
-var Interview = require('../../../server/models/interview.js');
-var Candidate = require('../../../server/models/candidate.js');
+var AuditLog = require('../../../server/models/audit-log');
+var Application = require('../../../server/models/application');
+var Interview = require('../../../server/models/interview');
+var Candidate = require('../../../server/models/candidate');
 var scenario = require('../utils/test').scenario;
 
 // Start our tests
@@ -12,6 +13,19 @@ scenario.model('A Base model', function () {
   it('has timestamp fields', function () {
     expect(Application.attributes).to.have.property('created_at');
     expect(Application.attributes).to.have.property('updated_at');
+  });
+});
+
+scenario.model('A Base model with an ID field', function () {
+  before(function sanityCheckIdField () {
+    // Sanity check Candidate is using ID
+    var idAttribute = Candidate.tableAttributes.id;
+    assert.strictEqual(idAttribute.type.key, 'ID');
+  });
+
+  it('automatically generates id on initialization', function () {
+    var candidate = Candidate.build({});
+    expect(candidate.get('id')).to.have.length(36);
   });
 });
 

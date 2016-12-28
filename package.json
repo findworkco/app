@@ -100,7 +100,6 @@
     "gulp-svgmin": "~1.2.2",
     "gulp-uglify": "~1.5.3",
     "jquery": "~2.2.3",
-    "multiline": "~1.0.2",
     "rimraf": "~2.5.2",
     "sequelize-cli": "git://github.com/twolfson/sequelize-cli.git#8cb60ca",
     "timepicker": "~1.8.11",

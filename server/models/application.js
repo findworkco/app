@@ -26,7 +26,10 @@ exports.APPLICATION_EDIT_HUMAN_STATUSES = _.defaults({
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
 var Application = module.exports = _.extend(baseDefine('application', {
-  id: {type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, primaryKey: true},
+  id: {
+    type: baseDefine.ID, defaultValue: Sequelize.UUIDV4, primaryKey: true,
+    validate: {isUUID: 4}
+  },
 
   // Example: 2016-01-08, no time
   application_date_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
@@ -59,15 +62,15 @@ var Application = module.exports = _.extend(baseDefine('application', {
 
   // Define our reminders
   saved_for_later_reminder_id: {
-    type: Sequelize.UUID, allowNull: true,
+    type: baseDefine.ID, allowNull: true,
     references: {model: Reminder, key: 'id'}
   },
   waiting_for_response_reminder_id: {
-    type: Sequelize.UUID, allowNull: true,
+    type: baseDefine.ID, allowNull: true,
     references: {model: Reminder, key: 'id'}
   },
   received_offer_reminder_id: {
-    type: Sequelize.UUID, allowNull: true,
+    type: baseDefine.ID, allowNull: true,
     references: {model: Reminder, key: 'id'}
   }
 }, {

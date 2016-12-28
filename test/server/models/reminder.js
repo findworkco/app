@@ -6,7 +6,9 @@ var Reminder = require('../../../server/models/reminder.js');
 
 // Start our tests
 var validReminder = {
-  parent_id: 'mock-parent-id',
+  // https://github.com/chriso/validator.js/blob/6.2.0/src/lib/isUUID.js#L5
+  // A9911CA7105 = "APPLICATION" in our attempted 1337 speak
+  parent_id: 'A9911CA7-1050-4000-8000-000000000000',
   parent_type: Reminder.PARENT_TYPES.APPLICATION,
   type: Reminder.TYPES.SAVED_FOR_LATER,
   is_enabled: true,

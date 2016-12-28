@@ -7,11 +7,14 @@ var Reminder = require('./reminder');
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
 var Interview = module.exports = baseDefine('interview', {
-  id: {type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, primaryKey: true},
+  id: {
+    type: baseDefine.ID, defaultValue: Sequelize.UUIDV4, primaryKey: true,
+    validate: {isUUID: 4}
+  },
 
   // TODO: Verify foreign key properly set up
   application_id: {
-    type: Sequelize.UUID, allowNull: false,
+    type: baseDefine.ID, allowNull: false,
     references: {model: Application, key: 'id'}
   },
 
@@ -25,11 +28,11 @@ var Interview = module.exports = baseDefine('interview', {
 
   // Define our reminders
   pre_interview_reminder_id: {
-    type: Sequelize.UUID, allowNull: false,
+    type: baseDefine.ID, allowNull: false,
     references: {model: Reminder, key: 'id'}
   },
   post_interview_reminder_id: {
-    type: Sequelize.UUID, allowNull: false,
+    type: baseDefine.ID, allowNull: false,
     references: {model: Reminder, key: 'id'}
   }
 }, {

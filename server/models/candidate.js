@@ -6,7 +6,10 @@ var baseDefine = require('./base.js');
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
 module.exports = _.extend(baseDefine('candidate', {
-  id: {type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, primaryKey: true},
+  id: {
+    type: baseDefine.ID, defaultValue: Sequelize.UUIDV4, primaryKey: true,
+    validate: {isUUID: 4}
+  },
   // DEV: Sequelize interprets `unique` as an index key as well
   email: {
     type: Sequelize.STRING(255), unique: true, allowNull: false,

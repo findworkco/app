@@ -3,6 +3,7 @@ var assert = require('assert');
 var _ = require('underscore');
 var Sequelize = require('sequelize');
 var sequelize = require('../index.js').app.sequelize;
+var customTypes = require('./utils/custom-types');
 
 // Define our constants
 exports.ACTION_CREATE = 'create';
@@ -21,18 +22,25 @@ exports.VALID_SOURCES = [exports.SOURCE_CANDIDATES, exports.SOURCE_QUEUE, export
 //   (e.g. no fancy getters, no audit hooks)
 // DEV: Based on memory, verified by http://stackoverflow.com/a/2015276
 module.exports = _.extend(sequelize.define('audit_log', {
-  id: {type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, primaryKey: true},
+  id: {
+    type: customTypes.ID, defaultValue: Sequelize.UUIDV4, primaryKey: true,
+    validate: {isUUID: 4}
+  },
   // 'server', 'candidates', etc
   // DEV: Validation for `source_id` being set for non-server type is in options
   source_type: {
     type: Sequelize.STRING(255), allowNull: false,
     validate: {isIn: {args: [exports.VALID_SOURCES], msg: 'Source must be server or candidates'}}
   },
-  source_id: {type: Sequelize.UUID, allowNull: true},
+  source_id: {
+    // DEV: Since this isn't a foreign key, we can use UUID check for sanity
+    type: customTypes.ID, allowNull: true,
+    validate: {isUUID: 4}
+  },
 
   // 'candidates', 'applications', interviews', etc
   table_name: {type: Sequelize.STRING(255), allowNull: false},
-  table_row_id: {type: Sequelize.UUID, allowNull: false},
+  table_row_id: {type: customTypes.ID, allowNull: false},
 
   // 'create', 'update', 'delete'
   action: {

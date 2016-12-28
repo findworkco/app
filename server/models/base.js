@@ -7,8 +7,10 @@ var Sequelize = require('sequelize');
 var AuditLog = require('./audit-log');
 var sequelize = require('../index.js').app.sequelize;
 var timezones = require('../utils/tz-stable.js');
+var customTypes = require('./utils/custom-types');
 
-// Define our custom types
+// Expose our custom types
+exports.ID = customTypes.ID;
 exports.MOMENT_DATEONLY = 'MOMENT_DATEONLY';
 exports.MOMENT_TZ = 'MOMENT_TZ';
 

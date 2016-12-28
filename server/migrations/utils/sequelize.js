@@ -4,13 +4,18 @@ var Sequelize = require('sequelize');
 // Monkey patch Sequelize to require transactions
 var _query = Sequelize.prototype.query;
 Sequelize.prototype.query = function (sql, options) {
-  // If there is no transaction option and it isn't for our meta table, bail out
+  // Fallback our options
+  options = options || {};
+
+  // Resolve our table name
   // DEV: Handles SequelizeMeta creation
   var tableName = options.tableName;
   // DEV: Handles SequelizeMeta row deletions
   if (!tableName && options.model) { tableName = options.model.name; }
   // DEV: Handles SequelizeMeta row insertions
   if (!tableName && options.instance) { tableName = options.instance.$modelOptions.tableName; }
+
+  // If there is no transaction option and it isn't for our meta table, bail out
   if (!options.transaction && tableName !== 'SequelizeMeta') {
     throw new Error('Transaction not set in migration: ' + sql);
   }

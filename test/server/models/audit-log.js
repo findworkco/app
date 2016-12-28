@@ -67,7 +67,9 @@ scenario.model('An audit log with an non-server source and an id', function () {
   it('receives no validation errors', function (done) {
     var auditLog = AuditLog.build(_.defaults({
       source_type: 'candidates',
-      source_id: 'mock-candidate-id'
+      // https://github.com/chriso/validator.js/blob/6.2.0/src/lib/isUUID.js#L5
+      // CA2D1DA73 = "CANDIDATE" in our attempted 1337 speak
+      source_id: 'CA2D1DA7-3000-4000-8000-000000000000'
     }, validAuditLog));
     auditLog.validate().asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);

@@ -24,11 +24,16 @@ exports.TYPES = _.extend({}, APPLICATION_TYPES, INTERVIEW_TYPES);
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
 module.exports = _.extend(baseDefine('reminder', {
-  id: {type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, primaryKey: true},
+  id: {
+    type: baseDefine.ID, defaultValue: Sequelize.UUIDV4, primaryKey: true,
+    validate: {isUUID: 4}
+  },
 
   // TODO: Create a non-unique index with PARENT_TYPE and PARENT_ID (multiple reminders per application)
   parent_id: {
-    type: Sequelize.STRING(36), allowNull: false
+    // DEV: Since this isn't a foreign key, we can use `isUUID` as a sanity check
+    type: baseDefine.ID, allowNull: false,
+    validate: {isUUID: 4}
   },
   parent_type: {
     type: Sequelize.STRING(36), allowNull: false,
