@@ -10,7 +10,7 @@ var validReminder = {
   parent_type: Reminder.PARENT_TYPES.APPLICATION,
   type: Reminder.TYPES.SAVED_FOR_LATER,
   is_enabled: true,
-  date_time_moment: moment().tz('America/Chicago')
+  date_time_moment: moment().tz('US-America/Chicago')
 };
 scenario.model('A valid reminder', function () {
   it('receives no validation errors', function (done) {

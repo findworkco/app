@@ -210,9 +210,9 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
     it('returns a moment instance', function () {
       var base = Interview.build({
         date_time_datetime: new Date('2016-02-05T14:00:00Z'),
-        date_time_timezone: 'America/Chicago'
+        date_time_timezone: 'US-America/Chicago'
       });
-      var expectedMoment = moment.tz('2016-02-05T14:00:00Z', 'America/Chicago');
+      var expectedMoment = moment.tz('2016-02-05T14:00:00Z', 'US-America/Chicago');
       expect(base.get('date_time_moment').isSame(expectedMoment)).to.equal(true);
     });
   });
@@ -223,7 +223,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
         application_id: 'mock-id', details: 'mock details',
         pre_interview_reminder_id: 'mock-pre-reminder-id', post_interview_reminder_id: 'mock-post-reminder-id',
         date_time_datetime: null,
-        date_time_timezone: 'America/Chicago'
+        date_time_timezone: 'US-America/Chicago'
       });
     });
     after(function cleanup () {
@@ -285,7 +285,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
     it('has null as datetime and timezone', function () {
       var base = Interview.build({
         date_time_datetime: new Date('2016-02-05T14:00:00Z'),
-        date_time_timezone: 'America/Chicago'
+        date_time_timezone: 'US-America/Chicago'
       });
       base.set('date_time_moment', null);
       expect(base.get('date_time_datetime')).to.equal(null);
@@ -300,9 +300,9 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
         date_time_timezone: null
       });
       // DEV: We exclude `Z` suffix which indicates UTC and offset time appropriately for America/Chicago
-      base.set('date_time_moment', moment.tz('2016-02-05T08:00:00', 'America/Chicago'));
+      base.set('date_time_moment', moment.tz('2016-02-05T08:00:00', 'US-America/Chicago'));
       expect(base.get('date_time_datetime')).to.deep.equal(new Date('2016-02-05T14:00:00Z'));
-      expect(base.get('date_time_timezone')).to.equal('America/Chicago');
+      expect(base.get('date_time_timezone')).to.equal('US-America/Chicago');
     });
   });
 

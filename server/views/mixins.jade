@@ -29,28 +29,19 @@ mixin timepicker(moment)
   input(type="time", value=moment.format(timepickerFormat))&attributes(attributes)
 
 mixin timezonepicker(moment)
-  //- TODO: When we save this to the server, verify we have the codes in `vendor`
-  //-   When saving in the db, preserve as an object for easy queries
-  //- TODO: Find best match based on IP as a fallback
-  //-   Then, fallback to US Pacific TIme
   //- DEV: We were initially going to use a modal similar to Google Calendar
   //-   However, we realized that (1) the terms are different than CST/CDT abbreviations and (2) modals are a complex interaction
   //- TODO: Sort countries by their name, not code; UAE should be next to USA
-  //-   Maybe create a new data structure `[{name: United States, code: US, timezones: [{locale: America/Chicago, abbrs: []}]`
   - var selectedTimezone = moment.tz();
   select(data-chosen)&attributes(attributes)
-    //- {US: {America/Chicago: 'Central Standard Time'}}; timezones = {America/Chicago}, countryCode = US
-    each timezones, countryCode in timezonesByCountryCode
+    //- [{countryCode: 'US', name: 'United States', locales:
+    //-   [{ianaTimezone: 'America/Chicago', abbrStr: 'CST/CDT', val: 'US-America/Chicago'}, ...], ...]
+    each timezoneInfo in tzStable
       //- United States
-      - var countryName = countryData.countries[countryCode].name;
-      optgroup(label=countryName)
-        //- timezoneName = Central Standard Time, timezoneLocale = America/Chicago
-        //- TODO: Compute pre-emptively
-        - var timezoneLocales = Object.keys(timezones);
-        - timezoneLocales.sort(function (a, b) { return timezoneAbbrs[a].join('/') > timezoneAbbrs[b].join('/') });
-        each timezoneLocale in timezoneLocales
-          - var abbrs = timezoneAbbrs[timezoneLocale].join('/');
-          option(selected=selectedTimezone == timezoneLocale, value=countryCode + '-' + timezoneLocale)= abbrs
+      optgroup(label=timezoneInfo.name)
+        each timezoneLocale in timezoneInfo.locales
+          //- val=US-America/Chicago, text=CST/CDT
+          option(selected=selectedTimezone == timezoneLocale.val, value=timezoneLocale.val)= timezoneLocale.abbrStr
 
 mixin datetimepicker(name, moment, options)
   - options = options || {};

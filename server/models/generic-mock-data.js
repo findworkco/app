@@ -25,7 +25,7 @@ candidates.push({
 applications.push({
   id: 'abcdef-black-mesa-uuid',
   // Fri Jan 8
-  application_date_moment: moment.tz('2015-12-01', 'America/Chicago'),
+  application_date_moment: moment.tz('2015-12-01', 'US-America/Chicago'),
   archived_at_moment: null,
   company_name: 'Black Mesa',
   name: 'Black Mesa',
@@ -40,14 +40,14 @@ reminders.push({
   parent_id: applications[applications.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.APPLICATION,
   type: Reminder.TYPES.RECEIVED_OFFER,
-  date_time_moment: moment.tz('2016-01-01T12:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-01-01T12:00', 'US-America/Chicago'),
   is_enabled: true
 });
 interviews.push({
   id: 'abcdef-black-mesa-interview-uuid',
   application_id: applications[applications.length - 1].id,
   // Wed Jan 20 at 2:00PM CST
-  date_time_moment: moment.tz('2015-12-14T14:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2015-12-14T14:00', 'US-America/Chicago'),
   details: 'Go to underground complex',
   pre_interview_reminder_id: 'abcdef-black-mesa-interview-pre-reminder-uuid',
   post_interview_reminder_id: 'abcdef-black-mesa-interview-post-reminder-uuid'
@@ -57,7 +57,7 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2015-12-14T11:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2015-12-14T11:00', 'US-America/Chicago'),
   is_enabled: false
 });
 reminders.push({
@@ -65,7 +65,7 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.POST_INTERVIEW,
-  date_time_moment: moment.tz('2015-12-14T17:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2015-12-14T17:00', 'US-America/Chicago'),
   is_enabled: false
 });
 
@@ -73,7 +73,7 @@ reminders.push({
 applications.push({
   id: 'abcdef-umbrella-corp-uuid',
   // Fri Jan 8
-  application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
+  application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
   archived_at_moment: null,
   company_name: 'Umbrella Corporation',
   name: 'Umbrella Corporation',
@@ -93,7 +93,7 @@ interviews.push({
   id: 'abcdef-umbrella-corp-interview-uuid',
   application_id: applications[applications.length - 1].id,
   // Wed Jan 20 at 2:00PM CST
-  date_time_moment: moment.tz('2022-01-20T14:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2022-01-20T14:00', 'US-America/Chicago'),
   // Go to <a href="https://maps.google.com">1200 Lake St...</a>
   details: 'Go to 1200 Lake St, Suite 303, Chicago',
   pre_interview_reminder_id: 'abcdef-umbrella-corp-interview-pre-reminder-uuid',
@@ -104,7 +104,7 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2022-01-20T11:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2022-01-20T11:00', 'US-America/Chicago'),
   is_enabled: false
 });
 reminders.push({
@@ -112,13 +112,13 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.POST_INTERVIEW,
-  date_time_moment: moment.tz('2022-01-20T17:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2022-01-20T17:00', 'US-America/Chicago'),
   is_enabled: false
 });
 applications.push({
   id: 'abcdef-globo-gym-uuid',
   // Mon Feb 1
-  application_date_moment: moment.tz('2016-02-01', 'America/Chicago'),
+  application_date_moment: moment.tz('2016-02-01', 'US-America/Chicago'),
   archived_at_moment: null,
   company_name: null,
   name: 'Globo Gym',
@@ -130,7 +130,7 @@ interviews.push({
   id: 'abcdef-globo-gym-interview-uuid',
   application_id: applications[applications.length - 1].id,
   // Mon Mar 14 at 2:00PM CST
-  date_time_moment: moment.tz('2022-03-14T14:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2022-03-14T14:00', 'US-America/Chicago'),
   details: '',
   pre_interview_reminder_id: 'abcdef-globo-gym-interview-pre-reminder-uuid',
   post_interview_reminder_id: 'abcdef-globo-gym-interview-post-reminder-uuid'
@@ -140,7 +140,7 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2022-03-14T11:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2022-03-14T11:00', 'US-America/Chicago'),
   is_enabled: false
 });
 reminders.push({
@@ -148,14 +148,14 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.POST_INTERVIEW,
-  date_time_moment: moment.tz('2022-03-14T17:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2022-03-14T17:00', 'US-America/Chicago'),
   is_enabled: false
 });
 interviews.push({
   id: 'abcdef-globo-gym-interview-past-1-uuid',
   application_id: applications[applications.length - 1].id,
   // Thu Feb 18 at 9:00AM CST
-  date_time_moment: moment.tz('2016-02-18T09:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-02-18T09:00', 'US-America/Chicago'),
   details: '',
   pre_interview_reminder_id: 'abcdef-globo-gym-interview-past-1-pre-reminder-uuid',
   post_interview_reminder_id: 'abcdef-globo-gym-interview-past-1-post-reminder-uuid'
@@ -165,7 +165,7 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2016-02-18T06:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-02-18T06:00', 'US-America/Chicago'),
   is_enabled: false
 });
 reminders.push({
@@ -173,14 +173,14 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.POST_INTERVIEW,
-  date_time_moment: moment.tz('2016-02-18T12:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-02-18T12:00', 'US-America/Chicago'),
   is_enabled: false
 });
 interviews.push({
   id: 'abcdef-globo-gym-interview-past-2-uuid',
   application_id: applications[applications.length - 1].id,
   // Wed Mar 2 at 6:00PM CST
-  date_time_moment: moment.tz('2016-03-02T18:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-03-02T18:00', 'US-America/Chicago'),
   details: '',
   pre_interview_reminder_id: 'abcdef-globo-gym-interview-past-2-pre-reminder-uuid',
   post_interview_reminder_id: 'abcdef-globo-gym-interview-past-2-post-reminder-uuid'
@@ -190,7 +190,7 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2016-03-02T15:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-03-02T15:00', 'US-America/Chicago'),
   is_enabled: false
 });
 reminders.push({
@@ -198,7 +198,7 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.POST_INTERVIEW,
-  date_time_moment: moment.tz('2016-03-02T21:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-03-02T21:00', 'US-America/Chicago'),
   is_enabled: false
 });
 
@@ -206,7 +206,7 @@ reminders.push({
 applications.push({
   id: 'abcdef-sky-networks-uuid',
   // Fri Jan 8
-  application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
+  application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
   archived_at_moment: null,
   company_name: 'Sky Networks',
   // Mon Jan 25
@@ -222,14 +222,14 @@ reminders.push({
   parent_id: applications[applications.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.APPLICATION,
   type: Reminder.TYPES.WAITING_FOR_RESPONSE,
-  date_time_moment: moment.tz('2016-01-25T12:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-01-25T12:00', 'US-America/Chicago'),
   is_enabled: true
 });
 interviews.push({
   id: 'abcdef-sky-networks-interview-uuid',
   application_id: applications[applications.length - 1].id,
   // Fri Jan 15 at 9:00AM PST
-  date_time_moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
+  date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Los_Angeles'),
   details: 'Call 555-123-4567',
   pre_interview_reminder_id: 'abcdef-sky-networks-interview-pre-reminder-uuid',
   post_interview_reminder_id: 'abcdef-sky-networks-interview-post-reminder-uuid'
@@ -239,7 +239,7 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
+  date_time_moment: moment.tz('2016-01-15T08:00', 'US-America/Los_Angeles'),
   is_enabled: true
 });
 reminders.push({
@@ -247,7 +247,7 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.POST_INTERVIEW,
-  date_time_moment:  moment.tz('2016-01-15T11:00', 'America/Los_Angeles'),
+  date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
   is_enabled: true
 });
 
@@ -256,7 +256,7 @@ applications.push({
   id: 'abcdef-intertrode-uuid',
   application_date_moment: null,
   archived_at_moment: null,
-  created_at: moment.tz('2015-12-19T12:00', 'America/Chicago').toDate(),
+  created_at: moment.tz('2015-12-19T12:00', 'US-America/Chicago').toDate(),
   name: 'Intertrode',
   // Mon Jan 25
   saved_for_later_reminder_id: 'abcdef-intertrode-reminder-uuid',
@@ -269,7 +269,7 @@ reminders.push({
   parent_id: applications[applications.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.APPLICATION,
   type: Reminder.TYPES.SAVED_FOR_LATER,
-  date_time_moment: moment.tz('2016-06-20T12:00', 'America/Chicago'),
+  date_time_moment: moment.tz('2016-06-20T12:00', 'US-America/Chicago'),
   is_enabled: true
 });
 
@@ -277,9 +277,9 @@ reminders.push({
 applications.push({
   id: 'abcdef-monstromart-uuid',
   // Fri Jan 8
-  application_date_moment: moment.tz('2016-01-08', 'America/Chicago'),
+  application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
   // Mon Jan 18 at 3:00PM CST
-  archived_at_moment: moment.tz('2016-01-18T15:00', 'America/Chicago'),
+  archived_at_moment: moment.tz('2016-01-18T15:00', 'US-America/Chicago'),
   company_name: 'Monstromart',
   status: Application.APPLICATION_STATUSES.ARCHIVED,
   posting_url: 'https://github.com/about/jobs',
@@ -290,7 +290,7 @@ interviews.push({
   id: 'abcdef-monstromart-interview-uuid',
   application_id: applications[applications.length - 1].id,
   // Fri Jan 15 at 9:00AM PST
-  date_time_moment: moment.tz('2016-01-15T09:00', 'America/Los_Angeles'),
+  date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Los_Angeles'),
   details: 'Wait for call from Bob',
   pre_interview_reminder_id: 'abcdef-monstromart-interview-pre-reminder-uuid',
   post_interview_reminder_id: 'abcdef-monstromart-interview-post-reminder-uuid'
@@ -300,7 +300,7 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2016-01-15T08:00', 'America/Los_Angeles'),
+  date_time_moment: moment.tz('2016-01-15T08:00', 'US-America/Los_Angeles'),
   is_enabled: true
 });
 reminders.push({
@@ -308,6 +308,6 @@ reminders.push({
   parent_id: interviews[interviews.length - 1].id,
   parent_type: Reminder.PARENT_TYPES.INTERVIEW,
   type: Reminder.TYPES.POST_INTERVIEW,
-  date_time_moment:  moment.tz('2016-01-15T11:00', 'America/Los_Angeles'),
+  date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
   is_enabled: true
 });

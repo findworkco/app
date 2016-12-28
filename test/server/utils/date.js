@@ -7,7 +7,7 @@ exports.nowInChicago = function () {
   // http://momentjs.com/timezone/docs/#/zone-object/offset/
   var now = +new Date();
   // Example: 360 (minutes)
-  var offset = moment.tz.zone('America/Chicago').offset(now);
+  var offset = moment.tz.zone('US-America/Chicago').offset(now);
   return now - (offset * 1000 * 60);
 };
 exports.oneWeek = function () {

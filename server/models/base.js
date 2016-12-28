@@ -6,7 +6,7 @@ var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
 var AuditLog = require('./audit-log');
 var sequelize = require('../index.js').app.sequelize;
-var timezones = require('../utils/timezones');
+var timezones = require('../utils/tz-stable.js');
 
 // Define our custom types
 exports.MOMENT_DATEONLY = 'MOMENT_DATEONLY';
@@ -22,6 +22,18 @@ moment.prototype.format = function () {
   // Call our normal function
   return _momentFormat.apply(this, arguments);
 };
+
+// Resolve our timezone values
+// [{countryCode: 'US', name: 'United States', locales:
+//   [{ianaTimezone: 'America/Chicago', abbrStr: 'CST/CDT', val: 'US-America/Chicago'}, ...], ...]
+// to
+// ['US-America/Chicago', ...]
+var validTimezoneValues = [];
+timezones.forEach(function extractTimezoneValues (timezone) {
+  timezone.locales.forEach(function extractLocaleValues (locale) {
+    validTimezoneValues.push(locale.val);
+  });
+});
 
 // Define our model definer
 // https://github.com/sequelize/sequelize/blob/v3.24.6/lib/sequelize.js#L602
@@ -80,13 +92,13 @@ module.exports = _.extend(function (modelName, attributes, options) {
       }, attribute);
       // DEV: For safety, we will keep 255 characters -- we prob could do 64 but why risk it
       // jscs:disable maximumLineLength
-      // DEV: Longest timezone in moment-timezone is 32 characters long
+      // DEV: Longest timezone in moment-timezone is 32 characters long (+3 for ISO code and '-')
       //   require('underscore').values(require('moment-timezone').tz._names).sort(function (a, b) { return a.length - b.length; });
       //   Longest: America/Argentina/ComodRivadavia
       // jscs:enable maximumLineLength
       attributes[timezoneKey] = _.defaults({
         type: Sequelize.STRING(255),
-        validate: {isIn: {args: [timezones], msg: 'Invalid timezone provided'}}
+        validate: {isIn: {args: [validTimezoneValues], msg: 'Invalid timezone provided'}}
       }, attribute);
 
       // Add getter/setters and validation
