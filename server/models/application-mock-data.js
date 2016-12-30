@@ -92,26 +92,26 @@ exports.getById = function (id, options) {
 };
 exports.getReceivedOfferApplications = function (options) {
   return _.where(genericMockData.applications, {
-    status: Application.APPLICATION_STATUSES.RECEIVED_OFFER
+    status: Application.STATUSES.RECEIVED_OFFER
   }).map(function (attrs) { return buildApplication(attrs, options); });
 };
 exports.getUpcomingInterviewApplications = function (options) {
   return _.where(genericMockData.applications, {
-    status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
+    status: Application.STATUSES.UPCOMING_INTERVIEW
   }).map(function (attrs) { return buildApplication(attrs, options); });
 };
 exports.getWaitingForResponseApplications = function (options) {
   return _.where(genericMockData.applications, {
-    status: Application.APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+    status: Application.STATUSES.WAITING_FOR_RESPONSE
   }).map(function (attrs) { return buildApplication(attrs, options); });
 };
 exports.getSavedForLaterApplications = function (options) {
   return _.where(genericMockData.applications, {
-    status: Application.APPLICATION_STATUSES.SAVED_FOR_LATER
+    status: Application.STATUSES.SAVED_FOR_LATER
   }).map(function (attrs) { return buildApplication(attrs, options); });
 };
 exports.getArchivedApplications = function (options) {
   return _.where(genericMockData.applications, {
-    status: Application.APPLICATION_STATUSES.ARCHIVED
+    status: Application.STATUSES.ARCHIVED
   }).map(function (attrs) { return buildApplication(attrs, options); });
 };

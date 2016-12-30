@@ -13,9 +13,9 @@ var companyMockData = require('../models/company-mock-data');
 app.all('*', function loadNavData (req, res, next) {
   // Define common statuses for all pages
   // TODO: Consider relocating statuses to `app.locals`
-  res.locals.APPLICATION_STATUSES = Application.APPLICATION_STATUSES;
-  res.locals.APPLICATION_ADD_HUMAN_STATUSES = Application.APPLICATION_ADD_HUMAN_STATUSES;
-  res.locals.APPLICATION_EDIT_HUMAN_STATUSES = Application.APPLICATION_EDIT_HUMAN_STATUSES;
+  res.locals.APPLICATION_STATUSES = Application.STATUSES;
+  res.locals.APPLICATION_ADD_HUMAN_STATUSES = Application.ADD_HUMAN_STATUSES;
+  res.locals.APPLICATION_EDIT_HUMAN_STATUSES = Application.EDIT_HUMAN_STATUSES;
 
   // Set up default timezone
   // TODO: Resolve our user's timezone from IP (fallback to US PST) or their settings

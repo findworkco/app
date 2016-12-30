@@ -7,23 +7,23 @@ var Candidate = require('./candidate');
 var Reminder = require('./reminder');
 
 // Define constants for our applications
-exports.APPLICATION_STATUSES = {
+exports.STATUSES = {
   SAVED_FOR_LATER: 'saved_for_later',
   WAITING_FOR_RESPONSE: 'waiting_for_response',
   UPCOMING_INTERVIEW: 'upcoming_interview',
   RECEIVED_OFFER: 'received_offer',
   ARCHIVED: 'archived'
 };
-exports.APPLICATION_ADD_HUMAN_STATUSES = {
+exports.ADD_HUMAN_STATUSES = {
   SAVED_FOR_LATER: 'Saving for later',
   WAITING_FOR_RESPONSE: 'Waiting for response',
   UPCOMING_INTERVIEW: 'Upcoming interview',
   RECEIVED_OFFER: 'Received offer'
 };
-exports.APPLICATION_EDIT_HUMAN_STATUSES = _.defaults({
+exports.EDIT_HUMAN_STATUSES = _.defaults({
   SAVED_FOR_LATER: 'Saved for later',
   ARCHIVED: 'Archived'
-}, exports.APPLICATION_ADD_HUMAN_STATUSES);
+}, exports.ADD_HUMAN_STATUSES);
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
@@ -63,7 +63,7 @@ var Application = module.exports = _.extend(baseDefine('application', {
   // TODO: Probably add an index based on application status
   status: {
     type: Sequelize.STRING(36), allowNull: false,
-    validate: {isIn: {args: [_.values(exports.APPLICATION_STATUSES)], msg: 'Invalid status provided'}}
+    validate: {isIn: {args: [_.values(exports.STATUSES)], msg: 'Invalid status provided'}}
   },
 
   // Define our reminders
@@ -84,18 +84,18 @@ var Application = module.exports = _.extend(baseDefine('application', {
     statusHasMatchingReminder: function () {
       // If we have a status that expects a reminder, then verify it exists
       var status = this.getDataValue('status');
-      if (status === exports.APPLICATION_STATUSES.SAVED_FOR_LATER) {
+      if (status === exports.STATUSES.SAVED_FOR_LATER) {
         assert(this.getDataValue('saved_for_later_reminder_id'),
           'Expected "saved_for_later" application to have a saved for later reminder set');
-      } else if (status === exports.APPLICATION_STATUSES.WAITING_FOR_RESPONSE) {
+      } else if (status === exports.STATUSES.WAITING_FOR_RESPONSE) {
         assert(this.getDataValue('waiting_for_response_reminder_id'),
           'Expected "waiting_for_response" application to have a waiting for response reminder set');
-      } else if (status === exports.APPLICATION_STATUSES.UPCOMING_INTERVIEW) {
+      } else if (status === exports.STATUSES.UPCOMING_INTERVIEW) {
         // No assertions necessary (handled by interview)
-      } else if (status === exports.APPLICATION_STATUSES.RECEIVED_OFFER) {
+      } else if (status === exports.STATUSES.RECEIVED_OFFER) {
         assert(this.getDataValue('received_offer_reminder_id'),
           'Expected "received_offer" application to have a received offer reminder set');
-      } else if (status === exports.APPLICATION_STATUSES.ARCHIVED) {
+      } else if (status === exports.STATUSES.ARCHIVED) {
         // No assertions necessary
       } else {
         throw new Error('Unexpected status received');
@@ -125,7 +125,7 @@ var Application = module.exports = _.extend(baseDefine('application', {
       return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/delete';
     },
     human_status: function () {
-      return exports.APPLICATION_EDIT_HUMAN_STATUSES[this.get('status_key')];
+      return exports.EDIT_HUMAN_STATUSES[this.get('status_key')];
     },
     last_contact_moment: function () {
       // Verify we have both past interviews and application date resolved

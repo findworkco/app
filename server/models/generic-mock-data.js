@@ -33,7 +33,7 @@ applications.push({
   received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid',
   notes: '300 employees, all engineers/scientists',
   posting_url: 'http://www.nature.com/naturejobs/science/jobs/123456-researcher',
-  status: Application.APPLICATION_STATUSES.RECEIVED_OFFER
+  status: Application.STATUSES.RECEIVED_OFFER
 });
 reminders.push({
   id: applications[applications.length - 1].received_offer_reminder_id,
@@ -87,7 +87,7 @@ applications.push({
     'Need to ask about compensation'
   ].join('<br/>'),
   posting_url: 'https://www.linkedin.com/jobs/view/133713371337',
-  status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
+  status: Application.STATUSES.UPCOMING_INTERVIEW
 });
 interviews.push({
   id: 'abcdef-umbrella-corp-interview-uuid',
@@ -124,7 +124,7 @@ applications.push({
   name: 'Globo Gym',
   notes: '',
   posting_url: 'http://job-openings.monster.com/monster/abcdef-ghij-klmn-opqr-stuvwxyz',
-  status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
+  status: Application.STATUSES.UPCOMING_INTERVIEW
 });
 interviews.push({
   id: 'abcdef-globo-gym-interview-uuid',
@@ -215,7 +215,7 @@ applications.push({
   name: 'Sky Networks',
   notes: 'Phone screen (John): 100 employees, focused on AI<br/>' +
     'Website: <a href="https://sky.net/">https://sky.net/</a>',
-  status: Application.APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+  status: Application.STATUSES.WAITING_FOR_RESPONSE
 });
 reminders.push({
   id: applications[applications.length - 1].waiting_for_response_reminder_id,
@@ -262,7 +262,7 @@ applications.push({
   saved_for_later_reminder_id: 'abcdef-intertrode-reminder-uuid',
   notes: '',
   posting_url: 'https://www.dice.com/jobs/detail/Business-Systems-Analyst-Springfield-USA-12345/1234567/123456',
-  status: Application.APPLICATION_STATUSES.SAVED_FOR_LATER
+  status: Application.STATUSES.SAVED_FOR_LATER
 });
 reminders.push({
   id: applications[applications.length - 1].saved_for_later_reminder_id,
@@ -281,7 +281,7 @@ applications.push({
   // Mon Jan 18 at 3:00PM CST
   archived_at_moment: moment.tz('2016-01-18T15:00', 'US-America/Chicago'),
   company_name: 'Monstromart',
-  status: Application.APPLICATION_STATUSES.ARCHIVED,
+  status: Application.STATUSES.ARCHIVED,
   posting_url: 'https://github.com/about/jobs',
   name: 'Monstromart',
   notes: 'Sounds like a great career opportunity'
