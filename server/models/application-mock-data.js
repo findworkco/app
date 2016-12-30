@@ -1,7 +1,6 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
-var HttpError = require('http-errors');
 var Application = require('./application');
 var Interview = require('./interview');
 var Reminder = require('./reminder');
@@ -17,13 +16,13 @@ genericMockData.applications.forEach(function saveApplicationById (application) 
 // http://docs.sequelizejs.com/en/v3/docs/associations/#creating-with-associations
 var interviewMocks = genericMockData.interviews;
 var reminderMocks = genericMockData.reminders;
-exports._buildApplicationAttrs = function (attrs, include) {
+exports._buildApplicationAttrs = function (attrs, options) {
   // Clone our attrs for extension
   var retVal = _.clone(attrs);
 
   // If we have an include parameter
-  if (include) {
-    include.forEach(function handleIncludeItem (includeItem) {
+  if (options.include) {
+    options.include.forEach(function handleIncludeItem (includeItem) {
       // Upcast models to objects
       if (includeItem.$modelOptions) {
         includeItem = {model: includeItem};
@@ -58,65 +57,61 @@ exports._buildApplicationAttrs = function (attrs, include) {
   // Return our retVal
   return retVal;
 };
-function buildApplication(attrs, include) {
-  // Fallback our include parameter temporarily
-  // TODO: Remove include fallback
-  if (!include) {
-    // DEV: We use `_.flatten` and empty arrays to skip non-included data
-    include =  _.flatten([
-      {model: Interview},
-      attrs.saved_for_later_reminder_id ? {model: Reminder, as: 'saved_for_later_reminder'} : [],
-      attrs.waiting_for_response_reminder_id ? {model: Reminder, as: 'waiting_for_response_reminder'} : [],
-      attrs.received_offer_reminder_id ? {model: Reminder, as: 'received_offer_reminder'} : []
-    ]);
+function buildApplication(attrs, options) {
+  // If we have an include parameter, clone it by 2 levels to prevent mutation on `build`
+  options = _.clone(options) || {};
+  function cloneInclude(options) {
+    if (options.include) {
+      options.include = options.include.map(function cloneIncludeItem (includeItem) {
+        // Clone our include item
+        includeItem = _.clone(includeItem);
+
+        // If the include item has an include, then recurse it
+        if (includeItem.include) {
+          cloneInclude(includeItem);
+        }
+
+        // Return our cloned include item
+        return includeItem;
+      });
+    }
   }
+  cloneInclude(options);
 
   // Compile our build data based on include
-  var buildData = exports._buildApplicationAttrs(attrs, include);
+  var buildData = exports._buildApplicationAttrs(attrs, options);
 
   // Build and return our application
-  var retVal = Application.build(buildData, {include: include});
+  var retVal = Application.build(buildData, options);
   return retVal;
 }
 
 // Export application mock data resolver
-exports.getById = function (id) {
-  return applicationsById.hasOwnProperty(id) ? buildApplication(applicationsById[id]) : null;
+exports.getById = function (id, options) {
+  return applicationsById.hasOwnProperty(id) ? buildApplication(applicationsById[id], options) : null;
 };
-exports.getByIdOr404 = function (id, include) {
-  // Resolve our application
-  var application = exports.getById(id, include);
-
-  // If the application doesn't exist, then 404
-  if (application === null) {
-    throw new HttpError.NotFound();
-  }
-
-  // Otherwise, return our application
-  return application;
-};
-exports.getReceivedOfferApplications = function (include) {
+exports.getReceivedOfferApplications = function (options) {
   return _.where(genericMockData.applications, {
     status: Application.APPLICATION_STATUSES.RECEIVED_OFFER
-  }).map(function (attrs) { return buildApplication(attrs, include); });
+  }).map(function (attrs) { return buildApplication(attrs, options); });
 };
-exports.getUpcomingInterviewApplications = function (include) {
+exports.getUpcomingInterviewApplications = function (options) {
   return _.where(genericMockData.applications, {
     status: Application.APPLICATION_STATUSES.UPCOMING_INTERVIEW
-  }).map(function (attrs) { return buildApplication(attrs, include); });
+  }).map(function (attrs) { return buildApplication(attrs, options); });
 };
-exports.getWaitingForResponseApplications = function (include) {
+exports.getWaitingForResponseApplications = function (options) {
   return _.where(genericMockData.applications, {
     status: Application.APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-  }).map(function (attrs) { return buildApplication(attrs, include); });
+  }).map(function (attrs) { return buildApplication(attrs, options); });
 };
-exports.getSavedForLaterApplications = function (include) {
+exports.getSavedForLaterApplications = function (options) {
   return _.where(genericMockData.applications, {
     status: Application.APPLICATION_STATUSES.SAVED_FOR_LATER
-  }).map(function (attrs) { return buildApplication(attrs, include); });
+  }).map(function (attrs) { return buildApplication(attrs, options); });
 };
-exports.getArchivedApplications = function (include) {
+exports.getArchivedApplications = function (options) {
   return _.where(genericMockData.applications, {
     status: Application.APPLICATION_STATUSES.ARCHIVED
-  }).map(function (attrs) { return buildApplication(attrs, include); });
+  }).map(function (attrs) { return buildApplication(attrs, options); });
 };

@@ -6,15 +6,17 @@ var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
 var applicationMockData = require('../models/application-mock-data');
 var companyMockData = require('../models/company-mock-data');
+var Interview = require('../models/interview');
+var Reminder = require('../models/reminder');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Define common applications for redirects
-var mockApplicationsByStatus = {
-  SAVED_FOR_LATER: applicationMockData.getById('abcdef-intertrode-uuid'),
-  WAITING_FOR_RESPONSE: applicationMockData.getById('abcdef-sky-networks-uuid'),
-  UPCOMING_INTERVIEW: applicationMockData.getById('abcdef-umbrella-corp-uuid'),
-  RECEIVED_OFFER: applicationMockData.getById('abcdef-black-mesa-uuid'),
-  ARCHIVED: applicationMockData.getById('abcdef-monstromart-uuid')
+var mockApplicationIdsByStatus = {
+  SAVED_FOR_LATER: 'abcdef-intertrode-uuid',
+  WAITING_FOR_RESPONSE: 'abcdef-sky-networks-uuid',
+  UPCOMING_INTERVIEW: 'abcdef-umbrella-corp-uuid',
+  RECEIVED_OFFER: 'abcdef-black-mesa-uuid',
+  ARCHIVED: 'abcdef-monstromart-uuid'
 };
 
 // Define our controllers
@@ -56,8 +58,9 @@ var applicationAddFormSaveFns = [
   resolveModelsAsLocals({nav: true}),
   function applicationAddFormSave (req, res, next) {
     // Create our application (currently mocked)
-    var mockApplication = mockApplicationsByStatus[req.statusKey];
-    assert(mockApplication, 'No redirect application found with status key "' + req.statusKey + '"');
+    var mockApplicationId = mockApplicationIdsByStatus[req.statusKey];
+    assert(mockApplicationId, 'No mock application found with status key "' + req.statusKey + '"');
+    var mockApplication = applicationMockData.getById(mockApplicationId, {include: []});
 
     // TODO: On save, show "Job application successfully created!" and go to its edit page (if user logged in)
     // jscs:disable maximumLineLength
@@ -112,15 +115,26 @@ app.post('/add-application/received-offer', _.flatten([
 var resolveApplicationById = exports.resolveApplicationById = function (params) {
   return resolveModelsAsLocals(params, function resolveApplicationByIdFn (req) {
     // If we are loading mock data, return mock data
+    // TODO: Consider split load past/upcoming interviews (as well as closest upcoming/past interview for nav)
+    var applicationOptions = {
+      include: [
+        // Past interviews, upcoming interviews, closest upcoming interview, closest past interview (last contact)
+        // DEV: We additionally load closest upcoming/past interview for nav reuse
+        {model: Interview},
+        {model: Reminder, as: 'saved_for_later_reminder'},
+        {model: Reminder, as: 'waiting_for_response_reminder'},
+        {model: Reminder, as: 'received_offer_reminder'}
+      ]
+    };
     if (this.useMocks) {
       return {
-        selectedApplication: applicationMockData.getByIdOr404(req.params.id)
+        selectedApplicationOr404: applicationMockData.getById(req.params.id, applicationOptions)
       };
     }
 
     // Otherwise, return Sequelize queries
     return {
-      selectedApplication: applicationMockData.getByIdOr404(req.params.id)
+      selectedApplicationOr404: applicationMockData.getById(req.params.id, applicationOptions)
     };
   });
 };
@@ -144,13 +158,13 @@ app.post('/application/:id', _.flatten([
   resolveApplicationById({nav: true}),
   function applicationEditSave (req, res, next) {
     // TODO: Update application on save
-    var mockApplication = req.models.selectedApplication;
+    var application = req.models.selectedApplication;
 
     // Notify user of successful save
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Changes saved');
 
     // Redirect to the same page to render flash messages and prevent double submissions
-    res.redirect(mockApplication.get('url'));
+    res.redirect(application.get('url'));
   }
 ]));
 
@@ -161,7 +175,7 @@ app.post('/application/:id/received-offer', _.flatten([
   function applicationRecievedOfferSave (req, res, next) {
     // TODO: Update received offer application
     // var mockApplication = req.models.selectedApplication;
-    var mockApplication = mockApplicationsByStatus.RECEIVED_OFFER;
+    var mockApplication = applicationMockData.getById(mockApplicationIdsByStatus.RECEIVED_OFFER, {include: []});
     req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
     // req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application status updated to "Offer received"');
     res.redirect(mockApplication.get('url'));
@@ -175,7 +189,7 @@ app.post('/application/:id/remove-offer', _.flatten([
   function applicationRemoveOfferSave (req, res, next) {
     // TODO: Update application back to waiting for response or upcoming interview
     // var mockApplication = req.models.selectedApplication;
-    var mockApplication = mockApplicationsByStatus.WAITING_FOR_RESPONSE;
+    var mockApplication = applicationMockData.getById(mockApplicationIdsByStatus.WAITING_FOR_RESPONSE, {include: []});
     req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
     res.redirect(mockApplication.get('url'));
   }
@@ -199,7 +213,7 @@ app.post('/application/:id/restore', _.flatten([
   function applicationRestoreSave (req, res, next) {
     // TODO: Update application back to any of the non-archived statuses
     // var mockApplication = req.models.selectedApplication;
-    var mockApplication = mockApplicationsByStatus.WAITING_FOR_RESPONSE;
+    var mockApplication = applicationMockData.getById(mockApplicationIdsByStatus.WAITING_FOR_RESPONSE, {include: []});
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application restored');
     res.redirect(mockApplication.get('url'));
   }

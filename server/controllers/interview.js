@@ -2,6 +2,9 @@
 var assert = require('assert');
 var _ = require('underscore');
 var app = require('../index.js').app;
+var Application = require('../models/application');
+var includes = require('../models/utils/includes');
+var Reminder = require('../models/reminder');
 var resolveApplicationById = require('./application').resolveApplicationById;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
@@ -10,27 +13,35 @@ var interviewMockData = require('../models/interview-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Define common applications for redirects
-var mockApplicationsByStatus = {
-  SAVED_FOR_LATER: applicationMockData.getById('abcdef-intertrode-uuid'),
-  WAITING_FOR_RESPONSE: applicationMockData.getById('abcdef-sky-networks-uuid'),
-  UPCOMING_INTERVIEW: applicationMockData.getById('abcdef-umbrella-corp-uuid'),
-  RECEIVED_OFFER: applicationMockData.getById('abcdef-black-mesa-uuid'),
-  ARCHIVED: applicationMockData.getById('abcdef-monstromart-uuid')
+var mockApplicationIdsByStatus = {
+  SAVED_FOR_LATER: 'abcdef-intertrode-uuid',
+  WAITING_FOR_RESPONSE: 'abcdef-sky-networks-uuid',
+  UPCOMING_INTERVIEW: 'abcdef-umbrella-corp-uuid',
+  RECEIVED_OFFER: 'abcdef-black-mesa-uuid',
+  ARCHIVED: 'abcdef-monstromart-uuid'
 };
 
 // Define our controllers
 function resolveInterviewById(params) {
   return resolveModelsAsLocals(params, function resolveInterviewByIdFn (req) {
     // If we loading mock data, return mock data
+    var interviewOptions = {
+      include: [
+        // DEV: We include nav content so it can be reused
+        {model: Application, include: includes.applicationNavContent},
+        {model: Reminder, as: 'pre_interview_reminder'},
+        {model: Reminder, as: 'post_interview_reminder'}
+      ]
+    };
     if (this.useMocks) {
       return {
-        selectedInterview: interviewMockData.getByIdOr404(req.params.id)
+        selectedInterviewOr404: interviewMockData.getById(req.params.id, interviewOptions)
       };
     }
 
     // Return Sequelize queries
     return {
-      selectedInterview: interviewMockData.getByIdOr404(req.params.id)
+      selectedInterviewOr404: interviewMockData.getById(req.params.id, interviewOptions)
     };
   });
 }
@@ -48,7 +59,7 @@ app.post('/application/:id/add-interview', _.flatten([
   function interviewAddSave (req, res, next) {
     // TODO: Update status if interview is upcoming
     // var mockApplication = req.models.selectedApplication;
-    var mockApplication = mockApplicationsByStatus.UPCOMING_INTERVIEW;
+    var mockApplication = applicationMockData.getById(mockApplicationIdsByStatus.UPCOMING_INTERVIEW, {include: []});
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Interview saved');
     res.redirect(mockApplication.get('url'));
   }

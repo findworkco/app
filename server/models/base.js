@@ -106,7 +106,8 @@ exports.expandMomentAttributes = function (attributes, options) {
       options.getterMethods[momentKey] = function () {
         var dateTimeVal = this.getDataValue(dateTimeKey);
         var timezoneVal = this.getDataValue(timezoneKey);
-        if (dateTimeVal === null && timezoneVal === null) {
+        if ((dateTimeVal === null || dateTimeVal === undefined) &&
+            (timezoneVal === null || timezoneVal === undefined)) {
           return null;
         }
         assert.notEqual(dateTimeVal, null, 'Expected "' + dateTimeKey + '" to not be null when "' +

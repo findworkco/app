@@ -1,7 +1,6 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
-var HttpError = require('http-errors');
 var Application = require('./application');
 var Interview = require('./interview');
 var Reminder = require('./reminder');
@@ -17,32 +16,31 @@ genericMockData.interviews.forEach(function saveInterviewById (interview) {
 // Define interview builder
 var applicationMocks = genericMockData.applications;
 var reminderMocks = genericMockData.reminders;
-function buildInterview(attrs, include) {
-  // Fallback our include parameter temporarily
-  // TODO: Remove include fallback
-  if (!include) {
-    var _applicationAttrs = _.findWhere(applicationMocks, {id: attrs.application_id});
-    include = [
-      {
-        model: Application, include: _.flatten([
-          {model: Interview},
-          _applicationAttrs.saved_for_later_reminder_id ?
-            {model: Reminder, as: 'saved_for_later_reminder'} : [],
-          _applicationAttrs.waiting_for_response_reminder_id ?
-            {model: Reminder, as: 'waiting_for_response_reminder'} : [],
-          _applicationAttrs.received_offer_reminder_id ?
-            {model: Reminder, as: 'received_offer_reminder'} : []
-        ])
-      },
-      {model: Reminder, as: 'pre_interview_reminder'},
-      {model: Reminder, as: 'post_interview_reminder'}
-    ];
+function buildInterview(attrs, options) {
+  // If we have an include parameter, clone it by 2 levels to prevent mutation on `build`
+  options = _.clone(options) || {};
+  function cloneInclude(options) {
+    if (options.include) {
+      options.include = options.include.map(function cloneIncludeItem (includeItem) {
+        // Clone our include item
+        includeItem = _.clone(includeItem);
+
+        // If the include item has an include, then recurse it
+        if (includeItem.include) {
+          cloneInclude(includeItem);
+        }
+
+        // Return our cloned include item
+        return includeItem;
+      });
+    }
   }
+  cloneInclude(options);
 
   // Compile our build data based on include
   var buildData = _.clone(attrs);
-  if (include) {
-    include.forEach(function handleIncludeItem (includeItem) {
+  if (options.include) {
+    options.include.forEach(function handleIncludeItem (includeItem) {
       // Upcast models to objects
       if (includeItem.$modelOptions) {
         includeItem = {model: includeItem};
@@ -52,7 +50,7 @@ function buildInterview(attrs, include) {
       if (includeItem.model === Application) {
         assert(!includeItem.as, 'Received unexpected "as" key for Application');
         var applicationAttrs = applicationMockData._buildApplicationAttrs(
-          _.findWhere(applicationMocks, {id: attrs.application_id}), includeItem.include);
+          _.findWhere(applicationMocks, {id: attrs.application_id}), {include: includeItem.include});
         buildData.application = applicationAttrs;
       // If our include is a reminder, build the matching reminder type
       } else if (includeItem.model === Reminder) {
@@ -75,23 +73,11 @@ function buildInterview(attrs, include) {
 
   // Build and return our interview with its application (and its interviews) and reminders
   // http://docs.sequelizejs.com/en/v3/docs/associations/#creating-with-associations
-  var retVal = Interview.build(buildData, {include: include});
+  var retVal = Interview.build(buildData, options);
   return retVal;
 }
 
 // Export interview mock data resolver
-exports.getById = function (id) {
-  return interviewsById.hasOwnProperty(id) ? buildInterview(interviewsById[id]) : null;
-};
-exports.getByIdOr404 = function (id, include) {
-  // Resolve our interview
-  var interview = exports.getById(id, include);
-
-  // If the interview doesn't exist, then 404
-  if (interview === null) {
-    throw new HttpError.NotFound();
-  }
-
-  // Otherwise, return our interview
-  return interview;
+exports.getById = function (id, options) {
+  return interviewsById.hasOwnProperty(id) ? buildInterview(interviewsById[id], options) : null;
 };

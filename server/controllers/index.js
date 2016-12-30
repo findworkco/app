@@ -5,6 +5,8 @@ var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
 var applicationMockData = require('../models/application-mock-data');
 var Application = require('../models/application');
+var includes = require('../models/utils/includes');
+var Reminder = require('../models/reminder');
 var companyMockData = require('../models/company-mock-data');
 
 // Define common data loader for nav
@@ -120,16 +122,34 @@ app.get('/schedule', [
     }
 
     // If we are loading mock data, return mock data
+    var receivedOfferOptions = {
+      include: [
+        includes.closestPastInterview,
+        {model: Reminder, as: 'received_offer_reminder'}
+      ]
+    };
+    var upcomingInterviewOptions = {
+      include: [includes.closestUpcomingInterview]
+    };
+    var waitingForResponseOptions = {
+      include: [
+        includes.closestPastInterview,
+        {model: Reminder, as: 'waiting_for_response_reminder'}
+      ]
+    };
+    var savedForLaterOptions = {
+      include: [{model: Reminder, as: 'saved_for_later_reminder'}]
+    };
     if (this.useMocks) {
       return {
         receivedOfferApplications: req.query.get('received_offer') === 'true' ?
-          applicationMockData.getReceivedOfferApplications() : [],
+          applicationMockData.getReceivedOfferApplications(receivedOfferOptions) : [],
         upcomingInterviewApplications: req.query.get('upcoming_interviews') !== 'false' ?
-          applicationMockData.getUpcomingInterviewApplications() : [],
+          applicationMockData.getUpcomingInterviewApplications(upcomingInterviewOptions) : [],
         waitingForResponseApplications: req.query.get('waiting_for_response') !== 'false' ?
-          applicationMockData.getWaitingForResponseApplications() : [],
+          applicationMockData.getWaitingForResponseApplications(waitingForResponseOptions) : [],
         savedForLaterApplications: req.query.get('saved_for_later') === 'true' ?
-          applicationMockData.getSavedForLaterApplications() : []
+          applicationMockData.getSavedForLaterApplications(savedForLaterOptions) : []
       };
     }
 
@@ -139,8 +159,8 @@ app.get('/schedule', [
     // TODO: Warn ourselves if we see a date that was before today for upcoming interviews
     return {
       receivedOfferApplications: [],
-      upcomingInterviewApplications: applicationMockData.getUpcomingInterviewApplications(),
-      waitingForResponseApplications: applicationMockData.getWaitingForResponseApplications(),
+      upcomingInterviewApplications: applicationMockData.getUpcomingInterviewApplications(upcomingInterviewOptions),
+      waitingForResponseApplications: applicationMockData.getWaitingForResponseApplications(waitingForResponseOptions),
       savedForLaterApplications: []
     };
   }),
@@ -156,15 +176,16 @@ app.get('/archive', [
     }
 
     // If we are loading mock data, return mock data
+    var archivedOptions = {include: []};
     if (this.useMocks) {
       return {
-        archivedApplications: applicationMockData.getArchivedApplications()
+        archivedApplications: applicationMockData.getArchivedApplications(archivedOptions)
       };
     }
 
     // Return Sequelize queries
     return {
-      archivedApplications: applicationMockData.getArchivedApplications()
+      archivedApplications: applicationMockData.getArchivedApplications(archivedOptions)
     };
   }),
   function archiveShow (req, res, next) {

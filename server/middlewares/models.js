@@ -1,8 +1,13 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
+var HttpError = require('http-errors');
 var config = require('../index.js').config;
+var includes = require('../models/utils/includes');
 var applicationMockData = require('../models/application-mock-data');
+
+// Define helper functions
+function noop() {}
 
 // TODO: Move to pattern with multiple functions;
 //   retrieve all models `loadModels(function (req, res) { req.models = {a: A.get(1)} })`,
@@ -13,7 +18,6 @@ var applicationMockData = require('../models/application-mock-data');
 // DEV: We considered this against a wrapper around Express routes (e.g. `routes.get`)
 //   We chose a standalone middleware so we can place it as needed (e.g. after `ensureLoggedIn` )
 //   and we don't essentially wind up rewriting middleware support under a bespoke API
-function noop() {}
 exports.resolveModelsAsLocals = function (params, resolver) {
   // Require parameters (including nav setting) to enforce convention
   assert(params, '`resolveModelsAsLocals` expected `params` but received none. Please provide one');
@@ -27,7 +31,7 @@ exports.resolveModelsAsLocals = function (params, resolver) {
   return function resolveModelsAsLocalsFn (req, res, next) {
     // Define our models base
     // DEV: When we move to Sequelize, we will load from a promise via `.asCallback()` and update the object
-    var models = {};
+    var unresolvedModels = {};
 
     // Determine if we want to use mocks/not
     var resolverContext = {useMocks: false};
@@ -46,7 +50,7 @@ exports.resolveModelsAsLocals = function (params, resolver) {
     if (params.nav !== false) {
       // If the user is logged in, provide mock applications
       // TODO: When we move to Sequelize for model loading, make this load in parallel with other data
-      models.recentlyViewedApplications = [];
+      unresolvedModels.recentlyViewedApplications = [];
       if (req.candidate) {
         // Fallback our application ids
         var recentlyViewedApplicationIds = req.session.recentlyViewedApplicationIds =
@@ -54,12 +58,45 @@ exports.resolveModelsAsLocals = function (params, resolver) {
 
         // Resolve our current set of application ids
         // TODO: When we move to Sequelize, use user id in query
+        var applicationOptions = {
+          include: includes.applicationNavContent
+        };
         if (resolverContext.useMocks) {
-          models.recentlyViewedApplications = recentlyViewedApplicationIds.map(applicationMockData.getById);
+          unresolvedModels.recentlyViewedApplications = recentlyViewedApplicationIds.map(
+              function getApplicationById (id) {
+            return applicationMockData.getById(id, applicationOptions);
+          });
         } else {
-          models.recentlyViewedApplications = recentlyViewedApplicationIds.map(applicationMockData.getById);
+          unresolvedModels.recentlyViewedApplications = recentlyViewedApplicationIds.map(
+              function getApplicationById (id) {
+            return applicationMockData.getById(id, applicationOptions);
+          });
         }
+      }
+    }
 
+    // Load our other models
+    var resolverModels = resolver.call(resolverContext, req);
+    var verifyNot404 = [];
+    _.each(resolverModels, function handleResolverModel (val, key) {
+      // If we have a key ending in Or404, strip ending and save it for later
+      if (key.slice(-1 * 'Or404'.length) === 'Or404') {
+        key = key.slice(0, -1 * 'Or404'.length);
+        verifyNot404.push(key);
+      }
+
+      // Save our model under its cleaned key
+      unresolvedModels[key] = val;
+    });
+
+    // Mock waiting for models to load
+    process.nextTick(function handleNextTick () {
+      // Mock loaded async variables
+      var err = null;
+      var models = _.clone(unresolvedModels);
+
+      // If we are loading nav, the candidate is logged in, and its models loaded successfully
+      if (params.nav !== false && req.candidate && models.recentlyViewedApplications) {
         // If any of the models have been deleted, update our ids
         var getApplicationIds = function (applications) {
           return applications.map(function getApplicationId (application) {
@@ -101,45 +138,64 @@ exports.resolveModelsAsLocals = function (params, resolver) {
           updateRecentlyViewedApplicationIds();
         };
       }
-    }
 
-    // Extend and save our models
-    req.models = models = _.defaults(models, resolver.call(resolverContext, req));
-    var _render = res.render;
-    res.render = function () {
-      // Serialize our models
-      var serializedModels = _.mapObject(models, function serializeModelsObj (modelOrModels, key) {
-        function serializeModel(model) {
-          // If our model is serialization exempt, return it as is
-          if (model._serializeExempt) {
-            return model;
+      // Expose/save our models
+      req.models = models;
+      var _render = res.render;
+      res.render = function () {
+        // Serialize our models
+        var serializedModels = _.mapObject(models, function serializeModelsObj (modelOrModels, key) {
+          function serializeModel(model) {
+            // If our model is serialization exempt, return it as is
+            if (model._serializeExempt) {
+              return model;
+            }
+
+            // Serialize our model
+            assert(model.$modelOptions, '`resolveModelsAsLocals` expected "' + key + '" to be a model but it wasn\'t');
+            return model.get({plain: true});
           }
+          if (Array.isArray(modelOrModels)) {
+            return modelOrModels.map(serializeModel);
+          } else {
+            return serializeModel(modelOrModels);
+          }
+        });
 
-          // Serialize our model
-          assert(model.$modelOptions, '`resolveModelsAsLocals` expected "' + key + '" to be a model but it wasn\'t');
-          return model.get({plain: true});
-        }
-        if (Array.isArray(modelOrModels)) {
-          return modelOrModels.map(serializeModel);
-        } else {
-          return serializeModel(modelOrModels);
+        // Expose our serializations onto res.locals
+        // DEV: `res.locals` is a bit dangerous as we could overwrite an attribute like `candidate`
+        //   but it avoids rewrite noise with `render` and annoying namespaces in views (e.g. `models.applications`)
+        //   We are attempting to save ourselves by naming `asLocals` in function
+        _.extend(res.locals, serializedModels);
+
+        // Flag our locals as using `resolveModelsAsLocals`
+        res.locals._loadedModels = true;
+
+        // Call our normal render function
+        return _render.apply(this, arguments);
+      };
+
+      // If we had an error, callback with it as our `render` is all set up
+      if (err) {
+        return next(err);
+      }
+
+      // Verify we aren't missing any 404 models, otherwise remove them to prevent serialization issues
+      var missingAModel = false;
+      _.each(verifyNot404, function modelIsMissing (key) {
+        if (models[key] === null) {
+          missingAModel = true;
+          delete models[key];
         }
       });
 
-      // Expose our serializations onto res.locals
-      // DEV: `res.locals` is a bit dangerous as we could overwrite an attribute like `candidate`
-      //   but it avoids rewrite noise with `render` and annoying namespaces in views (e.g. `models.applications`)
-      //   We are attempting to save ourselves by naming `asLocals` in function
-      _.extend(res.locals, serializedModels);
+      // If we were missing a model, then 404
+      if (missingAModel) {
+        return next(new HttpError.NotFound());
+      }
 
-      // Flag our locals as using `resolveModelsAsLocals`
-      res.locals._loadedModels = true;
-
-      // Call our normal render function
-      return _render.apply(this, arguments);
-    };
-
-    // Continue
-    next();
+      // Callback
+      next();
+    });
   };
 };
