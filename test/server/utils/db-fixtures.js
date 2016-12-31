@@ -1,21 +1,9 @@
-// Define default fixtures
-exports.DEFAULT_FIXTURES = ['candidate-default'];
+// Load in our dependencies
+// DEV: We load `server/index.js` to prevent circular dependencies
+void require('../../../server/index.js');
+var genericMockData = require('../../../server/models/generic-mock-data');
 
-// Define our fixtures as export keys
-exports['candidate-default'] = {
-  model: 'candidate',
-  data: {
-    email: 'mock-email@mock-domain.test',
-    google_access_token: 'mock_access_token_fixtured',
-    welcome_email_sent: true
-  }
-};
-
-exports['candidate-new'] = {
-  model: 'candidate',
-  data: {
-    email: 'mock-email@mock-domain.test',
-    google_access_token: 'mock_access_token_fixtured',
-    welcome_email_sent: false
-  }
-};
+// Re-expose fixture sets as `module.exports`
+// DEV: We reuse our mocks in `generic-mock-data` to simplify maintenance
+// DEV: We don't use `generic-mock-data` directly because it's a lengthy/complex path =/
+module.exports = genericMockData.fixtures;

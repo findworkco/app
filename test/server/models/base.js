@@ -2,6 +2,7 @@
 var assert = require('assert');
 var expect = require('chai').expect;
 var moment = require('moment-timezone');
+var dbFixtures = require('../utils/db-fixtures');
 var AuditLog = require('../../../server/models/audit-log');
 var Application = require('../../../server/models/application');
 var Interview = require('../../../server/models/interview');
@@ -55,7 +56,7 @@ scenario.model('A Base model being created', function () {
 });
 
 scenario.model('A Base model being updated', {
-  dbFixtures: ['candidate-default']
+  dbFixtures: [dbFixtures.CANDIDATE_DEFAULT]
 }, function () {
   before(function updateCandidate (done) {
     Candidate.find().asCallback(function handleFind (err, candidate) {
@@ -90,7 +91,7 @@ scenario.model('A Base model being updated', {
 });
 
 scenario.model('A Base model being deleted', {
-  dbFixtures: ['candidate-default']
+  dbFixtures: [dbFixtures.CANDIDATE_DEFAULT]
 }, function () {
   before(function deleteCandidate (done) {
     Candidate.find().asCallback(function handleFind (err, candidate) {

@@ -1,12 +1,13 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var dbFixtures = require('../utils/db-fixtures');
 var Candidate = require('../../../server/models/candidate');
 var serverUtils = require('../utils/server');
 var queue = require('../../../server/queue');
 
 // Start our tests
 scenario.job('A welcome email being sent for the first time', {
-  dbFixtures: ['candidate-new']
+  dbFixtures: [dbFixtures.CANDIDATE_NEW]
 }, function () {
   serverUtils.stubEmails();
   before(function runSendWelcomeEmail (done) {
@@ -57,7 +58,7 @@ scenario.job('A welcome email being sent for the first time', {
 });
 
 scenario.job('A welcome email being sent for the second time', {
-  dbFixtures: ['candidate-default']
+  dbFixtures: [dbFixtures.CANDIDATE_DEFAULT]
 }, function () {
   serverUtils.stubEmails();
   before(function runSendWelcomeEmail (done) {

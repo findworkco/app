@@ -83,8 +83,9 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
     });
     before(function installFixtures (done) {
       // Resolve our fixtures
-      var selectedFixturesObj = _.pick(dbFixtures, options.dbFixtures);
-      var missingFixtures = _.difference(options.dbFixtures, Object.keys(selectedFixturesObj));
+      var selectedFixtureKeys = _.flatten(options.dbFixtures);
+      var selectedFixturesObj = _.pick(dbFixtures, selectedFixtureKeys);
+      var missingFixtures = _.difference(selectedFixtureKeys, Object.keys(selectedFixturesObj));
       if (missingFixtures.length !== 0) {
         throw new Error('We were unable to find database fixtures: ' + missingFixtures.join(', ') + '. ' +
           'Please verify `options.dbFixtures` is correct');
@@ -146,7 +147,7 @@ exports.scenario = getDescribeWrapper(DEFAULT_ROUTE_TEST_OPTIONS,
 // Define route + ACL wrappers
 // DEV: In future iterations, we may allow `route` to host parent options to route tests
 // scenario.route('A request to GET /item/:id',  {
-//   dbFixtures: ['item-default'].concat(dbFixtures.DEFAULT_FIXTURES)
+//   dbFixtures: [dbFixtures.ITEM, dbFixtures.DEFAULT_FIXTURES],
 //   url: serverUtils.getUrl('/item/' + itemId)
 // }, function () {
 //   this.scenarioUrl = urlDefinedAbove

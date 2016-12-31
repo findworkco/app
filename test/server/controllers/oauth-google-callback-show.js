@@ -3,6 +3,7 @@ var expect = require('chai').expect;
 var app = require('../utils/server').app;
 var Candidate = require('../../../server/models/candidate');
 var queue = require('../../../server/queue');
+var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 var sinonUtils = require('../utils/sinon');
@@ -224,7 +225,7 @@ scenario.route('A request to GET /oauth/google/callback', {
   });
 
   scenario.loggedOut('with an existent user', {
-    dbFixtures: ['candidate-default'],
+    dbFixtures: [dbFixtures.CANDIDATE_DEFAULT],
     googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
   }, function () {
     // Verify we have a different access token
