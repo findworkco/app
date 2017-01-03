@@ -61,8 +61,7 @@ function addInterviewReminder(key, data) {
 fixtures.DEFAULT_FIXTURES = ['default__candidate'];
 
 // Candidates
-// DEFA617 = "DEFAULT" in our attempted 1337 speak
-var DEFAULT_CANDIDATE_ID = 'DEFA6170-0000-4000-8000-000000000000';
+var DEFAULT_CANDIDATE_ID = 'default0-0000-0000-0000-000000000000';
 fixtures.CANDIDATE_DEFAULT = [
   addCandidate('default__candidate', {
     id: DEFAULT_CANDIDATE_ID,
@@ -134,49 +133,55 @@ addInterviewReminder('received-offer__reminder--post-interview', {
 });
 
 // Upcoming interview applications
-addApplication('upcoming-interview__application', {
-  id: 'abcdef-umbrella-corp-uuid',
-  // Fri Jan 8
-  application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
-  archived_at_moment: null,
-  company_name: 'Umbrella Corporation',
-  name: 'Umbrella Corporation',
-  notes: [
-    '1000 employees, 200 engineers, 200 scientists, underground office',
-    '',
-    'Many different research opportunities. High level clearance required',
-    '',
-    'First round was a phone screen',
-    '',
-    'Need to ask about compensation'
-  ].join('<br/>'),
-  posting_url: 'https://www.linkedin.com/jobs/view/133713371337',
-  status: Application.STATUSES.UPCOMING_INTERVIEW
-});
-addInterview('upcoming-interview__interview', {
-  id: 'abcdef-umbrella-corp-interview-uuid',
-  application_id: applications[applications.length - 1].id,
-  // Wed Jan 20 at 2:00PM CST
-  date_time_moment: moment.tz('2022-01-20T14:00', 'US-America/Chicago'),
-  // Go to <a href="https://maps.google.com">1200 Lake St...</a>
-  details: 'Go to 1200 Lake St, Suite 303, Chicago',
-  pre_interview_reminder_id: 'abcdef-umbrella-corp-reminder-pre-interview-uuid',
-  post_interview_reminder_id: 'abcdef-umbrella-corp-reminder-post-interview-uuid'
-});
-addInterviewReminder('upcoming-interview__reminder--pre-interview', {
-  id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2022-01-20T11:00', 'US-America/Chicago'),
-  is_enabled: false
-});
-addInterviewReminder('upcoming-interview__reminder--post-interview', {
-  id: interviews[interviews.length - 1].post_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.POST_INTERVIEW,
-  date_time_moment: moment.tz('2022-01-20T17:00', 'US-America/Chicago'),
-  is_enabled: false
-});
+fixtures.APPLICATION_UPCOMING_INTERVIEW = [
+  addApplication('upcoming-interview__application', {
+    id: 'abcdef-umbrella-corp-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Fri Jan 8
+    application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
+    archived_at_moment: null,
+    company_name: 'Umbrella Corporation',
+    name: 'Umbrella Corporation',
+    notes: [
+      '1000 employees, 200 engineers, 200 scientists, underground office',
+      '',
+      'Many different research opportunities. High level clearance required',
+      '',
+      'First round was a phone screen',
+      '',
+      'Need to ask about compensation'
+    ].join('<br/>'),
+    posting_url: 'https://www.linkedin.com/jobs/view/133713371337',
+    status: Application.STATUSES.UPCOMING_INTERVIEW
+  }),
+  addInterview('upcoming-interview__interview', {
+    id: 'abcdef-umbrella-corp-interview-uuid',
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Wed Jan 20 at 2:00PM CST
+    date_time_moment: moment.tz('2022-01-20T14:00', 'US-America/Chicago'),
+    // Go to <a href="https://maps.google.com">1200 Lake St...</a>
+    details: 'Go to 1200 Lake St, Suite 303, Chicago',
+    pre_interview_reminder_id: 'umbrella-corp-reminder-pre-int-uuid',
+    post_interview_reminder_id: 'umbrella-corp-reminder-post-int-uuid'
+  }),
+  addInterviewReminder('upcoming-interview__reminder--pre-interview', {
+    id: interviews[interviews.length - 1].pre_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.PRE_INTERVIEW,
+    date_time_moment: moment.tz('2022-01-20T11:00', 'US-America/Chicago'),
+    is_enabled: false
+  }),
+  addInterviewReminder('upcoming-interview__reminder--post-interview', {
+    id: interviews[interviews.length - 1].post_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.POST_INTERVIEW,
+    date_time_moment: moment.tz('2022-01-20T17:00', 'US-America/Chicago'),
+    is_enabled: false
+  })
+];
 addApplication('upcoming-interview-2__application', {
   id: 'abcdef-globo-gym-uuid',
   // Mon Feb 1
@@ -259,71 +264,82 @@ addInterviewReminder('upcoming-interview-2__reminder--post-interview--past-2', {
 });
 
 // Waiting for response applications
-addApplication('waiting-for-response__application', {
-  id: 'abcdef-sky-networks-uuid',
-  // Fri Jan 8
-  application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
-  archived_at_moment: null,
-  company_name: 'Sky Networks',
-  // Mon Jan 25
-  waiting_for_response_reminder_id: 'abcdef-sky-networks-reminder-uuid',
-  posting_url: 'https://github.com/about/jobs',
-  name: 'Sky Networks',
-  notes: 'Phone screen (John): 100 employees, focused on AI<br/>' +
-    'Website: <a href="https://sky.net/">https://sky.net/</a>',
-  status: Application.STATUSES.WAITING_FOR_RESPONSE
-});
-addApplicationReminder('waiting-for-response__reminder--application', {
-  id: applications[applications.length - 1].waiting_for_response_reminder_id,
-  application_id: applications[applications.length - 1].id,
-  type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
-  date_time_moment: moment.tz('2016-01-25T12:00', 'US-America/Chicago'),
-  is_enabled: true
-});
-addInterview('waiting-for-response__interview', {
-  id: 'abcdef-sky-networks-interview-uuid',
-  application_id: applications[applications.length - 1].id,
-  // Fri Jan 15 at 9:00AM PST
-  date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Los_Angeles'),
-  details: 'Call 555-123-4567',
-  pre_interview_reminder_id: 'abcdef-sky-networks-reminder-pre-interview-uuid',
-  post_interview_reminder_id: 'abcdef-sky-networks-reminder-post-interview-uuid'
-});
-addInterviewReminder('waiting-for-response__reminder--pre-interview', {
-  id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2016-01-15T08:00', 'US-America/Los_Angeles'),
-  is_enabled: true
-});
-addInterviewReminder('waiting-for-response__reminder--post-interview', {
-  id: interviews[interviews.length - 1].post_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.POST_INTERVIEW,
-  date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
-  is_enabled: true
-});
+fixtures.APPLICATION_WAITING_FOR_RESPONSE = [
+  addApplication('waiting-for-response__application', {
+    id: 'abcdef-sky-networks-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Fri Jan 8
+    application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
+    archived_at_moment: null,
+    company_name: 'Sky Networks',
+    // Mon Jan 25
+    waiting_for_response_reminder_id: 'abcdef-sky-networks-reminder-uuid',
+    posting_url: 'https://github.com/about/jobs',
+    name: 'Sky Networks',
+    notes: 'Phone screen (John): 100 employees, focused on AI<br/>' +
+      'Website: <a href="https://sky.net/">https://sky.net/</a>',
+    status: Application.STATUSES.WAITING_FOR_RESPONSE
+  }),
+  addApplicationReminder('waiting-for-response__reminder--application', {
+    id: applications[applications.length - 1].waiting_for_response_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    application_id: applications[applications.length - 1].id,
+    type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
+    date_time_moment: moment.tz('2016-01-25T12:00', 'US-America/Chicago'),
+    is_enabled: true
+  }),
+  addInterview('waiting-for-response__interview', {
+    id: 'abcdef-sky-networks-interview-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    application_id: applications[applications.length - 1].id,
+    // Fri Jan 15 at 9:00AM PST
+    date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Los_Angeles'),
+    details: 'Call 555-123-4567',
+    pre_interview_reminder_id: 'sky-networks-reminder-pre-int-uuid',
+    post_interview_reminder_id: 'sky-networks-reminder-post-int-uuid'
+  }),
+  addInterviewReminder('waiting-for-response__reminder--pre-interview', {
+    id: interviews[interviews.length - 1].pre_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.PRE_INTERVIEW,
+    date_time_moment: moment.tz('2016-01-15T08:00', 'US-America/Los_Angeles'),
+    is_enabled: true
+  }),
+  addInterviewReminder('waiting-for-response__reminder--post-interview', {
+    id: interviews[interviews.length - 1].post_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.POST_INTERVIEW,
+    date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
+    is_enabled: true
+  })
+];
 
 // Saved for later applications
-addApplication('saved-for-later__application', {
-  id: 'abcdef-intertrode-uuid',
-  application_date_moment: null,
-  archived_at_moment: null,
-  created_at: moment.tz('2015-12-19T12:00', 'US-America/Chicago').toDate(),
-  name: 'Intertrode',
-  // Mon Jan 25
-  saved_for_later_reminder_id: 'abcdef-intertrode-reminder-uuid',
-  notes: '',
-  posting_url: 'https://www.dice.com/jobs/detail/Business-Systems-Analyst-Springfield-USA-12345/1234567/123456',
-  status: Application.STATUSES.SAVED_FOR_LATER
-});
-addApplicationReminder('saved-for-later__reminder--application', {
-  id: applications[applications.length - 1].saved_for_later_reminder_id,
-  application_id: applications[applications.length - 1].id,
-  type: ApplicationReminder.TYPES.SAVED_FOR_LATER,
-  date_time_moment: moment.tz('2016-06-20T12:00', 'US-America/Chicago'),
-  is_enabled: true
-});
+fixtures.APPLICATION_SAVED_FOR_LATER = [
+  addApplication('saved-for-later__application', {
+    id: 'abcdef-intertrode-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    application_date_moment: null,
+    archived_at_moment: null,
+    created_at: moment.tz('2015-12-19T12:00', 'US-America/Chicago').toDate(),
+    name: 'Intertrode',
+    // Mon Jan 25
+    saved_for_later_reminder_id: 'abcdef-intertrode-reminder-uuid',
+    notes: '',
+    posting_url: 'https://www.dice.com/jobs/detail/Business-Systems-Analyst-Springfield-USA-12345/1234567/123456',
+    status: Application.STATUSES.SAVED_FOR_LATER
+  }),
+  addApplicationReminder('saved-for-later__reminder--application', {
+    id: applications[applications.length - 1].saved_for_later_reminder_id,
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    type: ApplicationReminder.TYPES.SAVED_FOR_LATER,
+    date_time_moment: moment.tz('2016-06-20T12:00', 'US-America/Chicago'),
+    is_enabled: true
+  })
+];
 
 // Archived applications
 addApplication('archived__application', {

@@ -26,16 +26,24 @@ exports.up = function (queryInterface) {
       -- Copy parent foreign key constraints
       ALTER TABLE application_reminders ADD CONSTRAINT "application_reminders_candidate_id_fkey"
         FOREIGN KEY (candidate_id) REFERENCES candidates(id);
+        -- Missed DEFERRABLE and ON UPDATE/ON DELETE initially
+        -- ON UPDATE CASCADE ON DELETE CASCADE DEFERRED INITIALLY DEFERRED;
       -- Move parent-pointing foreign keys from parent to child
       ALTER TABLE "applications" DROP CONSTRAINT "applications_received_offer_reminder_id_fkey";
       ALTER TABLE "applications" ADD CONSTRAINT "applications_received_offer_reminder_id_fkey"
         FOREIGN KEY (received_offer_reminder_id) REFERENCES application_reminders(id);
+        -- Missed DEFERRABLE and ON UPDATE/ON DELETE initially
+        -- ON UPDATE CASCADE ON DELETE RESTRICT DEFERRED INITIALLY DEFERRED;
       ALTER TABLE "applications" DROP CONSTRAINT "applications_saved_for_later_reminder_id_fkey";
       ALTER TABLE "applications" ADD CONSTRAINT "applications_saved_for_later_reminder_id_fkey"
         FOREIGN KEY (saved_for_later_reminder_id) REFERENCES application_reminders(id);
+        -- Missed DEFERRABLE and ON UPDATE/ON DELETE initially
+        -- ON UPDATE CASCADE ON DELETE RESTRICT DEFERRED INITIALLY DEFERRED;
       ALTER TABLE "applications" DROP CONSTRAINT "applications_waiting_for_response_reminder_id_fkey";
       ALTER TABLE "applications" ADD CONSTRAINT "applications_waiting_for_response_reminder_id_fkey"
         FOREIGN KEY (waiting_for_response_reminder_id) REFERENCES application_reminders(id);
+        -- Missed DEFERRABLE and ON UPDATE/ON DELETE initially
+        -- ON UPDATE CASCADE ON DELETE RESTRICT DEFERRED INITIALLY DEFERRED;
 
       -- Create second child table similarly
       CREATE TABLE interview_reminders (
@@ -44,12 +52,18 @@ exports.up = function (queryInterface) {
       ) INHERITS (reminders);
       ALTER TABLE interview_reminders ADD CONSTRAINT "interview_reminders_candidate_id_fkey"
         FOREIGN KEY (candidate_id) REFERENCES candidates(id);
+        -- Missed DEFERRABLE and ON UPDATE/ON DELETE initially
+        -- ON UPDATE CASCADE ON DELETE CASCADE DEFERRED INITIALLY DEFERRED;
       ALTER TABLE "interviews" DROP CONSTRAINT "interviews_post_interview_reminder_id_fkey";
       ALTER TABLE "interviews" ADD CONSTRAINT "interviews_post_interview_reminder_id_fkey"
         FOREIGN KEY (post_interview_reminder_id) REFERENCES interview_reminders(id);
+        -- Missed DEFERRABLE and ON UPDATE/ON DELETE initially
+        -- ON UPDATE CASCADE ON DELETE RESTRICT DEFERRED INITIALLY DEFERRED;
       ALTER TABLE "interviews" DROP CONSTRAINT "interviews_pre_interview_reminder_id_fkey";
       ALTER TABLE "interviews" ADD CONSTRAINT "interviews_pre_interview_reminder_id_fkey"
         FOREIGN KEY (pre_interview_reminder_id) REFERENCES interview_reminders(id);
+        -- Missed DEFERRABLE and ON UPDATE/ON DELETE initially
+        -- ON UPDATE CASCADE ON DELETE RESTRICT DEFERRED INITIALLY DEFERRED;
     */}), {transaction: t})
   ]); });
 };

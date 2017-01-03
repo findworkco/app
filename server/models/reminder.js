@@ -24,7 +24,8 @@ var attributes = exports._cleanAttributes = {
   },
   candidate_id: {
     type: baseDefine.ID, allowNull: false,
-    references: {model: Candidate, key: 'id'}
+    references: {model: Candidate, key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'CASCADE'
   },
 
   // Same length as Application.status

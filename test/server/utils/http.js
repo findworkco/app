@@ -1,11 +1,13 @@
 // Taken from https://gist.github.com/twolfson/3af2ed0a016f877d676d
 // Load in our dependencies
 var _ = require('underscore');
+var async = require('async');
 var assert = require('assert');
 var url = require('url');
 var cheerio = require('cheerio');
 var request = require('request');
 var serverUtils = require('./server');
+var kueQueue = require('./server').app.kueQueue;
 
 // Copy over utilities from request-mocha
 // https://github.com/uber-archive/request-mocha/blob/0.2.0/lib/request-mocha.js
@@ -82,46 +84,64 @@ exports._save = function (options) {
     // Make our request
     var that = this;
     function next() { // jshint ignore:line
-      request(options, function handleRequest (err, res, body) {
-        // Save our results to `this` context
-        that.err = err;
-        that.res = res;
-        that.body = body;
+      async.parallel([
+        function waitForJobs (cb) {
+          // If we have no jobs to wait for, callback now
+          if (!options.waitForJobs) {
+            return process.nextTick(cb);
+          }
 
-        // Verify status code is as expected (default of 200)
-        // DEV: `expectedStatusCode` can be opted out via `null`
-        var expectedStatusCode = options.expectedStatusCode !== undefined ? options.expectedStatusCode : 200;
-        if (expectedStatusCode) {
-          assert.strictEqual(err, null);
-          if (res.statusCode !== expectedStatusCode) {
-            var assertionMsg = 'Expected status code "' + expectedStatusCode + '" ' +
-              'but received "' + res.statusCode + '" and body "' + body + '"';
-            try {
-              var errorMsg = cheerio.load(body)('#_error').text();
-              assertionMsg = 'Expected status code "' + expectedStatusCode + '" but ' +
-              'received "' + res.statusCode + '" at URL "' + (options.url || options)  + '", ' +
-              'error "' + errorMsg + '", and body "' + body.slice(0, 300) + '..."';
-            } catch (loadErr) {
-              // Ignore error (assuming we can't parse body or find error
+          // Otherwise, wait for `n` jobs to complete
+          var handleJobComplete = _.after(options.waitForJobs, function handleJobCompleteFn () {
+            // Unsubscribe our function and callback
+            kueQueue.removeListener('job complete', handleJobComplete);
+            cb();
+          });
+          kueQueue.on('job complete', handleJobComplete);
+        },
+        function makeRequest (cb) {
+          request(options, function handleRequest (err, res, body) {
+            // Save our results to `this` context
+            that.err = err;
+            that.res = res;
+            that.body = body;
+
+            // Verify status code is as expected (default of 200)
+            // DEV: `expectedStatusCode` can be opted out via `null`
+            var expectedStatusCode = options.expectedStatusCode !== undefined ? options.expectedStatusCode : 200;
+            if (expectedStatusCode) {
+              assert.strictEqual(err, null);
+              if (res.statusCode !== expectedStatusCode) {
+                var assertionMsg = 'Expected status code "' + expectedStatusCode + '" ' +
+                  'but received "' + res.statusCode + '" and body "' + body + '"';
+                try {
+                  var errorMsg = cheerio.load(body)('#_error').text();
+                  assertionMsg = 'Expected status code "' + expectedStatusCode + '" but ' +
+                  'received "' + res.statusCode + '" at URL "' + (options.url || options)  + '", ' +
+                  'error "' + errorMsg + '", and body "' + body.slice(0, 300) + '..."';
+                } catch (loadErr) {
+                  // Ignore error (assuming we can't parse body or find error
+                }
+                assert.strictEqual(res.statusCode, expectedStatusCode, assertionMsg);
+              }
             }
-            assert.strictEqual(res.statusCode, expectedStatusCode, assertionMsg);
-          }
-        }
 
-        // If there was a request to parse the response, then do it
-        if (options.parseHTML !== false) {
-          try {
-            that.$ = cheerio.load(body);
-          } catch (err) {
-            console.error('Tried to parse response body as HTML but failed. ' +
-              'If response should not be parsed, set `parseHTML` to `false`');
-            throw err;
-          }
-        }
+            // If there was a request to parse the response, then do it
+            if (options.parseHTML !== false) {
+              try {
+                that.$ = cheerio.load(body);
+              } catch (err) {
+                console.error('Tried to parse response body as HTML but failed. ' +
+                  'If response should not be parsed, set `parseHTML` to `false`');
+                throw err;
+              }
+            }
 
-        // Callback
-        done();
-      });
+            // Callback
+            cb();
+          });
+        }
+      ], done);
     }
   };
 };

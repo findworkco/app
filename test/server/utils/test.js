@@ -2,11 +2,13 @@
 var assert = require('assert');
 var _ = require('underscore');
 var async = require('async');
-var sequelizeFixtures = require('sequelize-fixtures');
+var Sequelize = require('sequelize');
 var dbFixtures = require('./db-fixtures');
 var fakeGoogleFactory = require('./fake-google');
 var server = require('../../../server/index.js');
+var sinonUtils = require('./sinon');
 var sequelize = server.app.sequelize;
+var validator = require('sequelize/lib/utils/validator-extras').validator;
 
 // DEV: This file is loaded directly by `mocha` first
 //   so we get fancy global behavior
@@ -70,15 +72,41 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
     });
   }
 
+  // If we want to ignore UUID validation, then stub it
+  // https://github.com/chriso/validator.js/blob/6.2.0/src/lib/isUUID.js
+  // https://github.com/chriso/validator.js/blob/6.2.0/src/lib/util/assertString.js
+  // DEV: We initially were using UUIDs but they required consistency within server and tests
+  //   which meant overmaintenance and hard to remember values for humans
+  if (options.mockUUIDValidation) {
+    sinonUtils.stub(validator, 'isUUID', function isUUIDLike (val, uuidType) {
+      assert.strictEqual(typeof val, 'string');
+      // abcdef-uuid, abcdef-candidate-uuid, NOT abcdef
+      assert(val.length <= 36, 'Value "' + val + '" too long (needs to be at most 36 characters)');
+      return /[A-Za-z0-9]-([A-Za-z0-9]-?)+/.test(val);
+    });
+  }
+
   // If we want to set up database fixtures, then clean our database and add fixtures
   if (options.dbFixtures) {
     before(function truncateDatabase (done) {
       // http://docs.sequelizejs.com/en/v3/docs/raw-queries/
       // DEV: We use DELETE over TRUNCATE as it's faster (speed up from 20s to 14s)
       // DEV: Our query is vulnerable to SQL injection but we can't use bind and trust our table names more/less
-      var tableNames = _.pluck(_.values(sequelize.models), 'tableName');
+      // DEV: We specify table names directly due to CASCADE hooks causing deadlocks otherwise
+      var tableNames = ['candidates', 'audit_logs'];
       async.each(tableNames, function handleEach (tableName, cb) {
         sequelize.query('DELETE FROM ' + tableName).asCallback(cb);
+      }, done);
+    });
+    before(function assertDatabaseEmpty (done) {
+      async.each(sequelize.models, function handleEach (model, cb) {
+        model.count().asCallback(function handleCount (err, count) {
+          if (err) { return cb(err); }
+          err = count !== 0 ? new Error('Expected ' + model.tableName + ' to be empty but it wasn\'t. ' +
+            'Please verify CASCADE is configured properly and there are no jobs still running ' +
+            '(if there are, use `waitForJobs` in `httpUtils.save`)') : null;
+          cb(err);
+        });
       }, done);
     });
     before(function installFixtures (done) {
@@ -92,13 +120,15 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
       }
 
       // Resolve our fixtures, add in their source, and load into the db
+      // DEV: We use bespoke fixture loader instead of `sequelize-fixtures` due to wanting `.build` support
       var selectedFixtures = _.values(selectedFixturesObj);
-      selectedFixtures = selectedFixtures.map(function addBuildOptions (fixture) {
-        return _.defaults({
-          saveOptions: _.defaults({_sourceType: 'server'}, fixture.saveOptions)
-        }, fixture);
-      });
-      sequelizeFixtures.loadFixtures(selectedFixtures, sequelize.models).asCallback(done);
+      sequelize.transaction({deferrable: Sequelize.Deferrable.SET_DEFERRED}, function handleTransaction (t) {
+        return Promise.all(selectedFixtures.map(function buildAndSaveModel (fixture) {
+          var model = sequelize.models[fixture.model];
+          assert(model, 'Fixture model not found "' + fixture.model + '"');
+          return model.build(fixture.data).save({_sourceType: 'server', transaction: t});
+        }));
+      }).asCallback(done);
     });
   }
 
@@ -126,6 +156,7 @@ function _scenarioRouteTestBaseSetup(describeStr, options, describeFn) {
 var DEFAULT_ROUTE_TEST_OPTIONS = {
   dbFixtures: dbFixtures.DEFAULT_FIXTURES,
   flushRedis: true,
+  mockUUIDValidation: true,
   // DEV: Later services might want to add/remove a single fixture
   //   We could support that via `{add: [], remove: [], removeAll: true}`
   //   Default behavior would be `[overrides] = {add: [overrides], removeAll: true}`
@@ -240,6 +271,8 @@ exports.scenario.model = getDescribeWrapper({
   dbFixtures: [],
   // Don't set up Google server as we don't log in
   googleFixtures: [],
+  // Allow non-standard UUIDs
+  mockUUIDValidation: true,
   // Don't start our server
   startServer: false
 }, function _scenarioModelWrapper (describeStr, options, describeFn) {
@@ -256,6 +289,8 @@ exports.scenario.job = getDescribeWrapper({
   dbFixtures: [],
   // Don't set up Google server as we don't log in
   googleFixtures: [],
+  // Allow non-standard UUIDs
+  mockUUIDValidation: true,
   // Don't start our server
   startServer: false
 }, function _scenarioTaskWrapper (describeStr, options, describeFn) {

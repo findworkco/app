@@ -14,6 +14,9 @@ exports.up = function (queryInterface) {
       candidate_id: {
         type: baseDefine.ID, allowNull: false,
         references: {model: 'candidates', key: 'id'}
+        // Missed `deferrable` and `onUpdate/onDelete` settings initially
+        // references: {model: 'candidates', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+        // onUpdate: 'CASCADE', onDelete: 'CASCADE'
       },
       parent_id: {type: baseDefine.ID, allowNull: false},
       parent_type: {type: Sequelize.STRING(36), allowNull: false},
@@ -32,6 +35,9 @@ exports.up = function (queryInterface) {
       candidate_id: {
         type: baseDefine.ID, allowNull: false,
         references: {model: 'candidates', key: 'id'}
+        // Missed `deferrable` and `onUpdate/onDelete` settings initially
+        // references: {model: 'candidates', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+        // onUpdate: 'CASCADE', onDelete: 'CASCADE'
       },
       application_date_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
       archived_at_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
@@ -44,14 +50,23 @@ exports.up = function (queryInterface) {
       saved_for_later_reminder_id: {
         type: baseDefine.ID, allowNull: true,
         references: {model: 'reminders', key: 'id'}
+        // Missed `deferrable` and `onUpdate/onDelete` settings initially
+        // references: {model: 'reminders', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+        // onUpdate: 'CASCADE', onDelete: 'RESTRICT'
       },
       waiting_for_response_reminder_id: {
         type: baseDefine.ID, allowNull: true,
         references: {model: 'reminders', key: 'id'}
+        // Missed `deferrable` and `onUpdate/onDelete` settings initially
+        // references: {model: 'reminders', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+        // onUpdate: 'CASCADE', onDelete: 'RESTRICT'
       },
       received_offer_reminder_id: {
         type: baseDefine.ID, allowNull: true,
         references: {model: 'reminders', key: 'id'}
+        // Missed `deferrable` and `onUpdate/onDelete` settings initially
+        // references: {model: 'reminders', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+        // onUpdate: 'CASCADE', onDelete: 'RESTRICT'
       },
 
       // Manually add timestamps (sequelize-cli doesn't inherit options)
@@ -64,10 +79,16 @@ exports.up = function (queryInterface) {
       candidate_id: {
         type: baseDefine.ID, allowNull: false,
         references: {model: 'candidates', key: 'id'}
+        // Missed `deferrable` and `onUpdate/onDelete` settings initially
+        // references: {model: 'candidates', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+        // onUpdate: 'CASCADE', onDelete: 'CASCADE'
       },
       application_id: {
         type: baseDefine.ID, allowNull: false,
         references: {model: 'applications', key: 'id'}
+        // Missed `deferrable` and `onUpdate/onDelete` settings initially
+        // references: {model: 'applications', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+        // onUpdate: 'CASCADE', onDelete: 'CASCADE'
       },
 
       date_time_moment: {type: baseDefine.MOMENT_TZ, allowNull: false},
@@ -76,10 +97,16 @@ exports.up = function (queryInterface) {
       pre_interview_reminder_id: {
         type: baseDefine.ID, allowNull: false,
         references: {model: 'reminders', key: 'id'}
+        // Missed `deferrable` and `onUpdate/onDelete` settings initially
+        // references: {model: 'reminders', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+        // onUpdate: 'CASCADE', onDelete: 'RESTRICT'
       },
       post_interview_reminder_id: {
         type: baseDefine.ID, allowNull: false,
         references: {model: 'reminders', key: 'id'}
+        // Missed `deferrable` and `onUpdate/onDelete` settings initially
+        // references: {model: 'reminders', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+        // onUpdate: 'CASCADE', onDelete: 'RESTRICT'
       },
 
       // Manually add timestamps (sequelize-cli doesn't inherit options)

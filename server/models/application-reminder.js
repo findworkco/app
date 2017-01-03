@@ -1,5 +1,6 @@
 // Load in our dependencies
 var _ = require('underscore');
+var Sequelize = require('sequelize');
 var baseDefine = require('./base');
 var Application = require('./application');
 var Reminder = require('./reminder');
@@ -16,7 +17,8 @@ exports.TYPES = {
 var ApplicationReminder = module.exports = _.extend(baseDefine('application_reminder', _.defaults({
   application_id: {
     type: baseDefine.ID, allowNull: false,
-    references: {model: Application, key: 'id'}
+    references: {model: Application, key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'CASCADE'
   }
 }, Reminder._cleanAttributes), {
   VALID_TYPES: _.values(exports.TYPES)

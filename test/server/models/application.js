@@ -1,7 +1,11 @@
 // Load in our dependencies
 var _ = require('underscore');
 var expect = require('chai').expect;
-var Application = require('../../../server/models/application.js');
+var dbFixtures = require('../utils/db-fixtures');
+var Application = require('../../../server/models/application');
+var Candidate = require('../../../server/models/candidate');
+var Interview = require('../../../server/models/interview');
+var Reminder = require('../../../server/models/reminder');
 
 // Define common application setups
 var validBaseApplication = {
@@ -124,6 +128,73 @@ scenario.model('An archived Application model with no reminder', function () {
     application.validate().asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+// DEV: This test verifies our database has proper cascading deletion hooks
+scenario.model('An Application model being deleted which has interviews and reminders', {
+  dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  before(function verifyCandidateExists (done) {
+    Candidate.findAll().asCallback(function verifyCandidateExistsFn (err, candidates) {
+      if (err) { return done(err); }
+      expect(candidates).to.have.length(1);
+      done();
+    });
+  });
+  before(function verifyApplicationsExist (done) {
+    Application.findAll().asCallback(function verifyApplicationsExistFn (err, applications) {
+      if (err) { return done(err); }
+      expect(applications).to.have.length(1);
+      done();
+    });
+  });
+  before(function verifyInterviewsExist (done) {
+    Interview.findAll().asCallback(function verifyInterviewsExistFn (err, interviews) {
+      if (err) { return done(err); }
+      expect(interviews).to.have.length(1);
+      done();
+    });
+  });
+  before(function verifyRemindersExist (done) {
+    Reminder.findAll().asCallback(function verifyRemindersExistFn (err, reminders) {
+      if (err) { return done(err); }
+      expect(reminders).to.have.length(3);
+      done();
+    });
+  });
+  before(function deleteApplication (done) {
+    var application = Application.build({id: 'abcdef-sky-networks-uuid'});
+    application.destroy({_sourceType: 'server'}).asCallback(done);
+  });
+
+  it('doesn\'t delete candidate', function (done) {
+    Candidate.findAll().asCallback(function verifyCandidateExistsFn (err, candidates) {
+      if (err) { return done(err); }
+      expect(candidates).to.have.length(1);
+      done();
+    });
+  });
+  it('deletes applications', function (done) {
+    Application.findAll().asCallback(function verifyApplicationsDeletedFn (err, applications) {
+      if (err) { return done(err); }
+      expect(applications).to.have.length(0);
+      done();
+    });
+  });
+  it('deletes interviews', function (done) {
+    Interview.findAll().asCallback(function verifyInterviewsDeletedFn (err, interviews) {
+      if (err) { return done(err); }
+      expect(interviews).to.have.length(0);
+      done();
+    });
+  });
+  it('deletes reminders', function (done) {
+    Reminder.findAll().asCallback(function verifyRemindersDeletedFn (err, reminders) {
+      if (err) { return done(err); }
+      expect(reminders).to.have.length(0);
       done();
     });
   });

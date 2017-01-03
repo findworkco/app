@@ -89,23 +89,6 @@ scenario.model('A reminder with a type', function () {
 scenario.model('A Reminder model', {
   dbFixtures: [dbFixtures.CANDIDATE_DEFAULT]
 }, function () {
-  // DEV: This test requires CASCADE changes to be in place so we can get it 100%
-  it.skip('allows creation as an ApplicationReminder', function (done) {
-    var reminder = ApplicationReminder.build(validApplicationReminder);
-    reminder.save({_sourceType: 'server'}).asCallback(function handleCreate (err) {
-      expect(err).to.equal(null);
-      done();
-    });
-  });
-
-  it.skip('allows creation as an InterviewReminder', function (done) {
-    var reminder = InterviewReminder.build(validApplicationReminder);
-    reminder.save({_sourceType: 'server'}).asCallback(function handleCreate (err) {
-      expect(err).to.equal(null);
-      done();
-    });
-  });
-
   it('cannot be created directly', function (done) {
     var reminder = Reminder.build(validApplicationReminder);
     reminder.save({skip: ['type'], _sourceType: 'server'}).asCallback(function handleCreate (err) {

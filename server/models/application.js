@@ -33,7 +33,8 @@ var Application = module.exports = _.extend(baseDefine('application', {
   },
   candidate_id: {
     type: baseDefine.ID, allowNull: false,
-    references: {model: Candidate, key: 'id'}
+    references: {model: Candidate, key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'CASCADE'
   },
 
   // Example: 2016-01-08, no time
@@ -68,15 +69,18 @@ var Application = module.exports = _.extend(baseDefine('application', {
   // Define our reminders
   saved_for_later_reminder_id: {
     type: baseDefine.ID, allowNull: true,
-    references: {model: 'application_reminders', key: 'id'}
+    references: {model: 'application_reminders', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'RESTRICT'
   },
   waiting_for_response_reminder_id: {
     type: baseDefine.ID, allowNull: true,
-    references: {model: 'application_reminders', key: 'id'}
+    references: {model: 'application_reminders', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'RESTRICT'
   },
   received_offer_reminder_id: {
     type: baseDefine.ID, allowNull: true,
-    references: {model: 'application_reminders', key: 'id'}
+    references: {model: 'application_reminders', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'RESTRICT'
   }
 }, {
   validate: {

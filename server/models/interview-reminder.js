@@ -1,5 +1,6 @@
 // Load in our dependencies
 var _ = require('underscore');
+var Sequelize = require('sequelize');
 var baseDefine = require('./base');
 var Interview = require('./interview');
 var Reminder = require('./reminder');
@@ -15,7 +16,8 @@ exports.TYPES = {
 var InterviewReminder = module.exports = _.extend(baseDefine('interview_reminder', _.defaults({
   interview_id: {
     type: baseDefine.ID, allowNull: false,
-    references: {model: Interview, key: 'id'}
+    references: {model: Interview, key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'CASCADE'
   }
 }, Reminder._cleanAttributes), {
   VALID_TYPES: _.values(exports.TYPES)

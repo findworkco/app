@@ -13,12 +13,14 @@ var Interview = module.exports = baseDefine('interview', {
   },
   candidate_id: {
     type: baseDefine.ID, allowNull: false,
-    references: {model: Candidate, key: 'id'}
+    references: {model: Candidate, key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'CASCADE'
   },
 
   application_id: {
     type: baseDefine.ID, allowNull: false,
-    references: {model: Application, key: 'id'}
+    references: {model: Application, key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'CASCADE'
   },
 
   date_time_moment: {type: baseDefine.MOMENT_TZ, allowNull: false},
@@ -32,11 +34,13 @@ var Interview = module.exports = baseDefine('interview', {
   // Define our reminders
   pre_interview_reminder_id: {
     type: baseDefine.ID, allowNull: false,
-    references: {model: 'interview_reminders', key: 'id'}
+    references: {model: 'interview_reminders', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'RESTRICT'
   },
   post_interview_reminder_id: {
     type: baseDefine.ID, allowNull: false,
-    references: {model: 'interview_reminders', key: 'id'}
+    references: {model: 'interview_reminders', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
+    onUpdate: 'CASCADE', onDelete: 'RESTRICT'
   }
 }, {
   getterMethods: {

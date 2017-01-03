@@ -193,7 +193,7 @@ scenario.route('A request to GET /oauth/google/callback', {
     httpUtils.session.init().save({
       // Redirects to fake Google OAuth, then to `/oauth/google/callback`
       url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
-      followRedirect: true,
+      followRedirect: true, waitForJobs: 1,
       expectedStatusCode: 200
     });
 
