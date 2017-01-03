@@ -2,7 +2,8 @@
 var assert = require('assert');
 var moment = require('moment-timezone');
 var Application = require('./application');
-var Reminder = require('./reminder');
+var ApplicationReminder = require('./application-reminder');
+var InterviewReminder = require('./interview-reminder');
 
 // DEV: We define all our mock data side by side for easy tweaking
 // DEV: We store 2 kinds of fixtures on `exports.fixtures`
@@ -14,18 +15,19 @@ var Reminder = require('./reminder');
 
 // Define collection for data
 var fixtures = exports.fixtures = {};
-exports.candidates = [];
+var candidates = exports.candidates = [];
 var applications = exports.applications = [];
 var interviews = exports.interviews = [];
-exports.reminders = [];
+var applicationReminders = exports.applicationReminders = [];
+var interviewReminders = exports.interviewReminders = [];
 
 // Define helper functions for fixtures/mock data
 var fixtureIds = {};
-function registerFixture(key, info) {
+function registerFixture(key, mockDataArr, info) {
   // Save our fixture/mock data
   assert.strictEqual(fixtures[key], undefined, 'Fixture already exists');
   fixtures[key] = info;
-  exports[info.model + 's'].push(info.data);
+  mockDataArr.push(info.data);
 
   // Verify we have no shared keys to prevent accidental false positives
   var id = info.data.id;
@@ -40,22 +42,30 @@ function registerFixture(key, info) {
   return key;
 }
 function addCandidate(key, data) {
-  return registerFixture(key, {model: 'candidate', data: data});
+  return registerFixture(key, candidates, {model: 'candidate', data: data});
 }
 function addApplication(key, data) {
-  return registerFixture(key, {model: 'application', data: data});
+  return registerFixture(key, applications, {model: 'application', data: data});
 }
 function addInterview(key, data) {
-  return registerFixture(key, {model: 'interview', data: data});
+  return registerFixture(key, interviews, {model: 'interview', data: data});
 }
-function addReminder(key, data) {
-  return registerFixture(key, {model: 'reminder', data: data});
+function addApplicationReminder(key, data) {
+  return registerFixture(key, applicationReminders, {model: 'application_reminder', data: data});
+}
+function addInterviewReminder(key, data) {
+  return registerFixture(key, interviewReminders, {model: 'interview_reminder', data: data});
 }
 
-// Candidates
+// Define default fixtures overall
 fixtures.DEFAULT_FIXTURES = ['default__candidate'];
+
+// Candidates
+// DEFA617 = "DEFAULT" in our attempted 1337 speak
+var DEFAULT_CANDIDATE_ID = 'DEFA6170-0000-4000-8000-000000000000';
 fixtures.CANDIDATE_DEFAULT = [
   addCandidate('default__candidate', {
+    id: DEFAULT_CANDIDATE_ID,
     email: 'mock-email@mock-domain.test',
     google_access_token: 'mock_access_token_fixtured',
     welcome_email_sent: true
@@ -92,11 +102,10 @@ addApplication('received-offer__application', {
   posting_url: 'http://www.nature.com/naturejobs/science/jobs/123456-researcher',
   status: Application.STATUSES.RECEIVED_OFFER
 });
-addReminder('received-offer__reminder--application', {
+addApplicationReminder('received-offer__reminder--application', {
   id: applications[applications.length - 1].received_offer_reminder_id,
-  parent_id: applications[applications.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.APPLICATION,
-  type: Reminder.TYPES.RECEIVED_OFFER,
+  application_id: applications[applications.length - 1].id,
+  type: ApplicationReminder.TYPES.RECEIVED_OFFER,
   date_time_moment: moment.tz('2016-01-01T12:00', 'US-America/Chicago'),
   is_enabled: true
 });
@@ -109,19 +118,17 @@ addInterview('received-offer__interview', {
   pre_interview_reminder_id: 'abcdef-black-mesa-reminder-pre-interview-uuid',
   post_interview_reminder_id: 'abcdef-black-mesa-reminder-post-interview-uuid'
 });
-addReminder('received-offer__reminder--pre-interview', {
+addInterviewReminder('received-offer__reminder--pre-interview', {
   id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.PRE_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.PRE_INTERVIEW,
   date_time_moment: moment.tz('2015-12-14T11:00', 'US-America/Chicago'),
   is_enabled: false
 });
-addReminder('received-offer__reminder--post-interview', {
+addInterviewReminder('received-offer__reminder--post-interview', {
   id: interviews[interviews.length - 1].post_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.POST_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.POST_INTERVIEW,
   date_time_moment: moment.tz('2015-12-14T17:00', 'US-America/Chicago'),
   is_enabled: false
 });
@@ -156,19 +163,17 @@ addInterview('upcoming-interview__interview', {
   pre_interview_reminder_id: 'abcdef-umbrella-corp-reminder-pre-interview-uuid',
   post_interview_reminder_id: 'abcdef-umbrella-corp-reminder-post-interview-uuid'
 });
-addReminder('upcoming-interview__reminder--pre-interview', {
+addInterviewReminder('upcoming-interview__reminder--pre-interview', {
   id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.PRE_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.PRE_INTERVIEW,
   date_time_moment: moment.tz('2022-01-20T11:00', 'US-America/Chicago'),
   is_enabled: false
 });
-addReminder('upcoming-interview__reminder--post-interview', {
+addInterviewReminder('upcoming-interview__reminder--post-interview', {
   id: interviews[interviews.length - 1].post_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.POST_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.POST_INTERVIEW,
   date_time_moment: moment.tz('2022-01-20T17:00', 'US-America/Chicago'),
   is_enabled: false
 });
@@ -192,19 +197,17 @@ addInterview('upcoming-interview-2__interview', {
   pre_interview_reminder_id: 'abcdef-globo-gym-reminder-pre-interview-uuid',
   post_interview_reminder_id: 'abcdef-globo-gym-reminder-post-interview-uuid'
 });
-addReminder('upcoming-interview-2__reminder--pre-interview', {
+addInterviewReminder('upcoming-interview-2__reminder--pre-interview', {
   id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.PRE_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.PRE_INTERVIEW,
   date_time_moment: moment.tz('2022-03-14T11:00', 'US-America/Chicago'),
   is_enabled: false
 });
-addReminder('upcoming-interview-2__reminder--post-interview', {
+addInterviewReminder('upcoming-interview-2__reminder--post-interview', {
   id: interviews[interviews.length - 1].post_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.POST_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.POST_INTERVIEW,
   date_time_moment: moment.tz('2022-03-14T17:00', 'US-America/Chicago'),
   is_enabled: false
 });
@@ -217,19 +220,17 @@ addInterview('upcoming-interview-2__interview--past-1', {
   pre_interview_reminder_id: 'abcdef-globo-gym-reminder-pre-interview-past-1-uuid',
   post_interview_reminder_id: 'abcdef-globo-gym-reminder-post-interview-past-1-uuid'
 });
-addReminder('upcoming-interview-2__reminder--pre-interview--past-1', {
+addInterviewReminder('upcoming-interview-2__reminder--pre-interview--past-1', {
   id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.PRE_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.PRE_INTERVIEW,
   date_time_moment: moment.tz('2016-02-18T06:00', 'US-America/Chicago'),
   is_enabled: false
 });
-addReminder('upcoming-interview-2__reminder--post-interview--past-1', {
+addInterviewReminder('upcoming-interview-2__reminder--post-interview--past-1', {
   id: interviews[interviews.length - 1].post_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.POST_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.POST_INTERVIEW,
   date_time_moment: moment.tz('2016-02-18T12:00', 'US-America/Chicago'),
   is_enabled: false
 });
@@ -242,19 +243,17 @@ addInterview('upcoming-interview-2__interview--past-2', {
   pre_interview_reminder_id: 'abcdef-globo-gym-reminder-pre-interview-past-2-uuid',
   post_interview_reminder_id: 'abcdef-globo-gym-reminder-post-interview-past-2-uuid'
 });
-addReminder('upcoming-interview-2__reminder--pre-interview--past-2', {
+addInterviewReminder('upcoming-interview-2__reminder--pre-interview--past-2', {
   id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.PRE_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.PRE_INTERVIEW,
   date_time_moment: moment.tz('2016-03-02T15:00', 'US-America/Chicago'),
   is_enabled: false
 });
-addReminder('upcoming-interview-2__reminder--post-interview--past-2', {
+addInterviewReminder('upcoming-interview-2__reminder--post-interview--past-2', {
   id: interviews[interviews.length - 1].post_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.POST_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.POST_INTERVIEW,
   date_time_moment: moment.tz('2016-03-02T21:00', 'US-America/Chicago'),
   is_enabled: false
 });
@@ -274,11 +273,10 @@ addApplication('waiting-for-response__application', {
     'Website: <a href="https://sky.net/">https://sky.net/</a>',
   status: Application.STATUSES.WAITING_FOR_RESPONSE
 });
-addReminder('waiting-for-response__reminder--application', {
+addApplicationReminder('waiting-for-response__reminder--application', {
   id: applications[applications.length - 1].waiting_for_response_reminder_id,
-  parent_id: applications[applications.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.APPLICATION,
-  type: Reminder.TYPES.WAITING_FOR_RESPONSE,
+  application_id: applications[applications.length - 1].id,
+  type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
   date_time_moment: moment.tz('2016-01-25T12:00', 'US-America/Chicago'),
   is_enabled: true
 });
@@ -291,19 +289,17 @@ addInterview('waiting-for-response__interview', {
   pre_interview_reminder_id: 'abcdef-sky-networks-reminder-pre-interview-uuid',
   post_interview_reminder_id: 'abcdef-sky-networks-reminder-post-interview-uuid'
 });
-addReminder('waiting-for-response__reminder--pre-interview', {
+addInterviewReminder('waiting-for-response__reminder--pre-interview', {
   id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.PRE_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.PRE_INTERVIEW,
   date_time_moment: moment.tz('2016-01-15T08:00', 'US-America/Los_Angeles'),
   is_enabled: true
 });
-addReminder('waiting-for-response__reminder--post-interview', {
+addInterviewReminder('waiting-for-response__reminder--post-interview', {
   id: interviews[interviews.length - 1].post_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.POST_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.POST_INTERVIEW,
   date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
   is_enabled: true
 });
@@ -321,11 +317,10 @@ addApplication('saved-for-later__application', {
   posting_url: 'https://www.dice.com/jobs/detail/Business-Systems-Analyst-Springfield-USA-12345/1234567/123456',
   status: Application.STATUSES.SAVED_FOR_LATER
 });
-addReminder('saved-for-later__reminder--application', {
+addApplicationReminder('saved-for-later__reminder--application', {
   id: applications[applications.length - 1].saved_for_later_reminder_id,
-  parent_id: applications[applications.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.APPLICATION,
-  type: Reminder.TYPES.SAVED_FOR_LATER,
+  application_id: applications[applications.length - 1].id,
+  type: ApplicationReminder.TYPES.SAVED_FOR_LATER,
   date_time_moment: moment.tz('2016-06-20T12:00', 'US-America/Chicago'),
   is_enabled: true
 });
@@ -352,19 +347,17 @@ addInterview('archived__interview', {
   pre_interview_reminder_id: 'abcdef-monstromart-reminder-pre-interview-uuid',
   post_interview_reminder_id: 'abcdef-monstromart-reminder-post-interview-uuid'
 });
-addReminder('archived__reminder--pre-interview', {
+addInterviewReminder('archived__reminder--pre-interview', {
   id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.PRE_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.PRE_INTERVIEW,
   date_time_moment: moment.tz('2016-01-15T08:00', 'US-America/Los_Angeles'),
   is_enabled: true
 });
-addReminder('archived__reminder--post-interview', {
+addInterviewReminder('archived__reminder--post-interview', {
   id: interviews[interviews.length - 1].post_interview_reminder_id,
-  parent_id: interviews[interviews.length - 1].id,
-  parent_type: Reminder.PARENT_TYPES.INTERVIEW,
-  type: Reminder.TYPES.POST_INTERVIEW,
+  interview_id: interviews[interviews.length - 1].id,
+  type: InterviewReminder.TYPES.POST_INTERVIEW,
   date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
   is_enabled: true
 });

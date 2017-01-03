@@ -4,7 +4,7 @@ var _ = require('underscore');
 var app = require('../index.js').app;
 var Application = require('../models/application');
 var includes = require('../models/utils/includes');
-var Reminder = require('../models/reminder');
+var InterviewReminder = require('../models/interview-reminder');
 var resolveApplicationById = require('./application').resolveApplicationById;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
@@ -29,8 +29,8 @@ function resolveInterviewById(params) {
       include: [
         // DEV: We include nav content so it can be reused
         {model: Application, include: includes.applicationNavContent},
-        {model: Reminder, as: 'pre_interview_reminder'},
-        {model: Reminder, as: 'post_interview_reminder'}
+        {model: InterviewReminder, as: 'pre_interview_reminder'},
+        {model: InterviewReminder, as: 'post_interview_reminder'}
       ]
     };
     if (this.useMocks) {

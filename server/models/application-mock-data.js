@@ -3,7 +3,7 @@ var assert = require('assert');
 var _ = require('underscore');
 var Application = require('./application');
 var Interview = require('./interview');
-var Reminder = require('./reminder');
+var ApplicationReminder = require('./application-reminder');
 var genericMockData = require('./generic-mock-data');
 
 // Generate application map by ids
@@ -15,7 +15,7 @@ genericMockData.applications.forEach(function saveApplicationById (application) 
 // Define application builder
 // http://docs.sequelizejs.com/en/v3/docs/associations/#creating-with-associations
 var interviewMocks = genericMockData.interviews;
-var reminderMocks = genericMockData.reminders;
+var applicationReminderMocks = genericMockData.applicationReminders;
 exports._buildApplicationAttrs = function (attrs, options) {
   // Clone our attrs for extension
   var retVal = _.clone(attrs);
@@ -33,19 +33,19 @@ exports._buildApplicationAttrs = function (attrs, options) {
         assert(!includeItem.as, 'Received unexpected "as" key for Interview');
         retVal.interviews = _.where(interviewMocks, {application_id: attrs.id});
       // If the include is a reminder , build the matching reminder type
-      } else if (includeItem.model === Reminder) {
-        assert(includeItem.as, 'Missing "as" parameter for Reminder include');
+      } else if (includeItem.model === ApplicationReminder) {
+        assert(includeItem.as, 'Missing "as" parameter for ApplicationReminder include');
         if (includeItem.as === 'saved_for_later_reminder') {
-          retVal.saved_for_later_reminder = _.findWhere(reminderMocks,
+          retVal.saved_for_later_reminder = _.findWhere(applicationReminderMocks,
             {id: attrs.saved_for_later_reminder_id});
         } else if (includeItem.as === 'waiting_for_response_reminder') {
-          retVal.waiting_for_response_reminder = _.findWhere(reminderMocks,
+          retVal.waiting_for_response_reminder = _.findWhere(applicationReminderMocks,
             {id: attrs.waiting_for_response_reminder_id});
         } else if (includeItem.as === 'received_offer_reminder') {
-          retVal.received_offer_reminder = _.findWhere(reminderMocks,
+          retVal.received_offer_reminder = _.findWhere(applicationReminderMocks,
             {id: attrs.received_offer_reminder_id});
         } else {
-          throw new Error('Unrecognized "as" parameter for Reminder: "' + includeItem.as + '"');
+          throw new Error('Unrecognized "as" parameter for ApplicationReminder: "' + includeItem.as + '"');
         }
       // Otherwise, complain and leave
       } else {

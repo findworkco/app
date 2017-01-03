@@ -4,7 +4,6 @@ var _ = require('underscore');
 var Sequelize = require('sequelize');
 var baseDefine = require('./base.js');
 var Candidate = require('./candidate');
-var Reminder = require('./reminder');
 
 // Define constants for our applications
 exports.STATUSES = {
@@ -69,15 +68,15 @@ var Application = module.exports = _.extend(baseDefine('application', {
   // Define our reminders
   saved_for_later_reminder_id: {
     type: baseDefine.ID, allowNull: true,
-    references: {model: Reminder, key: 'id'}
+    references: {model: 'application_reminders', key: 'id'}
   },
   waiting_for_response_reminder_id: {
     type: baseDefine.ID, allowNull: true,
-    references: {model: Reminder, key: 'id'}
+    references: {model: 'application_reminders', key: 'id'}
   },
   received_offer_reminder_id: {
     type: baseDefine.ID, allowNull: true,
-    references: {model: Reminder, key: 'id'}
+    references: {model: 'application_reminders', key: 'id'}
   }
 }, {
   validate: {
@@ -191,9 +190,10 @@ var Application = module.exports = _.extend(baseDefine('application', {
 // DEV: To prevent circular dependencies, we define parent/child relationships in model where foreign key is
 Application.belongsTo(Candidate);
 Candidate.hasMany(Application);
-// DEV: Reminder has no strict parent so we can only define parent to child
-// DEV: Due to reminder's foreign key being located on other tables we need to use `belongsTo` instead of `hasOne`
-//   Otherwise, Sequelize would attempt a JOIN with `application.id = reminders.application_id`
-Application.belongsTo(Reminder, {as: 'saved_for_later_reminder'});
-Application.belongsTo(Reminder, {as: 'waiting_for_response_reminder'});
-Application.belongsTo(Reminder, {as: 'received_offer_reminder'});
+
+// Expose Reminder keys for ApplicationReminder to bind on
+Application._reminderKeys = [
+  'saved_for_later_reminder',
+  'waiting_for_response_reminder',
+  'received_offer_reminder'
+];

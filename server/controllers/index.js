@@ -6,7 +6,7 @@ var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLoca
 var applicationMockData = require('../models/application-mock-data');
 var Application = require('../models/application');
 var includes = require('../models/utils/includes');
-var Reminder = require('../models/reminder');
+var ApplicationReminder = require('../models/application-reminder');
 var companyMockData = require('../models/company-mock-data');
 
 // Define common data loader for nav
@@ -125,7 +125,7 @@ app.get('/schedule', [
     var receivedOfferOptions = {
       include: [
         includes.closestPastInterview,
-        {model: Reminder, as: 'received_offer_reminder'}
+        {model: ApplicationReminder, as: 'received_offer_reminder'}
       ]
     };
     var upcomingInterviewOptions = {
@@ -134,11 +134,11 @@ app.get('/schedule', [
     var waitingForResponseOptions = {
       include: [
         includes.closestPastInterview,
-        {model: Reminder, as: 'waiting_for_response_reminder'}
+        {model: ApplicationReminder, as: 'waiting_for_response_reminder'}
       ]
     };
     var savedForLaterOptions = {
-      include: [{model: Reminder, as: 'saved_for_later_reminder'}]
+      include: [{model: ApplicationReminder, as: 'saved_for_later_reminder'}]
     };
     if (this.useMocks) {
       return {

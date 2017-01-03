@@ -3,7 +3,6 @@ var baseDefine = require('./base.js');
 var Sequelize = require('sequelize');
 var Application = require('./application');
 var Candidate = require('./candidate');
-var Reminder = require('./reminder');
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
@@ -33,11 +32,11 @@ var Interview = module.exports = baseDefine('interview', {
   // Define our reminders
   pre_interview_reminder_id: {
     type: baseDefine.ID, allowNull: false,
-    references: {model: Reminder, key: 'id'}
+    references: {model: 'interview_reminders', key: 'id'}
   },
   post_interview_reminder_id: {
     type: baseDefine.ID, allowNull: false,
-    references: {model: Reminder, key: 'id'}
+    references: {model: 'interview_reminders', key: 'id'}
   }
 }, {
   getterMethods: {
@@ -56,8 +55,9 @@ Interview.belongsTo(Application);
 Application.hasMany(Interview);
 Interview.belongsTo(Candidate);
 Candidate.hasMany(Interview);
-// DEV: Reminder has no strict parent so we can only define parent to child
-// DEV: Due to reminder's foreign key being located on other tables we need to use `belongsTo` instead of `hasOne`
-//   Otherwise, Sequelize would attempt a JOIN with `application.id = reminders.application_id`
-Interview.belongsTo(Reminder, {as: 'pre_interview_reminder'});
-Interview.belongsTo(Reminder, {as: 'post_interview_reminder'});
+
+// Expose Reminder keys for InterviewReminder to bind on
+Interview._reminderKeys = [
+  'pre_interview_reminder',
+  'post_interview_reminder'
+];

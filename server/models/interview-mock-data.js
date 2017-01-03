@@ -3,7 +3,7 @@ var assert = require('assert');
 var _ = require('underscore');
 var Application = require('./application');
 var Interview = require('./interview');
-var Reminder = require('./reminder');
+var InterviewReminder = require('./interview-reminder');
 var applicationMockData = require('./application-mock-data');
 var genericMockData = require('./generic-mock-data');
 
@@ -15,7 +15,7 @@ genericMockData.interviews.forEach(function saveInterviewById (interview) {
 
 // Define interview builder
 var applicationMocks = genericMockData.applications;
-var reminderMocks = genericMockData.reminders;
+var interviewReminderMocks = genericMockData.interviewReminders;
 function buildInterview(attrs, options) {
   // If we have an include parameter, clone it by 2 levels to prevent mutation on `build`
   options = _.clone(options) || {};
@@ -53,16 +53,16 @@ function buildInterview(attrs, options) {
           _.findWhere(applicationMocks, {id: attrs.application_id}), {include: includeItem.include});
         buildData.application = applicationAttrs;
       // If our include is a reminder, build the matching reminder type
-      } else if (includeItem.model === Reminder) {
-        assert(includeItem.as, 'Missing "as" parameter for Reminder include');
+      } else if (includeItem.model === InterviewReminder) {
+        assert(includeItem.as, 'Missing "as" parameter for InterviewReminder include');
         if (includeItem.as === 'pre_interview_reminder') {
-          buildData.pre_interview_reminder = _.findWhere(reminderMocks,
+          buildData.pre_interview_reminder = _.findWhere(interviewReminderMocks,
             {id: attrs.pre_interview_reminder_id});
         } else if (includeItem.as === 'post_interview_reminder') {
-          buildData.post_interview_reminder = _.findWhere(reminderMocks,
+          buildData.post_interview_reminder = _.findWhere(interviewReminderMocks,
             {id: attrs.post_interview_reminder_id});
         } else {
-          throw new Error('Unrecognized "as" parameter for Reminder: "' + includeItem.as + '"');
+          throw new Error('Unrecognized "as" parameter for InterviewReminder: "' + includeItem.as + '"');
         }
       // Otherwise, complain and leave
       } else {

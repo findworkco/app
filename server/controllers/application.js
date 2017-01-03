@@ -4,10 +4,10 @@ var _ = require('underscore');
 var app = require('../index.js').app;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
+var ApplicationReminder = require('../models/application-reminder');
 var applicationMockData = require('../models/application-mock-data');
 var companyMockData = require('../models/company-mock-data');
 var Interview = require('../models/interview');
-var Reminder = require('../models/reminder');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Define common applications for redirects
@@ -121,9 +121,9 @@ var resolveApplicationById = exports.resolveApplicationById = function (params) 
         // Past interviews, upcoming interviews, closest upcoming interview, closest past interview (last contact)
         // DEV: We additionally load closest upcoming/past interview for nav reuse
         {model: Interview},
-        {model: Reminder, as: 'saved_for_later_reminder'},
-        {model: Reminder, as: 'waiting_for_response_reminder'},
-        {model: Reminder, as: 'received_offer_reminder'}
+        {model: ApplicationReminder, as: 'saved_for_later_reminder'},
+        {model: ApplicationReminder, as: 'waiting_for_response_reminder'},
+        {model: ApplicationReminder, as: 'received_offer_reminder'}
       ]
     };
     if (this.useMocks) {

@@ -1,6 +1,6 @@
 // Load in our dependencies
 var Interview = require('../interview');
-var Reminder = require('../reminder');
+var ApplicationReminder = require('../application-reminder');
 
 // Define common query includes
 // DEV: We place these in a separate file from models to prevent circular dependencies between models
@@ -11,7 +11,7 @@ exports.closestUpcomingInterview = {model: Interview};
 exports.applicationNavContent = [
   // TODO: Selectively only load closest upcoming/past interviews
   {model: Interview}, // Closest upcoming interview, closest past interview (last contact)
-  {model: Reminder, as: 'saved_for_later_reminder'},
-  {model: Reminder, as: 'waiting_for_response_reminder'},
-  {model: Reminder, as: 'received_offer_reminder'}
+  {model: ApplicationReminder, as: 'saved_for_later_reminder'},
+  {model: ApplicationReminder, as: 'waiting_for_response_reminder'},
+  {model: ApplicationReminder, as: 'received_offer_reminder'}
 ];
