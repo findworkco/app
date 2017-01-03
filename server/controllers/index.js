@@ -1,4 +1,5 @@
 // Load in our dependencies
+var _ = require('underscore');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
@@ -121,25 +122,39 @@ app.get('/schedule', [
       };
     }
 
-    // If we are loading mock data, return mock data
-    var receivedOfferOptions = {
+    // Populate our options
+    // DEV: We fetch active applications separately so we can add limits to each type
+    // TODO: Be sure to sort queries by upcoming date
+    // TODO: Warn ourselves if we see a date that was before today for upcoming interviews
+    function getOptions(status, options) {
+      return _.extend({
+        where: {
+          candidate_id: req.candidate.id,
+          status: status
+        },
+        limit: 20
+      }, options);
+    }
+    var receivedOfferOptions = getOptions(Application.STATUSES.RECEIVED_OFFER, {
       include: [
         includes.closestPastInterview,
         {model: ApplicationReminder, as: 'received_offer_reminder'}
       ]
-    };
-    var upcomingInterviewOptions = {
+    });
+    var upcomingInterviewOptions = getOptions(Application.STATUSES.UPCOMING_INTERVIEW, {
       include: [includes.closestUpcomingInterview]
-    };
-    var waitingForResponseOptions = {
+    });
+    var waitingForResponseOptions = getOptions(Application.STATUSES.WAITING_FOR_RESPONSE, {
       include: [
         includes.closestPastInterview,
         {model: ApplicationReminder, as: 'waiting_for_response_reminder'}
       ]
-    };
-    var savedForLaterOptions = {
+    });
+    var savedForLaterOptions = getOptions(Application.STATUSES.SAVED_FOR_LATER, {
       include: [{model: ApplicationReminder, as: 'saved_for_later_reminder'}]
-    };
+    });
+
+    // If we are loading mock data, return mock data
     if (this.useMocks) {
       return {
         receivedOfferApplications: req.query.get('received_offer') === 'true' ?
@@ -154,17 +169,24 @@ app.get('/schedule', [
     }
 
     // Return Sequelize queries
-    // DEV: We fetch active applications separately so we can add limits to each type
-    // TODO: Be sure to sort queries by upcoming date
-    // TODO: Warn ourselves if we see a date that was before today for upcoming interviews
     return {
-      receivedOfferApplications: [],
-      upcomingInterviewApplications: applicationMockData.getUpcomingInterviewApplications(upcomingInterviewOptions),
-      waitingForResponseApplications: applicationMockData.getWaitingForResponseApplications(waitingForResponseOptions),
-      savedForLaterApplications: []
+      receivedOfferApplications: Application.findAll(receivedOfferOptions),
+      upcomingInterviewApplications: Application.findAll(upcomingInterviewOptions),
+      waitingForResponseApplications: Application.findAll(waitingForResponseOptions),
+      savedForLaterApplications: Application.findAll(savedForLaterOptions)
     };
   }),
   function scheduleShow (req, res, next) {
+    // If we have more applications than expected, notify ourselves
+    if (req.models.receivedOfferApplications.length > 10 ||
+        req.models.upcomingInterviewApplications.length > 10 ||
+        req.models.waitingForResponseApplications.length > 10 ||
+        req.models.savedForLaterApplications.length > 10) {
+      req.captureError(new Error('Candidate has at least 10 applications of a single type, ' +
+        'we should add limits and build "View more" functionality'));
+    }
+
+    // Render our page
     res.render('schedule.jade');
   }
 ]);

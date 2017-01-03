@@ -11,8 +11,9 @@ dist/
 # Temporary assets
 public/images/screenshots/*.jpg
 
-# Server test assets
+# Server development/test assets
 test-redis.pid
+queries.log
 
 # Visual test assets
 gemini/

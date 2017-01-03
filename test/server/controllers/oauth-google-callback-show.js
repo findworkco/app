@@ -207,7 +207,7 @@ scenario.route('A request to GET /oauth/google/callback', {
         expect(candidates).to.have.length(1);
         expect(candidates[0].get('id')).to.be.a('String');
         expect(candidates[0].get('email')).to.equal('mock-email@mock-domain.test');
-        expect(candidates[0].get('google_access_token')).to.equal('mock_access_token');
+        expect(candidates[0].get('google_access_token')).to.equal('mock_access_token|default__candidate');
         expect(candidates[0].get('created_at')).to.be.a('Date');
         expect(candidates[0].get('updated_at')).to.be.a('Date');
         done();
@@ -264,7 +264,7 @@ scenario.route('A request to GET /oauth/google/callback', {
       Candidate.findAll().asCallback(function handleCandidates (err, candidates) {
         if (err) { return done(err); }
         expect(candidates).to.have.length(1);
-        expect(candidates[0].get('google_access_token')).to.equal('mock_access_token');
+        expect(candidates[0].get('google_access_token')).to.equal('mock_access_token|default__candidate');
         done();
       });
     });

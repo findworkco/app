@@ -1,6 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
+var async = require('async');
 var HttpError = require('http-errors');
 var config = require('../index.js').config;
 var includes = require('../models/utils/includes');
@@ -8,6 +9,9 @@ var applicationMockData = require('../models/application-mock-data');
 
 // Define helper functions
 function noop() {}
+function isModel(val) {
+  return val && val.$modelOptions;
+}
 
 // TODO: Move to pattern with multiple functions;
 //   retrieve all models `loadModels(function (req, res) { req.models = {a: A.get(1)} })`,
@@ -30,7 +34,6 @@ exports.resolveModelsAsLocals = function (params, resolver) {
   // Return our resolver middleware
   return function resolveModelsAsLocalsFn (req, res, next) {
     // Define our models base
-    // DEV: When we move to Sequelize, we will load from a promise via `.asCallback()` and update the object
     var unresolvedModels = {};
 
     // Determine if we want to use mocks/not
@@ -49,7 +52,6 @@ exports.resolveModelsAsLocals = function (params, resolver) {
     // If we want to load nav content
     if (params.nav !== false) {
       // If the user is logged in, provide mock applications
-      // TODO: When we move to Sequelize for model loading, make this load in parallel with other data
       unresolvedModels.recentlyViewedApplications = [];
       if (req.candidate) {
         // Fallback our application ids
@@ -59,15 +61,19 @@ exports.resolveModelsAsLocals = function (params, resolver) {
         // Resolve our current set of application ids
         // TODO: When we move to Sequelize, use user id in query
         var applicationOptions = {
+          where: {
+            candidate_id: req.candidate.id,
+            id: {$in: recentlyViewedApplicationIds}
+          },
           include: includes.applicationNavContent
         };
         if (resolverContext.useMocks) {
-          unresolvedModels.recentlyViewedApplications = recentlyViewedApplicationIds.map(
+          unresolvedModels.recentlyViewedApplications = applicationOptions.where.id.$in.map(
               function getApplicationById (id) {
             return applicationMockData.getById(id, applicationOptions);
           });
         } else {
-          unresolvedModels.recentlyViewedApplications = recentlyViewedApplicationIds.map(
+          unresolvedModels.recentlyViewedApplications = applicationOptions.where.id.$in.map(
               function getApplicationById (id) {
             return applicationMockData.getById(id, applicationOptions);
           });
@@ -89,14 +95,27 @@ exports.resolveModelsAsLocals = function (params, resolver) {
       unresolvedModels[key] = val;
     });
 
-    // Mock waiting for models to load
-    process.nextTick(function handleNextTick () {
-      // Mock loaded async variables
-      var err = null;
-      var models = _.clone(unresolvedModels);
-
-      // If we are loading nav, the candidate is logged in, and its models loaded successfully
-      if (params.nav !== false && req.candidate && models.recentlyViewedApplications) {
+    // Wait for async loading and save models onto another object
+    // DEV: We use a separate object to prevent exposing promises to views
+    async.mapValues(unresolvedModels, function waitForModelToLoad (val, key, cb) {
+      // If the model is a promise, wait for it to resolve and callback
+      // DEV: We use name checking as we don't know if a promise is Bluebird, ES6, or other
+      if (val && val.constructor.name === 'Promise') {
+        val.asCallback(cb);
+      // Otherwise (e.g. model is a mock), callback with data
+      } else if (val === null || Array.isArray(val) || isModel(val) || val._serializeExempt) {
+        // DEV: null is for 404 mocks, `_serializeExempt` is for company data mocks
+        // DEV: We use `nextTick` to avoid zalgo
+        process.nextTick(function handleNextTick () {
+          cb(null, val);
+        });
+      } else {
+        cb(new Error('Unrecognized model type in `resolveModelsAsLocals`. ' +
+          'Expected Promise, array, or Sequelize.Instance but received something else'));
+      }
+    }, function handleErr (err, models) {
+      // If we are loading from nav and the models loaded successfully
+      if (params.nav !== false && recentlyViewedApplicationIds && models.recentlyViewedApplications) {
         // If any of the models have been deleted, update our ids
         var getApplicationIds = function (applications) {
           return applications.map(function getApplicationId (application) {
@@ -152,7 +171,7 @@ exports.resolveModelsAsLocals = function (params, resolver) {
             }
 
             // Serialize our model
-            assert(model.$modelOptions, '`resolveModelsAsLocals` expected "' + key + '" to be a model but it wasn\'t');
+            assert(isModel(model), '`resolveModelsAsLocals` expected "' + key + '" to be a model but it wasn\'t');
             return model.get({plain: true});
           }
           if (Array.isArray(modelOrModels)) {

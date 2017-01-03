@@ -1,9 +1,12 @@
 // Load in our dependencies
+var assert = require('assert');
 var url = require('url');
 var _ = require('underscore');
+var bodyParserMultiDict = require('body-parser-multidict');
 var SpyServerFactory = require('spy-server');
-var config = require('./server.js').config;
-var serverUtils = require('./server.js');
+var dbFixtures = require('./db-fixtures');
+var config = require('./server').config;
+var serverUtils = require('./server');
 
 // Generate our server and set up fixtures
 var fakeGoogleFactory = new SpyServerFactory({port: config.fakeGoogle.port});
@@ -32,7 +35,7 @@ fakeGoogleFactory.addFixture('/o/oauth2/v2/auth#valid', {
     // Add on valid state and code placeholder
     // DEV: Other fixtures will take care of considering code valid/not
     redirectUrl.query = _.extend(redirectUrl.query, {
-      code: 'mock_code',
+      code: dbFixtures.CANDIDATE_DEFAULT, // Use db fixture key as code
       state: req.query.state
     });
 
@@ -69,17 +72,23 @@ fakeGoogleFactory.addFixture('/oauth2/v4/token#invalid-code', {
 fakeGoogleFactory.addFixture('/oauth2/v4/token#valid-code', {
   method: 'post',
   route: '/oauth2/v4/token',
-  response: function (req, res) {
-    // Intercepted by adding a `console.log` in `oauth/lib/oauth2.js` and performing normal login via UI
-    //   https://github.com/ciaranj/node-oauth/blob/0.9.14/lib/oauth2.js#L183
-    //   console.log(data);
-    res.status(200).json({
-      access_token: 'mock_access_token',
-      token_type: 'Bearer',
-      expires_in: 3600,
-      id_token: 'mock_id_token'
-    });
-  }
+  response: [
+    bodyParserMultiDict.urlencoded(),
+    function (req, res) {
+      // Intercepted by adding a `console.log` in `oauth/lib/oauth2.js` and performing normal login via UI
+      //   https://github.com/ciaranj/node-oauth/blob/0.9.14/lib/oauth2.js#L183
+      //   console.log(data);
+      // Pass along code as access token
+      // DEV: We don't use the fixtured access token so we can test it gets updated properly
+      var code = req.body.fetch('code');
+      res.status(200).json({
+        access_token: 'mock_access_token|' + code,
+        token_type: 'Bearer',
+        expires_in: 3600,
+        id_token: 'mock_id_token'
+      });
+    }
+  ]
 });
 
 // https://github.com/jaredhanson/passport-google-oauth2/blob/v1.0.0/lib/strategy.js#L54
@@ -110,29 +119,31 @@ fakeGoogleFactory.addFixture('/plus/v1/people/me#invalid-access-token', {
   }
 });
 
-var validMeInfo = {
-  kind: 'plus#person',
-  etag: '"mock-etag"',
-  emails: [{
-    value: 'mock-email@mock-domain.test',
-    type: 'account'
-  }],
-  objectType: 'person',
-  id: '1234567890',
-  displayName: '',
-  name: {
-    familyName: '',
-    givenName: ''
-  },
-  image: {
-    url: 'https://mock-googleusercontent.test/mock/photo.jpg?sz=50',
-    isDefault: false
-  },
-  isPlusUser: false,
-  circledByCount: 0,
-  verified: false,
-  domain: 'mock-domain.test'
-};
+function getValidMeInfo(email) {
+  return {
+    kind: 'plus#person',
+    etag: '"mock-etag"',
+    emails: [{
+      value: email,
+      type: 'account'
+    }],
+    objectType: 'person',
+    id: '1234567890',
+    displayName: '',
+    name: {
+      familyName: '',
+      givenName: ''
+    },
+    image: {
+      url: 'https://mock-googleusercontent.test/mock/photo.jpg?sz=50',
+      isDefault: false
+    },
+    isPlusUser: false,
+    circledByCount: 0,
+    verified: false,
+    domain: 'mock-domain.test'
+  };
+}
 fakeGoogleFactory.addFixture('/plus/v1/people/me#valid-access-token', {
   method: 'get',
   route: '/plus/v1/people/me',
@@ -140,7 +151,11 @@ fakeGoogleFactory.addFixture('/plus/v1/people/me#valid-access-token', {
     // Intercepted by adding a `console.log` in `oauth/lib/oauth2.js` and performing normal login via UI
     //   https://github.com/jaredhanson/passport-google-oauth2/blob/v1.0.0/lib/strategy.js#L103
     //   console.log(body);
-    res.status(200).json(validMeInfo);
+    var accessToken = req.query.access_token; assert(accessToken);
+    var candidateKey = accessToken.replace('mock_access_token|', '');
+    var candidate = dbFixtures[candidateKey];
+    assert(candidate, 'Unable to find candidate by key "' + candidateKey + '" (token: ' + accessToken + ')');
+    res.status(200).json(getValidMeInfo(candidate.data.email));
   }
 });
 
@@ -150,7 +165,7 @@ fakeGoogleFactory.addFixture('/plus/v1/people/me#no-account-email', {
   response: function (req, res) {
     res.status(200).json(_.defaults({
       emails: []
-    }, validMeInfo));
+    }, getValidMeInfo('')));
   }
 });
 

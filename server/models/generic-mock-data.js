@@ -14,7 +14,6 @@ var InterviewReminder = require('./interview-reminder');
 //      These use CONSTANT_NAME structures and should be used directly as they cover multiple fixtures in 1
 
 // Define collection for data
-var fixtures = exports.fixtures = {};
 var candidates = exports.candidates = [];
 var applications = exports.applications = [];
 var interviews = exports.interviews = [];
@@ -25,8 +24,8 @@ var interviewReminders = exports.interviewReminders = [];
 var fixtureIds = {};
 function registerFixture(key, mockDataArr, info) {
   // Save our fixture/mock data
-  assert.strictEqual(fixtures[key], undefined, 'Fixture already exists');
-  fixtures[key] = info;
+  assert.strictEqual(exports[key], undefined, 'Fixture already exists');
+  exports[key] = info;
   mockDataArr.push(info.data);
 
   // Verify we have no shared keys to prevent accidental false positives
@@ -58,11 +57,11 @@ function addInterviewReminder(key, data) {
 }
 
 // Define default fixtures overall
-fixtures.DEFAULT_FIXTURES = ['default__candidate'];
+exports.DEFAULT_FIXTURES = ['default__candidate'];
 
 // Candidates
 var DEFAULT_CANDIDATE_ID = 'default0-0000-0000-0000-000000000000';
-fixtures.CANDIDATE_DEFAULT = [
+exports.CANDIDATE_DEFAULT = [
   addCandidate('default__candidate', {
     id: DEFAULT_CANDIDATE_ID,
     email: 'mock-email@mock-domain.test',
@@ -70,8 +69,17 @@ fixtures.CANDIDATE_DEFAULT = [
     welcome_email_sent: true
   })
 ];
-fixtures.CANDIDATE_NEW = [
+exports.CANDIDATE_ALT = [
+  addCandidate('alt__candidate', {
+    id: 'alt00000-0000-0000-0000-000000000000',
+    email: 'alt-email@mock-domain.test',
+    google_access_token: 'mock_access_token_fixtured_alt',
+    welcome_email_sent: true
+  })
+];
+exports.CANDIDATE_NEW = [
   addCandidate('new__candidate', {
+    id: 'newbie00-0000-0000-0000-000000000000',
     email: 'mock-email@mock-domain.test',
     google_access_token: 'mock_access_token_fixtured',
     welcome_email_sent: false
@@ -88,52 +96,59 @@ addCandidate('todd__candidate', {
 });
 
 // Received offer applications
-addApplication('received-offer__application', {
-  id: 'abcdef-black-mesa-uuid',
-  // Fri Jan 8
-  application_date_moment: moment.tz('2015-12-01', 'US-America/Chicago'),
-  archived_at_moment: null,
-  company_name: 'Black Mesa',
-  name: 'Black Mesa',
-  // Mon Jan 25
-  received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid',
-  notes: '300 employees, all engineers/scientists',
-  posting_url: 'http://www.nature.com/naturejobs/science/jobs/123456-researcher',
-  status: Application.STATUSES.RECEIVED_OFFER
-});
-addApplicationReminder('received-offer__reminder--application', {
-  id: applications[applications.length - 1].received_offer_reminder_id,
-  application_id: applications[applications.length - 1].id,
-  type: ApplicationReminder.TYPES.RECEIVED_OFFER,
-  date_time_moment: moment.tz('2016-01-01T12:00', 'US-America/Chicago'),
-  is_enabled: true
-});
-addInterview('received-offer__interview', {
-  id: 'abcdef-black-mesa-interview-uuid',
-  application_id: applications[applications.length - 1].id,
-  // Wed Jan 20 at 2:00PM CST
-  date_time_moment: moment.tz('2015-12-14T14:00', 'US-America/Chicago'),
-  details: 'Go to underground complex',
-  pre_interview_reminder_id: 'abcdef-black-mesa-reminder-pre-interview-uuid',
-  post_interview_reminder_id: 'abcdef-black-mesa-reminder-post-interview-uuid'
-});
-addInterviewReminder('received-offer__reminder--pre-interview', {
-  id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2015-12-14T11:00', 'US-America/Chicago'),
-  is_enabled: false
-});
-addInterviewReminder('received-offer__reminder--post-interview', {
-  id: interviews[interviews.length - 1].post_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.POST_INTERVIEW,
-  date_time_moment: moment.tz('2015-12-14T17:00', 'US-America/Chicago'),
-  is_enabled: false
-});
+exports.APPLICATION_RECEIVED_OFFER = [
+  addApplication('received-offer__application', {
+    id: 'abcdef-black-mesa-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Fri Jan 8
+    application_date_moment: moment.tz('2015-12-01', 'US-America/Chicago'),
+    archived_at_moment: null,
+    company_name: 'Black Mesa',
+    name: 'Black Mesa',
+    // Mon Jan 25
+    received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid',
+    notes: '300 employees, all engineers/scientists',
+    posting_url: 'http://www.nature.com/naturejobs/science/jobs/123456-researcher',
+    status: Application.STATUSES.RECEIVED_OFFER
+  }),
+  addApplicationReminder('received-offer__reminder--application', {
+    id: applications[applications.length - 1].received_offer_reminder_id,
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    type: ApplicationReminder.TYPES.RECEIVED_OFFER,
+    date_time_moment: moment.tz('2016-01-01T12:00', 'US-America/Chicago'),
+    is_enabled: true
+  }),
+  addInterview('received-offer__interview', {
+    id: 'abcdef-black-mesa-interview-uuid',
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Wed Jan 20 at 2:00PM CST
+    date_time_moment: moment.tz('2015-12-14T14:00', 'US-America/Chicago'),
+    details: 'Go to underground complex',
+    pre_interview_reminder_id: 'black-mesa-reminder-pre-int-uuid',
+    post_interview_reminder_id: 'black-mesa-reminder-post-int-uuid'
+  }),
+  addInterviewReminder('received-offer__reminder--pre-interview', {
+    id: interviews[interviews.length - 1].pre_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.PRE_INTERVIEW,
+    date_time_moment: moment.tz('2015-12-14T11:00', 'US-America/Chicago'),
+    is_enabled: false
+  }),
+  addInterviewReminder('received-offer__reminder--post-interview', {
+    id: interviews[interviews.length - 1].post_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.POST_INTERVIEW,
+    date_time_moment: moment.tz('2015-12-14T17:00', 'US-America/Chicago'),
+    is_enabled: false
+  })
+];
 
 // Upcoming interview applications
-fixtures.APPLICATION_UPCOMING_INTERVIEW = [
+exports.APPLICATION_UPCOMING_INTERVIEW = [
   addApplication('upcoming-interview__application', {
     id: 'abcdef-umbrella-corp-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
@@ -182,89 +197,101 @@ fixtures.APPLICATION_UPCOMING_INTERVIEW = [
     is_enabled: false
   })
 ];
-addApplication('upcoming-interview-2__application', {
-  id: 'abcdef-globo-gym-uuid',
-  // Mon Feb 1
-  application_date_moment: moment.tz('2016-02-01', 'US-America/Chicago'),
-  archived_at_moment: null,
-  company_name: null,
-  name: 'Globo Gym',
-  notes: '',
-  posting_url: 'http://job-openings.monster.com/monster/abcdef-ghij-klmn-opqr-stuvwxyz',
-  status: Application.STATUSES.UPCOMING_INTERVIEW
-});
-addInterview('upcoming-interview-2__interview', {
-  id: 'abcdef-globo-gym-interview-uuid',
-  application_id: applications[applications.length - 1].id,
-  // Mon Mar 14 at 2:00PM CST
-  date_time_moment: moment.tz('2022-03-14T14:00', 'US-America/Chicago'),
-  details: '',
-  pre_interview_reminder_id: 'abcdef-globo-gym-reminder-pre-interview-uuid',
-  post_interview_reminder_id: 'abcdef-globo-gym-reminder-post-interview-uuid'
-});
-addInterviewReminder('upcoming-interview-2__reminder--pre-interview', {
-  id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2022-03-14T11:00', 'US-America/Chicago'),
-  is_enabled: false
-});
-addInterviewReminder('upcoming-interview-2__reminder--post-interview', {
-  id: interviews[interviews.length - 1].post_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.POST_INTERVIEW,
-  date_time_moment: moment.tz('2022-03-14T17:00', 'US-America/Chicago'),
-  is_enabled: false
-});
-addInterview('upcoming-interview-2__interview--past-1', {
-  id: 'abcdef-globo-gym-interview-past-1-uuid',
-  application_id: applications[applications.length - 1].id,
-  // Thu Feb 18 at 9:00AM CST
-  date_time_moment: moment.tz('2016-02-18T09:00', 'US-America/Chicago'),
-  details: '',
-  pre_interview_reminder_id: 'abcdef-globo-gym-reminder-pre-interview-past-1-uuid',
-  post_interview_reminder_id: 'abcdef-globo-gym-reminder-post-interview-past-1-uuid'
-});
-addInterviewReminder('upcoming-interview-2__reminder--pre-interview--past-1', {
-  id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2016-02-18T06:00', 'US-America/Chicago'),
-  is_enabled: false
-});
-addInterviewReminder('upcoming-interview-2__reminder--post-interview--past-1', {
-  id: interviews[interviews.length - 1].post_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.POST_INTERVIEW,
-  date_time_moment: moment.tz('2016-02-18T12:00', 'US-America/Chicago'),
-  is_enabled: false
-});
-addInterview('upcoming-interview-2__interview--past-2', {
-  id: 'abcdef-globo-gym-interview-past-2-uuid',
-  application_id: applications[applications.length - 1].id,
-  // Wed Mar 2 at 6:00PM CST
-  date_time_moment: moment.tz('2016-03-02T18:00', 'US-America/Chicago'),
-  details: '',
-  pre_interview_reminder_id: 'abcdef-globo-gym-reminder-pre-interview-past-2-uuid',
-  post_interview_reminder_id: 'abcdef-globo-gym-reminder-post-interview-past-2-uuid'
-});
-addInterviewReminder('upcoming-interview-2__reminder--pre-interview--past-2', {
-  id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2016-03-02T15:00', 'US-America/Chicago'),
-  is_enabled: false
-});
-addInterviewReminder('upcoming-interview-2__reminder--post-interview--past-2', {
-  id: interviews[interviews.length - 1].post_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.POST_INTERVIEW,
-  date_time_moment: moment.tz('2016-03-02T21:00', 'US-America/Chicago'),
-  is_enabled: false
-});
+exports.APPLICATION_UPCOMING_INTERVIEW_2 = [
+  addApplication('upcoming-interview-2__application', {
+    id: 'abcdef-globo-gym-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Mon Feb 1
+    application_date_moment: moment.tz('2016-02-01', 'US-America/Chicago'),
+    archived_at_moment: null,
+    company_name: null,
+    name: 'Globo Gym',
+    notes: '',
+    posting_url: 'http://job-openings.monster.com/monster/abcdef-ghij-klmn-opqr-stuvwxyz',
+    status: Application.STATUSES.UPCOMING_INTERVIEW
+  }),
+  addInterview('upcoming-interview-2__interview', {
+    id: 'abcdef-globo-gym-interview-uuid',
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Mon Mar 14 at 2:00PM CST
+    date_time_moment: moment.tz('2022-03-14T14:00', 'US-America/Chicago'),
+    details: '',
+    pre_interview_reminder_id: 'globo-gym-reminder-pre-int-uuid',
+    post_interview_reminder_id: 'globo-gym-reminder-post-int-uuid'
+  }),
+  addInterviewReminder('upcoming-interview-2__reminder--pre-interview', {
+    id: interviews[interviews.length - 1].pre_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.PRE_INTERVIEW,
+    date_time_moment: moment.tz('2022-03-14T11:00', 'US-America/Chicago'),
+    is_enabled: false
+  }),
+  addInterviewReminder('upcoming-interview-2__reminder--post-interview', {
+    id: interviews[interviews.length - 1].post_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.POST_INTERVIEW,
+    date_time_moment: moment.tz('2022-03-14T17:00', 'US-America/Chicago'),
+    is_enabled: false
+  }),
+  addInterview('upcoming-interview-2__interview--past-1', {
+    id: 'abcdef-globo-gym-interview-past-1-uuid',
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Thu Feb 18 at 9:00AM CST
+    date_time_moment: moment.tz('2016-02-18T09:00', 'US-America/Chicago'),
+    details: '',
+    pre_interview_reminder_id: 'globo-gym-reminder-pre-int-pa-1-uuid',
+    post_interview_reminder_id: 'globo-gym-reminder-post-int-pa-1-uuid'
+  }),
+  addInterviewReminder('upcoming-interview-2__reminder--pre-interview--past-1', {
+    id: interviews[interviews.length - 1].pre_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.PRE_INTERVIEW,
+    date_time_moment: moment.tz('2016-02-18T06:00', 'US-America/Chicago'),
+    is_enabled: false
+  }),
+  addInterviewReminder('upcoming-interview-2__reminder--post-interview--past-1', {
+    id: interviews[interviews.length - 1].post_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.POST_INTERVIEW,
+    date_time_moment: moment.tz('2016-02-18T12:00', 'US-America/Chicago'),
+    is_enabled: false
+  }),
+  addInterview('upcoming-interview-2__interview--past-2', {
+    id: 'abcdef-globo-gym-interview-past-2-uuid',
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Wed Mar 2 at 6:00PM CST
+    date_time_moment: moment.tz('2016-03-02T18:00', 'US-America/Chicago'),
+    details: '',
+    pre_interview_reminder_id: 'globo-gym-reminder-pre-int-pa-2-uuid',
+    post_interview_reminder_id: 'globo-gym-reminder-post-int-pa-2-uuid'
+  }),
+  addInterviewReminder('upcoming-interview-2__reminder--pre-interview--past-2', {
+    id: interviews[interviews.length - 1].pre_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.PRE_INTERVIEW,
+    date_time_moment: moment.tz('2016-03-02T15:00', 'US-America/Chicago'),
+    is_enabled: false
+  }),
+  addInterviewReminder('upcoming-interview-2__reminder--post-interview--past-2', {
+    id: interviews[interviews.length - 1].post_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.POST_INTERVIEW,
+    date_time_moment: moment.tz('2016-03-02T21:00', 'US-America/Chicago'),
+    is_enabled: false
+  })
+];
 
 // Waiting for response applications
-fixtures.APPLICATION_WAITING_FOR_RESPONSE = [
+exports.APPLICATION_WAITING_FOR_RESPONSE = [
   addApplication('waiting-for-response__application', {
     id: 'abcdef-sky-networks-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
@@ -317,7 +344,7 @@ fixtures.APPLICATION_WAITING_FOR_RESPONSE = [
 ];
 
 // Saved for later applications
-fixtures.APPLICATION_SAVED_FOR_LATER = [
+exports.APPLICATION_SAVED_FOR_LATER = [
   addApplication('saved-for-later__application', {
     id: 'abcdef-intertrode-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
@@ -342,38 +369,44 @@ fixtures.APPLICATION_SAVED_FOR_LATER = [
 ];
 
 // Archived applications
-addApplication('archived__application', {
-  id: 'abcdef-monstromart-uuid',
-  // Fri Jan 8
-  application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
-  // Mon Jan 18 at 3:00PM CST
-  archived_at_moment: moment.tz('2016-01-18T15:00', 'US-America/Chicago'),
-  company_name: 'Monstromart',
-  status: Application.STATUSES.ARCHIVED,
-  posting_url: 'https://github.com/about/jobs',
-  name: 'Monstromart',
-  notes: 'Sounds like a great career opportunity'
-});
-addInterview('archived__interview', {
-  id: 'abcdef-monstromart-interview-uuid',
-  application_id: applications[applications.length - 1].id,
-  // Fri Jan 15 at 9:00AM PST
-  date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Los_Angeles'),
-  details: 'Wait for call from Bob',
-  pre_interview_reminder_id: 'abcdef-monstromart-reminder-pre-interview-uuid',
-  post_interview_reminder_id: 'abcdef-monstromart-reminder-post-interview-uuid'
-});
-addInterviewReminder('archived__reminder--pre-interview', {
-  id: interviews[interviews.length - 1].pre_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.PRE_INTERVIEW,
-  date_time_moment: moment.tz('2016-01-15T08:00', 'US-America/Los_Angeles'),
-  is_enabled: true
-});
-addInterviewReminder('archived__reminder--post-interview', {
-  id: interviews[interviews.length - 1].post_interview_reminder_id,
-  interview_id: interviews[interviews.length - 1].id,
-  type: InterviewReminder.TYPES.POST_INTERVIEW,
-  date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
-  is_enabled: true
-});
+exports.APPLICATION_ARCHIVED = [
+  addApplication('archived__application', {
+    id: 'abcdef-monstromart-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Fri Jan 8
+    application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
+    // Mon Jan 18 at 3:00PM CST
+    archived_at_moment: moment.tz('2016-01-18T15:00', 'US-America/Chicago'),
+    company_name: 'Monstromart',
+    status: Application.STATUSES.ARCHIVED,
+    posting_url: 'https://github.com/about/jobs',
+    name: 'Monstromart',
+    notes: 'Sounds like a great career opportunity'
+  }),
+  addInterview('archived__interview', {
+    id: 'abcdef-monstromart-interview-uuid',
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Fri Jan 15 at 9:00AM PST
+    date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Los_Angeles'),
+    details: 'Wait for call from Bob',
+    pre_interview_reminder_id: 'monstromart-reminder-pre-int-uuid',
+    post_interview_reminder_id: 'monstromart-reminder-post-int-uuid'
+  }),
+  addInterviewReminder('archived__reminder--pre-interview', {
+    id: interviews[interviews.length - 1].pre_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.PRE_INTERVIEW,
+    date_time_moment: moment.tz('2016-01-15T08:00', 'US-America/Los_Angeles'),
+    is_enabled: true
+  }),
+  addInterviewReminder('archived__reminder--post-interview', {
+    id: interviews[interviews.length - 1].post_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.POST_INTERVIEW,
+    date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
+    is_enabled: true
+  })
+];

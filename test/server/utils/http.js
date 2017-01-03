@@ -6,6 +6,7 @@ var assert = require('assert');
 var url = require('url');
 var cheerio = require('cheerio');
 var request = require('request');
+var dbFixtures = require('./db-fixtures');
 var serverUtils = require('./server');
 var kueQueue = require('./server').app.kueQueue;
 
@@ -206,9 +207,9 @@ exports.session = {
   },
   // Define shorthand login with default candidate
   login: function () {
-    return this.loginAs('mock-candidate');
+    return this.loginAs(dbFixtures.CANDIDATE_DEFAULT);
   },
-  loginAs: function (candidateName) {
+  loginAs: function (candidateKey) {
     before(function loginAsFn () {
       // Verify a session already has been started
       assert(this.jar, '`this.jar` doesn\'t exists for `httpUtils.session` ' +
@@ -236,7 +237,7 @@ exports.session = {
       exports.session._save({
         url: serverUtils.getUrl({
           pathname: '/oauth/google/callback',
-          query: {action: 'login', state: state, code: candidateName}
+          query: {action: 'login', state: state, code: candidateKey}
         }),
         followRedirect: true,
         expectedStatusCode: 200
