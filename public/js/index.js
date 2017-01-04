@@ -30,6 +30,7 @@ $(function handleReady () {
       $el.datepicker({
         // 2016-01-08 (same as native)
         //   http://stackoverflow.com/a/9519493
+        //   https://www.w3.org/TR/2012/WD-html-markup-20120329/input.date.html#input.date.attrs.value
         format: 'yyyy-mm-dd',
         todayBtn: 'linked',
         todayHighlight: true
@@ -46,9 +47,11 @@ $(function handleReady () {
     // TODO: Add component test to verify when we click a new time it changes
     //   and when we return to the original they are the same (verifies moment + component consistency)
     $('input[type=time]').each(function handleTimeInput () {
-      // DEV: Native will send HH:MM (e.g. 23:10) but can vary in presentation
-      //   We will use HH:MM AM/PM (e.g. 11:10PM) for user-friednliness
-      //   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
+      // DEV: Native will send HH:MM (e.g. 23:10, 7:20) but can vary in presentation
+      //   We will use HH:MM AM/PM (e.g. 11:10PM, 7:20AM) for user-friednliness
+      //   https://www.w3.org/TR/2012/WD-html-markup-20120329/input.time.html#input.time.attrs.value
+      //   https://tools.ietf.org/html/rfc3339#section-5.6
+      //   http://php.net/manual/en/function.date.php (used by jquery-timepicker)
       var $el = $(this);
       $el.timepicker({
         timeFormat: 'g:iA'

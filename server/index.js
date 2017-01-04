@@ -4,7 +4,6 @@ var domain = require('domain');
 var fs = require('fs');
 var url = require('url');
 var _ = require('underscore');
-var bodyParserMultiDict = require('body-parser-multidict');
 var connectFlash = require('connect-flash');
 var csurf = require('csurf');
 var express = require('express');
@@ -20,6 +19,7 @@ var raven = require('raven');
 var redis = require('redis');
 // DEV: ORM evaluation -- https://gist.github.com/twolfson/13eeeb547271c8ee32707f7b02c2ed90
 var Sequelize = require('sequelize');
+var bodyParserMultiDict = require('./utils/body-parser-multidict');
 var sentryUtils = require('./utils/sentry');
 var appLocals = {
   _: require('underscore'),
