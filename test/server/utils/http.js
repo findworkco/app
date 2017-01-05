@@ -93,11 +93,23 @@ exports._save = function (options) {
           }
 
           // Otherwise, wait for `n` jobs to complete
-          var handleJobComplete = _.after(options.waitForJobs, function handleJobCompleteFn () {
-            // Unsubscribe our function and callback
+          // https://github.com/Automattic/kue/tree/v0.11.5#job-events
+          // https://github.com/Automattic/kue/tree/v0.11.5#queue-events
+          var removeListeners = function () {
+            kueQueue.removeListener('job failed', handleJobFailed);
             kueQueue.removeListener('job complete', handleJobComplete);
+          };
+          var handleJobFailed = function (id, err, result) { // jshint ignore:line
+            removeListeners();
+            cb(err);
+          };
+          var handleJobComplete = _.after(options.waitForJobs, // jshint ignore:line
+              function handleJobCompleteFn (id, result) {
+            // Unsubscribe our listeners and callback
+            removeListeners();
             cb();
           });
+          kueQueue.on('job failed', handleJobFailed);
           kueQueue.on('job complete', handleJobComplete);
         },
         function makeRequest (cb) {

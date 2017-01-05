@@ -30,10 +30,23 @@ scenario.model('A Base model with an ID field', function () {
   });
 });
 
-scenario.model('A Base model being created', function () {
+scenario.model('A Base model being created without a transaction', function () {
+  it('receives an assertion error', function (done) {
+    var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
+    candidate.save({_sourceType: 'server'}).asCallback(function handleSave (err) {
+      expect(err).to.not.equal(null);
+      expect(err.message).to.contain('All create/update/delete actions must be run in a transaction');
+      done();
+    });
+  });
+});
+
+scenario.model('A Base model being created with a transaction', function () {
   before(function createCandidate (done) {
     var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
-    candidate.save({_sourceType: 'server'}).asCallback(done);
+    Candidate.sequelize.transaction(function handleTransaction (t) {
+      return candidate.save({_sourceType: 'server', transaction: t});
+    }).asCallback(done);
   });
 
   it('is saved to an audit log', function (done) {
@@ -55,10 +68,10 @@ scenario.model('A Base model being created', function () {
   });
 });
 
-scenario.model('A Base model being updated', {
+scenario.model('A Base model being updated without a transaction', {
   dbFixtures: [dbFixtures.CANDIDATE_DEFAULT]
 }, function () {
-  before(function updateCandidate (done) {
+  it('receives an assertion error', function (done) {
     Candidate.find().asCallback(function handleFind (err, candidate) {
       if (err) { return done(err); }
       candidate.update({
@@ -66,6 +79,29 @@ scenario.model('A Base model being updated', {
       }, {
         _sourceType: 'candidates',
         _sourceId: candidate.get('id')
+      }).asCallback(function handleUpdate (err) {
+        expect(err).to.not.equal(null);
+        expect(err.message).to.contain('All create/update/delete actions must be run in a transaction');
+        done();
+      });
+    });
+  });
+});
+
+scenario.model('A Base model being updated with a transaction', {
+  dbFixtures: [dbFixtures.CANDIDATE_DEFAULT]
+}, function () {
+  before(function updateCandidate (done) {
+    Candidate.find().asCallback(function handleFind (err, candidate) {
+      if (err) { return done(err); }
+      Candidate.sequelize.transaction(function handleTransaction (t) {
+        return candidate.update({
+          email: 'mock-email2@mock-domain2.test'
+        }, {
+          _sourceType: 'candidates',
+          _sourceId: candidate.get('id'),
+          transaction: t
+        });
       }).asCallback(done);
     });
   });
@@ -90,15 +126,36 @@ scenario.model('A Base model being updated', {
   });
 });
 
-scenario.model('A Base model being deleted', {
+scenario.model('A Base model being deleted without a transaction', {
   dbFixtures: [dbFixtures.CANDIDATE_DEFAULT]
 }, function () {
-  before(function deleteCandidate (done) {
+  it('receives an assertion error', function (done) {
     Candidate.find().asCallback(function handleFind (err, candidate) {
       if (err) { return done(err); }
       candidate.destroy({
         _sourceType: 'candidates',
         _sourceId: candidate.get('id')
+      }).asCallback(function handleSave (err) {
+        expect(err).to.not.equal(null);
+        expect(err.message).to.contain('All create/update/delete actions must be run in a transaction');
+        done();
+      });
+    });
+  });
+});
+
+scenario.model('A Base model being deleted with a transaction', {
+  dbFixtures: [dbFixtures.CANDIDATE_DEFAULT]
+}, function () {
+  before(function deleteCandidate (done) {
+    Candidate.find().asCallback(function handleFind (err, candidate) {
+      if (err) { return done(err); }
+      Candidate.sequelize.transaction(function handleTransaction (t) {
+        return candidate.destroy({
+          _sourceType: 'candidates',
+          _sourceId: candidate.get('id'),
+          transaction: t
+        });
       }).asCallback(done);
     });
   });

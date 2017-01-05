@@ -136,10 +136,13 @@ registerJob(JOBS.SEND_WELCOME_EMAIL, 5, function sendWelcomeEmail (job, done) {
       if (err) { return done(err); }
 
       // Update our candidate with a `welcome_email_sent` attribute
-      candidate.update({
-        welcome_email_sent: true
-      }, {
-        _sourceType: AuditLog.SOURCE_QUEUE
+      app.sequelize.transaction(function handleTransaction (t) {
+        return candidate.update({
+          welcome_email_sent: true
+        }, {
+          _sourceType: AuditLog.SOURCE_QUEUE,
+          transaction: t
+        });
       }).asCallback(done);
     });
   });

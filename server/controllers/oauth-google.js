@@ -57,10 +57,13 @@ passport.use(new GoogleStrategy({
       // If we have a candidate
       if (_candidate) {
         // Update their access token (refresh token isn't defined for us)
-        _candidate.update({
-          google_access_token: accessToken
-        }, {
-          _sourceType: AuditLog.SOURCE_SERVER
+        app.sequelize.transaction(function handleTransaction (t) {
+          return _candidate.update({
+            google_access_token: accessToken
+          }, {
+            _sourceType: AuditLog.SOURCE_SERVER,
+            transaction: t
+          });
         }).asCallback(function handleUpdate (err) {
           // If there was an error, send it to Sentry (no need to bail)
           if (err) { app.sentryClient.captureError(err); }
@@ -78,8 +81,11 @@ passport.use(new GoogleStrategy({
         email: accountEmail,
         google_access_token: accessToken
       });
-      candidate.save({
-        _sourceType: AuditLog.SOURCE_SERVER
+      app.sequelize.transaction(function handleTransaction (t) {
+        return candidate.save({
+          _sourceType: AuditLog.SOURCE_SERVER,
+          transaction: t
+        });
       }).asCallback(function handleSave (err) {
         // If there was an error, callback with it
         if (err) { return cb(err); }

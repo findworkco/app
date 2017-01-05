@@ -55,7 +55,7 @@ scenario.model('A Candidate model being deleted which has applications, intervie
   });
   before(function deleteCandidate (done) {
     var candidate = Candidate.build({id: 'default0-0000-0000-0000-000000000000'});
-    candidate.destroy({_sourceType: 'server'}).asCallback(done);
+    candidate.destroy({_sourceType: 'server', _allowNoTransaction: true}).asCallback(done);
   });
 
   it('deletes candidate', function (done) {

@@ -57,7 +57,7 @@ scenario.model('An Interview model being deleted which has reminders', {
   });
   before(function deleteInterview (done) {
     var interview = Interview.build({id: 'abcdef-umbrella-corp-interview-uuid'});
-    interview.destroy({_sourceType: 'server'}).asCallback(done);
+    interview.destroy({_sourceType: 'server', _allowNoTransaction: true}).asCallback(done);
   });
 
   it('doesn\'t delete candidate', function (done) {

@@ -167,7 +167,7 @@ scenario.model('An Application model being deleted which has interviews and remi
   });
   before(function deleteApplication (done) {
     var application = Application.build({id: 'abcdef-sky-networks-uuid'});
-    application.destroy({_sourceType: 'server'}).asCallback(done);
+    application.destroy({_sourceType: 'server', _allowNoTransaction: true}).asCallback(done);
   });
 
   it('doesn\'t delete candidate', function (done) {

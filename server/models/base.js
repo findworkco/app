@@ -158,6 +158,14 @@ module.exports = _.extend(function (modelName, attributes, options) {
   // http://docs.sequelizejs.com/en/v3/docs/hooks/#declaring-hooks
   // http://docs.sequelizejs.com/en/v3/docs/hooks/#model-hooks
   function saveAuditLog(action, model, options) {
+    // Verify we are being run in a transaction
+    // DEV: _allowNoTransaction for testing models only, please always use a transaction in the server
+    if (options._allowNoTransaction !== true) {
+      assert(options.transaction, 'All create/update/delete actions must be run in a transaction to ' +
+        'prevent orphaned AuditLogs or connected models on save (e.g. Application <-> Reminder). ' +
+        'Please add a transaction to your current "' + action + '" request');
+    }
+
     // Resolve our model's constructor
     var Model = model.Model;
     var auditLog = AuditLog.build({
@@ -172,7 +180,7 @@ module.exports = _.extend(function (modelName, attributes, options) {
       previous_values: model._previousDataValues,
       current_values: model.dataValues
     });
-    return auditLog.save();
+    return auditLog.save({transaction: options.transaction});
   }
   options.hooks = _.extend({
     // DEV: We don't support bulk actions due to not knowing previous/current info for models
