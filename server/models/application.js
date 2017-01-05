@@ -103,6 +103,22 @@ var Application = module.exports = _.extend(baseDefine('application', {
       } else {
         throw new Error('Unexpected status received');
       }
+    },
+    statusHasMatchingApplicationDate: function () {
+      // If our status isn't saved for later, verify we have an application date
+      var status = this.getDataValue('status');
+      if (status !== exports.STATUSES.SAVED_FOR_LATER) {
+        assert(this.getDataValue('application_date_date'),
+          'Expected non-"saved_for_later" application to have an application date set');
+      }
+    },
+    statusHasMatchingArchivedDate: function () {
+      // If our status is archived, verify we have an archived date
+      var status = this.getDataValue('status');
+      if (status === exports.STATUSES.ARCHIVED) {
+        assert(this.getDataValue('archived_at_date'),
+          'Expected archived application to have an archived at date set');
+      }
     }
   },
   getterMethods: {
