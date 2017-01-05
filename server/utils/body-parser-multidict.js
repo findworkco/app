@@ -21,12 +21,30 @@ MultiDict.prototype.fetchBoolean = function (key) {
 // http://momentjs.com/docs/#/parsing/string-formats/
 // http://momentjs.com/timezone/docs/#/using-timezones/
 // http://momentjs.com/docs/#/displaying/format/
+function createMomentDateOnly(dateStr) {
+  return moment(dateStr,
+    ['YYYY-MM-DD',
+     'YYYY/MM/DD',
+     'MM-DD-YYYY']);
+}
 function createMomentTimezone(dateStr, timeStr, timezoneStr) {
   return moment.tz(dateStr + 'T' + timeStr,
     ['YYYY-MM-DDTh:mmA', 'YYYY-MM-DDTHH:mm:ss.SSS',
      'YYYY/MM/DDTh:mmA', 'YYYY/MM/DDTHH:mm:ss.SSS',
      'MM-DD-YYYYTh:mmA', 'MM-DD-YYYYTHH:mm:ss.SSS'], timezoneStr);
 }
+// DEV: We considered using same suffix logic as `models/base.js` but it feels wrong for request bodies =/
+MultiDict.prototype.getMomentDateOnly = function (key, defaultVal) {
+  var dateStr = this.get(key);
+  if (dateStr !== undefined) {
+    return createMomentDateOnly(dateStr);
+  }
+  return defaultVal;
+};
+MultiDict.prototype.fetchMomentDateOnly = function (key) {
+  var dateStr = this.fetch(key);
+  return createMomentDateOnly(dateStr);
+};
 MultiDict.prototype.getMomentTimezone = function (key, defaultVal) {
   var dateStr = this.get(key + '_date');
   var timeStr = this.get(key + '_time');
