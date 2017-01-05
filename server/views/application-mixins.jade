@@ -1,11 +1,12 @@
 mixin posting-url(values)
   //- TODO: Link up `follow URL` to automatically update on throttled keydown
   .form-group
+    - var postingUrl = form_data.get('posting_url') || values.posting_url;
     label(for="posting_url")
       = "Posting URL: ("
-      a(href=values.posting_url) follow URL
+      a(href=postingUrl) follow URL
       = ")"
-    input#posting_url.form-control.input--block(name="posting_url", type="text", value=values.posting_url, placeholder="https://job-board.com/url/of/listing")
+    input#posting_url.form-control.input--block(name="posting_url", type="text", value=postingUrl, placeholder="https://job-board.com/url/of/listing")
 
 mixin application-date(values)
   //- TODO: Reuse with edit field
@@ -20,7 +21,7 @@ mixin application-date(values)
     +datepicker(applicationDateMoment)#application_date.form-control(name="application_date")
 
 mixin saved-for-later-reminder(values, options)
-  .form-group
+  .form-group&attributes(attributes)
     h4.flush--bottom(style="font-weight: normal")
       = "Application reminder: "
       span.text--normal
@@ -58,9 +59,8 @@ mixin received-offer-reminder(values, options)
 mixin company-notes-and-research(values)
   .form-group
     label(for="notes") Notes:
-    //- TODO: Add editor integration (wysiwyg.js, did it in a gist or codepen)
     //- DEV: We use `data-wysiwyg-input` as `wysiwyg.js` wants to use `data-wysiwyg` for itself
-    textarea.form-control.input--block#notes(name="notes", data-wysiwyg-input, rows=3, placeholder="Notes about company (e.g. 40 employees, 10 engineers)")= values.notes
+    textarea.form-control.input--block#notes(name="notes", data-wysiwyg-input, rows=3, placeholder="Notes about company (e.g. 40 employees, 10 engineers)")= form_data.get('notes') || values.notes
   .research-company
     //- TODO: Make sure that either this mini form works
     //-   and is accessible
@@ -92,7 +92,7 @@ mixin company-notes-and-research(values)
       label(for="company_name") Company name:
       .flexbox
         .flexbox__item.company-name__container
-          input.form-control.input--block#company_name(name="company_name", type="text", value=values.company_name || locals.query_company_name, placeholder="Examples: Google, Acme Corp")
+          input.form-control.input--block#company_name(name="company_name", type="text", value=form_data.get('company_name') || values.company_name || locals.query_company_name, placeholder="Examples: Google, Acme Corp")
         .flexbox__item
           button.btn.btn--small.btn--wide.btn--default(type="button") Search
       //- TODO: Connect to search mechanism on click

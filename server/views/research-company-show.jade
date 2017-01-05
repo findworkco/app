@@ -32,6 +32,11 @@ block content
         +csrf-input()
         input(type="hidden", name="name", value=company_name)
         input(type="hidden", name="company_name", value=company_name)
+        //- Provide required form content for "Saved for later" applications
+        input(type="hidden", name="posting_url", value="")
+        input(type="hidden", name="notes", value="")
+        //- DEV: We use default reminder value for initial save
+        +saved-for-later-reminder({}, {showInfo: false}).hidden
         button.btn.btn--default(type="submit", disabled=!company_name) Save for later
       //- DEV: We use a form (even though this could be a link) to support disabled behavior elegantly
       //- DEV: We don't submit an application as we want to show off our application before sign up requirement

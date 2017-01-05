@@ -1,0 +1,136 @@
+// Load in our dependencies
+var _ = require('underscore');
+var async = require('async');
+var expect = require('chai').expect;
+var httpUtils = require('../utils/http');
+var serverUtils = require('../utils/server');
+var Application = require('../../../server/models/application');
+var ApplicationReminder = require('../../../server/models/application-reminder');
+var AuditLog = require('../../../server/models/audit-log');
+
+// Start our tests
+var validFormData = exports.validFormData = {
+  name: 'Test Corporation',
+  posting_url: 'http://google.com/',
+  company_name: 'Test Corporation search',
+  notes: 'Test notes',
+
+  saved_for_later_reminder_enabled: 'no',
+  saved_for_later_reminder_date: '2022-03-05',
+  saved_for_later_reminder_time: '13:00',
+  saved_for_later_reminder_timezone: 'US-America/Chicago'
+};
+scenario.route('A request to POST /add-application/save-for-later (specific)', {
+  // DEV: Logged out is tested by generic test
+  requiredTests: {nonExistent: false, nonOwner: false, loggedOut: false}
+}, function () {
+  scenario.routeTest('for a logged in user and valid form data', function () {
+    // Login and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/add-application/save-for-later'))
+      .save({
+        method: 'POST', url: serverUtils.getUrl('/add-application/save-for-later'),
+        htmlForm: validFormData, followRedirect: false,
+        expectedStatusCode: 302
+      });
+
+    it('creates our application in the database', function (done) {
+      Application.findAll().asCallback(function handleFindAll (err, applications) {
+        // If there was an error, callback with it
+        if (err) { return done(err); }
+
+        // Otherwise, assert our data
+        expect(applications).to.have.length(1);
+        expect(applications[0].get('id')).to.be.a('string');
+        expect(applications[0].get('candidate_id')).to.be.a('string');
+        expect(applications[0].get('saved_for_later_reminder_id')).to.be.a('string');
+        expect(applications[0].get('application_date_moment')).to.equal(null);
+        expect(applications[0].get('status')).to.equal('saved_for_later');
+        expect(applications[0].get('name')).to.equal('Test Corporation');
+        expect(applications[0].get('posting_url')).to.equal('http://google.com/');
+        expect(applications[0].get('company_name')).to.equal('Test Corporation search');
+        expect(applications[0].get('notes')).to.equal('Test notes');
+        done();
+      });
+    });
+
+    it('creates our reminder in the database', function (done) {
+      ApplicationReminder.findAll().asCallback(function handleFindAll (err, reminders) {
+        // If there was an error, callback with it
+        if (err) { return done(err); }
+
+        // Otherwise, assert our data
+        expect(reminders).to.have.length(1);
+        expect(reminders[0].get('id')).to.be.a('string');
+        expect(reminders[0].get('candidate_id')).to.be.a('string');
+        expect(reminders[0].get('type')).to.equal('saved_for_later');
+        expect(reminders[0].get('application_id')).to.be.a('string');
+        expect(reminders[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T19:00:00.000Z');
+        expect(reminders[0].get('date_time_timezone')).to.equal('US-America/Chicago');
+        expect(reminders[0].get('is_enabled')).to.equal(false);
+        expect(reminders[0].get('sent_at_date')).to.equal(null);
+        done();
+      });
+    });
+
+    it('redirects to the new application\'s page', function () {
+      expect(this.res.headers.location).to.have.match(/^\/application\/[^\/]+$/);
+    });
+
+    describe('on redirect completion', function () {
+      httpUtils.session.save(serverUtils.getUrl('/schedule'));
+
+      it('notifies user of creation success', function () {
+        expect(this.$('#notification-content > [data-notification=success]').text())
+          .to.equal('Application saved');
+      });
+    });
+  });
+
+  scenario.routeTest('for a logged in user and invalid form data', function () {
+    // Login and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/add-application/save-for-later'))
+      .save({
+        method: 'POST', url: serverUtils.getUrl('/add-application/save-for-later'),
+        htmlForm: _.defaults({
+          name: ''
+        }, validFormData),
+        followRedirect: false,
+        expectedStatusCode: 400
+      });
+
+    it('outputs validation errors on page', function () {
+      expect(this.$('#validation-errors').text()).to.contain('Name cannot be empty');
+    });
+
+    it('reuses submitted values in inputs/textareas', function () {
+      expect(this.$('input[name=posting_url]').val()).to.equal('http://google.com/');
+      expect(this.$('input[name=company_name]').val()).to.equal('Test Corporation search');
+      expect(this.$('textarea[name=notes]').val()).to.equal('Test notes');
+      expect(this.$('input[name=saved_for_later_reminder_enabled][value=yes]').attr('checked')).to.equal(undefined);
+      expect(this.$('input[name=saved_for_later_reminder_enabled][value=no]').attr('checked')).to.equal('checked');
+      expect(this.$('input[name=saved_for_later_reminder_date]').val()).to.equal('2022-03-05');
+      expect(this.$('input[name=saved_for_later_reminder_time]').val()).to.equal('13:00');
+      expect(this.$('select[name=saved_for_later_reminder_timezone]').val()).to.equal('US-America/Chicago');
+    });
+
+    // DEV: This verifies all content is run in a transaction
+    it('has no orphaned models', function (done) {
+      async.map([Application, ApplicationReminder, AuditLog], function findAllModel (model, cb) {
+        model.findAll().asCallback(cb);
+      }, function handleResults (err, resultsArr) {
+        // If there was an error, callback with it
+        if (err) { return done(err); }
+
+        // Reduce our results and filter out candidate audit log
+        var flatResults = _.flatten(resultsArr);
+        flatResults = flatResults.filter(function isNotCandidateAuditLog (instance) {
+          return instance.get('table_name') !== 'candidates';
+        });
+        expect(flatResults).to.have.length(0);
+        done();
+      });
+    });
+  });
+});

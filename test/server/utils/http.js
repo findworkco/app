@@ -44,9 +44,39 @@ exports._save = function (options) {
         options.htmlForm = _.identity;
       }
 
+      // If `options.htmlForm` is a function, then run it
+      var formData;
+      if (typeof options.htmlForm === 'function') {
+        formData = (options.htmlForm.call(this, $htmlForm) || $htmlForm).serialize();
+      // Otherwise, if it's an object, then fill out content based on form
+      } else if (typeof options.htmlForm === 'object') {
+        Object.keys(options.htmlForm).forEach(function fillOutInput (name) {
+          // Find our input/textarea
+          var $inputOrTextarea = $htmlForm.find('[name=' + name + ']');
+
+          // If the input is a radio, then update them
+          var val = options.htmlForm[name];
+          if ($inputOrTextarea.attr('type') === 'radio') {
+            $inputOrTextarea.removeAttr('checked');
+            var $selectedInput = $inputOrTextarea.filter('[value=' + val + ']');
+            assert.strictEqual($selectedInput.length, 1,
+              'Unable to find input[type=radio] with name "' + name + '" and value "' + val + '"');
+            $selectedInput.attr('checked', true);
+          // Otherwise, update it as a textbox
+          } else {
+            assert.strictEqual($inputOrTextarea.length, 1, 'Unable to find input/textarea with name "' + name + '"');
+            $inputOrTextarea.val(val);
+          }
+        });
+        formData = $htmlForm.serialize();
+      // Otherwise, error out
+      } else {
+        throw new Error('Unrecognized htmlForm type "' + typeof options.htmlForm + '". ' +
+          'Please use a function or object');
+      }
+
       // Complete and serialize our form
       // DEV: We allow for returning a new element as the form or using the original
-      var formData = (options.htmlForm.call(this, $htmlForm) || $htmlForm).serialize();
       if (options.method.toUpperCase() === 'GET') {
         options.url += '?' + formData;
       } else {

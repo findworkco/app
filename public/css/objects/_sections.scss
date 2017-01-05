@@ -3,6 +3,12 @@
   color: $brand-light;
 }
 
+.section--error {
+  padding: $half-spacing-unit;
+  background: $section--error-bg;
+  color: $section--error-color;
+}
+
 .section--info {
   padding: $half-spacing-unit;
   background: $section--info-bg;

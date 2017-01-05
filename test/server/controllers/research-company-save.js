@@ -1,7 +1,10 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var moment = require('moment-timezone');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
+var Application = require('../../../server/models/application');
+var ApplicationReminder = require('../../../server/models/application-reminder');
 
 // Start our tests
 // TODO: Add tests for AngelList logged in state/not when searching for companies
@@ -13,9 +16,7 @@ scenario.route('A request to POST /research-company to search', {
       .save(serverUtils.getUrl('/research-company'))
       .save({
         method: 'POST', url: serverUtils.getUrl('/research-company'),
-        htmlForm: function ($form) {
-          $form.find('input[name="company_name"]').val('Mock company');
-        },
+        htmlForm: {company_name: 'Mock company'},
         followRedirect: false, expectedStatusCode: 200
       });
 
@@ -51,9 +52,7 @@ scenario.route('A request to POST /research-company to search', {
       .save(serverUtils.getUrl('/research-company'))
       .save({
         method: 'POST', url: serverUtils.getUrl('/research-company'),
-        htmlForm: function ($form) {
-          $form.find('input[name="company_name"]').val('');
-        },
+        htmlForm: {company_name: ''},
         followRedirect: false, expectedStatusCode: 200
       });
 
@@ -74,9 +73,7 @@ scenario.route('A request to POST /research-company to search', {
       .save(serverUtils.getUrl('/research-company'))
       .save({
         method: 'POST', url: serverUtils.getUrl('/research-company'),
-        htmlForm: function ($form) {
-          $form.find('input[name="company_name"]').val('Mock company');
-        },
+        htmlForm: {company_name: 'Mock company'},
         followRedirect: false, expectedStatusCode: 200
       });
 
@@ -97,24 +94,41 @@ scenario.route('A request to POST /research-company to "Save for later"', {
       .save(serverUtils.getUrl('/research-company'))
       .save({
         method: 'POST', url: serverUtils.getUrl('/research-company'),
-        htmlForm: function ($form) {
-          $form.find('input[name="company_name"]').val('Mock company');
-        },
+        htmlForm: {company_name: 'Mock company'},
         followRedirect: false, expectedStatusCode: 200
       })
       .save({
         method: 'POST', url: serverUtils.getUrl('/add-application/save-for-later'),
-        // DEV: We need to use `followAllRedirects` due to more than 1 redirect
-        htmlForm: true, followRedirect: true, followAllRedirects: true, expectedStatusCode: 200
+        htmlForm: true, followRedirect: false,
+        expectedStatusCode: 302
       });
 
-    it.skip('opens to created application', function () {
-      // Currently failing due to mock data but super close
-      expect(this.$('title').text()).to.equal('Job application - Mock company - Find Work');
+    it('opens to created application', function () {
+      expect(this.res.headers.location).to.have.match(/^\/application\/[^\/]+$/);
     });
 
-    it.skip('creates saved for later application with name and company name', function () {
-      // Assert against database and verify 200 response
+    it('creates saved for later application with name, company name, and default save for later reminder',
+        function (done) {
+      // DEV: We use `include` as `/add-applcation/save-for-later` does it more accurately/properly
+      Application.findAll({include: [{model: ApplicationReminder, as: 'saved_for_later_reminder'}]})
+          .asCallback(function handleFindAll (err, applications) {
+        // If there was an error, callback with it
+        if (err) { return done(err); }
+
+        // Otherwise, assert our data
+        expect(applications).to.have.length(1);
+        expect(applications[0].get('candidate_id')).to.be.a('string');
+        expect(applications[0].get('saved_for_later_reminder_id')).to.be.a('string');
+        expect(applications[0].get('name')).to.equal('Mock company');
+        expect(applications[0].get('company_name')).to.equal('Mock company');
+        var reminder = applications[0].get('saved_for_later_reminder');
+        // DEV: This is close to a tautological test but it verifies a range more than specifics
+        var oneWeekMoment = moment().add({weeks: 1});
+        var oneWeekAndTwoDaysMoment = moment().add({weeks: 1, days: 2});
+        expect(reminder.get('date_time_moment').isAfter(oneWeekMoment)).to.equal(true);
+        expect(reminder.get('date_time_moment').isBefore(oneWeekAndTwoDaysMoment)).to.equal(true);
+        done();
+      });
     });
   });
 });
@@ -127,9 +141,7 @@ scenario.route('A request to POST /research-company to "Apply to company"', {
       .save(serverUtils.getUrl('/research-company'))
       .save({
         method: 'POST', url: serverUtils.getUrl('/research-company'),
-        htmlForm: function ($form) {
-          $form.find('input[name="company_name"]').val('Mock company');
-        },
+        htmlForm: {company_name: 'Mock company'},
         followRedirect: false, expectedStatusCode: 200
       })
       .save({

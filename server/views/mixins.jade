@@ -56,8 +56,10 @@ mixin datetimepicker(name, moment, options)
 mixin reminderpicker(name, values, defaultMoment)
   //- Determine if the reminder is enabled and its moment (default to `true` if there is none)
   - var reminder = values[name];
-  - var isEnabled = reminder ? reminder.is_enabled : true;
-  - var moment = reminder ? reminder.date_time_moment : defaultMoment;
+  - var isEnabled = form_data.getBoolean(name + '_enabled');
+  - if (isEnabled === undefined) { isEnabled = reminder ? reminder.is_enabled : true; }
+  - var moment = form_data.getMomentTimezone(name);
+  - if (moment === undefined) { moment = reminder ? reminder.date_time_moment : defaultMoment; }
   div(style="display: table")
     div(style="display: table-cell; vertical-align: middle")
       input(name="#{name}_enabled", type="radio", checked=isEnabled, value="yes")

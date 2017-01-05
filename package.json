@@ -49,6 +49,7 @@
   "dependencies": {
     "alertify.js": "~1.0.11",
     "async": "~2.1.2",
+    "bluebird": "~3.4.7",
     "body-parser-multidict": "~1.1.0",
     "connect-ensure-login": "~0.1.1",
     "connect-flash": "~0.1.1",
