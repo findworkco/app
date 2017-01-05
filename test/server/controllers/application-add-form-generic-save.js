@@ -4,6 +4,7 @@ var expect = require('chai').expect;
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 var savedForLaterTest = require('./application-add-form-save-for-later-show');
+var waitingForResponseTest = require('./application-add-form-waiting-for-response-show');
 
 // Start our tests
 // DEV: These are basic tests, one-off tests for specific forms are handled in separate files
@@ -15,7 +16,7 @@ var commonFormData = {
 };
 var scenarioInfoArr = [
   {url: '/add-application/save-for-later', form: savedForLaterTest.validFormData},
-  {url: '/add-application/waiting-for-response', form: _.defaults({}, commonFormData)},
+  {url: '/add-application/waiting-for-response', form: waitingForResponseTest.validFormData},
   {url: '/add-application/upcoming-interview', form: _.defaults({}, commonFormData)},
   {url: '/add-application/received-offer', form: _.defaults({}, commonFormData)}
 ];

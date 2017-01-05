@@ -29,6 +29,8 @@ mixin application-info(mixin, application)
   else if status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
     +#{mixin}({icon: 'fa-envelope-o'})
       //- Tue Feb 16
+      //- Fallback `last_contact_moment's timezone` for application date which has no timezone
+      - if (application.last_contact_moment.tz() === undefined) { application.last_contact_moment.tz(timezone); }
       = "Last contact: " + application.last_contact_moment.format('ddd MMM D')
     +#{mixin}({icon: 'fa-reply'})
       if application.waiting_for_response_reminder.is_enabled

@@ -71,14 +71,15 @@ var applicationAddFormSaveFns = [
       name: req.body.fetch('name'),
       notes: req.body.fetch('notes'),
       posting_url: req.body.fetch('posting_url'),
-      status: Application.STATUSES.SAVED_FOR_LATER
+      status: Application.STATUSES[req.statusKey]
     });
 
     // If our application is saved for later
+    var reminder;
     if (req.statusKey === 'SAVED_FOR_LATER') {
-      // Create our application's remaining parts its reminders
+      // Create our application's remaining parts (e.g. its reminders)
       // DEV: We avoid nested creation due to no transaction support
-      var reminder = ApplicationReminder.build({
+      reminder = ApplicationReminder.build({
         candidate_id: req.candidate.get('id'),
         application_id: application.get('id'),
         type: ApplicationReminder.TYPES.SAVED_FOR_LATER,
@@ -88,19 +89,23 @@ var applicationAddFormSaveFns = [
       application.set('saved_for_later_reminder_id', reminder.get('id'));
 
       // Save our models
-      // TODO: Consider building `req.saveModels` instead of inlining transaction
-      //   It will guarantee we always use a transaction by convention so no need to test it
-      //   Although we should prob test that saveModels never leaves any orphans on failure
-      var modelsToSave = [application, reminder];
-      app.sequelize.transaction(function handleTransaction (t) {
-        return Promise.all(modelsToSave.map(function getSaveQuery (model) {
-          return model.save({
-            _sourceType: AuditLog.SOURCE_CANDIDATES,
-            _sourceId: req.candidate.get('id'),
-            transaction: t
-          });
-        }));
-      }).asCallback(handleSave);
+      saveModels([application, reminder]);
+    // Otherwise if our application is waiting for response
+    } else if (req.statusKey === 'WAITING_FOR_RESPONSE') {
+      // Update our application and create its remaining parts (e.g. reminders)
+      // DEV: We avoid nested creation due to no transaction support
+      application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
+      reminder = ApplicationReminder.build({
+        candidate_id: req.candidate.get('id'),
+        application_id: application.get('id'),
+        type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
+        is_enabled: req.body.fetchBoolean('waiting_for_response_reminder_enabled'),
+        date_time_moment: req.body.fetchMomentTimezone('waiting_for_response_reminder')
+      });
+      application.set('waiting_for_response_reminder_id', reminder.get('id'));
+
+      // Save our models
+      saveModels([application, reminder]);
     // Otherwise, use mock behavior
     } else {
       // Find our mock application
@@ -112,7 +117,19 @@ var applicationAddFormSaveFns = [
       process.nextTick(handleSave);
     }
 
-    // Define our save handler
+    // Define our save handlers
+    // TODO: Consider building `req.saveModels` instead of inlining transaction
+    function saveModels(modelsToSave) { // jshint ignore:line
+      app.sequelize.transaction(function handleTransaction (t) {
+        return Promise.all(modelsToSave.map(function getSaveQuery (model) {
+          return model.save({
+            _sourceType: AuditLog.SOURCE_CANDIDATES,
+            _sourceId: req.candidate.get('id'),
+            transaction: t
+          });
+        }));
+      }).asCallback(handleSave);
+    }
     function handleSave(err) { // jshint ignore:line
       // If we have an error and it's a validation error, re-render with it
       if (err instanceof Sequelize.ValidationError) {
