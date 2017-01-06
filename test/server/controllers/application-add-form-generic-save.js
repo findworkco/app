@@ -3,8 +3,9 @@ var _ = require('underscore');
 var expect = require('chai').expect;
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
-var savedForLaterTest = require('./application-add-form-save-for-later-show');
-var waitingForResponseTest = require('./application-add-form-waiting-for-response-show');
+var savedForLaterTest = require('./application-add-form-save-for-later-save');
+var waitingForResponseTest = require('./application-add-form-waiting-for-response-save');
+var receivedOfferTest = require('./application-add-form-received-offer-save');
 
 // Start our tests
 // DEV: These are basic tests, one-off tests for specific forms are handled in separate files
@@ -17,7 +18,7 @@ var commonFormData = {
 var scenarioInfoArr = [
   {url: '/add-application/save-for-later', form: savedForLaterTest.validFormData},
   {url: '/add-application/waiting-for-response', form: waitingForResponseTest.validFormData},
-  {url: '/add-application/upcoming-interview', form: _.defaults({}, commonFormData)},
+  {url: '/add-application/upcoming-interview', form: receivedOfferTest.validFormData},
   {url: '/add-application/received-offer', form: _.defaults({}, commonFormData)}
 ];
 scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {

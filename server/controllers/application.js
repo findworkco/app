@@ -106,6 +106,22 @@ var applicationAddFormSaveFns = [
 
       // Save our models
       saveModels([application, reminder]);
+    // Otherwise if our application is received offer
+    } else if (req.statusKey === 'RECEIVED_OFFER') {
+      // Update our application and create its remaining parts (e.g. reminders)
+      // DEV: We avoid nested creation due to no transaction support
+      application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
+      reminder = ApplicationReminder.build({
+        candidate_id: req.candidate.get('id'),
+        application_id: application.get('id'),
+        type: ApplicationReminder.TYPES.RECEIVED_OFFER,
+        is_enabled: req.body.fetchBoolean('received_offer_reminder_enabled'),
+        date_time_moment: req.body.fetchMomentTimezone('received_offer_reminder')
+      });
+      application.set('received_offer_reminder_id', reminder.get('id'));
+
+      // Save our models
+      saveModels([application, reminder]);
     // Otherwise, use mock behavior
     } else {
       // Find our mock application
