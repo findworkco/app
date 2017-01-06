@@ -108,6 +108,7 @@ scenario.route('A request to POST /add-application/waiting-for-response (specifi
     it('reuses submitted values in inputs/textareas', function () {
       expect(this.$('input[name=posting_url]').val()).to.equal('http://google.com/');
       expect(this.$('input[name=company_name]').val()).to.equal('Test Corporation search');
+      expect(this.$('input[name=application_date]').val()).to.equal('2017-01-31');
       expect(this.$('textarea[name=notes]').val()).to.equal('Test notes');
       expect(this.$('input[name=waiting_for_response_reminder_enabled][value=yes]').attr('checked'))
         .to.equal(undefined);

@@ -31,7 +31,7 @@ scenario.route('A request to GET /add-application/received-offer (specific)', {
       // DEV: Our visual tests override this value for consistency in screenshots
       // DEV: We construct values without moment to verify our logic is correct
       // Example date string: 2016-05-23T21:00:00.000Z
-      var expectedDateStr = new Date(dateUtils.nowInChicago()).toISOString();
+      var expectedDateStr = new Date(dateUtils.nowInUTC()).toISOString();
       var expectedInfo = extractValues(expectedDateStr, '{date}T{full_time}');
       expect(this.$('input[name=application_date]').val()).to.equal(expectedInfo.date);
     });

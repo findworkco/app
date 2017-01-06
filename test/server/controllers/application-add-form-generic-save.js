@@ -1,25 +1,19 @@
 // Load in our dependencies
-var _ = require('underscore');
 var expect = require('chai').expect;
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 var savedForLaterTest = require('./application-add-form-save-for-later-save');
 var waitingForResponseTest = require('./application-add-form-waiting-for-response-save');
+var upcomingInterviewTest = require('./application-add-form-upcoming-interview-save');
 var receivedOfferTest = require('./application-add-form-received-offer-save');
 
 // Start our tests
 // DEV: These are basic tests, one-off tests for specific forms are handled in separate files
-var commonFormData = {
-  name: 'Test Corporation',
-  posting_url: 'http://google.com/',
-  company_name: 'Test Corporation search',
-  notes: 'Test notes'
-};
 var scenarioInfoArr = [
   {url: '/add-application/save-for-later', form: savedForLaterTest.validFormData},
   {url: '/add-application/waiting-for-response', form: waitingForResponseTest.validFormData},
-  {url: '/add-application/upcoming-interview', form: receivedOfferTest.validFormData},
-  {url: '/add-application/received-offer', form: _.defaults({}, commonFormData)}
+  {url: '/add-application/upcoming-interview', form: upcomingInterviewTest.validFormData},
+  {url: '/add-application/received-offer', form: receivedOfferTest.validFormData}
 ];
 scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
   scenario.route('A request to POST ' + scenarioInfo.url + ' (generic)', {

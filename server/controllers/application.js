@@ -1,6 +1,6 @@
 // Load in our dependencies
-var assert = require('assert');
 var _ = require('underscore');
+var async = require('async');
 var Promise = require('bluebird');
 var Sequelize = require('sequelize');
 var app = require('../index.js').app;
@@ -12,6 +12,7 @@ var applicationMockData = require('../models/application-mock-data');
 var AuditLog = require('../models/audit-log');
 var companyMockData = require('../models/company-mock-data');
 var Interview = require('../models/interview');
+var InterviewReminder = require('../models/interview-reminder');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Define common applications for redirects
@@ -90,7 +91,7 @@ var applicationAddFormSaveFns = [
 
       // Save our models
       saveModels([application, reminder]);
-    // Otherwise if our application is waiting for response
+    // Otherwise, if our application is waiting for response
     } else if (req.statusKey === 'WAITING_FOR_RESPONSE') {
       // Update our application and create its remaining parts (e.g. reminders)
       // DEV: We avoid nested creation due to no transaction support
@@ -106,7 +107,42 @@ var applicationAddFormSaveFns = [
 
       // Save our models
       saveModels([application, reminder]);
-    // Otherwise if our application is received offer
+    // Otherwise, if our application is upcoming interview
+    } else if (req.statusKey === 'UPCOMING_INTERVIEW') {
+      // Update our application and create its remaining parts (e.g. reminders)
+      // DEV: We avoid nested creation due to no transaction support
+      application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
+      var interview = Interview.build({
+        candidate_id: req.candidate.get('id'),
+        application_id: application.get('id'),
+        date_time_moment: req.body.fetchMomentTimezone('date_time'),
+        details: req.body.fetch('details')
+      });
+      var preInterviewReminder = InterviewReminder.build({
+        candidate_id: req.candidate.get('id'),
+        interview_id: interview.get('id'),
+        type: InterviewReminder.TYPES.PRE_INTERVIEW,
+        is_enabled: req.body.fetchBoolean('pre_interview_reminder_enabled'),
+        date_time_moment: req.body.fetchMomentTimezone('pre_interview_reminder')
+      });
+      var postInterviewReminder = InterviewReminder.build({
+        candidate_id: req.candidate.get('id'),
+        interview_id: interview.get('id'),
+        type: InterviewReminder.TYPES.POST_INTERVIEW,
+        is_enabled: req.body.fetchBoolean('post_interview_reminder_enabled'),
+        date_time_moment: req.body.fetchMomentTimezone('post_interview_reminder')
+      });
+      interview.set('pre_interview_reminder_id', preInterviewReminder.get('id'));
+      interview.set('post_interview_reminder_id', postInterviewReminder.get('id'));
+      // DEV: We set up relationships for any validation hooks
+      // DEV: We are using `setDataValue` as `set` requires `include` to be passed in options
+      application.setDataValue('interviews', [interview]);
+      preInterviewReminder.setDataValue('interview', interview);
+      postInterviewReminder.setDataValue('interview', interview);
+
+      // Save our models
+      saveModels([application, interview, preInterviewReminder, postInterviewReminder]);
+    // Otherwise, if our application is received offer
     } else if (req.statusKey === 'RECEIVED_OFFER') {
       // Update our application and create its remaining parts (e.g. reminders)
       // DEV: We avoid nested creation due to no transaction support
@@ -122,50 +158,75 @@ var applicationAddFormSaveFns = [
 
       // Save our models
       saveModels([application, reminder]);
-    // Otherwise, use mock behavior
+    // Otherwise, complain and leave
     } else {
-      // Find our mock application
-      var mockApplicationId = mockApplicationIdsByStatus[req.statusKey];
-      assert(mockApplicationId, 'No mock application found with status key "' + req.statusKey + '"');
-      application = applicationMockData.getById(mockApplicationId, {include: []});
-
-      // Call our completion logic
-      process.nextTick(handleSave);
+      throw new Error('Unrecognized status type');
     }
 
     // Define our save handlers
-    // TODO: Consider building `req.saveModels` instead of inlining transaction
+    // TODO: Consider building `req.saveModels` instead of large validation/save/transaction mess
     function saveModels(modelsToSave) { // jshint ignore:line
-      app.sequelize.transaction(function handleTransaction (t) {
-        return Promise.all(modelsToSave.map(function getSaveQuery (model) {
-          return model.save({
-            _sourceType: AuditLog.SOURCE_CANDIDATES,
-            _sourceId: req.candidate.get('id'),
-            transaction: t
-          });
-        }));
-      }).asCallback(handleSave);
-    }
-    function handleSave(err) { // jshint ignore:line
-      // If we have an error and it's a validation error, re-render with it
-      if (err instanceof Sequelize.ValidationError) {
-        res.status(400).render('application-add-form-show.jade', {
-          form_data: req.body,
-          page_url: req.url,
-          validation_errors: err.errors
-        });
-        return;
-      // Otherwise, if we still have an error, callback with it
-      } else if (err) {
-        return next(err);
-      }
+      // In series
+      async.series([
+        function validateModels (callback) {
+          // Perform all our validations in parallel
+          // DEV: If we don't validate all items in parallel, then we will only see first validation error to occur
+          async.map(modelsToSave, function validateModel (model, cb) {
+            model.validate().asCallback(cb);
+          }, function handleResults (err, validationErrResults) {
+            // If there was an error, callback with it
+            if (err) { return callback(err); }
 
-      // TODO: On save, show "Job application successfully created!" and go to its edit page (if user logged in)
-      // jscs:disable maximumLineLength
-      // TODO: If user logged out, provide messaging on log in page like: "Sorry, you’ll need an account before we can save the job application. Don’t worry, we will finish saving it when you are done."
-      // jscs:enable maximumLineLength
-      req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application saved');
-      res.redirect(application.get('url'));
+            // Concatenate all our validation results together
+            var validationErrors = [];
+            validationErrResults.forEach(function addValidationErrors (validationErrResult) {
+              if (validationErrResult) {
+                validationErrors = validationErrors.concat(validationErrResult.errors);
+              }
+            });
+
+            // If we had errors, callback with them
+            // https://github.com/sequelize/sequelize/blob/v3.28.0/lib/errors.js#L41-L61
+            if (validationErrors.length) {
+              return callback(new Sequelize.ValidationError(null, validationErrors));
+            }
+
+            // Otherwise, callback
+            callback(null);
+          });
+        },
+        function saveModels (callback) {
+          app.sequelize.transaction(function handleTransaction (t) {
+            return Promise.all(modelsToSave.map(function getSaveQuery (model) {
+              return model.save({
+                _sourceType: AuditLog.SOURCE_CANDIDATES,
+                _sourceId: req.candidate.get('id'),
+                transaction: t
+              });
+            }));
+          }).asCallback(callback);
+        }
+      ], function handleSave (err) {
+        // If we have an error and it's a validation error, re-render with it
+        if (err instanceof Sequelize.ValidationError) {
+          res.status(400).render('application-add-form-show.jade', {
+            form_data: req.body,
+            page_url: req.url,
+            validation_errors: err.errors
+          });
+          return;
+        // Otherwise, if we still have an error, callback with it
+        } else if (err) {
+          return next(err);
+        }
+
+        // TODO: On save, show "Job application successfully created!" and go to its edit page (if user logged in)
+        // jscs:disable maximumLineLength
+        // TODO: If user logged out, provide messaging on log in page like: "Sorry, you’ll need an account before we can save the job application. Don’t worry, we will finish saving it when you are done."
+        // jscs:enable maximumLineLength
+        req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application saved');
+        res.redirect(application.get('url'));
+      });
     }
   }
 ];
