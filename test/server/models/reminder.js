@@ -39,7 +39,7 @@ scenario.model('A valid ApplicationReminder', function () {
 scenario.model('A valid InterviewReminder', function () {
   it('receives no validation errors', function (done) {
     var reminder = InterviewReminder.build(_.clone(validInterviewReminder));
-    reminder.validate().asCallback(function handleError (err, validationErr) {
+    reminder.validate({skip: ['dateTimeMatchesInterview']}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr).to.equal(null);
       done();
@@ -75,7 +75,7 @@ scenario.model('A reminder with a type', function () {
   // DEV: Positive working test is provided outside of this scenario
   it('receives a validation error when it\'s invalid on an InterviewReminder', function (done) {
     var reminder = InterviewReminder.build(_.defaults({type: 'bad-type'}, validInterviewReminder));
-    reminder.validate().asCallback(function handleError (err, validationErr) {
+    reminder.validate({skip: ['dateTimeMatchesInterview']}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
       expect(validationErr.errors[0]).to.have.property('path', 'type');

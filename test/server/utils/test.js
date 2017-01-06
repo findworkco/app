@@ -124,9 +124,11 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
       var selectedFixtures = _.values(selectedFixturesObj);
       sequelize.transaction({deferrable: Sequelize.Deferrable.SET_DEFERRED}, function handleTransaction (t) {
         return Promise.all(selectedFixtures.map(function buildAndSaveModel (fixture) {
-          var model = sequelize.models[fixture.model];
-          assert(model, 'Fixture model not found "' + fixture.model + '"');
-          return model.build(fixture.data).save({_sourceType: 'server', transaction: t});
+          var modelClass = sequelize.models[fixture.model];
+          assert(modelClass, 'Fixture model not found "' + fixture.model + '"');
+          var fixtureModel = modelClass.build(fixture.data);
+          fixtureModel._createdByFixtures = true;
+          return fixtureModel.save({_sourceType: 'server', transaction: t});
         }));
       }).asCallback(done);
     });

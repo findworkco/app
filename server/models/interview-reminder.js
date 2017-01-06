@@ -1,4 +1,5 @@
 // Load in our dependencies
+var assert = require('assert');
 var _ = require('underscore');
 var Sequelize = require('sequelize');
 var baseDefine = require('./base');
@@ -20,7 +21,42 @@ var InterviewReminder = module.exports = _.extend(baseDefine('interview_reminder
     onUpdate: 'CASCADE', onDelete: 'CASCADE'
   }
 }, Reminder._cleanAttributes), {
-  VALID_TYPES: _.values(exports.TYPES)
+  VALID_TYPES: _.values(exports.TYPES),
+  validate: {
+    dateTimeMatchesInterview: function () {
+      // If we are building a fixture, ignore validation
+      if (this._createdByFixtures) {
+        return;
+      }
+
+      // Verify we have an interview
+      var interview = this.get('interview');
+      assert(interview, 'Expected InterviewReminder to have loaded an interview. ' +
+        'No updates should occur without being bound to an interview');
+
+      // If our reminder is disabled, stop checking
+      if (this.getDataValue('is_enabled') === false) {
+        return;
+      }
+
+      // If we are before an interview, verify our date time is before the interview
+      var reminderMoment = this.get('date_time_moment');
+      var interviewMoment = interview.get('date_time_moment');
+      if (this.getDataValue('type') === exports.TYPES.PRE_INTERVIEW) {
+        if (reminderMoment.isAfter(interviewMoment)) {
+          throw new Error('Pre-interview reminder was set after interview');
+        }
+      // Otherwise, if we are after an interview, verify our date time is after the interview
+      } else if (this.getDataValue('type') === exports.TYPES.POST_INTERVIEW) {
+        if (reminderMoment.isBefore(interviewMoment)) {
+          throw new Error('Post-interview reminder was set before interview');
+        }
+      // Otherwise, complain and leave
+      } else {
+        throw new Error('Unexpected InterviewReminder type received');
+      }
+    }
+  }
 }), exports);
 // DEV: To prevent circular dependencies, we define parent/child relationships in model where foreign key is
 //   Unfortunately, Application/ApplicationReminder both have foreign keys so we choose the stronger form
