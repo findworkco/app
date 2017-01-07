@@ -4,6 +4,7 @@ var _ = require('underscore');
 var async = require('async');
 var HttpError = require('http-errors');
 var config = require('../index.js').config;
+var Application = require('../models/application');
 var includes = require('../models/utils/includes');
 var applicationMockData = require('../models/application-mock-data');
 
@@ -59,7 +60,6 @@ exports.resolveModelsAsLocals = function (params, resolver) {
           req.session.recentlyViewedApplicationIds || [];
 
         // Resolve our current set of application ids
-        // TODO: When we move to Sequelize, use user id in query
         var applicationOptions = {
           where: {
             candidate_id: req.candidate.id,
@@ -73,10 +73,7 @@ exports.resolveModelsAsLocals = function (params, resolver) {
             return applicationMockData.getById(id, applicationOptions);
           });
         } else {
-          unresolvedModels.recentlyViewedApplications = applicationOptions.where.id.$in.map(
-              function getApplicationById (id) {
-            return applicationMockData.getById(id, applicationOptions);
-          });
+          unresolvedModels.recentlyViewedApplications = Application.findAll(applicationOptions);
         }
       }
     }
@@ -125,6 +122,15 @@ exports.resolveModelsAsLocals = function (params, resolver) {
         var updateRecentlyViewedApplicationIds = function () {
           req.session.recentlyViewedApplicationIds = getApplicationIds(models.recentlyViewedApplications);
         };
+        // DEV: We could have `null` entries due to mock data
+        models.recentlyViewedApplications = models.recentlyViewedApplications.filter(
+            function removeNullEntries (application) {
+          return application;
+        });
+        // DEV: We sort applications by index as PostgreSQL doesn't guarantee order
+        models.recentlyViewedApplications.sort(function sortByRequestedIndex (a, b) {
+          return recentlyViewedApplicationIds.indexOf(a.get('id')) - recentlyViewedApplicationIds.indexOf(b.get('id'));
+        });
         if (models.recentlyViewedApplications.length !== recentlyViewedApplicationIds.length) {
           updateRecentlyViewedApplicationIds();
         }

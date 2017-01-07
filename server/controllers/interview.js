@@ -4,28 +4,23 @@ var _ = require('underscore');
 var app = require('../index.js').app;
 var Application = require('../models/application');
 var includes = require('../models/utils/includes');
+var Interview = require('../models/interview');
 var InterviewReminder = require('../models/interview-reminder');
 var resolveApplicationById = require('./application').resolveApplicationById;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
-var applicationMockData = require('../models/application-mock-data');
 var interviewMockData = require('../models/interview-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
-
-// Define common applications for redirects
-var mockApplicationIdsByStatus = {
-  SAVED_FOR_LATER: 'abcdef-intertrode-uuid',
-  WAITING_FOR_RESPONSE: 'abcdef-sky-networks-uuid',
-  UPCOMING_INTERVIEW: 'abcdef-umbrella-corp-uuid',
-  RECEIVED_OFFER: 'abcdef-black-mesa-uuid',
-  ARCHIVED: 'abcdef-monstromart-uuid'
-};
 
 // Define our controllers
 function resolveInterviewById(params) {
   return resolveModelsAsLocals(params, function resolveInterviewByIdFn (req) {
     // If we loading mock data, return mock data
     var interviewOptions = {
+      where: {
+        id: req.params.id,
+        candidate_id: req.candidate.get('id')
+      },
       include: [
         // DEV: We include nav content so it can be reused
         {model: Application, include: includes.applicationNavContent},
@@ -35,13 +30,13 @@ function resolveInterviewById(params) {
     };
     if (this.useMocks) {
       return {
-        selectedInterviewOr404: interviewMockData.getById(req.params.id, interviewOptions)
+        selectedInterviewOr404: interviewMockData.getById(interviewOptions.where.id, interviewOptions)
       };
     }
 
     // Return Sequelize queries
     return {
-      selectedInterviewOr404: interviewMockData.getById(req.params.id, interviewOptions)
+      selectedInterviewOr404: Interview.findOne(interviewOptions)
     };
   });
 }
@@ -58,8 +53,7 @@ app.post('/application/:id/add-interview', _.flatten([
   resolveApplicationById({nav: true}),
   function interviewAddSave (req, res, next) {
     // TODO: Update status if interview is upcoming
-    // var mockApplication = req.models.selectedApplication;
-    var mockApplication = applicationMockData.getById(mockApplicationIdsByStatus.UPCOMING_INTERVIEW, {include: []});
+    var mockApplication = req.models.selectedApplication;
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Interview saved');
     res.redirect(mockApplication.get('url'));
   }

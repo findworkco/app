@@ -1,5 +1,6 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
@@ -21,7 +22,9 @@ scenario.route('A request to a POST /application/:id/restore', function () {
     });
   });
 
-  scenario.routeTest('from an archived application', function () {
+  scenario.routeTest('from an archived application', {
+    dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
     // Log in and make our request
     var applicationId = 'abcdef-monstromart-uuid';
     httpUtils.session.init().login()

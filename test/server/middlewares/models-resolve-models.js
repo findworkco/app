@@ -1,14 +1,16 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
 scenario.route('A request to a page loading recently viewed applications', {
-  dbFixtures: [/* Applications go here */],
   requiredTests: {loggedOut: false}
 }, function () {
-  scenario.routeTest('with a recently viewed application', function () {
+  scenario.routeTest('with a recently viewed application', {
+    dbFixtures: [dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
     // Login, view application, and make our request
     httpUtils.session.init().login()
       .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
@@ -30,7 +32,10 @@ scenario.route('A request to a page loading recently viewed applications', {
     });
   });
 
-  scenario.routeTest('with multiple recently viewed applications', function () {
+  scenario.routeTest('with multiple recently viewed applications', {
+    dbFixtures: [dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.APPLICATION_GLOBO_GYM,
+      dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
     // Login, view applications, and make our request
     httpUtils.session.init().login()
       .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
@@ -43,7 +48,7 @@ scenario.route('A request to a page loading recently viewed applications', {
     });
   });
 
-  scenario.routeTest.skip('with a recently viewed yet deleted application', function () {
+  scenario.nonExistent.skip('with a recently viewed yet deleted application', function () {
     // Login, view/delete our application, and make our request
     httpUtils.session.init().login()
       .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
@@ -55,7 +60,12 @@ scenario.route('A request to a page loading recently viewed applications', {
     });
   });
 
-  scenario.nonExistent('with more than 3 recently viewed applications', function () {
+  scenario.routeTest('with more than 3 recently viewed applications', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.APPLICATION_GLOBO_GYM,
+      dbFixtures.APPLICATION_MONSTROMART, dbFixtures.APPLICATION_BLACK_MESA,
+      dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
     // Login, view our applications, and make our request
     httpUtils.session.init().login()
       .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
@@ -72,7 +82,11 @@ scenario.route('A request to a page loading recently viewed applications', {
     });
   });
 
-  scenario.routeTest('viewing an already recently viewed application', function () {
+  scenario.routeTest('viewing an already recently viewed application', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.APPLICATION_GLOBO_GYM,
+      dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
     // Login, view our applications, and make our request
     httpUtils.session.init().login()
       .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
@@ -86,7 +100,9 @@ scenario.route('A request to a page loading recently viewed applications', {
     });
   });
 
-  scenario.routeTest('viewing an interview', function () {
+  scenario.routeTest('viewing an interview', {
+    dbFixtures: [dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
     // Login and make our request
     httpUtils.session.init().login()
       .save({url: serverUtils.getUrl('/interview/abcdef-umbrella-corp-interview-uuid'), expectedStatusCode: 200});

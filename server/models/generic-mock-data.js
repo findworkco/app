@@ -96,7 +96,7 @@ addCandidate('todd__candidate', {
 });
 
 // Received offer applications
-exports.APPLICATION_RECEIVED_OFFER = [
+exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
   addApplication('received-offer__application', {
     id: 'abcdef-black-mesa-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
@@ -148,7 +148,7 @@ exports.APPLICATION_RECEIVED_OFFER = [
 ];
 
 // Upcoming interview applications
-exports.APPLICATION_UPCOMING_INTERVIEW = [
+exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
   addApplication('upcoming-interview__application', {
     id: 'abcdef-umbrella-corp-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
@@ -197,14 +197,14 @@ exports.APPLICATION_UPCOMING_INTERVIEW = [
     is_enabled: false
   })
 ];
-exports.APPLICATION_UPCOMING_INTERVIEW_2 = [
+exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_GLOBO_GYM = [
   addApplication('upcoming-interview-2__application', {
     id: 'abcdef-globo-gym-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
     // Mon Feb 1
     application_date_moment: moment.tz('2016-02-01', 'US-America/Chicago'),
     archived_at_moment: null,
-    company_name: null,
+    company_name: '',
     name: 'Globo Gym',
     notes: '',
     posting_url: 'http://job-openings.monster.com/monster/abcdef-ghij-klmn-opqr-stuvwxyz',
@@ -237,14 +237,14 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = [
     is_enabled: false
   }),
   addInterview('upcoming-interview-2__interview--past-1', {
-    id: 'abcdef-globo-gym-interview-past-1-uuid',
+    id: 'globo-gym-interview-past-1-uuid',
     application_id: applications[applications.length - 1].id,
     candidate_id: DEFAULT_CANDIDATE_ID,
     // Thu Feb 18 at 9:00AM CST
     date_time_moment: moment.tz('2016-02-18T09:00', 'US-America/Chicago'),
     details: '',
-    pre_interview_reminder_id: 'globo-gym-reminder-pre-int-pa-1-uuid',
-    post_interview_reminder_id: 'globo-gym-reminder-post-int-pa-1-uuid'
+    pre_interview_reminder_id: 'globo-gym-reminder-pre-int-pa-1',
+    post_interview_reminder_id: 'globo-gym-reminder-post-int-pa-1'
   }),
   addInterviewReminder('upcoming-interview-2__reminder--pre-interview--past-1', {
     id: interviews[interviews.length - 1].pre_interview_reminder_id,
@@ -263,14 +263,14 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = [
     is_enabled: false
   }),
   addInterview('upcoming-interview-2__interview--past-2', {
-    id: 'abcdef-globo-gym-interview-past-2-uuid',
+    id: 'globo-gym-interview-past-2-uuid',
     application_id: applications[applications.length - 1].id,
     candidate_id: DEFAULT_CANDIDATE_ID,
     // Wed Mar 2 at 6:00PM CST
     date_time_moment: moment.tz('2016-03-02T18:00', 'US-America/Chicago'),
     details: '',
-    pre_interview_reminder_id: 'globo-gym-reminder-pre-int-pa-2-uuid',
-    post_interview_reminder_id: 'globo-gym-reminder-post-int-pa-2-uuid'
+    pre_interview_reminder_id: 'globo-gym-reminder-pre-int-pa-2',
+    post_interview_reminder_id: 'globo-gym-reminder-post-int-pa-2'
   }),
   addInterviewReminder('upcoming-interview-2__reminder--pre-interview--past-2', {
     id: interviews[interviews.length - 1].pre_interview_reminder_id,
@@ -291,7 +291,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = [
 ];
 
 // Waiting for response applications
-exports.APPLICATION_WAITING_FOR_RESPONSE = [
+exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_SKY_NETWORKS = [
   addApplication('waiting-for-response__application', {
     id: 'abcdef-sky-networks-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
@@ -344,7 +344,7 @@ exports.APPLICATION_WAITING_FOR_RESPONSE = [
 ];
 
 // Saved for later applications
-exports.APPLICATION_SAVED_FOR_LATER = [
+exports.APPLICATION_SAVED_FOR_LATER = exports.APPLICATION_INTERTRODE = [
   addApplication('saved-for-later__application', {
     id: 'abcdef-intertrode-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
@@ -369,7 +369,7 @@ exports.APPLICATION_SAVED_FOR_LATER = [
 ];
 
 // Archived applications
-exports.APPLICATION_ARCHIVED = [
+exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
   addApplication('archived__application', {
     id: 'abcdef-monstromart-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,

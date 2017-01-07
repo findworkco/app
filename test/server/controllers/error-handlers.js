@@ -1,6 +1,7 @@
 // Load in our dependencies
 var expect = require('chai').expect;
 var app = require('../utils/server').app;
+var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 var sinonUtils = require('../utils/sinon');
@@ -8,7 +9,7 @@ var Response = require('express/lib/response');
 
 // Start our tests
 scenario('A request for a missing page', {
-  dbFixtures: [/* Application goes here */]
+  dbFixtures: [dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   // Spy on Sentry, set up user with recent application, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');

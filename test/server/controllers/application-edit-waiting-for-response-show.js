@@ -1,5 +1,6 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
@@ -8,9 +9,11 @@ scenario.route('A request to GET /application/:id (waiting for response)', {
   // DEV: requiredTests are taken care of by `generic` test
   requiredTests: {loggedOut: false, nonExistent: false, nonOwner: false}
 }, function () {
-  scenario.routeTest('from the owner user', function () {
+  scenario.routeTest('from the owner user', {
+    dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
     // Log in and make our request
-    var applicationId = 'abcdef-monstromart-uuid';
+    var applicationId = 'abcdef-sky-networks-uuid';
     httpUtils.session.init().login()
       .save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
 

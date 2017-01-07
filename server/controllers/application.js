@@ -15,15 +15,6 @@ var Interview = require('../models/interview');
 var InterviewReminder = require('../models/interview-reminder');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
-// Define common applications for redirects
-var mockApplicationIdsByStatus = {
-  SAVED_FOR_LATER: 'abcdef-intertrode-uuid',
-  WAITING_FOR_RESPONSE: 'abcdef-sky-networks-uuid',
-  UPCOMING_INTERVIEW: 'abcdef-umbrella-corp-uuid',
-  RECEIVED_OFFER: 'abcdef-black-mesa-uuid',
-  ARCHIVED: 'abcdef-monstromart-uuid'
-};
-
 // Define our controllers
 app.get('/add-application', [
   resolveModelsAsLocals({nav: true}),
@@ -273,9 +264,13 @@ app.post('/add-application/received-offer', _.flatten([
 
 var resolveApplicationById = exports.resolveApplicationById = function (params) {
   return resolveModelsAsLocals(params, function resolveApplicationByIdFn (req) {
-    // If we are loading mock data, return mock data
+    // Define common application options
     // TODO: Consider split load past/upcoming interviews (as well as closest upcoming/past interview for nav)
     var applicationOptions = {
+      where: {
+        id: req.params.id,
+        candidate_id: req.candidate.get('id')
+      },
       include: [
         // Past interviews, upcoming interviews, closest upcoming interview, closest past interview (last contact)
         // DEV: We additionally load closest upcoming/past interview for nav reuse
@@ -285,15 +280,17 @@ var resolveApplicationById = exports.resolveApplicationById = function (params) 
         {model: ApplicationReminder, as: 'received_offer_reminder'}
       ]
     };
+
+    // If we are loading mock data, return mock data
     if (this.useMocks) {
       return {
-        selectedApplicationOr404: applicationMockData.getById(req.params.id, applicationOptions)
+        selectedApplicationOr404: applicationMockData.getById(applicationOptions.where.id, applicationOptions)
       };
     }
 
     // Otherwise, return Sequelize queries
     return {
-      selectedApplicationOr404: applicationMockData.getById(req.params.id, applicationOptions)
+      selectedApplicationOr404: Application.findOne(applicationOptions)
     };
   });
 };
@@ -333,8 +330,7 @@ app.post('/application/:id/received-offer', _.flatten([
   resolveApplicationById({nav: false}),
   function applicationRecievedOfferSave (req, res, next) {
     // TODO: Update received offer application
-    // var mockApplication = req.models.selectedApplication;
-    var mockApplication = applicationMockData.getById(mockApplicationIdsByStatus.RECEIVED_OFFER, {include: []});
+    var mockApplication = req.models.selectedApplication;
     req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
     // req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application status updated to "Offer received"');
     res.redirect(mockApplication.get('url'));
@@ -347,8 +343,7 @@ app.post('/application/:id/remove-offer', _.flatten([
   resolveApplicationById({nav: false}),
   function applicationRemoveOfferSave (req, res, next) {
     // TODO: Update application back to waiting for response or upcoming interview
-    // var mockApplication = req.models.selectedApplication;
-    var mockApplication = applicationMockData.getById(mockApplicationIdsByStatus.WAITING_FOR_RESPONSE, {include: []});
+    var mockApplication = req.models.selectedApplication;
     req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
     res.redirect(mockApplication.get('url'));
   }
@@ -371,8 +366,7 @@ app.post('/application/:id/restore', _.flatten([
   resolveApplicationById({nav: false}),
   function applicationRestoreSave (req, res, next) {
     // TODO: Update application back to any of the non-archived statuses
-    // var mockApplication = req.models.selectedApplication;
-    var mockApplication = applicationMockData.getById(mockApplicationIdsByStatus.WAITING_FOR_RESPONSE, {include: []});
+    var mockApplication = req.models.selectedApplication;
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application restored');
     res.redirect(mockApplication.get('url'));
   }

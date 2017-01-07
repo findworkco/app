@@ -1,22 +1,30 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
 var scenarioInfoArr = [
-  {type: 'save-for-later', url: '/application/abcdef-intertrode-uuid', name: 'Intertrode'},
-  {type: 'waiting-for-response', url: '/application/abcdef-sky-networks-uuid', name: 'Sky Networks'},
-  {type: 'upcoming-interview', url: '/application/abcdef-umbrella-corp-uuid', name: 'Umbrella Corporation'},
-  {type: 'received-offer', url: '/application/abcdef-black-mesa-uuid', name: 'Black Mesa'},
-  {type: 'archived', url: '/application/abcdef-monstromart-uuid', name: 'Monstromart'}
+  {type: 'saved-for-later', url: '/application/abcdef-intertrode-uuid', name: 'Intertrode',
+    dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]},
+  {type: 'waiting-for-response', url: '/application/abcdef-sky-networks-uuid', name: 'Sky Networks',
+    dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]},
+  {type: 'upcoming-interview', url: '/application/abcdef-umbrella-corp-uuid', name: 'Umbrella Corporation',
+    dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]},
+  {type: 'received-offer', url: '/application/abcdef-black-mesa-uuid', name: 'Black Mesa',
+    dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]},
+  {type: 'archived', url: '/application/abcdef-monstromart-uuid', name: 'Monstromart',
+    dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]}
 ];
 scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
   scenario.route('A request to GET /application/:id (generic/' + scenarioInfo.type + ')', {
-    // DEV: We test nonExistent and loggedOut after the `forEach` as they aren't type dependent
-    requiredTests: {nonExistent: false, loggedOut: false}
+    // DEV: We test nonExistent, nonOwner, and loggedOut after the `forEach` as they aren't type dependent
+    requiredTests: {nonExistent: false, nonOwner: false, loggedOut: false}
   }, function () {
-    scenario.routeTest('from the owner user', function () {
+    scenario.routeTest('from the owner user', {
+      dbFixtures: scenarioInfo.dbFixtures
+    }, function () {
       // Log in and make our request
       httpUtils.session.init().login()
         .save({url: serverUtils.getUrl(scenarioInfo.url), expectedStatusCode: 200});
@@ -30,29 +38,26 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
         // DEV: We have title testing as we cannot test it in visual tests
         expect(this.$('title').text()).to.equal('Job application - ' + scenarioInfo.name + ' - Find Work');
       });
-
-      // Test that all fields exist
-      it.skip('has our expected fields', function () {
-        // Name, URL, notes, company name
-        expect(this.$('input[name=...]').val()).to.equal('Test me');
-      });
-    });
-
-    scenario.nonOwner.skip('from a non-owner user', function () {
-      // Log in (need to do) and make our request
-      httpUtils.session.init().save({url: serverUtils.getUrl(scenarioInfo.url), expectedStatusCode: 404});
-
-      it('recieves a 404', function () {
-        // Asserted by `expectedStatusCode` in `httpUtils.save()`
-      });
     });
   });
 });
 
-scenario.route('A request to GET /application/:id (generic)', {
-  // DEV: nonOwner is taken care of in above `forEach`
-  requiredTests: {nonOwner: false}
-}, function () {
+scenario.route('A request to GET /application/:id (generic)', function () {
+  scenario.nonOwner('from a non-owner user', {
+    dbFixtures: [dbFixtures.APPLICATION_INTERTRODE, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_ALT)
+      .save({
+        url: serverUtils.getUrl('/application/abcdef-intertrode-uuid'),
+        expectedStatusCode: 404
+      });
+
+    it('recieves a 404', function () {
+      // Asserted by `expectedStatusCode` in `httpUtils.save()`
+    });
+  });
+
   scenario.nonExistent('that doesn\'t exist', function () {
     // Log in and make our request
     httpUtils.session.init().login()
@@ -77,7 +82,7 @@ scenario.route('A request to GET /application/:id (generic)', {
     });
   });
 
-  scenario.routeTest('with a company name', function () {
+  scenario.routeTest.skip('with a company name', function () {
     var applicationId = 'abcdef-sky-networks-uuid';
     httpUtils.session.init().login()
       .save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});

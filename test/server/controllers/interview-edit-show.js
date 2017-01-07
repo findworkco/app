@@ -1,11 +1,14 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
 scenario.route('A request to GET /interview/:id', function () {
-  scenario.routeTest('from the owner user', function () {
+  scenario.routeTest('from the owner user', {
+    dbFixtures: [dbFixtures.APPLICATION_SKY_NETWORKS, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
     // Log in (need to do) and make our request
     var interviewId = 'abcdef-sky-networks-interview-uuid';
     httpUtils.session.init().login().save({
