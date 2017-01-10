@@ -110,6 +110,16 @@ app.post('/delete-account', [
   }
 ]);
 
+// Define common schedule options resolver
+function getScheduleOptions(req, status, options) {
+  return _.extend({
+    where: {
+      candidate_id: req.candidate.id,
+      status: status
+    },
+    limit: 20
+  }, options);
+}
 app.get('/schedule', [
   resolveModelsAsLocals({nav: true}, function scheduleShowResolve (req) {
     // If there's no candidate, return nothing
@@ -126,31 +136,22 @@ app.get('/schedule', [
     // DEV: We fetch active applications separately so we can add limits to each type
     // TODO: Be sure to sort queries by upcoming date
     // TODO: Warn ourselves if we see a date that was before today for upcoming interviews
-    function getOptions(status, options) {
-      return _.extend({
-        where: {
-          candidate_id: req.candidate.id,
-          status: status
-        },
-        limit: 20
-      }, options);
-    }
-    var receivedOfferOptions = getOptions(Application.STATUSES.RECEIVED_OFFER, {
+    var receivedOfferOptions = getScheduleOptions(req, Application.STATUSES.RECEIVED_OFFER, {
       include: [
         includes.closestPastInterview,
         {model: ApplicationReminder, as: 'received_offer_reminder'}
       ]
     });
-    var upcomingInterviewOptions = getOptions(Application.STATUSES.UPCOMING_INTERVIEW, {
+    var upcomingInterviewOptions = getScheduleOptions(req, Application.STATUSES.UPCOMING_INTERVIEW, {
       include: [includes.closestUpcomingInterview]
     });
-    var waitingForResponseOptions = getOptions(Application.STATUSES.WAITING_FOR_RESPONSE, {
+    var waitingForResponseOptions = getScheduleOptions(req, Application.STATUSES.WAITING_FOR_RESPONSE, {
       include: [
         includes.closestPastInterview,
         {model: ApplicationReminder, as: 'waiting_for_response_reminder'}
       ]
     });
-    var savedForLaterOptions = getOptions(Application.STATUSES.SAVED_FOR_LATER, {
+    var savedForLaterOptions = getScheduleOptions(req, Application.STATUSES.SAVED_FOR_LATER, {
       include: [{model: ApplicationReminder, as: 'saved_for_later_reminder'}]
     });
 
@@ -198,7 +199,9 @@ app.get('/archive', [
     }
 
     // If we are loading mock data, return mock data
-    var archivedOptions = {include: []};
+    var archivedOptions = getScheduleOptions(req, Application.STATUSES.ARCHIVED, {
+      include: []
+    });
     if (this.useMocks) {
       return {
         archivedApplications: applicationMockData.getArchivedApplications(archivedOptions)
@@ -207,10 +210,17 @@ app.get('/archive', [
 
     // Return Sequelize queries
     return {
-      archivedApplications: applicationMockData.getArchivedApplications(archivedOptions)
+      archivedApplications: Application.findAll(archivedOptions)
     };
   }),
   function archiveShow (req, res, next) {
+    // If we have more applications than expected, notify ourselves
+    if (req.models.archivedApplications.length > 10) {
+      req.captureError(new Error('Candidate has at least 10 archived applications, ' +
+        'we should add limits and build "View more" functionality'));
+    }
+
+    // Render our page
     res.render('archive.jade');
   }
 ]);

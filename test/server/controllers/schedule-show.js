@@ -48,7 +48,9 @@ scenario.route('A request to GET /schedule', function () {
     });
 
     it('shows application information', function () {
-      expect(this.$('#content').text()).to.contain('Intertrode');
+      expect(this.$('#content .schedule-row--application').text()).to.contain('Intertrode');
+      expect(this.$('#content .schedule-row--application a').attr('href'))
+        .to.equal('/application/abcdef-intertrode-uuid');
     });
   });
 
