@@ -32,13 +32,16 @@ scenario.route('A request to GET /interview/:id', function () {
     });
   });
 
-  scenario.nonOwner.skip('from a non-owner user', function () {
-    // Log in (need to do) and make our request
-    var interviewId = 'abcdef-uuid';
-    httpUtils.session.init().save({
-      url: serverUtils.getUrl('/interview/' + interviewId),
-      expectedStatusCode: 404
-    });
+  scenario.nonOwner('from a non-owner user', {
+    dbFixtures: [dbFixtures.APPLICATION_SKY_NETWORKS, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+  }, function () {
+    // Log in and make our request
+    var interviewId = 'abcdef-sky-networks-interview-uuid';
+    httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_ALT)
+      .save({
+        url: serverUtils.getUrl('/interview/' + interviewId),
+        expectedStatusCode: 404
+      });
 
     it('recieves a 404', function () {
       // Asserted by `expectedStatusCode` in `httpUtils.save()`

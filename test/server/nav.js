@@ -1,6 +1,8 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var Promise = require('bluebird');
 var Application = require('../../server/models/application');
+var ApplicationReminder = require('../../server/models/application-reminder');
 var dbFixtures = require('./utils/db-fixtures');
 var httpUtils = require('./utils/http');
 var serverUtils = require('./utils/server');
@@ -99,13 +101,34 @@ scenario.route('A request to a page which loads navigation', function () {
     });
   });
 
-  scenario.nonOwner.skip('from a logged in user with an application in another account', function () {
-    // Log in our user and make our request
-    httpUtils.session.init().login()
+  scenario.nonOwner('from a logged in user with an application in another account', {
+    // DEV: We are intentionally using a simple appliation for easier updating
+    dbFixtures: [dbFixtures.APPLICATION_INTERTRODE, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+  }, function () {
+    // Log in as default user, verify we list application in nav,
+    //   update application's owner, verify application not listed
+    // DEV: We manually edit database as there's not really any way to force a candidate id into someone else's session
+    httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_DEFAULT)
+      .save({url: serverUtils.getUrl('/application/abcdef-intertrode-uuid'), expectedStatusCode: 200})
       .save({url: serverUtils.getUrl('/404'), expectedStatusCode: 404});
+    before(function verifyApplicationInNav () {
+      expect(this.$('#nav').text()).to.contain('Intertrode');
+    });
+    before(function changeApplicationOwner (done) {
+      // https://github.com/sequelize/sequelize/blob/v3.29.0/lib/model.js#L1740-L1748
+      var application = Application.build({id: 'abcdef-intertrode-uuid'}, {isNewRecord: false});
+      var reminder = ApplicationReminder.build({id: 'abcdef-intertrode-reminder-uuid'}, {isNewRecord: false});
+      var updateOptions = {_allowNoTransaction: true, _sourceType: 'server', validate: false};
+      Promise.all([
+        application.update({candidate_id: 'alt00000-0000-0000-0000-000000000000'}, updateOptions),
+        reminder.update({candidate_id: 'alt00000-0000-0000-0000-000000000000'}, updateOptions)
+      ]).asCallback(done);
+    });
+    httpUtils.session
+        .save({url: serverUtils.getUrl('/404'), expectedStatusCode: 404});
 
-    it.skip('does not list the application', function () {
-      // Test me
+    it('does not list the application', function () {
+      expect(this.$('#nav').text()).to.not.contain('Intertrode');
     });
   });
 
