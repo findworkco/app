@@ -37,10 +37,10 @@ var Application = module.exports = _.extend(baseDefine('application', {
     onUpdate: 'CASCADE', onDelete: 'CASCADE'
   },
 
-  // Example: 2016-01-08, no time
-  application_date_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
+  // Example: 2016-01-08, no time but we reuse type for development simplicity
+  application_date_moment: {type: baseDefine.MOMENT_NO_TZ, defaultValue: null, allowNull: true},
   // DEV: We don't use timezone for archived at as this is set by our system so user has no timezone setting
-  archived_at_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
+  archived_at_moment: {type: baseDefine.MOMENT_NO_TZ, defaultValue: null, allowNull: true},
 
   // Example: Sky Networks
   // DEV: This is never null, only an empty string (this gives us falsy consistency)
@@ -108,7 +108,7 @@ var Application = module.exports = _.extend(baseDefine('application', {
       // If our status isn't saved for later, verify we have an application date
       var status = this.getDataValue('status');
       if (status !== exports.STATUSES.SAVED_FOR_LATER) {
-        assert(this.getDataValue('application_date_date'),
+        assert(this.getDataValue('application_date_datetime'),
           'Expected non-"saved_for_later" application to have an application date set');
       }
     },
@@ -116,7 +116,7 @@ var Application = module.exports = _.extend(baseDefine('application', {
       // If our status is archived, verify we have an archived date
       var status = this.getDataValue('status');
       if (status === exports.STATUSES.ARCHIVED) {
-        assert(this.getDataValue('archived_at_date'),
+        assert(this.getDataValue('archived_at_datetime'),
           'Expected archived application to have an archived at date set');
       }
     }

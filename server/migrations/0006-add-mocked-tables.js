@@ -23,7 +23,9 @@ exports.up = function (queryInterface) {
       type: {type: Sequelize.STRING(36), allowNull: false},
       date_time_moment: {type: baseDefine.MOMENT_TZ, allowNull: false},
       is_enabled: {type: Sequelize.BOOLEAN, allowNull: false},
-      sent_at_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
+      // DEV: Original type no longer defined
+      // sent_at_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
+      sent_at_date: {type: Sequelize.DATE, defaultValue: null, allowNull: true},
 
       // Manually add timestamps (sequelize-cli doesn't inherit options)
       // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/model.js#L191-L204
@@ -39,8 +41,11 @@ exports.up = function (queryInterface) {
         // references: {model: 'candidates', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
         // onUpdate: 'CASCADE', onDelete: 'CASCADE'
       },
-      application_date_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
-      archived_at_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
+      // DEV: Original type no longer defined
+      // application_date_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
+      // archived_at_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
+      application_date_date: {type: Sequelize.DATE, defaultValue: null, allowNull: true},
+      archived_at_date: {type: Sequelize.DATE, defaultValue: null, allowNull: true},
       company_name: {type: Sequelize.STRING(255), defaultValue: '', allowNull: false},
       name: {type: Sequelize.STRING(255), allowNull: false},
       notes: {type: Sequelize.STRING(64 * 1024) /* 64kb */, defaultValue: '', allowNull: false},

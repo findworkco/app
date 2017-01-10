@@ -55,7 +55,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         expect(applications).to.have.length(1);
         expect(applications[0].get('id')).to.be.a('string');
         expect(applications[0].get('candidate_id')).to.be.a('string');
-        expect(applications[0].get('application_date_date').toISOString()).to.equal('2017-01-31T00:00:00.000Z');
+        expect(applications[0].get('application_date_datetime').toISOString()).to.equal('2017-01-31T00:00:00.000Z');
         expect(applications[0].get('status')).to.equal('upcoming_interview');
         expect(applications[0].get('name')).to.equal('Test Corporation');
         expect(applications[0].get('posting_url')).to.equal('http://google.com/');
@@ -101,7 +101,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         expect(reminders[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T19:00:00.000Z');
         expect(reminders[0].get('date_time_timezone')).to.equal('US-America/Chicago');
         expect(reminders[0].get('is_enabled')).to.equal(true);
-        expect(reminders[0].get('sent_at_date')).to.equal(null);
+        expect(reminders[0].get('sent_at_datetime')).to.equal(null);
 
         expect(reminders[1].get('id')).to.be.a('string');
         expect(reminders[1].get('candidate_id')).to.be.a('string');
@@ -110,7 +110,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         expect(reminders[1].get('date_time_datetime').toISOString()).to.equal('2022-03-06T01:00:00.000Z');
         expect(reminders[1].get('date_time_timezone')).to.equal('US-America/Chicago');
         expect(reminders[1].get('is_enabled')).to.equal(true);
-        expect(reminders[1].get('sent_at_date')).to.equal(null);
+        expect(reminders[1].get('sent_at_datetime')).to.equal(null);
         done();
       });
     });

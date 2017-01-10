@@ -25,7 +25,7 @@ scenario.route('A request to GET /application/:id (archived)', {
       // Assert form exists
     });
 
-    it.skip('shows archive date', function () {
+    it('shows archive date', function () {
       expect(this.$('.archive-date').text()).to.contain('Mon Jan 18 at 3:00PM CST');
     });
   });

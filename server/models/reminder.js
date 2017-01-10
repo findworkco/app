@@ -12,6 +12,8 @@ var Sequelize = require('sequelize');
 //     In addition, if we ever leave it, we can easily expand `reminders` inheritance into separate tables
 //     As a result, it's 90% win to 10% possibility of being painful -- good odds for now
 //   https://www.postgresql.org/docs/9.3/static/ddl-inherit.html
+// DEV: This is already paying off with `MOMENT_DATEONLY` to `MOMENT_NO_TZ` conversion
+//   It reduced potentially 2/3 column renames/conversions to 1
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
@@ -50,7 +52,7 @@ var attributes = exports._cleanAttributes = {
 
   date_time_moment: {type: baseDefine.MOMENT_TZ, allowNull: false},
   is_enabled: {type: Sequelize.BOOLEAN, allowNull: false},
-  sent_at_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true}
+  sent_at_moment: {type: baseDefine.MOMENT_NO_TZ, defaultValue: null, allowNull: true}
 };
 var options = {
   hooks: {

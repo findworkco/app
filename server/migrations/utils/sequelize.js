@@ -5,7 +5,7 @@ var baseDefine = require('../../models/base');
 
 // Expose base define constants
 Sequelize.ID = baseDefine.ID;
-Sequelize.MOMENT_DATEONLY = baseDefine.MOMENT_DATEONLY;
+Sequelize.MOMENT_NO_TZ = baseDefine.MOMENT_NO_TZ;
 Sequelize.MOMENT_TZ = baseDefine.MOMENT_TZ;
 
 // Monkey patch Sequelize to require transactions

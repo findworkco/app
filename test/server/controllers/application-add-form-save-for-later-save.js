@@ -68,7 +68,7 @@ scenario.route('A request to POST /add-application/save-for-later (specific)', {
         expect(reminders[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T19:00:00.000Z');
         expect(reminders[0].get('date_time_timezone')).to.equal('US-America/Chicago');
         expect(reminders[0].get('is_enabled')).to.equal(false);
-        expect(reminders[0].get('sent_at_date')).to.equal(null);
+        expect(reminders[0].get('sent_at_datetime')).to.equal(null);
         done();
       });
     });

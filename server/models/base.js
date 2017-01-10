@@ -8,8 +8,11 @@ var timezones = require('../utils/tz-stable.js');
 var customTypes = require('./utils/custom-types');
 
 // Expose our custom types
+// DEV: We originally had a `DATEONLY` type but additionally storing time costs only a little extra on space
+//   and it makes developer maintenance 2 things instead of 3 things
+//   and we get consistently named columns, making it easier to potentially switch between `TZ`/`NO_TZ`
 exports.ID = customTypes.ID;
-exports.MOMENT_DATEONLY = 'MOMENT_DATEONLY';
+exports.MOMENT_NO_TZ = 'MOMENT_NO_TZ';
 exports.MOMENT_TZ = 'MOMENT_TZ';
 
 // Override moment to check timezones
@@ -43,14 +46,16 @@ exports.expandMomentAttributes = function (attributes, options) {
     // If the attribute is a moment with no timezone
     var attribute = attributes[attributeKey];
     var dateTimeKey, timezoneKey, momentKey;
-    if (attribute.type === exports.MOMENT_DATEONLY) {
+    if (attribute.type === exports.MOMENT_NO_TZ) {
       // Replace original attribute with database column
+      // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/data-types.js#L441-L459
+      // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/dialects/postgres/data-types.js#L101-L105
       delete attributes[attributeKey];
       assert.notEqual(attributeKey.indexOf('_moment'), -1,
-        'Expected `_moment` suffix on "' + attributeKey + '" for "MOMENT_DATEONLY" type');
-      dateTimeKey = attributeKey.replace('_moment', '_date');
+        'Expected `_moment` suffix on "' + attributeKey + '" for "MOMENT_NO_TZ" type');
+      dateTimeKey = attributeKey.replace('_moment', '_datetime');
       attributes[dateTimeKey] = _.defaults({
-        type: Sequelize.DATEONLY
+        type: Sequelize.DATE
       }, attribute);
 
       // Add getter/setters

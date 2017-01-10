@@ -234,10 +234,10 @@ scenario.model.skip('A Base model being created with a candidate source', functi
   });
 });
 
-scenario.model('A Base model with a moment-based dateonly field', function () {
+scenario.model('A Base model with a moment-based datetime/no-timezone field', function () {
   describe('when date is null', function () {
     it('returns null as moment', function () {
-      var base = Application.build({application_date_date: null});
+      var base = Application.build({application_date_datetime: null});
       expect(base.get('application_date_moment')).to.equal(null);
     });
   });
@@ -245,24 +245,24 @@ scenario.model('A Base model with a moment-based dateonly field', function () {
   describe('when date is not null', function () {
     it('returns a moment instance', function () {
       // http://momentjs.com/docs/#/query/is-same/
-      var base = Application.build({application_date_date: new Date('2016-02-05')});
+      var base = Application.build({application_date_datetime: new Date('2016-02-05')});
       expect(base.get('application_date_moment').isSame(moment('2016-02-05'))).to.equal(true);
     });
   });
 
   describe('when updating moment to null', function () {
     it('has null as date', function () {
-      var base = Application.build({application_date_date: new Date('2016-02-05')});
+      var base = Application.build({application_date_datetime: new Date('2016-02-05')});
       base.set('application_date_moment', null);
-      expect(base.get('application_date_date')).to.equal(null);
+      expect(base.get('application_date_datetime')).to.equal(null);
     });
   });
 
   describe('when updating moment to not null', function () {
     it('has a date', function () {
-      var base = Application.build({application_date_date: null});
+      var base = Application.build({application_date_datetime: null});
       base.set('application_date_moment', moment('2016-02-05'));
-      expect(base.get('application_date_date')).to.deep.equal(new Date('2016-02-05'));
+      expect(base.get('application_date_datetime')).to.deep.equal(new Date('2016-02-05'));
     });
   });
 });
