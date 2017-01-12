@@ -14,9 +14,7 @@ block content
     //- DEV: On large screens, display "All changes saved" away from content
     //- DEV: We keep "All changes saved" separate from h1 for a11y clarity
     i.text--normal.muted.medium-and-down-hidden(data-autosave, style="position: absolute; top: 0; right: 0") All changes saved
-  h2.content__subheading(style="font-weight: normal")
-    //- Interaction heavily inspired by Google Docs
-    input.form-control.form-control--editable-title(type="text", name="name", data-autosize, value=selectedApplication.name)
+  h2.content__subheading(style="font-weight: normal")= form_data.get('name') || selectedApplication.name
   //- DEV: We wanted to use a `p` but we can't nest forms in them
   //-   as browsers break up those block in block formations
   .action-bar.push--bottom
@@ -82,6 +80,7 @@ block content
       +csrf-input()
       .grid
         .grid__item.one-whole.medium-one-half.large-four-ninths
+          +application-name("Name:", selectedApplication)(data-content-sync=".content__subheading")
           +posting-url(selectedApplication)
 
           //- DEV: Archived applications can only be created from waiting for response or later (i.e. they'll always have an application date)

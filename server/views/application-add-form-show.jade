@@ -32,10 +32,7 @@ block content
             li= error.message
     .grid
       .grid__item.one-whole.medium-one-half.large-four-ninths
-        .form-group
-          label(for="name")
-            = "Name: (if empty, autofilled from URL)"
-          input#name.form-control.input--block(name="name", type="text", value=form_data.get('name') || locals.query_company_name, placeholder="Examples: Google, Acme Corp")
+        +application-name("Name: (if empty, autofilled from URL)", {})
         +posting-url({})
         if status !== APPLICATION_STATUSES.SAVED_FOR_LATER
           +application-date({})

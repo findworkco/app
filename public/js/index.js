@@ -8,7 +8,7 @@ void require('browsernizr/test/inputtypes');
 // DEV: Add in `window.jQuery` for Chosen and wysiwyg.js
 window.jQuery = $;
 void require('../../bower_components/chosen/chosen.jquery.js');
-var autosizeInput = require('./autosize-input');
+var contentSync = require('./content-sync');
 var errorGenerators = require('./error-generators');
 var notifications = require('./notifications');
 var menu = require('./menu');
@@ -66,7 +66,7 @@ $(function handleReady () {
   $('[data-chosen]').chosen();
 
   // Bind our external plugins
-  autosizeInput.init();
+  contentSync.init();
   errorGenerators.init();
   notifications.init();
   menu.init();

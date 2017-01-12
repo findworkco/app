@@ -1,3 +1,9 @@
+mixin application-name(text, values)
+  .form-group
+    label(for="name")
+      = text
+    input#name.form-control.input--block(name="name", type="text", value=form_data.get('name') || values.name || locals.query_company_name, placeholder="Examples: Google, Acme Corp")&attributes(attributes)
+
 mixin posting-url(values)
   //- TODO: Link up `follow URL` to automatically update on throttled keydown
   .form-group

@@ -11,7 +11,7 @@ block content
   //- DESIGN: On save, redirect back to “Job application” with a notification about “Upcoming interview added”
   h1.content__heading(style="font-weight: normal") Add interview
   h2.content__subheading(style="font-weight: normal")
-    | Application: #{selectedApplication.name}
+    = selectedApplication.name
   p.medium-and-up-hidden
     a.btn.btn--default.btn--thin(href=selectedApplication.url) Cancel and return to job application
     = " "

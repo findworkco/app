@@ -38,10 +38,11 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
 
       it('recieves the application page', function () {
         expect(this.$('.content__heading').text()).to.equal('Job application');
-        expect(this.$('.content__subheading input').val()).to.equal(applicationData.name);
+        expect(this.$('.content__subheading').text()).to.equal(applicationData.name);
         expect(this.$('.action-bar__info').text()).to.equal('Status: ' + applicationData.humanStatus);
         var $form = this.$('#content form[action="' + scenarioInfo.url + '"]');
         assert.strictEqual($form.length, 1);
+        expect($form.find('[name=name]').val()).to.equal(applicationData.name);
         expect($form.find('[name=posting_url]').val()).to.contain('https://');
         // DEV: We could be more thorough with note data comparison but verifying it's non-empty is good enough
         expect($form.find('[name=notes]').val()).to.match(/employees|career|website/i);
