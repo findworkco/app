@@ -17,16 +17,29 @@ scenario.route('A request to GET /application/:id (archived)', {
     httpUtils.session.init().login()
       .save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
 
-    it.skip('sets status to "Archived"', function () {
-      // Assert application status
+    it('has expected actions', function () {
+      var $actions = this.$('.action-bar__actions > form, .action-bar__actions > a');
+      expect($actions).to.have.length(1);
+      // Archived -/> Saved for later
+      //   Not possible currently due to seeming unlikely...
+      // Archived -> Waiting for response
+      // OR
+      // Archived -> Upcoming interview
+      // OR
+      // Archived -> Received offer
+      // DEV: We could have an "Add interview" action
+      //   but for past ones we have an "Add interview" button in "Past interviews"
+      //   and there should be no upcoming interviews as we are archived
+      expect($actions.filter('[action="/application/' + applicationId + '/restore"]')).to.have.length(1);
     });
 
-    it.skip('has action to restore application', function () {
-      // Assert form exists
+    // DEV: We explicitly test this to prevent past states' reminders from being shown
+    it('lists no reminders', function () {
+      expect(this.$('saved_for_later_reminder_date')).to.have.length(0);
+      expect(this.$('waiting_for_response_reminder_date')).to.have.length(0);
+      expect(this.$('received_offer_reminder_date')).to.have.length(0);
     });
 
-    it('shows archive date', function () {
-      expect(this.$('.archive-date').text()).to.contain('Mon Jan 18 at 3:00PM CST');
-    });
+    // Archived at section is tested in common as the non-archived test fits it better
   });
 });

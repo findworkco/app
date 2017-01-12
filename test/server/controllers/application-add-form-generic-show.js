@@ -24,11 +24,9 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
         expect(this.$('.content__heading').text()).to.equal('Add job application');
       });
 
-      // Test that all fields exist
-      it.skip('has our expected fields', function () {
-        // Name, posting URL, notes, research company, back button
-        expect(this.$('input[name=...]').val()).to.equal('Test me');
-      });
+      // DEV: We rely on `htmlForm` and `add-form-save` tests to verify field presence
+      //   There's no data being loaded from the database to verify
+      //   Only the field content on validation and save
     });
   });
 });

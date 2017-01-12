@@ -17,33 +17,23 @@ scenario.route('A request to GET /application/:id (upcoming interview)', {
     httpUtils.session.init().login()
       .save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
 
-    it.skip('sets status to "Waiting for response"', function () {
-      // Assert application status
+    it('has expected actions', function () {
+      var $actions = this.$('.action-bar__actions > form, .action-bar__actions > a');
+      expect($actions).to.have.length(2);
+      // Upcoming interview -/> Saved for later
+      //   Not possible currently due to seeming unlikely...
+      // Upcoming interview -/> Waiting for response
+      //   Must be done via deleting an interview
+      // DEV: We could have an "Add interview" button
+      //   but we have "Add interview" linked on "Upcoming interviews" section so we're covered
+      // Upcoming interview -> Received offer
+      expect($actions.filter('[action="/application/' + applicationId + '/received-offer"]')).to.have.length(1);
+      // Upcoming interview -> Archived
+      expect($actions.filter('[action="/application/' + applicationId + '/archive"]')).to.have.length(1);
     });
 
-    it.skip('has an action to add interview', function () {
-      // Assert link exists
-    });
-
-    it.skip('has an action to mark application with "Recieved offer"', function () {
-      // Assert form exists
-    });
-
-    it.skip('has an action to archive application', function () {
-      // Assert form exists
-    });
-
-    it.skip('shows application date', function () {
-      // Assert application date
-      expect(true).to.equal(false);
-    });
-
-    it.skip('has a follow up reminder', function () {
-      // Assert follow up reminder content
-    });
-
-    it.skip('has an upcoming interviews section', function () {
-      // Assert upcoming interviews section
-    });
+    // There is no reminder to assert for
+    // Upcoming interviews being visible/not is tested in `generic`
+    //   due to archived applications possibly having upcoming interviews
   });
 });

@@ -17,25 +17,25 @@ scenario.route('A request to GET /application/:id (waiting for response)', {
     httpUtils.session.init().login()
       .save({url: serverUtils.getUrl('/application/' + applicationId), expectedStatusCode: 200});
 
-    it.skip('sets status to "Waiting for response"', function () {
-      // Assert application status
+    it('has expected actions', function () {
+      var $actions = this.$('.action-bar__actions > form, .action-bar__actions > a');
+      expect($actions).to.have.length(3);
+      // Waiting for response -/> Saved for later
+      //   Not possible currently due to seeming unlikely...
+      // Waiting for response -> Upcoming interview
+      expect($actions.filter('[href="/application/' + applicationId + '/add-interview"]')).to.have.length(1);
+      // Waiting for response -> Received offer
+      expect($actions.filter('[action="/application/' + applicationId + '/received-offer"]')).to.have.length(1);
+      // Waiting for response -> Archived
+      expect($actions.filter('[action="/application/' + applicationId + '/archive"]')).to.have.length(1);
     });
 
-    it.skip('has an action to mark application with "Recieved offer"', function () {
-      // Assert form exists
-    });
-
-    it.skip('has an action to archive application', function () {
-      // Assert form exists
-    });
-
-    it.skip('shows application date', function () {
-      // Assert application date
-      expect(true).to.equal(false);
-    });
-
-    it.skip('has a past interviews section', function () {
-      // Assert past interviews section
+    it('has a follow up reminder', function () {
+      expect(this.$('[name=waiting_for_response_reminder_enabled][value=yes]').attr('checked')).to.equal('checked');
+      expect(this.$('[name=waiting_for_response_reminder_enabled][value=no]').attr('checked')).to.equal(undefined);
+      expect(this.$('[name=waiting_for_response_reminder_date]').val()).to.equal('2016-01-25');
+      expect(this.$('[name=waiting_for_response_reminder_time]').val()).to.equal('12:00');
+      expect(this.$('[name=waiting_for_response_reminder_timezone]').val()).to.equal('US-America/Chicago');
     });
   });
 });
