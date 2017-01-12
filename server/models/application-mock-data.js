@@ -90,28 +90,8 @@ function buildApplication(attrs, options) {
 exports.getById = function (id, options) {
   return applicationsById.hasOwnProperty(id) ? buildApplication(applicationsById[id], options) : null;
 };
-exports.getReceivedOfferApplications = function (options) {
-  return _.where(genericMockData.applications, {
-    status: Application.STATUSES.RECEIVED_OFFER
-  }).map(function (attrs) { return buildApplication(attrs, options); });
-};
-exports.getUpcomingInterviewApplications = function (options) {
-  return _.where(genericMockData.applications, {
-    status: Application.STATUSES.UPCOMING_INTERVIEW
-  }).map(function (attrs) { return buildApplication(attrs, options); });
-};
-exports.getWaitingForResponseApplications = function (options) {
-  return _.where(genericMockData.applications, {
-    status: Application.STATUSES.WAITING_FOR_RESPONSE
-  }).map(function (attrs) { return buildApplication(attrs, options); });
-};
-exports.getSavedForLaterApplications = function (options) {
-  return _.where(genericMockData.applications, {
-    status: Application.STATUSES.SAVED_FOR_LATER
-  }).map(function (attrs) { return buildApplication(attrs, options); });
-};
-exports.getArchivedApplications = function (options) {
-  return _.where(genericMockData.applications, {
-    status: Application.STATUSES.ARCHIVED
-  }).map(function (attrs) { return buildApplication(attrs, options); });
+exports.getByIds = function (ids, options) {
+  return ids.map(function getByIdsFn (id) {
+    return exports.getById(id, options);
+  });
 };

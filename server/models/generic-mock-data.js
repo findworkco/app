@@ -101,14 +101,14 @@ exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
     id: 'abcdef-black-mesa-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
     // Fri Jan 8
-    application_date_moment: moment.tz('2015-12-01', 'US-America/Chicago'),
+    application_date_moment: moment('2015-12-01'),
     archived_at_moment: null,
-    company_name: 'Black Mesa',
+    company_name: 'Black Mesa Labs',
     name: 'Black Mesa',
     // Mon Jan 25
     received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid',
     notes: '300 employees, all engineers/scientists',
-    posting_url: 'http://www.nature.com/naturejobs/science/jobs/123456-researcher',
+    posting_url: 'https://www.nature.com/naturejobs/science/jobs/123456-researcher',
     status: Application.STATUSES.RECEIVED_OFFER
   }),
   addApplicationReminder('received-offer__reminder--application', {
@@ -153,7 +153,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
     id: 'abcdef-umbrella-corp-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
     // Fri Jan 8
-    application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
+    application_date_moment: moment('2016-01-08'),
     archived_at_moment: null,
     company_name: 'Umbrella Corporation',
     name: 'Umbrella Corporation',
@@ -197,12 +197,13 @@ exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
     is_enabled: false
   })
 ];
-exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_GLOBO_GYM = [
+exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_MULTIPLE_PAST_INTERVIEWS =
+    exports.APPLICATION_GLOBO_GYM = [
   addApplication('upcoming-interview-2__application', {
     id: 'abcdef-globo-gym-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
     // Mon Feb 1
-    application_date_moment: moment.tz('2016-02-01', 'US-America/Chicago'),
+    application_date_moment: moment('2016-02-01'),
     archived_at_moment: null,
     company_name: '',
     name: 'Globo Gym',
@@ -289,32 +290,102 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_GLOBO_GYM = [
     is_enabled: false
   })
 ];
+exports.APPLICATION_UPCOMING_INTERVIEW_3 = exports.APPLICATION_MULTIPLE_UPCOMING_INTERVIEWS =
+    exports.APPLICATION_STARK_INDUSTRIES = [
+  addApplication('upcoming-interview-3__application', {
+    id: 'abcdef-stark-indy-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Mon Feb 1
+    application_date_moment: moment('2016-03-01'),
+    archived_at_moment: null,
+    company_name: '',
+    name: 'Stark Industries',
+    notes: 'Developing high tech exoskeletons',
+    posting_url: 'http://job-openings.monster.com/monster/abcdef-ghij-klmn-opqr-stuvwxyz',
+    status: Application.STATUSES.UPCOMING_INTERVIEW
+  }),
+  addInterview('upcoming-interview-3__interview--upcoming-1', {
+    id: 'stark-indy-interview-upcoming-1-uuid',
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Mon Mar 14 at 2:00PM CST
+    date_time_moment: moment.tz('2022-03-14T14:00', 'US-America/Chicago'),
+    details: '',
+    pre_interview_reminder_id: 'stark-indy-reminder-pre-int-up-1',
+    post_interview_reminder_id: 'stark-indy-reminder-post-int-up-1'
+  }),
+  addInterviewReminder('upcoming-interview-3__reminder--pre-interview--upcoming-1', {
+    id: interviews[interviews.length - 1].pre_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.PRE_INTERVIEW,
+    date_time_moment: moment.tz('2022-03-14T11:00', 'US-America/Chicago'),
+    is_enabled: false
+  }),
+  addInterviewReminder('upcoming-interview-3__reminder--post-interview--upcoming-1', {
+    id: interviews[interviews.length - 1].post_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.POST_INTERVIEW,
+    date_time_moment: moment.tz('2022-03-14T17:00', 'US-America/Chicago'),
+    is_enabled: false
+  }),
+  addInterview('upcoming-interview-3__interview--upcoming-2', {
+    id: 'stark-indy-interview-upcoming-2-uuid',
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Mon Mar 14 at 2:00PM CST
+    date_time_moment: moment.tz('2022-03-22T07:00', 'US-America/Chicago'),
+    details: '',
+    pre_interview_reminder_id: 'stark-indy-reminder-pre-int-up-2',
+    post_interview_reminder_id: 'stark-indy-reminder-post-int-up-2'
+  }),
+  addInterviewReminder('upcoming-interview-3__reminder--pre-interview--upcoming-2', {
+    id: interviews[interviews.length - 1].pre_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.PRE_INTERVIEW,
+    date_time_moment: moment.tz('2022-03-22T09:00', 'US-America/Chicago'),
+    is_enabled: false
+  }),
+  addInterviewReminder('upcoming-interview-3__reminder--post-interview--upcoming-2', {
+    id: interviews[interviews.length - 1].post_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.POST_INTERVIEW,
+    date_time_moment: moment.tz('2022-03-22T11:00', 'US-America/Chicago'),
+    is_enabled: false
+  })
+];
 
 // Waiting for response applications
-exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_SKY_NETWORKS = [
-  addApplication('waiting-for-response__application', {
-    id: 'abcdef-sky-networks-uuid',
-    candidate_id: DEFAULT_CANDIDATE_ID,
-    // Fri Jan 8
-    application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
-    archived_at_moment: null,
-    company_name: 'Sky Networks',
-    // Mon Jan 25
-    waiting_for_response_reminder_id: 'abcdef-sky-networks-reminder-uuid',
-    posting_url: 'https://github.com/about/jobs',
-    name: 'Sky Networks',
-    notes: 'Phone screen (John): 100 employees, focused on AI<br/>' +
-      'Website: <a href="https://sky.net/">https://sky.net/</a>',
-    status: Application.STATUSES.WAITING_FOR_RESPONSE
-  }),
-  addApplicationReminder('waiting-for-response__reminder--application', {
-    id: applications[applications.length - 1].waiting_for_response_reminder_id,
-    candidate_id: DEFAULT_CANDIDATE_ID,
-    application_id: applications[applications.length - 1].id,
-    type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
-    date_time_moment: moment.tz('2016-01-25T12:00', 'US-America/Chicago'),
-    is_enabled: true
-  }),
+exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_PAST_INTERVIEWS =
+    exports.APPLICATION_SKY_NETWORKS = [
+  exports.APPLICATION_WAITING_FOR_RESPONSE_NO_PAST_INTERVIEWS = [
+    addApplication('waiting-for-response__application', {
+      id: 'abcdef-sky-networks-uuid',
+      candidate_id: DEFAULT_CANDIDATE_ID,
+      // Fri Jan 8
+      application_date_moment: moment('2016-01-08'),
+      archived_at_moment: null,
+      company_name: 'Sky Networks Inc',
+      // Mon Jan 25
+      waiting_for_response_reminder_id: 'abcdef-sky-networks-reminder-uuid',
+      posting_url: 'https://github.com/about/jobs',
+      name: 'Sky Networks',
+      notes: 'Phone screen (John): 100 employees, focused on AI<br/>' +
+        'Website: <a href="https://sky.net/">https://sky.net/</a>',
+      status: Application.STATUSES.WAITING_FOR_RESPONSE
+    }),
+    addApplicationReminder('waiting-for-response__reminder--application', {
+      id: applications[applications.length - 1].waiting_for_response_reminder_id,
+      candidate_id: DEFAULT_CANDIDATE_ID,
+      application_id: applications[applications.length - 1].id,
+      type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
+      date_time_moment: moment.tz('2016-01-25T12:00', 'US-America/Chicago'),
+      is_enabled: true
+    })
+  ],
   addInterview('waiting-for-response__interview', {
     id: 'abcdef-sky-networks-interview-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
@@ -351,10 +422,11 @@ exports.APPLICATION_SAVED_FOR_LATER = exports.APPLICATION_INTERTRODE = [
     application_date_moment: null,
     archived_at_moment: null,
     created_at: moment.tz('2015-12-19T12:00', 'US-America/Chicago').toDate(),
+    company_name: 'Intertrode Inc',
     name: 'Intertrode',
     // Mon Jan 25
     saved_for_later_reminder_id: 'abcdef-intertrode-reminder-uuid',
-    notes: '',
+    notes: 'Website: http://intertrode.net/',
     posting_url: 'https://www.dice.com/jobs/detail/Business-Systems-Analyst-Springfield-USA-12345/1234567/123456',
     status: Application.STATUSES.SAVED_FOR_LATER
   }),
@@ -374,10 +446,11 @@ exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
     id: 'abcdef-monstromart-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
     // Fri Jan 8
-    application_date_moment: moment.tz('2016-01-08', 'US-America/Chicago'),
+    application_date_moment: moment('2016-01-08'),
     // Mon Jan 18 at 3:00PM CST
+    // DEV: Technically this is stored as timezone-less but we re-render with user's timezone
     archived_at_moment: moment.tz('2016-01-18T15:00', 'US-America/Chicago'),
-    company_name: 'Monstromart',
+    company_name: 'Monstromart Inc',
     status: Application.STATUSES.ARCHIVED,
     posting_url: 'https://github.com/about/jobs',
     name: 'Monstromart',

@@ -158,14 +158,17 @@ app.get('/schedule', [
     // If we are loading mock data, return mock data
     if (this.useMocks) {
       return {
+        // DEV: We use hardcoded ids to prevent listing unnecessary content by default
+        //   which also makes our mocks more inaccurate of normal user
         receivedOfferApplications: req.query.get('received_offer') === 'true' ?
-          applicationMockData.getReceivedOfferApplications(receivedOfferOptions) : [],
+          applicationMockData.getByIds(['abcdef-black-mesa-uuid'], receivedOfferOptions) : [],
         upcomingInterviewApplications: req.query.get('upcoming_interviews') !== 'false' ?
-          applicationMockData.getUpcomingInterviewApplications(upcomingInterviewOptions) : [],
+          applicationMockData.getByIds(
+            ['abcdef-umbrella-corp-uuid', 'abcdef-globo-gym-uuid'], upcomingInterviewOptions) : [],
         waitingForResponseApplications: req.query.get('waiting_for_response') !== 'false' ?
-          applicationMockData.getWaitingForResponseApplications(waitingForResponseOptions) : [],
+          applicationMockData.getByIds(['abcdef-sky-networks-uuid'], waitingForResponseOptions) : [],
         savedForLaterApplications: req.query.get('saved_for_later') === 'true' ?
-          applicationMockData.getSavedForLaterApplications(savedForLaterOptions) : []
+          applicationMockData.getByIds(['abcdef-intertrode-uuid'], savedForLaterOptions) : []
       };
     }
 
@@ -204,7 +207,7 @@ app.get('/archive', [
     });
     if (this.useMocks) {
       return {
-        archivedApplications: applicationMockData.getArchivedApplications(archivedOptions)
+        archivedApplications: applicationMockData.getByIds(['abcdef-monstromart-uuid'], archivedOptions)
       };
     }
 

@@ -88,10 +88,8 @@ gemini.suite('application-edit-show', function (suite) {
   });
 
   // Verify listing multiple upcoming/past interviews looks good
-  gemini.suite('multiple-upcoming-interviews', function (child) {
-    // Skipped due to lack of mock data for now
-    child.skip();
-    child.load('/application/abcdef-globo-gym-uuid', geminiUtils.SETUPS.DEFAULT)
+  gemini.suite('no-past-interviews', function (child) {
+    child.load('/application/abcdef-umbrella-corp-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)
@@ -111,8 +109,8 @@ gemini.suite('application-edit-show', function (suite) {
       .capture('default-medium', geminiUtils.resizeMedium)
       .capture('default-small', geminiUtils.resizeSmall);
   });
-  gemini.suite('no-past-interviews', function (child) {
-    child.load('/application/abcdef-umbrella-corp-uuid', geminiUtils.SETUPS.DEFAULT)
+  gemini.suite('multiple-upcoming-interviews', function (child) {
+    child.load('/application/abcdef-stark-indy-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)

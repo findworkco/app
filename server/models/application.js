@@ -137,9 +137,11 @@ var Application = module.exports = _.extend(baseDefine('application', {
     closest_upcoming_interview: function () {
       var upcomingInterviews = this.get('upcoming_interviews');
       if (upcomingInterviews && upcomingInterviews.length) {
-        // TODO: Sort upcoming interviews and fetch latest one
-        //   Also consider making this into a query
-        return upcomingInterviews[0];
+        // Example: Assuming today is 2017-01-01 and interviews are 2017-02-01 and 2017-03-01
+        //   we want `2017-02-01` as it's closest so we use `isBefore`
+        return upcomingInterviews.reduce(function findClosestInterview (a, b) {
+          return a.get('date_time_moment').isBefore(b.get('date_time_moment')) ? a : b;
+        }, upcomingInterviews[0]);
       }
       return null;
     },
