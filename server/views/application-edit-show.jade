@@ -53,7 +53,7 @@ block content
           span.medium-and-up-hidden Archive
 
       if selectedApplication.status === APPLICATION_STATUSES.SAVED_FOR_LATER
-        +action--form(selectedApplication.restore_url).btn--first
+        +action--form(selectedApplication.applied_url).btn--first
           span.small-hidden Applied to posting
           span.medium-and-up-hidden Applied
         +action--add-interview().btn--middle

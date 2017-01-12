@@ -126,6 +126,10 @@ var Application = module.exports = _.extend(baseDefine('application', {
       // Example: /application/abcdef-sky-networks-uuid/add-interview
       return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/add-interview';
     },
+    applied_url: function () {
+      // Example: /application/abcdef-sky-networks-uuid/applied
+      return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/applied';
+    },
     archive_url: function () {
       // Example: /application/abcdef-sky-networks-uuid/archive
       return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/archive';

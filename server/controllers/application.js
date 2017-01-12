@@ -324,6 +324,19 @@ app.post('/application/:id', _.flatten([
   }
 ]));
 
+app.post('/application/:id/applied', _.flatten([
+  ensureLoggedIn,
+  // DEV: We don't include as a nav as this is an action only
+  resolveApplicationById({nav: false}),
+  function applicationRecievedOfferSave (req, res, next) {
+    // TODO: Update saved for later application
+    var mockApplication = req.models.selectedApplication;
+    req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
+    // req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application status updated to "Waiting for response"');
+    res.redirect(mockApplication.get('url'));
+  }
+]));
+
 app.post('/application/:id/received-offer', _.flatten([
   ensureLoggedIn,
   // DEV: We don't include as a nav as this is an action only
