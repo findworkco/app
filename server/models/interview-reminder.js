@@ -23,12 +23,8 @@ var InterviewReminder = module.exports = _.extend(baseDefine('interview_reminder
 }, Reminder._cleanAttributes), {
   VALID_TYPES: _.values(exports.TYPES),
   validate: {
+    // DEV: We skip this validation by default on fixture create in `utils/test` as models are standalone
     dateTimeMatchesInterview: function () {
-      // If we are building a fixture, ignore validation
-      if (this._createdByFixtures) {
-        return;
-      }
-
       // Verify we have an interview
       var interview = this.get('interview');
       assert(interview, 'Expected InterviewReminder to have loaded an interview. ' +

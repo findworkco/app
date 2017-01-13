@@ -119,18 +119,28 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
           'Please verify `options.dbFixtures` is correct');
       }
 
-      // Resolve our fixtures, add in their source, and load into the db
+      // Build and expose our fixtures for easy access in testing
       // DEV: We use bespoke fixture loader instead of `sequelize-fixtures` due to wanting `.build` support
-      var selectedFixtures = _.values(selectedFixturesObj);
+      var builtModels = this.models = _.mapObject(selectedFixturesObj, function buildModel (fixture, key) {
+        var modelClass = sequelize.models[fixture.model];
+        assert(modelClass, 'Fixture model not found "' + fixture.model + '"');
+        return modelClass.build(fixture.data);
+      });
+
+      // Save our built models ot the database
       sequelize.transaction({deferrable: Sequelize.Deferrable.SET_DEFERRED}, function handleTransaction (t) {
-        return Promise.all(selectedFixtures.map(function buildAndSaveModel (fixture) {
-          var modelClass = sequelize.models[fixture.model];
-          assert(modelClass, 'Fixture model not found "' + fixture.model + '"');
-          var fixtureModel = modelClass.build(fixture.data);
-          fixtureModel._createdByFixtures = true;
-          return fixtureModel.save({_sourceType: 'server', transaction: t});
+        return Promise.all(_.values(builtModels).map(function buildAndSaveModel (model) {
+          // Skip over model-dependent validation
+          var skip = [];
+          if (model.Model === sequelize.models.interview_reminder) { skip = ['dateTimeMatchesInterview']; }
+
+          // Perform our save
+          return model.save({skip: skip, _sourceType: 'server', transaction: t});
         }));
       }).asCallback(done);
+    });
+    after(function cleanupModels () {
+      delete this.models;
     });
   }
 

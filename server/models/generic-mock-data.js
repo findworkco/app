@@ -96,8 +96,9 @@ addCandidate('todd__candidate', {
 });
 
 // Received offer applications
+exports.APPLICATION_RECEIVED_OFFER_KEY = 'received-offer__application';
 exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
-  addApplication('received-offer__application', {
+  addApplication(exports.APPLICATION_RECEIVED_OFFER_KEY, {
     id: 'abcdef-black-mesa-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
     // Fri Jan 8
@@ -148,8 +149,9 @@ exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
 ];
 
 // Upcoming interview applications
+exports.APPLICATION_UPCOMING_INTERVIEW_KEY = 'upcoming-interview__application';
 exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
-  addApplication('upcoming-interview__application', {
+  addApplication(exports.APPLICATION_UPCOMING_INTERVIEW_KEY, {
     id: 'abcdef-umbrella-corp-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
     // Fri Jan 8
@@ -359,10 +361,11 @@ exports.APPLICATION_UPCOMING_INTERVIEW_3 = exports.APPLICATION_MULTIPLE_UPCOMING
 ];
 
 // Waiting for response applications
+exports.APPLICATION_WAITING_FOR_RESPONSE_KEY = 'waiting-for-response__application';
 exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_PAST_INTERVIEWS =
     exports.APPLICATION_SKY_NETWORKS = [
   exports.APPLICATION_WAITING_FOR_RESPONSE_NO_PAST_INTERVIEWS = [
-    addApplication('waiting-for-response__application', {
+    addApplication(exports.APPLICATION_WAITING_FOR_RESPONSE_KEY, {
       id: 'abcdef-sky-networks-uuid',
       candidate_id: DEFAULT_CANDIDATE_ID,
       // Fri Jan 8
@@ -415,8 +418,9 @@ exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPO
 ];
 
 // Saved for later applications
+exports.APPLICATION_SAVED_FOR_LATER_KEY = 'saved-for-later__application';
 exports.APPLICATION_SAVED_FOR_LATER = exports.APPLICATION_INTERTRODE = [
-  addApplication('saved-for-later__application', {
+  addApplication(exports.APPLICATION_SAVED_FOR_LATER_KEY, {
     id: 'abcdef-intertrode-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
     application_date_moment: null,
@@ -441,8 +445,9 @@ exports.APPLICATION_SAVED_FOR_LATER = exports.APPLICATION_INTERTRODE = [
 ];
 
 // Archived applications
+exports.APPLICATION_ARCHIVED_KEY = 'archived__application';
 exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
-  addApplication('archived__application', {
+  addApplication(exports.APPLICATION_ARCHIVED_KEY, {
     id: 'abcdef-monstromart-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
     // Fri Jan 8

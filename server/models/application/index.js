@@ -2,27 +2,14 @@
 var assert = require('assert');
 var _ = require('underscore');
 var Sequelize = require('sequelize');
-var baseDefine = require('./base.js');
-var Candidate = require('./candidate');
+var baseDefine = require('../base');
+var Candidate = require('../candidate');
+var statusInstanceMethods = require('./status').instanceMethods;
 
-// Define constants for our applications
-exports.STATUSES = {
-  SAVED_FOR_LATER: 'saved_for_later',
-  WAITING_FOR_RESPONSE: 'waiting_for_response',
-  UPCOMING_INTERVIEW: 'upcoming_interview',
-  RECEIVED_OFFER: 'received_offer',
-  ARCHIVED: 'archived'
-};
-exports.ADD_HUMAN_STATUSES = {
-  SAVED_FOR_LATER: 'Saving for later',
-  WAITING_FOR_RESPONSE: 'Waiting for response',
-  UPCOMING_INTERVIEW: 'Upcoming interview',
-  RECEIVED_OFFER: 'Received offer'
-};
-exports.EDIT_HUMAN_STATUSES = _.defaults({
-  SAVED_FOR_LATER: 'Saved for later',
-  ARCHIVED: 'Archived'
-}, exports.ADD_HUMAN_STATUSES);
+// Re-expose status info onto exports
+exports.STATUSES = require('./status').STATUSES;
+exports.ADD_HUMAN_STATUSES = require('./status').ADD_HUMAN_STATUSES;
+exports.EDIT_HUMAN_STATUSES = require('./status').EDIT_HUMAN_STATUSES;
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
@@ -107,7 +94,10 @@ var Application = module.exports = _.extend(baseDefine('application', {
     statusHasMatchingApplicationDate: function () {
       // If our status isn't saved for later, verify we have an application date
       var status = this.getDataValue('status');
-      if (status !== exports.STATUSES.SAVED_FOR_LATER) {
+      if (status === exports.STATUSES.SAVED_FOR_LATER) {
+        assert(!this.getDataValue('application_date_datetime'),
+          'Expected "saved_for_later" application to not have an application date set');
+      } else {
         assert(this.getDataValue('application_date_datetime'),
           'Expected non-"saved_for_later" application to have an application date set');
       }
@@ -117,8 +107,30 @@ var Application = module.exports = _.extend(baseDefine('application', {
       var status = this.getDataValue('status');
       if (status === exports.STATUSES.ARCHIVED) {
         assert(this.getDataValue('archived_at_datetime'),
-          'Expected archived application to have an archived at date set');
+          'Expected "archived" application to have an archived at date set');
+      } else {
+        assert(!this.getDataValue('archived_at_datetime'),
+          'Expected non-"archived" application to not have an archived at date');
       }
+    }
+  },
+
+  instanceMethods: _.extend({
+    // Instance methods go here
+  }, statusInstanceMethods),
+
+  setterMethods: {
+    status: function (val) {
+      // If the record is being updated, then prevent status from being set directly
+      // DEV: It's easy to get into an edge case status wise so we have methods for this
+      //   Edge case example: When restoring an archived application, what's its status?
+      if (!this.isNewRecord) {
+        throw new Error('`Application.status` cannot be set directly. ' +
+          'Please use a `application.updateTo*()` instead (e.g. `application.updateToApplied();`)');
+      }
+
+      // Set our value normally
+      this.setDataValue('status', val);
     }
   },
   getterMethods: {
