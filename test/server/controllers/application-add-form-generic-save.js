@@ -43,13 +43,9 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
           // Verify data in PostgreSQL
         });
 
-        describe('on redirect completion', function () {
-          httpUtils.session.save(serverUtils.getUrl('/schedule'));
-
-          it('notifies user of creation success', function () {
-            expect(this.$('#notification-content > [data-notification=success]').text())
-              .to.equal('Application saved');
-          });
+        it('notifies user of creation success', function () {
+          expect(this.$('#notification-content > [data-notification=success]').text())
+            .to.equal('Application saved');
         });
       });
     });

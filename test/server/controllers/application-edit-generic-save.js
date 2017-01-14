@@ -16,25 +16,23 @@ scenario.route('A request to POST /application/:id (generic)', function () {
       .save(serverUtils.getUrl('/application/' + applicationId))
       .save({
         method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
-        htmlForm: true, followRedirect: false,
-        expectedStatusCode: 302
+        // DEV: We use `followAllRedirects` to follow POST based redirects
+        htmlForm: true, followRedirect: true, followAllRedirects: true,
+        expectedStatusCode: 200
       });
 
     it('redirects to the application page', function () {
-      expect(this.res.headers.location).to.equal('/application/' + applicationId);
+      expect(this.lastRedirect).to.have.property('statusCode', 302);
+      expect(this.lastRedirect.redirectUri).to.have.match(/\/application\/abcdef-sky-networks-uuid$/);
+    });
+
+    it('notifies user of update success', function () {
+      expect(this.$('#notification-content > [data-notification=success]').text())
+        .to.equal('Changes saved');
     });
 
     it.skip('updates our application in the database', function () {
       // Verify data in PostgreSQL
-    });
-
-    describe('on redirect completion', function () {
-      httpUtils.session.save(serverUtils.getUrl('/schedule'));
-
-      it('notifies user of update success', function () {
-        expect(this.$('#notification-content > [data-notification=success]').text())
-          .to.equal('Changes saved');
-      });
     });
   });
 

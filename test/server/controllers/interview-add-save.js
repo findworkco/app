@@ -17,25 +17,23 @@ scenario.route('A request to POST /application/:id/add-interview', function () {
       .save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'))
       .save({
         method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
-        htmlForm: true, followRedirect: false,
-        expectedStatusCode: 302
+        // DEV: We use `followAllRedirects` to follow POST based redirects
+        htmlForm: true, followRedirect: true, followAllRedirects: true,
+        expectedStatusCode: 200
       });
 
-    it.skip('redirects to the application page', function () {
-      expect(this.res.headers).to.have.property('location', '/application/' + applicationId);
+    it('redirects to the application page', function () {
+      expect(this.lastRedirect).to.have.property('statusCode', 302);
+      expect(this.lastRedirect.redirectUri).to.have.match(/\/application\/[^\/]+$/);
+    });
+
+    it('notifies user of creation success', function () {
+      expect(this.$('#notification-content > [data-notification=success]').text())
+        .to.equal('Interview saved');
     });
 
     it.skip('creates our interview in the database', function () {
       // Verify data in PostgreSQL
-    });
-
-    describe('on redirect completion', function () {
-      httpUtils.session.save(serverUtils.getUrl('/schedule'));
-
-      it('notifies user of creation success', function () {
-        expect(this.$('#notification-content > [data-notification=success]').text())
-          .to.equal('Interview saved');
-      });
     });
   });
 

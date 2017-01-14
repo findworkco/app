@@ -42,9 +42,20 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
       .save(serverUtils.getUrl('/add-application/upcoming-interview'))
       .save({
         method: 'POST', url: serverUtils.getUrl('/add-application/upcoming-interview'),
-        htmlForm: validFormData, followRedirect: false,
-        expectedStatusCode: 302
+        // DEV: We use `followAllRedirects` to follow POST based redirects
+        htmlForm: validFormData, followRedirect: true, followAllRedirects: true,
+        expectedStatusCode: 200
       });
+
+    it('redirects to the new application\'s page', function () {
+      expect(this.lastRedirect).to.have.property('statusCode', 302);
+      expect(this.lastRedirect.redirectUri).to.have.match(/\/application\/[^\/]+$/);
+    });
+
+    it('notifies user of creation success', function () {
+      expect(this.$('#notification-content > [data-notification=success]').text())
+        .to.equal('Application created');
+    });
 
     it('creates our application in the database', function (done) {
       Application.findAll().asCallback(function handleFindAll (err, applications) {
@@ -112,19 +123,6 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         expect(reminders[1].get('is_enabled')).to.equal(true);
         expect(reminders[1].get('sent_at_datetime')).to.equal(null);
         done();
-      });
-    });
-
-    it('redirects to the new application\'s page', function () {
-      expect(this.res.headers.location).to.have.match(/^\/application\/[^\/]+$/);
-    });
-
-    describe('on redirect completion', function () {
-      httpUtils.session.save(serverUtils.getUrl('/schedule'));
-
-      it('notifies user of creation success', function () {
-        expect(this.$('#notification-content > [data-notification=success]').text())
-          .to.equal('Application created');
       });
     });
   });

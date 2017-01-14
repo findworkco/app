@@ -16,25 +16,23 @@ scenario.route('A request to POST /interview/:id/delete', function () {
       .save(serverUtils.getUrl('/interview/' + interviewId))
       .save({
         method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId + '/delete'),
-        htmlForm: true, followRedirect: false,
-        expectedStatusCode: 302
+        // DEV: We use `followAllRedirects` to follow POST based redirects
+        htmlForm: true, followRedirect: true, followAllRedirects: true,
+        expectedStatusCode: 200
       });
 
     it('redirects to the application page', function () {
-      expect(this.res.headers.location).to.have.match(/^\/application\/[^\/]+$/);
+      expect(this.lastRedirect).to.have.property('statusCode', 302);
+      expect(this.lastRedirect.redirectUri).to.have.match(/\/application\/[^\/]+$/);
+    });
+
+    it('notifies user of deletion success', function () {
+      expect(this.$('#notification-content > [data-notification=success]').text())
+        .to.equal('Interview deleted');
     });
 
     it.skip('deletes our interview from the database', function () {
       // Verify data in PostgreSQL
-    });
-
-    describe('on redirect completion', function () {
-      httpUtils.session.save(serverUtils.getUrl('/schedule'));
-
-      it('notifies user of deletion success', function () {
-        expect(this.$('#notification-content > [data-notification=success]').text())
-          .to.equal('Interview deleted');
-      });
     });
   });
 

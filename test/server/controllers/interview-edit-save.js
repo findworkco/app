@@ -16,25 +16,23 @@ scenario.route('A request to POST /interview/:id', function () {
       .save(serverUtils.getUrl('/interview/' + interviewId))
       .save({
         method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
-        htmlForm: true, followRedirect: false,
-        expectedStatusCode: 302
+        // DEV: We use `followAllRedirects` to follow POST based redirects
+        htmlForm: true, followRedirect: true, followAllRedirects: true,
+        expectedStatusCode: 200
       });
 
+    it('notifies user of update success', function () {
+      expect(this.$('#notification-content > [data-notification=success]').text())
+        .to.equal('Changes saved');
+    });
+
     it('redirects to the interview page', function () {
-      expect(this.res.headers).to.have.property('location', '/interview/' + interviewId);
+      expect(this.lastRedirect).to.have.property('statusCode', 302);
+      expect(this.lastRedirect.redirectUri).to.have.match(/\/interview\/abcdef-sky-networks-interview-uuid$/);
     });
 
     it.skip('updates our interview in the database', function () {
       // Verify data in PostgreSQL
-    });
-
-    describe('on redirect completion', function () {
-      httpUtils.session.save(serverUtils.getUrl('/schedule'));
-
-      it('notifies user of update success', function () {
-        expect(this.$('#notification-content > [data-notification=success]').text())
-          .to.equal('Changes saved');
-      });
     });
   });
 

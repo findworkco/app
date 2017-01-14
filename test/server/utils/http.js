@@ -143,11 +143,20 @@ exports._save = function (options) {
           kueQueue.on('job complete', handleJobComplete);
         },
         function makeRequest (cb) {
-          request(options, function handleRequest (err, res, body) {
+          var req = request(options, function handleRequest (err, res, body) {
             // Save our results to `this` context
             that.err = err;
+            that.req = req;
             that.res = res;
             that.body = body;
+
+            // Expose convenince redirect information
+            that.redirects = [];
+            that.lastRedirect = undefined;
+            if (that.req && that.req._redirect) {
+              that.redirects = that.req._redirect.redirects;
+              that.lastRedirect = that.redirects[that.redirects.length - 1];
+            }
 
             // Verify status code is as expected (default of 200)
             // DEV: `expectedStatusCode` can be opted out via `null`
@@ -191,8 +200,11 @@ exports._save = function (options) {
 exports._saveCleanup = function () {
   return function _saveCleanupFn () {
     delete this.err;
+    delete this.req;
     delete this.res;
     delete this.body;
+    delete this.redirects;
+    delete this.lastRedirect;
     delete this.$;
   };
 };
