@@ -83,7 +83,7 @@ scenario.route('A request to POST /add-application/waiting-for-response (specifi
 
       it('notifies user of creation success', function () {
         expect(this.$('#notification-content > [data-notification=success]').text())
-          .to.equal('Application saved');
+          .to.equal('Application created');
       });
     });
   });

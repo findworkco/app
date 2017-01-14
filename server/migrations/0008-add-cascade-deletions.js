@@ -1,5 +1,6 @@
 // Load in our dependencies
 var multiline = require('multiline');
+var Promise = require('bluebird');
 
 // Define our migrations
 // http://docs.sequelizejs.com/en/v3/docs/migrations/

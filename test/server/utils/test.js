@@ -2,6 +2,7 @@
 var assert = require('assert');
 var _ = require('underscore');
 var async = require('async');
+var Promise = require('bluebird');
 var Sequelize = require('sequelize');
 var dbFixtures = require('./db-fixtures');
 var fakeGoogleFactory = require('./fake-google');

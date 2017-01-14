@@ -1,4 +1,5 @@
 // Load in our dependencies
+var Promise = require('bluebird');
 var Sequelize = require('./utils/sequelize');
 
 // Define our migrations

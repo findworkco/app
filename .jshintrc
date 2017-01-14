@@ -17,8 +17,7 @@
     "beforeEach": true,
     "after": true,
     "afterEach": true,
-    "it": true,
-    "Promise": true
+    "it": true
   },
   "curly": true,
   "indent": 2,

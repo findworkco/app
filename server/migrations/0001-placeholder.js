@@ -1,4 +1,5 @@
 // Load in our dependencies
+var Promise = require('bluebird');
 var Sequelize = require('./utils/sequelize'); /* Ignore unused Sequelize */ // jshint ignore:line
 
 // Define our migrations

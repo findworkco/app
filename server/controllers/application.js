@@ -1,15 +1,13 @@
 // Load in our dependencies
 var _ = require('underscore');
-var async = require('async');
-var Promise = require('bluebird');
 var Sequelize = require('sequelize');
 var app = require('../index.js').app;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
+var saveModelsViaCandidate = require('../models/utils/save-models').saveModelsViaCandidate;
 var Application = require('../models/application');
 var ApplicationReminder = require('../models/application-reminder');
 var applicationMockData = require('../models/application-mock-data');
-var AuditLog = require('../models/audit-log');
 var companyMockData = require('../models/company-mock-data');
 var Interview = require('../models/interview');
 var InterviewReminder = require('../models/interview-reminder');
@@ -53,8 +51,12 @@ var applicationAddFormSaveFns = [
   // DEV: We resolve `nav` in case of there being a validation error
   resolveModelsAsLocals({nav: true}),
   function applicationAddFormSave (req, res, next) {
+    // TODO: If user logged out, redirect to login and provide messaging on log in page like:
+    //   "Sorry, you’ll need an account before we can save the job application.
+    //    Don’t worry, we will finish saving it when you are done."
+
     // Create our application to be extended
-    var application = Application.build({
+    var application = req._application = Application.build({
       candidate_id: req.candidate.get('id'),
       application_date_moment: null,
       archived_at_moment: null,
@@ -155,70 +157,27 @@ var applicationAddFormSaveFns = [
     }
 
     // Define our save handlers
-    // TODO: Consider building `req.saveModels` instead of large validation/save/transaction mess
     function saveModels(modelsToSave) { // jshint ignore:line
-      // In series
-      async.series([
-        function validateModels (callback) {
-          // Perform all our validations in parallel
-          // DEV: If we don't validate all items in parallel, then we will only see first validation error to occur
-          async.map(modelsToSave, function validateModel (model, cb) {
-            model.validate().asCallback(cb);
-          }, function handleResults (err, validationErrResults) {
-            // If there was an error, callback with it
-            if (err) { return callback(err); }
-
-            // Concatenate all our validation results together
-            var validationErrors = [];
-            validationErrResults.forEach(function addValidationErrors (validationErrResult) {
-              if (validationErrResult) {
-                validationErrors = validationErrors.concat(validationErrResult.errors);
-              }
-            });
-
-            // If we had errors, callback with them
-            // https://github.com/sequelize/sequelize/blob/v3.28.0/lib/errors.js#L41-L61
-            if (validationErrors.length) {
-              return callback(new Sequelize.ValidationError(null, validationErrors));
-            }
-
-            // Otherwise, callback
-            callback(null);
-          });
-        },
-        function saveModels (callback) {
-          app.sequelize.transaction(function handleTransaction (t) {
-            return Promise.all(modelsToSave.map(function getSaveQuery (model) {
-              return model.save({
-                _sourceType: AuditLog.SOURCE_CANDIDATES,
-                _sourceId: req.candidate.get('id'),
-                transaction: t
-              });
-            }));
-          }).asCallback(callback);
-        }
-      ], function handleSave (err) {
-        // If we have an error and it's a validation error, re-render with it
-        if (err instanceof Sequelize.ValidationError) {
-          res.status(400).render('application-add-form-show.jade', {
-            form_data: req.body,
-            page_url: req.url,
-            validation_errors: err.errors
-          });
-          return;
-        // Otherwise, if we still have an error, callback with it
-        } else if (err) {
-          return next(err);
-        }
-
-        // TODO: On save, show "Job application successfully created!" and go to its edit page (if user logged in)
-        // jscs:disable maximumLineLength
-        // TODO: If user logged out, provide messaging on log in page like: "Sorry, you’ll need an account before we can save the job application. Don’t worry, we will finish saving it when you are done."
-        // jscs:enable maximumLineLength
-        req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application saved');
-        res.redirect(application.get('url'));
-      });
+      saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
     }
+  },
+  function applicationAddFormSaveError (err, req, res, next) {
+    // If we have an error and it's a validation error, re-render with it
+    if (err instanceof Sequelize.ValidationError) {
+      res.status(400).render('application-add-form-show.jade', {
+        form_data: req.body,
+        page_url: req.url,
+        validation_errors: err.errors
+      });
+      return;
+    }
+
+    // Otherwise, callback with our error
+    return next(err);
+  },
+  function applicationAddFormSaveSuccess (req, res, next) {
+    req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application created');
+    res.redirect(req._application.get('url'));
   }
 ];
 

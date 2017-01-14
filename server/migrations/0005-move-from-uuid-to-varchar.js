@@ -1,6 +1,7 @@
 // Load in our dependencies
 // DEV: We load Sequelize for transaction requirement
 var multiline = require('multiline');
+var Promise = require('bluebird');
 void require('./utils/sequelize');
 
 // Define our migrations
