@@ -150,6 +150,7 @@ exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
 
 // Upcoming interview applications
 exports.APPLICATION_UPCOMING_INTERVIEW_KEY = 'upcoming-interview__application';
+exports.INTERVIEW_UPCOMING_INTERVIEW_KEY = 'upcoming-interview__interview';
 exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
   addApplication(exports.APPLICATION_UPCOMING_INTERVIEW_KEY, {
     id: 'abcdef-umbrella-corp-uuid',
@@ -171,7 +172,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
     posting_url: 'https://www.linkedin.com/jobs/view/133713371337',
     status: Application.STATUSES.UPCOMING_INTERVIEW
   }),
-  addInterview('upcoming-interview__interview', {
+  addInterview(exports.INTERVIEW_UPCOMING_INTERVIEW_KEY, {
     id: 'abcdef-umbrella-corp-interview-uuid',
     application_id: applications[applications.length - 1].id,
     candidate_id: DEFAULT_CANDIDATE_ID,

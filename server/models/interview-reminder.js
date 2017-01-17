@@ -57,8 +57,12 @@ var InterviewReminder = module.exports = _.extend(baseDefine('interview_reminder
 // DEV: To prevent circular dependencies, we define parent/child relationships in model where foreign key is
 //   Unfortunately, Application/ApplicationReminder both have foreign keys so we choose the stronger form
 Interview._reminderKeys.forEach(function bindReminderKeyAssociation (key) {
-  Interview.hasOne(InterviewReminder, {as: key});
+  // DEV: We use `belongsTo` as `hasOne` has a flipped relationship for source/target
+  // https://github.com/sequelize/sequelize/pull/7115
+  Interview.belongsTo(InterviewReminder, {as: key});
 });
 InterviewReminder.belongsTo(Interview);
+Interview.hasMany(InterviewReminder);
+
 // Set up inherited bindings (e.g. Candidate)
 Reminder._bindAssociations(InterviewReminder);

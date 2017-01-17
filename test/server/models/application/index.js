@@ -4,6 +4,7 @@ var expect = require('chai').expect;
 var moment = require('moment-timezone');
 var dbFixtures = require('../../utils/db-fixtures');
 var Application = require('../../../../server/models/application');
+var ApplicationReminder = require('../../../../server/models/application-reminder');
 var Candidate = require('../../../../server/models/candidate');
 var Interview = require('../../../../server/models/interview');
 var Reminder = require('../../../../server/models/reminder');
@@ -353,6 +354,36 @@ scenario.model('An Application model with multiple past interviews', {
         '2016-03-03T00:00:00.000Z');
       done();
     });
+  });
+});
+
+// Relationships
+scenario.model('An Application model with a saved for later reminder', {
+  dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  before(function loadApplicationWithIncludes (done) {
+    this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY].reload({
+      include: [
+        {model: ApplicationReminder, as: 'saved_for_later_reminder'},
+        {model: ApplicationReminder, as: 'waiting_for_response_reminder'},
+        {model: ApplicationReminder, as: 'received_offer_reminder'}
+      ]
+    }).asCallback(done);
+  });
+
+  it('loads saved for later reminder', function () {
+    var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
+    expect(application.get('saved_for_later_reminder')).to.not.equal(null);
+  });
+
+  it('doesn\'t resolve saved for later reminder as waiting for response reminder', function () {
+    var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
+    expect(application.get('waiting_for_response_reminder')).to.equal(null);
+  });
+
+  it('doesn\'t resolve saved for later reminder as received offer reminder', function () {
+    var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
+    expect(application.get('received_offer_reminder')).to.equal(null);
   });
 });
 
