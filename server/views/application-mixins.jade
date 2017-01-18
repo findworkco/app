@@ -36,7 +36,7 @@ mixin saved-for-later-reminder(values, options)
     if options.showInfo
       .section--info.push-half--ends We will send you a reminder email to apply to this posting
     //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
-    - var savedForLaterDefaultMoment = moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    - var savedForLaterDefaultMoment = reminderUtils.getSavedForLaterDefaultMoment(timezone);
     +reminderpicker("saved_for_later_reminder", values, savedForLaterDefaultMoment)
 
 mixin waiting-for-response-reminder(values, options)

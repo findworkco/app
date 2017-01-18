@@ -1,5 +1,7 @@
 // Load in our dependencies
+var assert = require('assert');
 var _ = require('underscore');
+var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
 var app = require('../index.js').app;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
@@ -12,6 +14,7 @@ var companyMockData = require('../models/company-mock-data');
 var Interview = require('../models/interview');
 var InterviewReminder = require('../models/interview-reminder');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
+var reminderUtils = require('../utils/reminder');
 
 // Define our controllers
 app.get('/add-application', [
@@ -288,11 +291,30 @@ app.post('/application/:id/applied', _.flatten([
   // DEV: We don't include as a nav as this is an action only
   resolveApplicationById({nav: false}),
   function applicationRecievedOfferSave (req, res, next) {
-    // TODO: Update saved for later application
-    var mockApplication = req.models.selectedApplication;
-    req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
-    // req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application status updated to "Waiting for response"');
-    res.redirect(mockApplication.get('url'));
+    // Update our model
+    var application = req.models.selectedApplication;
+    application.updateToApplied();
+    application.set('application_date_moment', moment());
+
+    // Build our model's reminder
+    // Sanity check there isn't a reminder yet (there's no way to get to saved for later)
+    // DEV: This comes after `updateToApplied()` so it can 400 non-saved for later applications
+    assert(!application.get('waiting_for_response_reminder'));
+    var reminder = ApplicationReminder.build({
+      application_id: application.get('id'),
+      candidate_id: req.candidate.get('id'),
+      type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
+      is_enabled: true,
+      date_time_moment: reminderUtils.getSavedForLaterDefaultMoment(req.timezone)
+    });
+    application.set('waiting_for_response_reminder_id', reminder.get('id'));
+    saveModelsViaCandidate({models: [application, reminder], candidate: req.candidate}, next);
+  },
+  function applicationRecievedOfferSaveSuccess (req, res, next) {
+    // Notify user of success
+    req.flash(NOTIFICATION_TYPES.SUCCESS,
+      'Application updated to "' + Application.EDIT_HUMAN_STATUSES.WAITING_FOR_RESPONSE + '"');
+    res.redirect(req.models.selectedApplication.get('url'));
   }
 ]));
 

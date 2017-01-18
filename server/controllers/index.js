@@ -20,7 +20,7 @@ app.all('*', function loadNavData (req, res, next) {
 
   // Set up default timezone
   // TODO: Resolve our user's timezone from IP (fallback to US PST) or their settings
-  res.locals.timezone = 'US-America/Chicago';
+  req.timezone = res.locals.timezone = 'US-America/Chicago';
 
   // Continue
   next();

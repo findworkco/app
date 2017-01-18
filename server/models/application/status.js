@@ -1,6 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
+var HttpError = require('http-errors');
 
 // Define constants for our applications
 exports.STATUSES = {
@@ -30,8 +31,10 @@ exports.instanceMethods = {
     // DEV: Validation will ensure we have a `waiting_for_response` reminder set
     if (this.getDataValue('status') === exports.STATUSES.SAVED_FOR_LATER) {
       this.setDataValue('status', exports.STATUSES.WAITING_FOR_RESPONSE);
+    // Otherwise, reject the change
+    } else {
+      throw new HttpError.BadRequest('Application has already been applied to');
     }
-    // Otherwise, do nothing (application has already been applied to)
   },
   updateToInterviewChanges: function () {
     // Verify we have upcoming interviews loaded
@@ -63,8 +66,10 @@ exports.instanceMethods = {
     if ([exports.STATUSES.SAVED_FOR_LATER, exports.STATUSES.WAITING_FOR_RESPONSE, exports.STATUSES.UPCOMING_INTERVIEW]
         .indexOf(this.getDataValue('status')) !== -1) {
       this.setDataValue('status', exports.STATUSES.RECEIVED_OFFER);
+    // Otherwise, reject the change
+    } else {
+      throw new HttpError.BadRequest('Application has already received an offer or is archived');
     }
-    // Otherwise, do nothing (application has already received an offer or is archived)
   },
   updateToRemoveOffer: function () {
     // Verify we have upcoming interviews loaded AND waiting for response reminder
@@ -73,9 +78,9 @@ exports.instanceMethods = {
     assert(_.findWhere(this.$options.include, {as: 'waiting_for_response_reminder'}),
       '`updateToInterviewChanges()` requires `waiting_for_response` reminder is included');
 
-    // If the application is not "received offer", then ignore it
+    // If the application is not "received offer", then reject the change
     if (this.getDataValue('status') !== exports.STATUSES.RECEIVED_OFFER) {
-      return;
+      throw new HttpError.BadRequest('Application doesn\'t have an offer or is archived');
     }
 
     // If we have an upcoming interview, change status to "Upcoming interview"
@@ -95,8 +100,10 @@ exports.instanceMethods = {
     if ([exports.STATUSES.WAITING_FOR_RESPONSE, exports.STATUSES.UPCOMING_INTERVIEW, exports.STATUSES.RECEIVED_OFFER]
         .indexOf(this.getDataValue('status')) !== -1) {
       this.setDataValue('status', exports.STATUSES.ARCHIVED);
+    // Otherwise, reject the change
+    } else {
+      throw new HttpError.BadRequest('Application is already archived or cannot be (e.g. saved for later)');
     }
-    // Otherwise, do nothing (application is already archived or cannot be (e.g. saved for later))
   },
   updateToRestore: function () {
     // Verify we have upcoming interviews loaded AND waiting for response reminder
@@ -105,9 +112,9 @@ exports.instanceMethods = {
     assert(_.findWhere(this.$options.include, {as: 'received_offer_reminder'}),
       '`updateToInterviewChanges()` requires `received_offer` reminder is included');
 
-    // If the application is not archived, then ignore it
+    // If the application is not archived, then reject the change
     if (this.getDataValue('status') !== exports.STATUSES.ARCHIVED) {
-      return;
+      throw new HttpError.BadRequest('Application is not archived');
     }
 
     // If the application had received an offer, then change status to "received offer"

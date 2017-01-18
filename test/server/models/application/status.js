@@ -1,6 +1,7 @@
 // Load in our dependencies
 var expect = require('chai').expect;
 var moment = require('moment-timezone');
+var HttpError = require('http-errors');
 var dbFixtures = require('../../utils/db-fixtures');
 var Application = require('../../../../server/models/application');
 var ApplicationReminder = require('../../../../server/models/application-reminder');
@@ -40,14 +41,15 @@ scenario.model('A saved for later Application model being applied to', {
   });
 });
 
-// Waiting for response, upcoming interview, received offer, archived -> Same/ignore
+// Waiting for response, upcoming interview, received offer, archived -> Reject
 scenario.model('A non-saved for later Application model being applied to', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
-  it('doesn\'t affect its status', function () {
+  it('rejects the change', function () {
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
-    application.updateToApplied();
-    expect(application.get('status')).to.equal('received_offer');
+    expect(function () {
+      application.updateToApplied();
+    }).to.throw(HttpError.BadRequest, /already been applied to/);
   });
 });
 
@@ -117,7 +119,7 @@ scenario.model('An interview-sensitive Application model with no upcoming interv
 
 // ACTION: Received offer
 // Saved for later, waiting for response, upcoming interview -> Received offer
-scenario.model('An offer-sensitive Application model receiving an offer', {
+scenario.model('An offer-tolerant Application model receiving an offer', {
   dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('updates status to "Waiting for response"', function () {
@@ -127,14 +129,15 @@ scenario.model('An offer-sensitive Application model receiving an offer', {
   });
 });
 
-// Received offer, archived -> Same/ignore
-scenario.model('An offer-insensitive Application model receiving an offer', {
+// Received offer, archived -> Reject
+scenario.model('An offer-intolerant Application model receiving an offer', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
-  it('doesn\'t affect its status', function () {
+  it('rejects the change', function () {
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
-    application.updateToReceivedOffer();
-    expect(application.get('status')).to.equal('received_offer');
+    expect(function () {
+      application.updateToReceivedOffer();
+    }).to.throw(HttpError.BadRequest, /already received an offer or is archived/);
   });
 });
 
@@ -217,10 +220,11 @@ scenario.model('A non-received offer Application model removing an offer', {
     application.reload(removeOfferReloadOptions).asCallback(done);
   });
 
-  it('doesn\'t change status', function () {
+  it('rejects the change', function () {
     var application = this.models[dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY];
-    application.updateToRemoveOffer();
-    expect(application.get('status')).to.equal('waiting_for_response');
+    expect(function () {
+      application.updateToRemoveOffer();
+    }).to.throw(HttpError.BadRequest, /doesn\'t have an offer or is archived/);
   });
 });
 
@@ -240,10 +244,11 @@ scenario.model('A non-archived non-saved for later Application model being archi
 scenario.model('A saved for later Application model being archived', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
-  it('doesn\'t change status', function () {
+  it('rejects the change', function () {
     var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
-    application.updateToArchived();
-    expect(application.get('status')).to.equal('saved_for_later');
+    expect(function () {
+      application.updateToArchived();
+    }).to.throw(HttpError.BadRequest, /is already archived or cannot be/);
   });
 });
 
@@ -251,10 +256,11 @@ scenario.model('A saved for later Application model being archived', {
 scenario.model('An archived Application model being archived', {
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
-  it('doesn\'t change status', function () {
+  it('rejects the change', function () {
     var application = this.models[dbFixtures.APPLICATION_ARCHIVED_KEY];
-    application.updateToArchived();
-    expect(application.get('status')).to.equal('archived');
+    expect(function () {
+      application.updateToArchived();
+    }).to.throw(HttpError.BadRequest, /is already archived or cannot be/);
   });
 });
 
@@ -337,9 +343,10 @@ scenario.model('A non-archived Application model being restored', {
     application.reload(restoreReloadOptions).asCallback(done);
   });
 
-  it('doesn\'t change status', function () {
+  it('rejects the change', function () {
     var application = this.models[dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY];
-    application.updateToRestore();
-    expect(application.get('status')).to.equal('upcoming_interview');
+    expect(function () {
+      application.updateToRestore();
+    }).to.throw(HttpError.BadRequest, /is not archived/);
   });
 });

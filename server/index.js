@@ -30,6 +30,7 @@ var appLocals = {
   form_data: new bodyParserMultiDict.MultiDict(), // Default form data
   gravatarUrl: require('gravatar-url'),
   moment: require('moment-timezone'),
+  reminderUtils: require('./utils/reminder'),
   sanitizeHtml: require('sanitize-html'),
   tzStable: require('./utils/tz-stable.js')
 };
