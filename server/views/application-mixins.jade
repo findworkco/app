@@ -48,7 +48,7 @@ mixin waiting-for-response-reminder(values, options)
     if options.showInfo
       .section--info.push-half--ends We will send you a reminder email to follow up to this posting
     //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
-    - var waitingForResponseDefaultMoment = moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    - var waitingForResponseDefaultMoment = reminderUtils.getWaitingForResponseDefaultMoment(timezone);
     +reminderpicker("waiting_for_response_reminder", values, waitingForResponseDefaultMoment)
 
 mixin received-offer-reminder(values, options)
@@ -60,7 +60,7 @@ mixin received-offer-reminder(values, options)
     if options.showInfo
       .section--info.push-half--ends We will send you a reminder email to respond to your offer
     //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
-    - var receivedOfferDefaultMoment = moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+    - var receivedOfferDefaultMoment = reminderUtils.getReceivedOfferDefaultMoment(timezone);
     +reminderpicker("received_offer_reminder", values, receivedOfferDefaultMoment)
 
 mixin company-notes-and-research(values)

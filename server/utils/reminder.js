@@ -7,3 +7,11 @@ exports.getSavedForLaterDefaultMoment = function (timezone) {
   assert(timezone);
   return moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
 };
+exports.getWaitingForResponseDefaultMoment = function (timezone) {
+  assert(timezone);
+  return moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+};
+exports.getReceivedOfferDefaultMoment = function (timezone) {
+  assert(timezone);
+  return moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
+};

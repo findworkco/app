@@ -290,7 +290,7 @@ app.post('/application/:id/applied', _.flatten([
   ensureLoggedIn,
   // DEV: We don't include as a nav as this is an action only
   resolveApplicationById({nav: false}),
-  function applicationRecievedOfferSave (req, res, next) {
+  function applicationAppliedSave (req, res, next) {
     // Update our model
     var application = req.models.selectedApplication;
     application.updateToApplied();
@@ -305,12 +305,14 @@ app.post('/application/:id/applied', _.flatten([
       candidate_id: req.candidate.get('id'),
       type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
       is_enabled: true,
-      date_time_moment: reminderUtils.getSavedForLaterDefaultMoment(req.timezone)
+      date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(req.timezone)
     });
     application.set('waiting_for_response_reminder_id', reminder.get('id'));
+
+    // Save our changes
     saveModelsViaCandidate({models: [application, reminder], candidate: req.candidate}, next);
   },
-  function applicationRecievedOfferSaveSuccess (req, res, next) {
+  function applicationAppliedSaveSuccess (req, res, next) {
     // Notify user of success
     req.flash(NOTIFICATION_TYPES.SUCCESS,
       'Application updated to "' + Application.EDIT_HUMAN_STATUSES.WAITING_FOR_RESPONSE + '"');
@@ -323,11 +325,31 @@ app.post('/application/:id/received-offer', _.flatten([
   // DEV: We don't include as a nav as this is an action only
   resolveApplicationById({nav: false}),
   function applicationRecievedOfferSave (req, res, next) {
-    // TODO: Update received offer application
-    var mockApplication = req.models.selectedApplication;
-    req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
-    // req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application status updated to "Offer received"');
-    res.redirect(mockApplication.get('url'));
+    // Update our model
+    var application = req.models.selectedApplication;
+    application.updateToReceivedOffer();
+
+    // If we don't have a reminder yet, build one
+    // DEV: We reuse old reminders to support undo-like behavior
+    var reminder = application.get('received_offer_reminder');
+    if (!reminder) {
+      reminder = ApplicationReminder.build({
+        application_id: application.get('id'),
+        candidate_id: req.candidate.get('id'),
+        type: ApplicationReminder.TYPES.RECEIVED_OFFER,
+        is_enabled: true,
+        date_time_moment: reminderUtils.getReceivedOfferDefaultMoment(req.timezone)
+      });
+      application.set('received_offer_reminder_id', reminder.get('id'));
+    }
+
+    // Save our changes
+    saveModelsViaCandidate({models: [application, reminder], candidate: req.candidate}, next);
+  },
+  function applicationRecievedOfferSaveSuccess (req, res, next) {
+    // Notify user of success
+    req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application updated to "Received offer"');
+    res.redirect(req.models.selectedApplication.get('url'));
   }
 ]));
 

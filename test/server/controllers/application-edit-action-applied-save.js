@@ -11,9 +11,10 @@ var sinonUtils = require('../utils/sinon');
 // Start our tests
 scenario.route('A request to a POST /application/:id/applied', function () {
   // DEV: We reuse the same fixture/URL across tests to verify they test ACL properly
+  var savedForLaterDbFixture = dbFixtures.APPLICATION_SAVED_FOR_LATER;
   var savedForLaterAppliedUrl = '/application/abcdef-intertrode-uuid/applied';
   scenario.routeTest('from a saved for later application', {
-    dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
+    dbFixtures: [savedForLaterDbFixture, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
     // Log in and make our request
     sinonUtils.spy(Application.Instance.prototype, 'updateToApplied');
@@ -29,7 +30,7 @@ scenario.route('A request to a POST /application/:id/applied', function () {
 
     it('redirects to application page', function () {
       expect(this.lastRedirect).to.have.property('statusCode', 302); // Temporary redirect
-      expect(this.lastRedirect.redirectUri).to.match(/\/application\/[a-z\-]+$/);
+      expect(this.lastRedirect.redirectUri).to.match(/\/application\/abcdef-intertrode-uuid$/);
     });
 
     it('has update flash message', function () {
@@ -70,7 +71,7 @@ scenario.route('A request to a POST /application/:id/applied', function () {
   });
 
   scenario.nonOwner('from a non-owner user', {
-    dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+    dbFixtures: [savedForLaterDbFixture, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
   }, function () {
     // Log in and make our request
     httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_ALT)
