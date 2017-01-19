@@ -45,7 +45,7 @@ scenario.route('A request to a POST /application/:id/restore', function () {
       expect(true).to.equal(false);
     });
 
-    it.skip('updates application status in database', function () {
+    it.skip('updates application status and removes archived at date in database', function () {
       // Assert updated status
     });
   });

@@ -395,7 +395,13 @@ app.post('/application/:id/archive', _.flatten([
   // DEV: We don't include as a nav as this is an action only
   resolveApplicationById({nav: false}),
   function applicationArchiveSave (req, res, next) {
-    // TODO: Archive `req.models.selectedApplication`
+    // Update our model and save
+    var application = req.models.selectedApplication;
+    application.updateToArchived();
+    application.set('archived_at_moment', moment());
+    saveModelsViaCandidate({models: [application], candidate: req.candidate}, next);
+  },
+  function applicationArchiveSaveSuccess (req, res, next) {
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application archived');
     res.redirect('/schedule');
   }
