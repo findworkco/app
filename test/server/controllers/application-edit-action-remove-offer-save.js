@@ -1,68 +1,153 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var moment = require('moment-timezone');
+var Application = require('../../../server/models/application');
+var ApplicationReminder = require('../../../server/models/application-reminder');
 var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
+var sinonUtils = require('../utils/sinon');
 
 // Start our tests
 scenario.route('A request to a POST /application/:id/remove-offer', function () {
-  scenario.routeTest.skip('from a non-received offer application', function () {
-    // Log in (need to do) and make our request
-    var applicationId = 'abcdef-sky-networks-uuid';
-    httpUtils.session.init()
-      .save(serverUtils.getUrl('/application/' + applicationId))
-      .save({
-        method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/remove-offer'),
-        htmlForm: true, followRedirect: true,
-        expectedStatusCode: 500
-      });
-
-    it.skip('receives a message about it being invalid', function () {
-      // Assert error message
-    });
-  });
-
-  scenario.routeTest('from a received offer application', {
-    dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
+  var receivedOfferDbFixture = dbFixtures.APPLICATION_RECEIVED_OFFER;
+  var receivedOfferRemoveOfferUrl = 'application/abcdef-black-mesa-uuid/remove-offer';
+  scenario.routeTest('from a received offer application with no upcoming interviews', {
+    dbFixtures: [receivedOfferDbFixture, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
     // Log in and make our request
-    var applicationId = 'abcdef-black-mesa-uuid';
+    sinonUtils.spy(Application.Instance.prototype, 'updateToRemoveOffer');
     httpUtils.session.init().login()
-      .save(serverUtils.getUrl('/application/' + applicationId))
+      .save(serverUtils.getUrl('/application/abcdef-black-mesa-uuid'))
       .save({
-        method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/remove-offer'),
+        method: 'POST', url: serverUtils.getUrl(receivedOfferRemoveOfferUrl),
         // DEV: We use `followAllRedirects` as this is a POST submission (which `request` doesn't respect)
         //   https://github.com/request/request/blob/v2.78.1/lib/redirect.js#L57-L63
         htmlForm: true, followRedirect: true, followAllRedirects: true,
         expectedStatusCode: 200
       });
 
-    it.skip('redirects to application page', function () {
-      // Assert redirect location
+    it('redirects to application page', function () {
+      expect(this.lastRedirect).to.have.property('statusCode', 302); // Temporary redirect
+      expect(this.lastRedirect.redirectUri).to.match(/\/application\/abcdef-black-mesa-uuid$/);
     });
 
-    it.skip('updates application to waiting for response OR upcoming interview in database', function () {
-      // Assert updated status
+    it('has update flash message', function () {
+      expect(this.$('#notification-content > [data-notification=success]').text())
+        .to.equal('Removed offer from application');
     });
 
-    describe.skip('on redirect completion', function () {
-      httpUtils.session.save(serverUtils.getUrl('/schedule'));
+    it('runs `Application.updateToRemoveOffer()`', function () {
+      // DEV: This verifies non-saved for later applications are rejected via model tests
+      var updateToReceivedOfferSpy = Application.Instance.prototype.updateToRemoveOffer;
+      expect(updateToReceivedOfferSpy.callCount).to.equal(1);
+    });
 
-      it('notifies user of update success', function () {
-        expect(this.$('#notification-content > [data-notification=success]').text())
-          .to.equal('Application status updated to: Offer recieved');
+    it('updates application status, keeps old reminder reference, and falls back "wating for response" reminder',
+        function (done) {
+      Application.findAll().asCallback(function handleFindAll (err, applications) {
+        if (err) { return done(err); }
+        expect(applications).to.have.length(1);
+        expect(applications[0].get('status')).to.equal('waiting_for_response');
+        expect(applications[0].get('waiting_for_response_reminder_id')).to.be.a('string');
+        expect(applications[0].get('received_offer_reminder_id')).to.be.a('string');
+        done();
+      });
+    });
+
+    it('doesn\'t delete the received offer reminder', function (done) {
+      ApplicationReminder.findAll({where: {type: 'received_offer'}}).asCallback(
+          function handleFindAll (err, reminders) {
+        if (err) { return done(err); }
+        expect(reminders).to.have.length(1);
+        done();
+      });
+    });
+
+    it('creates a default waiting for response reminder', function (done) {
+      ApplicationReminder.findAll({where: {type: 'waiting_for_response'}}).asCallback(
+          function handleFindAll (err, reminders) {
+        if (err) { return done(err); }
+        expect(reminders).to.have.length(1);
+        expect(reminders[0].get('application_id')).to.equal('abcdef-black-mesa-uuid');
+        expect(reminders[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
+        expect(reminders[0].get('date_time_moment')).to.be.at.least(moment().add({days: 6, hours: 20}));
+        expect(reminders[0].get('date_time_moment')).to.be.at.most(moment().add({days: 7, hours: 4}));
+        done();
       });
     });
   });
 
-  scenario.nonOwner.skip('from a non-owner user', function () {
-    // Log in (need to do) and make our request
-    var applicationId = 'abcdef-black-mesa-uuid';
-    httpUtils.session.init().save({
-      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/remove-offer'),
-      csrfForm: true, followRedirect: false,
-      expectedStatusCode: 404
+  scenario.routeTest('from a received offer application with upcoming interviews', {
+    dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER_WITH_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-black-mesa-uuid'))
+      .save({
+        method: 'POST', url: serverUtils.getUrl(receivedOfferRemoveOfferUrl),
+        // DEV: We use `followAllRedirects` as this is a POST submission (which `request` doesn't respect)
+        //   https://github.com/request/request/blob/v2.78.1/lib/redirect.js#L57-L63
+        htmlForm: true, followRedirect: true, followAllRedirects: true,
+        expectedStatusCode: 200
+      });
+
+    it('updates application status, keeps old reminder reference, and doesn\'t create "wating for response" reminder',
+        function (done) {
+      Application.findAll().asCallback(function handleFindAll (err, applications) {
+        if (err) { return done(err); }
+        expect(applications).to.have.length(1);
+        expect(applications[0].get('status')).to.equal('upcoming_interview');
+        expect(applications[0].get('waiting_for_response_reminder_id')).to.equal(null);
+        done();
+      });
     });
+
+    it('doesn\'t create a waiting for response reminder', function (done) {
+      ApplicationReminder.findAll({where: {type: 'waiting_for_response'}}).asCallback(
+          function handleFindAll (err, reminders) {
+        if (err) { return done(err); }
+        expect(reminders).to.have.length(0);
+        done();
+      });
+    });
+  });
+
+  scenario.routeTest('from a received offer application with an existing waiting for response reminder', {
+    dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER_WITH_WAITING_FOR_RESPONSE_REMINDER, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-black-mesa-uuid'))
+      .save({
+        method: 'POST', url: serverUtils.getUrl(receivedOfferRemoveOfferUrl),
+        // DEV: We use `followAllRedirects` as this is a POST submission (which `request` doesn't respect)
+        //   https://github.com/request/request/blob/v2.78.1/lib/redirect.js#L57-L63
+        htmlForm: true, followRedirect: true, followAllRedirects: true,
+        expectedStatusCode: 200
+      });
+
+    it('reuses existing waiting for response reminder', function (done) {
+      ApplicationReminder.findAll({where: {type: 'waiting_for_response'}}).asCallback(
+          function handleFindAll (err, reminders) {
+        if (err) { return done(err); }
+        expect(reminders).to.have.length(1);
+        expect(reminders[0].get('date_time_moment').toISOString()).to.equal('2016-01-25T18:00:00.000Z');
+        done();
+      });
+    });
+  });
+
+  scenario.nonOwner('from a non-owner user', {
+    dbFixtures: [receivedOfferDbFixture, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_ALT)
+      .save({
+        method: 'POST', url: serverUtils.getUrl(receivedOfferRemoveOfferUrl),
+        csrfForm: true, followRedirect: false,
+        expectedStatusCode: 404
+      });
 
     it('receives a 404', function () {
       // Asserted by `expectedStatusCode` in `httpUtils.save()`

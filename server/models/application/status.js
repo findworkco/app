@@ -86,13 +86,10 @@ exports.instanceMethods = {
     // If we have an upcoming interview, change status to "Upcoming interview"
     if (upcomingInterviews.length >= 1) {
       this.setDataValue('status', exports.STATUSES.UPCOMING_INTERVIEW);
-    // Otherwise, if we were previously waiting for response, change status to "Waiting for response"
-    } else if (this.get('waiting_for_response_reminder')) {
-      // DEV: This is a little janky by looking at reminder itself but it's simplest without adding another column
-      this.setDataValue('status', exports.STATUSES.WAITING_FOR_RESPONSE);
-    // Otherwise, assume we were saved for later
+    // Otherwise change status to "Waiting for response"
     } else {
-      this.setDataValue('status', exports.STATUSES.SAVED_FOR_LATER);
+      // DEV: We could support downgrading to "Saved for later" but it gets hairy with application date preservation
+      this.setDataValue('status', exports.STATUSES.WAITING_FOR_RESPONSE);
     }
   },
   updateToArchived: function () {

@@ -182,33 +182,35 @@ exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
     posting_url: 'https://www.linkedin.com/jobs/view/133713371337',
     status: Application.STATUSES.UPCOMING_INTERVIEW
   }),
-  addInterview(exports.INTERVIEW_UPCOMING_INTERVIEW_KEY, {
-    id: 'abcdef-umbrella-corp-interview-uuid',
-    application_id: applications[applications.length - 1].id,
-    candidate_id: DEFAULT_CANDIDATE_ID,
-    // Wed Jan 20 at 2:00PM CST
-    date_time_moment: moment.tz('2022-01-20T14:00', 'US-America/Chicago'),
-    // Go to <a href="https://maps.google.com">1200 Lake St...</a>
-    details: 'Go to 1200 Lake St, Suite 303, Chicago',
-    pre_interview_reminder_id: 'umbrella-corp-reminder-pre-int-uuid',
-    post_interview_reminder_id: 'umbrella-corp-reminder-post-int-uuid'
-  }),
-  addInterviewReminder('upcoming-interview__reminder--pre-interview', {
-    id: interviews[interviews.length - 1].pre_interview_reminder_id,
-    candidate_id: DEFAULT_CANDIDATE_ID,
-    interview_id: interviews[interviews.length - 1].id,
-    type: InterviewReminder.TYPES.PRE_INTERVIEW,
-    date_time_moment: moment.tz('2022-01-20T11:00', 'US-America/Chicago'),
-    is_enabled: false
-  }),
-  addInterviewReminder('upcoming-interview__reminder--post-interview', {
-    id: interviews[interviews.length - 1].post_interview_reminder_id,
-    candidate_id: DEFAULT_CANDIDATE_ID,
-    interview_id: interviews[interviews.length - 1].id,
-    type: InterviewReminder.TYPES.POST_INTERVIEW,
-    date_time_moment: moment.tz('2022-01-20T17:00', 'US-America/Chicago'),
-    is_enabled: false
-  })
+  exports.INTERVIEW_UPCOMING_INTERVIEW = [
+    addInterview(exports.INTERVIEW_UPCOMING_INTERVIEW_KEY, {
+      id: 'abcdef-umbrella-corp-interview-uuid',
+      application_id: applications[applications.length - 1].id,
+      candidate_id: DEFAULT_CANDIDATE_ID,
+      // Wed Jan 20 at 2:00PM CST
+      date_time_moment: moment.tz('2022-01-20T14:00', 'US-America/Chicago'),
+      // Go to <a href="https://maps.google.com">1200 Lake St...</a>
+      details: 'Go to 1200 Lake St, Suite 303, Chicago',
+      pre_interview_reminder_id: 'umbrella-corp-reminder-pre-int-uuid',
+      post_interview_reminder_id: 'umbrella-corp-reminder-post-int-uuid'
+    }),
+    addInterviewReminder('upcoming-interview__reminder--pre-interview', {
+      id: interviews[interviews.length - 1].pre_interview_reminder_id,
+      candidate_id: DEFAULT_CANDIDATE_ID,
+      interview_id: interviews[interviews.length - 1].id,
+      type: InterviewReminder.TYPES.PRE_INTERVIEW,
+      date_time_moment: moment.tz('2022-01-20T11:00', 'US-America/Chicago'),
+      is_enabled: false
+    }),
+    addInterviewReminder('upcoming-interview__reminder--post-interview', {
+      id: interviews[interviews.length - 1].post_interview_reminder_id,
+      candidate_id: DEFAULT_CANDIDATE_ID,
+      interview_id: interviews[interviews.length - 1].id,
+      type: InterviewReminder.TYPES.POST_INTERVIEW,
+      date_time_moment: moment.tz('2022-01-20T17:00', 'US-America/Chicago'),
+      is_enabled: false
+    })
+  ]
 ];
 exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_MULTIPLE_PAST_INTERVIEWS =
     exports.APPLICATION_GLOBO_GYM = [
@@ -373,6 +375,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_3 = exports.APPLICATION_MULTIPLE_UPCOMING
 
 // Waiting for response applications
 exports.APPLICATION_WAITING_FOR_RESPONSE_KEY = 'waiting-for-response__application';
+exports.REMINDER_WAITING_FOR_RESPONSE_KEY = 'waiting-for-response__reminder--application';
 exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_PAST_INTERVIEWS =
     exports.APPLICATION_SKY_NETWORKS = [
   exports.APPLICATION_WAITING_FOR_RESPONSE_NO_PAST_INTERVIEWS = [
@@ -391,14 +394,16 @@ exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPO
         'Website: <a href="https://sky.net/">https://sky.net/</a>',
       status: Application.STATUSES.WAITING_FOR_RESPONSE
     }),
-    addApplicationReminder('waiting-for-response__reminder--application', {
-      id: applications[applications.length - 1].waiting_for_response_reminder_id,
-      candidate_id: DEFAULT_CANDIDATE_ID,
-      application_id: applications[applications.length - 1].id,
-      type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
-      date_time_moment: moment.tz('2016-01-25T12:00', 'US-America/Chicago'),
-      is_enabled: true
-    })
+    exports.REMINDER_WAITING_FOR_RESPONSE = [
+      addApplicationReminder(exports.REMINDER_WAITING_FOR_RESPONSE_KEY, {
+        id: applications[applications.length - 1].waiting_for_response_reminder_id,
+        candidate_id: DEFAULT_CANDIDATE_ID,
+        application_id: applications[applications.length - 1].id,
+        type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
+        date_time_moment: moment.tz('2016-01-25T12:00', 'US-America/Chicago'),
+        is_enabled: true
+      })
+    ]
   ],
   addInterview('waiting-for-response__interview', {
     id: 'abcdef-sky-networks-interview-uuid',
@@ -510,11 +515,45 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_RECEIVED_OFFER_REMINDER = [
     exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
     exports.REMINDER_RECEIVED_OFFER_KEY),
   {
+    // application = {id: sky-networks, reminder_id: black-mesa}
     key: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
     overrides: {received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid'}
   },
   {
+    // reminder = {id: black-mesa, application_id: sky-networks}
     key: exports.REMINDER_RECEIVED_OFFER_KEY,
     overrides: {application_id: 'abcdef-sky-networks-uuid'}
+  }
+];
+exports.APPLICATION_RECEIVED_OFFER_WITH_UPCOMING_INTERVIEW = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_RECEIVED_OFFER,
+      exports.INTERVIEW_UPCOMING_INTERVIEW
+    ]),
+    exports.INTERVIEW_UPCOMING_INTERVIEW_KEY),
+  {
+    // interview = {id: umbrella-corp, application_id: black-mesa}
+    key: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
+    overrides: {application_id: 'abcdef-black-mesa-uuid'}
+  }
+];
+exports.APPLICATION_RECEIVED_OFFER_WITH_WAITING_FOR_RESPONSE_REMINDER = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_RECEIVED_OFFER,
+      exports.REMINDER_WAITING_FOR_RESPONSE
+    ]),
+    exports.APPLICATION_RECEIVED_OFFER_KEY,
+    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+  {
+    // application = {id: black-mesa, reminder_id: sky-networks}
+    key: exports.APPLICATION_RECEIVED_OFFER_KEY,
+    overrides: {waiting_for_response_reminder_id: 'abcdef-sky-networks-reminder-uuid'}
+  },
+  {
+    // reminder = {id: sky-networks, application_id: black-mesa}
+    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    overrides: {application_id: 'abcdef-black-mesa-uuid'}
   }
 ];

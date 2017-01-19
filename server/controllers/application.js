@@ -361,10 +361,32 @@ app.post('/application/:id/remove-offer', _.flatten([
   // DEV: We don't include as a nav as this is an action only
   resolveApplicationById({nav: false}),
   function applicationRemoveOfferSave (req, res, next) {
-    // TODO: Update application back to waiting for response or upcoming interview
-    var mockApplication = req.models.selectedApplication;
-    req.flash(NOTIFICATION_TYPES.ERROR, 'Pending implementation');
-    res.redirect(mockApplication.get('url'));
+    // Update our model and save
+    var application = req.models.selectedApplication;
+    application.updateToRemoveOffer();
+    var modelsToSave = [application];
+
+    // If we downgraded to waiting for response and it lacks a reminder, then add one
+    // DEV: We can get here via add application "Received offer" -> "Remove offer"
+    if (application.get('status') === Application.STATUSES.WAITING_FOR_RESPONSE &&
+        !application.get('waiting_for_response_reminder')) {
+      var reminder = ApplicationReminder.build({
+        application_id: application.get('id'),
+        candidate_id: req.candidate.get('id'),
+        type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
+        is_enabled: true,
+        date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(req.timezone)
+      });
+      application.set('waiting_for_response_reminder_id', reminder.get('id'));
+      modelsToSave.push(reminder);
+    }
+
+    // Save our models
+    saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
+  },
+  function applicationRemoveOfferSaveSuccess (req, res, next) {
+    req.flash(NOTIFICATION_TYPES.SUCCESS, 'Removed offer from application');
+    res.redirect(req.models.selectedApplication.get('url'));
   }
 ]));
 

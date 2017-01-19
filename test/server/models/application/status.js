@@ -190,7 +190,8 @@ scenario.model('A received offer Application model ' +
   });
 });
 
-// Received offer + no upcoming interview + never waiting for response -> Saved for later
+// Received offer + no upcoming interview + never waiting for response -> Waiting for response
+// DEV: We could move to "Saved for later" but it causes more complication in code than it's worth =/
 scenario.model('A received offer Application model ' +
     'with no upcoming interview and no previous "waiting for response" state removing an offer', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
@@ -204,10 +205,10 @@ scenario.model('A received offer Application model ' +
     application.set('waiting_for_response_reminder', null);
   });
 
-  it('changes status to "saved for later"', function () {
+  it('changes status to "waiting for response"', function () {
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
     application.updateToRemoveOffer();
-    expect(application.get('status')).to.equal('saved_for_later');
+    expect(application.get('status')).to.equal('waiting_for_response');
   });
 });
 
