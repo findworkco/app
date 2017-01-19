@@ -412,10 +412,15 @@ app.post('/application/:id/restore', _.flatten([
   // DEV: We don't include as a nav as this is an action only
   resolveApplicationById({nav: false}),
   function applicationRestoreSave (req, res, next) {
-    // TODO: Update application back to any of the non-archived statuses
-    var mockApplication = req.models.selectedApplication;
+    // Update our model and save
+    var application = req.models.selectedApplication;
+    application.updateToRestore();
+    application.set('archived_at_moment', null);
+    saveModelsViaCandidate({models: [application], candidate: req.candidate}, next);
+  },
+  function applicationRestoreSaveSuccess (req, res, next) {
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application restored');
-    res.redirect(mockApplication.get('url'));
+    res.redirect(req.models.selectedApplication.get('url'));
   }
 ]));
 
