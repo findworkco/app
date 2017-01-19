@@ -24,20 +24,24 @@ app.get('/add-application', [
   }
 ]);
 
-function setSaveForLaterStatusKey(req, res, next) {
-  req.statusKey = res.locals.status_key = 'SAVED_FOR_LATER';
+function setSaveForLaterApplicationStatus(req, res, next) {
+  req.applicationStatus = res.locals.application_status =
+    Application.STATUSES.SAVED_FOR_LATER;
   next();
 }
-function setWaitingForResponseStatusKey(req, res, next) {
-  req.statusKey = res.locals.status_key = 'WAITING_FOR_RESPONSE';
+function setWaitingForResponseApplicationStatus(req, res, next) {
+  req.applicationStatus = res.locals.application_status =
+    Application.STATUSES.WAITING_FOR_RESPONSE;
   next();
 }
-function setUpcomingInterviewStatusKey(req, res, next) {
-  req.statusKey = res.locals.status_key = 'UPCOMING_INTERVIEW';
+function setUpcomingInterviewApplicationStatus(req, res, next) {
+  req.applicationStatus = res.locals.application_status =
+    Application.STATUSES.UPCOMING_INTERVIEW;
   next();
 }
-function setReceivedOfferStatusKey(req, res, next) {
-  req.statusKey = res.locals.status_key = 'RECEIVED_OFFER';
+function setReceivedOfferApplicationStatus(req, res, next) {
+  req.applicationStatus = res.locals.application_status =
+    Application.STATUSES.RECEIVED_OFFER;
   next();
 }
 
@@ -68,12 +72,12 @@ var applicationAddFormSaveFns = [
       name: req.body.fetch('name'),
       notes: req.body.fetch('notes'),
       posting_url: req.body.fetch('posting_url'),
-      status: Application.STATUSES[req.statusKey]
+      status: req.applicationStatus
     });
 
     // If our application is saved for later
     var reminder;
-    if (req.statusKey === 'SAVED_FOR_LATER') {
+    if (req.applicationStatus === Application.STATUSES.SAVED_FOR_LATER) {
       // Create our application's remaining parts (e.g. its reminders)
       // DEV: We avoid nested creation due to no transaction support
       reminder = ApplicationReminder.build({
@@ -88,7 +92,7 @@ var applicationAddFormSaveFns = [
       // Save our models
       saveModels([application, reminder]);
     // Otherwise, if our application is waiting for response
-    } else if (req.statusKey === 'WAITING_FOR_RESPONSE') {
+    } else if (req.applicationStatus === Application.STATUSES.WAITING_FOR_RESPONSE) {
       // Update our application and create its remaining parts (e.g. reminders)
       // DEV: We avoid nested creation due to no transaction support
       application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
@@ -104,7 +108,7 @@ var applicationAddFormSaveFns = [
       // Save our models
       saveModels([application, reminder]);
     // Otherwise, if our application is upcoming interview
-    } else if (req.statusKey === 'UPCOMING_INTERVIEW') {
+    } else if (req.applicationStatus === Application.STATUSES.UPCOMING_INTERVIEW) {
       // Update our application and create its remaining parts (e.g. reminders)
       // DEV: We avoid nested creation due to no transaction support
       application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
@@ -139,7 +143,7 @@ var applicationAddFormSaveFns = [
       // Save our models
       saveModels([application, interview, preInterviewReminder, postInterviewReminder]);
     // Otherwise, if our application is received offer
-    } else if (req.statusKey === 'RECEIVED_OFFER') {
+    } else if (req.applicationStatus === Application.STATUSES.RECEIVED_OFFER) {
       // Update our application and create its remaining parts (e.g. reminders)
       // DEV: We avoid nested creation due to no transaction support
       application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
@@ -185,42 +189,42 @@ var applicationAddFormSaveFns = [
 ];
 
 app.get('/add-application/save-for-later', _.flatten([
-  setSaveForLaterStatusKey,
+  setSaveForLaterApplicationStatus,
   applicationAddFormShowFns
 ]));
 app.post('/add-application/save-for-later', _.flatten([
   ensureLoggedIn,
-  setSaveForLaterStatusKey,
+  setSaveForLaterApplicationStatus,
   applicationAddFormSaveFns
 ]));
 
 app.get('/add-application/waiting-for-response', _.flatten([
-  setWaitingForResponseStatusKey,
+  setWaitingForResponseApplicationStatus,
   applicationAddFormShowFns
 ]));
 app.post('/add-application/waiting-for-response', _.flatten([
   ensureLoggedIn,
-  setWaitingForResponseStatusKey,
+  setWaitingForResponseApplicationStatus,
   applicationAddFormSaveFns
 ]));
 
 app.get('/add-application/upcoming-interview', _.flatten([
-  setUpcomingInterviewStatusKey,
+  setUpcomingInterviewApplicationStatus,
   applicationAddFormShowFns
 ]));
 app.post('/add-application/upcoming-interview', _.flatten([
   ensureLoggedIn,
-  setUpcomingInterviewStatusKey,
+  setUpcomingInterviewApplicationStatus,
   applicationAddFormSaveFns
 ]));
 
 app.get('/add-application/received-offer', _.flatten([
-  setReceivedOfferStatusKey,
+  setReceivedOfferApplicationStatus,
   applicationAddFormShowFns
 ]));
 app.post('/add-application/received-offer', _.flatten([
   ensureLoggedIn,
-  setReceivedOfferStatusKey,
+  setReceivedOfferApplicationStatus,
   applicationAddFormSaveFns
 ]));
 

@@ -5,9 +5,9 @@ include interview-mixins
 block title
   //- Resolve human status
   //- DEV: This must be done in a block, otherwise it's inaccessible
-  - assert(status_key);
-  - var status = APPLICATION_STATUSES[status_key];
-  - var humanStatus = APPLICATION_ADD_HUMAN_STATUSES[status_key];
+  - var statusKey = application_status.toUpperCase();
+  - var humanStatus = APPLICATION_ADD_HUMAN_STATUSES[statusKey];
+  - assert(humanStatus);
   title Add job application - #{humanStatus} - Find Work
 
 //- DEV: We cannot share all content with edit page (e.g. it lacks interview fields for upcoming interview)
@@ -34,29 +34,29 @@ block content
       .grid__item.one-whole.medium-one-half.large-four-ninths
         +application-name("Name: (if empty, autofilled from URL)", {})
         +posting-url({})
-        if status !== APPLICATION_STATUSES.SAVED_FOR_LATER
+        if application_status !== APPLICATION_STATUSES.SAVED_FOR_LATER
           +application-date({})
       .grid__item.one-whole.medium-one-half.large-five-ninths.company-notes-and-research__container
         +company-notes-and-research({})
       .grid__item.one-whole.medium-one-half.large-four-ninths
-        if status === APPLICATION_STATUSES.SAVED_FOR_LATER
+        if application_status === APPLICATION_STATUSES.SAVED_FOR_LATER
           +saved-for-later-reminder({}, {showInfo: true})
-        else if status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+        else if application_status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
           +waiting-for-response-reminder({}, {showInfo: true})
-        else if status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
+        else if application_status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
           h4.push-half--bottom(style="font-weight: normal") Interview information:
           //- DEV: We could shift follow up dates with application info but
           //-   it's sanest to keep relevant/changing info next to each other
           //- TODO: Hide reminders when people have seen them before
           +interview-fields({}, {showInfo: true})
-        else if status === APPLICATION_STATUSES.RECEIVED_OFFER
+        else if application_status === APPLICATION_STATUSES.RECEIVED_OFFER
           +received-offer-reminder({}, {showInfo: true})
         else
-          throw new Error('Unrecognized status "' + status + '"');
+          throw new Error('Unrecognized status "' + application_status + '"');
         p.push-triple--bottom
           button.btn.btn--primary(type="submit")
             | Save job application
-            if status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
+            if application_status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
               = " and interview"
         p
           a.btn.btn--default(href="javascript:window.history.go(-1);") Go back to previous screen
