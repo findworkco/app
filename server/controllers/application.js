@@ -328,6 +328,9 @@ app.post('/application/:id/received-offer', _.flatten([
     // Update our model
     var application = req.models.selectedApplication;
     application.updateToReceivedOffer();
+    if (!application.get('application_date_moment')) {
+      application.set('application_date_moment', moment());
+    }
 
     // If we don't have a reminder yet, build one
     // DEV: We reuse old reminders to support undo-like behavior

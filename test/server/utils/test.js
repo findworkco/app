@@ -112,7 +112,19 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
     });
     before(function installFixtures (done) {
       // Resolve our fixtures
-      var selectedFixtureKeys = _.flatten(options.dbFixtures);
+      var selectedFixtureKeys = [];
+      var selectedFixtureOverrides = {};
+      _.flatten(options.dbFixtures).forEach(function resolveKeyAndOverrides (dbFixtureInfo) {
+        // If we received an object, extract its parts
+        if (typeof dbFixtureInfo === 'object') {
+          assert(dbFixtureInfo.key, 'Expected "' + JSON.stringify(dbFixtureInfo) + '" to have property "key"');
+          selectedFixtureOverrides[dbFixtureInfo.key] = dbFixtureInfo.overrides;
+          selectedFixtureKeys.push(dbFixtureInfo.key);
+        // Otherwise, save our info as a string
+        } else {
+          selectedFixtureKeys.push(dbFixtureInfo);
+        }
+      });
       var selectedFixturesObj = _.pick(dbFixtures, selectedFixtureKeys);
       var missingFixtures = _.difference(selectedFixtureKeys, Object.keys(selectedFixturesObj));
       if (missingFixtures.length !== 0) {
@@ -125,7 +137,8 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
       var builtModels = this.models = _.mapObject(selectedFixturesObj, function buildModel (fixture, key) {
         var modelClass = sequelize.models[fixture.model];
         assert(modelClass, 'Fixture model not found "' + fixture.model + '"');
-        return modelClass.build(fixture.data);
+        var overriddenData = _.extend({}, fixture.data, selectedFixtureOverrides[key]);
+        return modelClass.build(overriddenData);
       });
 
       // Save our built models ot the database

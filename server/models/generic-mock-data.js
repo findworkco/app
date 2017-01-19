@@ -1,4 +1,5 @@
 // Load in our dependencies
+var _ = require('underscore');
 var assert = require('assert');
 var moment = require('moment-timezone');
 var Application = require('./application');
@@ -59,6 +60,12 @@ function addInterviewReminder(key, data) {
 // Define default fixtures overall
 exports.DEFAULT_FIXTURES = ['default__candidate'];
 
+// Fixtures are defined in 2 parts: Static fixtures and overridden fixtures
+//   Static fixtures have no cross-pollenation between parts
+//   Overridden fixtures referenece static fixtures but add override pieces
+//     For example: Received offer with upcoming interview
+
+// Static fixtures
 // Candidates
 var DEFAULT_CANDIDATE_ID = 'default0-0000-0000-0000-000000000000';
 exports.CANDIDATE_DEFAULT = [
@@ -97,6 +104,7 @@ addCandidate('todd__candidate', {
 
 // Received offer applications
 exports.APPLICATION_RECEIVED_OFFER_KEY = 'received-offer__application';
+exports.REMINDER_RECEIVED_OFFER_KEY = 'received-offer__reminder--application';
 exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
   addApplication(exports.APPLICATION_RECEIVED_OFFER_KEY, {
     id: 'abcdef-black-mesa-uuid',
@@ -112,14 +120,16 @@ exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
     posting_url: 'https://www.nature.com/naturejobs/science/jobs/123456-researcher',
     status: Application.STATUSES.RECEIVED_OFFER
   }),
-  addApplicationReminder('received-offer__reminder--application', {
-    id: applications[applications.length - 1].received_offer_reminder_id,
-    application_id: applications[applications.length - 1].id,
-    candidate_id: DEFAULT_CANDIDATE_ID,
-    type: ApplicationReminder.TYPES.RECEIVED_OFFER,
-    date_time_moment: moment.tz('2016-01-01T12:00', 'US-America/Chicago'),
-    is_enabled: true
-  }),
+  exports.REMINDER_RECEIVED_OFFER = [
+    addApplicationReminder(exports.REMINDER_RECEIVED_OFFER_KEY, {
+      id: applications[applications.length - 1].received_offer_reminder_id,
+      application_id: applications[applications.length - 1].id,
+      candidate_id: DEFAULT_CANDIDATE_ID,
+      type: ApplicationReminder.TYPES.RECEIVED_OFFER,
+      date_time_moment: moment.tz('2016-01-01T12:00', 'US-America/Chicago'),
+      is_enabled: true
+    })
+  ],
   addInterview('received-offer__interview', {
     id: 'abcdef-black-mesa-interview-uuid',
     application_id: applications[applications.length - 1].id,
@@ -488,4 +498,23 @@ exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
     date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
     is_enabled: true
   })
+];
+
+// Overridden fixtures
+exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_RECEIVED_OFFER_REMINDER = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_WAITING_FOR_RESPONSE,
+      exports.REMINDER_RECEIVED_OFFER
+    ]),
+    exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    exports.REMINDER_RECEIVED_OFFER_KEY),
+  {
+    key: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    overrides: {received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid'}
+  },
+  {
+    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    overrides: {application_id: 'abcdef-sky-networks-uuid'}
+  }
 ];
