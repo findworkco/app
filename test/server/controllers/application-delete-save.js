@@ -1,21 +1,22 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var Application = require('../../../server/models/application');
 var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
 
 // Start our tests
 scenario.route('A request to POST /application/:id/delete', function () {
+  var savedForLaterDbFixture = dbFixtures.APPLICATION_INTERTRODE;
+  var savedForLaterDeleteUrl = '/application/abcdef-intertrode-uuid/delete';
   scenario.routeTest('from the owner user', {
-    dbFixtures: [dbFixtures.APPLICATION_INTERTRODE, dbFixtures.DEFAULT_FIXTURES]
+    dbFixtures: [savedForLaterDbFixture, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
     // Log in and make our request
-    // TODO: Complete form for test
-    var applicationId = 'abcdef-intertrode-uuid';
     httpUtils.session.init().login()
-      .save(serverUtils.getUrl('/application/' + applicationId))
+      .save(serverUtils.getUrl('/application/abcdef-intertrode-uuid'))
       .save({
-        method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/delete'),
+        method: 'POST', url: serverUtils.getUrl(savedForLaterDeleteUrl),
         // DEV: We use `followAllRedirects` to follow POST based redirects
         htmlForm: true, followRedirect: true, followAllRedirects: true,
         expectedStatusCode: 200
@@ -31,19 +32,26 @@ scenario.route('A request to POST /application/:id/delete', function () {
         .to.equal('Application deleted');
     });
 
-    it.skip('deletes our application from the database', function () {
-      // Verify data in PostgreSQL
+    // DEV: We verify that deletions cascade properly in model tests
+    it('deletes our application from the database', function (done) {
+      Application.findAll().asCallback(function handleFindAll (err, applications) {
+        if (err) { return done(err); }
+        expect(applications).to.have.length(0);
+        done();
+      });
     });
   });
 
-  scenario.nonOwner.skip('from a non-owner user', function () {
-    // Log in (need to do) and make our request
-    var applicationId = 'abcdef-uuid';
-    httpUtils.session.init().save({
-      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/delete'),
-      csrfForm: true, followRedirect: false,
-      expectedStatusCode: 404
-    });
+  scenario.nonOwner('from a non-owner user', {
+    dbFixtures: [savedForLaterDbFixture, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_ALT)
+      .save({
+        method: 'POST', url: serverUtils.getUrl(savedForLaterDeleteUrl),
+        csrfForm: true, followRedirect: false,
+        expectedStatusCode: 404
+      });
 
     it('recieves a 404', function () {
       // Asserted by `expectedStatusCode` in `httpUtils.save()`

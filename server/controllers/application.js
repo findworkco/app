@@ -429,7 +429,11 @@ app.post('/application/:id/delete', _.flatten([
   // DEV: We don't include as a nav as this is an action only
   resolveApplicationById({nav: false}),
   function applicationDeleteSave (req, res, next) {
-    // TODO: Delete `req.models.selectedApplication`
+    // Delete our model
+    var application = req.models.selectedApplication;
+    saveModelsViaCandidate({destroyModels: [application], candidate: req.candidate}, next);
+  },
+  function applicationDeleteSaveSuccess (req, res, next) {
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application deleted');
     res.redirect('/schedule');
   }
