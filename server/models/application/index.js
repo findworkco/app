@@ -4,6 +4,7 @@ var _ = require('underscore');
 var Sequelize = require('sequelize');
 var baseDefine = require('../base');
 var Candidate = require('../candidate');
+var reminderInstanceMethods = require('./reminder').instanceMethods;
 var statusInstanceMethods = require('./status').instanceMethods;
 
 // Re-expose status info onto exports
@@ -117,7 +118,7 @@ var Application = module.exports = _.extend(baseDefine('application', {
 
   instanceMethods: _.extend({
     // Instance methods go here
-  }, statusInstanceMethods),
+  }, reminderInstanceMethods, statusInstanceMethods),
 
   setterMethods: {
     status: function (val) {

@@ -1,8 +1,10 @@
 // Load in our dependencies
-var baseDefine = require('./base.js');
+var _ = require('underscore');
+var baseDefine = require('../base.js');
 var Sequelize = require('sequelize');
-var Application = require('./application');
-var Candidate = require('./candidate');
+var Application = require('../application');
+var Candidate = require('../candidate');
+var reminderInstanceMethods = require('./reminder').instanceMethods;
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
@@ -43,6 +45,10 @@ var Interview = module.exports = baseDefine('interview', {
     onUpdate: 'CASCADE', onDelete: 'RESTRICT'
   }
 }, {
+  instanceMethods: _.extend({
+    // Instance methods go here
+  }, reminderInstanceMethods),
+
   getterMethods: {
     delete_url: function () {
       // Example: /interview/abcdef-sky-networks-interview-uuid/delete
