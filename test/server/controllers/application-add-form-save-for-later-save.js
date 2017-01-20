@@ -18,7 +18,7 @@ var validFormData = exports.validFormData = {
   saved_for_later_reminder_enabled: 'no',
   saved_for_later_reminder_date: '2022-03-05',
   saved_for_later_reminder_time: '13:00',
-  saved_for_later_reminder_timezone: 'US-America/Chicago'
+  saved_for_later_reminder_timezone: 'US-America/Los_Angeles'
 };
 scenario.route('A request to POST /add-application/save-for-later (specific)', {
   // DEV: Logged out is tested by generic test
@@ -32,7 +32,7 @@ scenario.route('A request to POST /add-application/save-for-later (specific)', {
         method: 'POST', url: serverUtils.getUrl('/add-application/save-for-later'),
         // DEV: We use `followAllRedirects` to follow POST based redirects
         htmlForm: validFormData, followRedirect: true, followAllRedirects: true,
-        expectedStatusCode: 200
+        expectedStatusCode: 200, validateHtmlFormDifferent: true
       });
 
     it('redirects to the new application\'s page', function () {
@@ -53,7 +53,7 @@ scenario.route('A request to POST /add-application/save-for-later (specific)', {
         // Otherwise, assert our data
         expect(applications).to.have.length(1);
         expect(applications[0].get('id')).to.be.a('string');
-        expect(applications[0].get('candidate_id')).to.be.a('string');
+        expect(applications[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(applications[0].get('saved_for_later_reminder_id')).to.be.a('string');
         expect(applications[0].get('application_date_moment')).to.equal(null);
         expect(applications[0].get('status')).to.equal('saved_for_later');
@@ -73,11 +73,11 @@ scenario.route('A request to POST /add-application/save-for-later (specific)', {
         // Otherwise, assert our data
         expect(reminders).to.have.length(1);
         expect(reminders[0].get('id')).to.be.a('string');
-        expect(reminders[0].get('candidate_id')).to.be.a('string');
+        expect(reminders[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(reminders[0].get('type')).to.equal('saved_for_later');
         expect(reminders[0].get('application_id')).to.be.a('string');
-        expect(reminders[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T19:00:00.000Z');
-        expect(reminders[0].get('date_time_timezone')).to.equal('US-America/Chicago');
+        expect(reminders[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T21:00:00.000Z');
+        expect(reminders[0].get('date_time_timezone')).to.equal('US-America/Los_Angeles');
         expect(reminders[0].get('is_enabled')).to.equal(false);
         expect(reminders[0].get('sent_at_datetime')).to.equal(null);
         done();
@@ -95,7 +95,7 @@ scenario.route('A request to POST /add-application/save-for-later (specific)', {
           name: ''
         }, validFormData),
         followRedirect: false,
-        expectedStatusCode: 400
+        expectedStatusCode: 400, validateHtmlFormDifferent: true
       });
 
     it('outputs validation errors on page', function () {
@@ -110,7 +110,7 @@ scenario.route('A request to POST /add-application/save-for-later (specific)', {
       expect(this.$('input[name=saved_for_later_reminder_enabled][value=no]').attr('checked')).to.equal('checked');
       expect(this.$('input[name=saved_for_later_reminder_date]').val()).to.equal('2022-03-05');
       expect(this.$('input[name=saved_for_later_reminder_time]').val()).to.equal('13:00');
-      expect(this.$('select[name=saved_for_later_reminder_timezone]').val()).to.equal('US-America/Chicago');
+      expect(this.$('select[name=saved_for_later_reminder_timezone]').val()).to.equal('US-America/Los_Angeles');
     });
 
     // DEV: This verifies all content is run in a transaction

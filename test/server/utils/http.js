@@ -50,13 +50,24 @@ exports._save = function (options) {
         formData = (options.htmlForm.call(this, $htmlForm) || $htmlForm).serialize();
       // Otherwise, if it's an object, then fill out content based on form
       } else if (typeof options.htmlForm === 'object') {
+        var validateHtmlFormDifferent = options.validateHtmlFormDifferent;
+        var validateHtmlFormDifferentExclude = (validateHtmlFormDifferent && validateHtmlFormDifferent.exclude) || [];
         Object.keys(options.htmlForm).forEach(function fillOutInput (name) {
           // Find our input/textarea
           var $inputOrTextarea = $htmlForm.find('[name=' + name + ']');
 
-          // If the input is a radio, then update them
+          // If the input is a radio
           var val = options.htmlForm[name];
           if ($inputOrTextarea.attr('type') === 'radio') {
+            // If we should validate the value is going to change, then validate it
+            if (validateHtmlFormDifferent !== false && validateHtmlFormDifferentExclude.indexOf(name) === -1) {
+              var $checkedInput = $inputOrTextarea.filter(':checked');
+              assert.notEqual($checkedInput.val(), val,
+                'input[type=radio] with name "' + name + '" is already checked for "' + val + '". ' +
+                'Please use different form data, exclude it, or disable `validateHtmlFormDifferent`');
+            }
+
+            // Perform our normal update
             $inputOrTextarea.removeAttr('checked');
             var $selectedInput = $inputOrTextarea.filter('[value=' + val + ']');
             assert.strictEqual($selectedInput.length, 1,
@@ -65,6 +76,11 @@ exports._save = function (options) {
           // Otherwise, update it as a textbox
           } else {
             assert.strictEqual($inputOrTextarea.length, 1, 'Unable to find input/textarea with name "' + name + '"');
+            if (options.validateHtmlFormDifferent !== false && validateHtmlFormDifferentExclude.indexOf(name) === -1) {
+              assert.notEqual($inputOrTextarea.val(), val,
+                'Form data for input/textarea "' + name + '" already has value "' + val + '". ' +
+                'Please use different form data, exclude it, or disable `validateHtmlFormDifferent`');
+            }
             $inputOrTextarea.val(val);
           }
         });

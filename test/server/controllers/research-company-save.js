@@ -117,7 +117,7 @@ scenario.route('A request to POST /research-company to "Save for later"', {
 
         // Otherwise, assert our data
         expect(applications).to.have.length(1);
-        expect(applications[0].get('candidate_id')).to.be.a('string');
+        expect(applications[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(applications[0].get('saved_for_later_reminder_id')).to.be.a('string');
         expect(applications[0].get('name')).to.equal('Mock company');
         expect(applications[0].get('company_name')).to.equal('Mock company');

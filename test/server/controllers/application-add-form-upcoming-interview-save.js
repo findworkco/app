@@ -19,18 +19,18 @@ var validFormData = exports.validFormData = {
 
   date_time_date: '2022-03-05',
   date_time_time: '16:00',
-  date_time_timezone: 'US-America/Chicago',
+  date_time_timezone: 'US-America/Los_Angeles',
   details: 'Test details',
 
   pre_interview_reminder_enabled: 'yes',
   pre_interview_reminder_date: '2022-03-05',
-  pre_interview_reminder_time: '13:00',
-  pre_interview_reminder_timezone: 'US-America/Chicago',
+  pre_interview_reminder_time: '12:00',
+  pre_interview_reminder_timezone: 'US-America/Los_Angeles',
 
   post_interview_reminder_enabled: 'yes',
   post_interview_reminder_date: '2022-03-05',
   post_interview_reminder_time: '19:00',
-  post_interview_reminder_timezone: 'US-America/Chicago'
+  post_interview_reminder_timezone: 'US-America/Los_Angeles'
 };
 scenario.route('A request to POST /add-application/upcoming-interview (specific)', {
   // DEV: Logged out is tested by generic test
@@ -44,7 +44,8 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         method: 'POST', url: serverUtils.getUrl('/add-application/upcoming-interview'),
         // DEV: We use `followAllRedirects` to follow POST based redirects
         htmlForm: validFormData, followRedirect: true, followAllRedirects: true,
-        expectedStatusCode: 200
+        expectedStatusCode: 200,
+        validateHtmlFormDifferent: {exclude: ['pre_interview_reminder_enabled', 'post_interview_reminder_enabled']}
       });
 
     it('redirects to the new application\'s page', function () {
@@ -65,7 +66,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         // Otherwise, assert our data
         expect(applications).to.have.length(1);
         expect(applications[0].get('id')).to.be.a('string');
-        expect(applications[0].get('candidate_id')).to.be.a('string');
+        expect(applications[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(applications[0].get('application_date_datetime').toISOString()).to.equal('2017-01-31T00:00:00.000Z');
         expect(applications[0].get('status')).to.equal('upcoming_interview');
         expect(applications[0].get('name')).to.equal('Test Corporation');
@@ -84,8 +85,10 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         // Otherwise, assert our data
         expect(interviews).to.have.length(1);
         expect(interviews[0].get('id')).to.be.a('string');
-        expect(interviews[0].get('candidate_id')).to.be.a('string');
+        expect(interviews[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(interviews[0].get('application_id')).to.be.a('string');
+        expect(interviews[0].get('date_time_datetime').toISOString()).to.equal('2022-03-06T00:00:00.000Z');
+        expect(interviews[0].get('date_time_timezone')).to.equal('US-America/Los_Angeles');
         expect(interviews[0].get('pre_interview_reminder_id')).to.be.a('string');
         expect(interviews[0].get('post_interview_reminder_id')).to.be.a('string');
         expect(interviews[0].get('details')).to.equal('Test details');
@@ -106,20 +109,20 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         });
 
         expect(reminders[0].get('id')).to.be.a('string');
-        expect(reminders[0].get('candidate_id')).to.be.a('string');
+        expect(reminders[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(reminders[0].get('interview_id')).to.be.a('string');
         expect(reminders[0].get('type')).to.equal('pre_interview');
-        expect(reminders[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T19:00:00.000Z');
-        expect(reminders[0].get('date_time_timezone')).to.equal('US-America/Chicago');
+        expect(reminders[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T20:00:00.000Z');
+        expect(reminders[0].get('date_time_timezone')).to.equal('US-America/Los_Angeles');
         expect(reminders[0].get('is_enabled')).to.equal(true);
         expect(reminders[0].get('sent_at_datetime')).to.equal(null);
 
         expect(reminders[1].get('id')).to.be.a('string');
-        expect(reminders[1].get('candidate_id')).to.be.a('string');
+        expect(reminders[1].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(reminders[1].get('interview_id')).to.be.a('string');
         expect(reminders[1].get('type')).to.equal('post_interview');
-        expect(reminders[1].get('date_time_datetime').toISOString()).to.equal('2022-03-06T01:00:00.000Z');
-        expect(reminders[1].get('date_time_timezone')).to.equal('US-America/Chicago');
+        expect(reminders[1].get('date_time_datetime').toISOString()).to.equal('2022-03-06T03:00:00.000Z');
+        expect(reminders[1].get('date_time_timezone')).to.equal('US-America/Los_Angeles');
         expect(reminders[1].get('is_enabled')).to.equal(true);
         expect(reminders[1].get('sent_at_datetime')).to.equal(null);
         done();
@@ -135,11 +138,14 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         method: 'POST', url: serverUtils.getUrl('/add-application/upcoming-interview'),
         htmlForm: _.defaults({
           name: '',
+          pre_interview_reminder_enabled: 'yes',
           pre_interview_reminder_time: '19:00',
+          post_interview_reminder_enabled: 'yes',
           post_interview_reminder_time: '13:00'
         }, validFormData),
         followRedirect: false,
-        expectedStatusCode: 400
+        expectedStatusCode: 400,
+        validateHtmlFormDifferent: {exclude: ['pre_interview_reminder_enabled', 'post_interview_reminder_enabled']}
       });
 
     it('outputs validation errors on page', function () {
@@ -157,7 +163,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
       expect(this.$('input[name=details]').val()).to.equal('Test details');
       expect(this.$('input[name=date_time_date]').val()).to.equal('2022-03-05');
       expect(this.$('input[name=date_time_time]').val()).to.equal('16:00');
-      expect(this.$('select[name=date_time_timezone]').val()).to.equal('US-America/Chicago');
+      expect(this.$('select[name=date_time_timezone]').val()).to.equal('US-America/Los_Angeles');
 
       expect(this.$('input[name=pre_interview_reminder_enabled][value=yes]').attr('checked'))
         .to.equal('checked');
@@ -165,7 +171,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         .to.equal(undefined);
       expect(this.$('input[name=pre_interview_reminder_date]').val()).to.equal('2022-03-05');
       expect(this.$('input[name=pre_interview_reminder_time]').val()).to.equal('19:00');
-      expect(this.$('select[name=pre_interview_reminder_timezone]').val()).to.equal('US-America/Chicago');
+      expect(this.$('select[name=pre_interview_reminder_timezone]').val()).to.equal('US-America/Los_Angeles');
 
       expect(this.$('input[name=post_interview_reminder_enabled][value=yes]').attr('checked'))
         .to.equal('checked');
@@ -173,7 +179,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         .to.equal(undefined);
       expect(this.$('input[name=post_interview_reminder_date]').val()).to.equal('2022-03-05');
       expect(this.$('input[name=post_interview_reminder_time]').val()).to.equal('13:00');
-      expect(this.$('select[name=post_interview_reminder_timezone]').val()).to.equal('US-America/Chicago');
+      expect(this.$('select[name=post_interview_reminder_timezone]').val()).to.equal('US-America/Los_Angeles');
     });
 
     // DEV: This verifies all content is run in a transaction
