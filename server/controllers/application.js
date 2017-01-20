@@ -1,4 +1,5 @@
 // Load in our dependencies
+var assert = require('assert');
 var _ = require('underscore');
 var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
@@ -79,7 +80,6 @@ var applicationAddFormSaveFns = [
       // Create our application's remaining parts (e.g. its reminders)
       // DEV: We avoid nested creation due to no transaction support
       reminder = application.createSavedForLaterReminder({
-        candidate_id: req.candidate.get('id'),
         is_enabled: req.body.fetchBoolean('saved_for_later_reminder_enabled'),
         date_time_moment: req.body.fetchMomentTimezone('saved_for_later_reminder')
       });
@@ -92,7 +92,6 @@ var applicationAddFormSaveFns = [
       // DEV: We avoid nested creation due to no transaction support
       application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
       reminder = application.createWaitingForResponseReminder({
-        candidate_id: req.candidate.get('id'),
         is_enabled: req.body.fetchBoolean('waiting_for_response_reminder_enabled'),
         date_time_moment: req.body.fetchMomentTimezone('waiting_for_response_reminder')
       });
@@ -111,12 +110,10 @@ var applicationAddFormSaveFns = [
         details: req.body.fetch('details')
       });
       var preInterviewReminder = interview.createPreInterviewReminder({
-        candidate_id: req.candidate.get('id'),
         is_enabled: req.body.fetchBoolean('pre_interview_reminder_enabled'),
         date_time_moment: req.body.fetchMomentTimezone('pre_interview_reminder')
       });
       var postInterviewReminder = interview.createPostInterviewReminder({
-        candidate_id: req.candidate.get('id'),
         is_enabled: req.body.fetchBoolean('post_interview_reminder_enabled'),
         date_time_moment: req.body.fetchMomentTimezone('post_interview_reminder')
       });
@@ -134,7 +131,6 @@ var applicationAddFormSaveFns = [
       // DEV: We avoid nested creation due to no transaction support
       application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
       reminder = application.createReceivedOfferReminder({
-        candidate_id: req.candidate.get('id'),
         is_enabled: req.body.fetchBoolean('received_offer_reminder_enabled'),
         date_time_moment: req.body.fetchMomentTimezone('received_offer_reminder')
       });
@@ -284,9 +280,10 @@ app.post('/application/:id/applied', _.flatten([
     application.set('application_date_moment', moment());
 
     // Build our model's reminder
+    // Sanity check there isn't a reminder yet (there's no way to get to saved for later)
     // DEV: This comes after `updateToApplied()` so it can 400 non-saved for later applications
+    assert(!application.get('waiting_for_response_reminder'));
     var reminder = application.createWaitingForResponseReminder({
-      candidate_id: req.candidate.get('id'),
       is_enabled: true,
       date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(req.timezone)
     });
@@ -319,7 +316,6 @@ app.post('/application/:id/received-offer', _.flatten([
     var reminder = application.get('received_offer_reminder');
     if (!reminder) {
       reminder = application.createReceivedOfferReminder({
-        candidate_id: req.candidate.get('id'),
         is_enabled: true,
         date_time_moment: reminderUtils.getReceivedOfferDefaultMoment(req.timezone)
       });
@@ -350,7 +346,6 @@ app.post('/application/:id/remove-offer', _.flatten([
     if (application.get('status') === Application.STATUSES.WAITING_FOR_RESPONSE &&
         !application.get('waiting_for_response_reminder')) {
       var reminder = application.createWaitingForResponseReminder({
-        candidate_id: req.candidate.get('id'),
         is_enabled: true,
         date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(req.timezone)
       });

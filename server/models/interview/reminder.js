@@ -1,34 +1,56 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
+var reminderUtils = require('../utils/reminder');
 
 // Define instance methods for reminders
 // DEV: These are quite bulky so we offload them to another file
 exports.instanceMethods = {
-  createPreInterviewReminder: function (attrs) {
-    // Sanity check there isn't a reminder yet (use `update` to perform updates)
-    assert(!this.get('pre_interview_reminder'));
-
-    // Create, set, and return our reminder
+  _buildReminder: function (typeKey, attrs) {
+    // Resolve our variables
     var InterviewReminder = this.sequelize.models.interview_reminder;
-    var reminder = InterviewReminder.build(_.defaults({
+    var candidateId = this.get('candidate_id'); assert(candidateId);
+    var type = InterviewReminder.TYPES[typeKey]; assert(type);
+
+    // Build and return our reminder
+    return InterviewReminder.build(_.defaults({
       interview_id: this.get('id'),
-      type: InterviewReminder.TYPES.PRE_INTERVIEW
+      candidate_id: candidateId,
+      type: type
     }, attrs));
+  },
+
+  createPreInterviewReminder: function (attrs) {
+    // Create, set, and return our reminder
+    var reminder = this._buildReminder('PRE_INTERVIEW', attrs);
     this.set('pre_interview_reminder_id', reminder.get('id'));
     return reminder;
   },
-  createPostInterviewReminder: function (attrs) {
-    // Sanity check there isn't a reminder yet (use `update` to perform updates)
-    assert(!this.get('post_interview_reminder'));
+  updateOrReplacePreInterviewReminder: function (attrs) {
+    // If the reminder has already been sent, create a new one
+    var reminder = this.get('pre_interview_reminder');
+    if (reminderUtils.shouldReplaceReminder(reminder, attrs)) {
+      return this.createPreInterviewReminder(attrs);
+    // Otherwise, update its values
+    } else {
+      reminder.set(attrs);
+      return reminder;
+    }
+  },
 
+  createPostInterviewReminder: function (attrs) {
     // Create, set, and return our reminder
-    var InterviewReminder = this.sequelize.models.interview_reminder;
-    var reminder = InterviewReminder.build(_.defaults({
-      interview_id: this.get('id'),
-      type: InterviewReminder.TYPES.POST_INTERVIEW
-    }, attrs));
+    var reminder = this._buildReminder('POST_INTERVIEW',attrs);
     this.set('post_interview_reminder_id', reminder.get('id'));
     return reminder;
+  },
+  updateOrReplacePostInterviewReminder: function (attrs) {
+    var reminder = this.get('post_interview_reminder');
+    if (reminderUtils.shouldReplaceReminder(reminder, attrs)) {
+      return this.createPostInterviewReminder(attrs);
+    } else {
+      reminder.set(attrs);
+      return reminder;
+    }
   }
 };

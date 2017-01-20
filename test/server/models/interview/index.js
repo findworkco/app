@@ -1,11 +1,11 @@
 // Load in our dependencies
 var expect = require('chai').expect;
-var dbFixtures = require('../utils/db-fixtures');
-var Application = require('../../../server/models/application');
-var Candidate = require('../../../server/models/candidate');
-var Interview = require('../../../server/models/interview');
-var InterviewReminder = require('../../../server/models/interview-reminder');
-var Reminder = require('../../../server/models/reminder');
+var dbFixtures = require('../../utils/db-fixtures');
+var Application = require('../../../../server/models/application');
+var Candidate = require('../../../../server/models/candidate');
+var Interview = require('../../../../server/models/interview');
+var InterviewReminder = require('../../../../server/models/interview-reminder');
+var Reminder = require('../../../../server/models/reminder');
 
 // Start our tests
 scenario.model('An Interview model', function () {
