@@ -258,14 +258,78 @@ app.post('/application/:id', _.flatten([
   // DEV: We include nav in case of a validation error
   resolveApplicationById({nav: true}),
   function applicationEditSave (req, res, next) {
-    // TODO: Update application on save
+    // Update our application's common fields
     var application = req.models.selectedApplication;
+    application.set({
+      company_name: req.body.fetch('company_name'),
+      name: req.body.fetch('name'),
+      notes: req.body.fetch('notes'),
+      posting_url: req.body.fetch('posting_url')
+    });
 
+    // If our application is saved for later
+    var reminder;
+    if (application.get('status') === Application.STATUSES.SAVED_FOR_LATER) {
+      reminder = application.updateOrReplaceSavedForLaterReminder({
+        is_enabled: req.body.fetchBoolean('saved_for_later_reminder_enabled'),
+        date_time_moment: req.body.fetchMomentTimezone('saved_for_later_reminder')
+      });
+      saveModels([application, reminder]);
+    // Otherwise, if our application is waiting for response
+    } else if (application.get('status') === Application.STATUSES.WAITING_FOR_RESPONSE) {
+      application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
+      reminder = application.updateOrReplaceWaitingForResponseReminder({
+        is_enabled: req.body.fetchBoolean('waiting_for_response_reminder_enabled'),
+        date_time_moment: req.body.fetchMomentTimezone('waiting_for_response_reminder')
+      });
+      saveModels([application, reminder]);
+    // Otherwise, if our application has an upcoming interview
+    } else if (application.get('status') === Application.STATUSES.UPCOMING_INTERVIEW) {
+      application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
+      // No reminders to update for upcoming interview on application page
+      saveModels([application]);
+    // Otherwise, if our application has received an offer
+    } else if (application.get('status') === Application.STATUSES.RECEIVED_OFFER) {
+      application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
+      reminder = application.updateOrReplaceReceivedOfferReminder({
+        is_enabled: req.body.fetchBoolean('received_offer_reminder_enabled'),
+        date_time_moment: req.body.fetchMomentTimezone('received_offer_reminder')
+      });
+      saveModels([application, reminder]);
+    // Otherwise, if our application is archived
+    } else if (application.get('status') === Application.STATUSES.ARCHIVED) {
+      application.set('application_date_moment', req.body.fetchMomentDateOnly('application_date'));
+      // No reminders to update for archived applications
+      saveModels([application]);
+    // Otherwise, complain and leave
+    } else {
+      throw new Error('Unrecognized status type');
+    }
+
+    // Define our save handlers
+    function saveModels(modelsToSave) { // jshint ignore:line
+      saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
+    }
+  },
+  function applicationEditSaveError (err, req, res, next) {
+    // If we have an error and it's a validation error, re-render with it
+    if (err instanceof Sequelize.ValidationError) {
+      res.status(400).render('application-edit-show.jade', {
+        form_data: req.body,
+        validation_errors: err.errors
+      });
+      return;
+    }
+
+    // Otherwise, callback with our error
+    return next(err);
+  },
+  function applicationEditSaveSuccess (req, res, next) {
     // Notify user of successful save
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Changes saved');
 
     // Redirect to the same page to render flash messages and prevent double submissions
-    res.redirect(application.get('url'));
+    res.redirect(req.models.selectedApplication.get('url'));
   }
 ]));
 

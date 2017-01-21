@@ -4,50 +4,117 @@ var geminiUtils = require('./utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('application-edit-show', function (suite) {
+  var nameSelector = '#content input[name=name]';
   gemini.suite('saved-for-later', function (child) {
     // DEV: We include nav to make sure we have selected the proper link
-    child.load('/application/abcdef-intertrode-uuid', geminiUtils.SETUPS.DEFAULT)
-      .setCaptureElements('body')
-      .capture('default-large', geminiUtils.resizeLarge)
-      .capture('default-medium', geminiUtils.resizeMedium)
-      .capture('default-small', geminiUtils.resizeSmall);
+    gemini.suite('default', function (child) {
+      child.load('/application/abcdef-intertrode-uuid', geminiUtils.SETUPS.DEFAULT)
+        .setCaptureElements('body')
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
+    gemini.suite('invalid', function (child) {
+      // DEV: These include validation errors for `id/isUUID`, we could ignore these
+      //   but we feel it's sanest to keep them in the tests
+      child.load('/application/abcdef-intertrode-uuid', geminiUtils.SETUPS.DEFAULT)
+        .setCaptureElements('body')
+        .before(function clearNameAndSubmitForm (actions, find) {
+          geminiUtils.clear(actions, nameSelector);
+          actions.click('form[action="/application/abcdef-intertrode-uuid"] button[type=submit]');
+        })
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
   });
   gemini.suite('upcoming-interview', function (child) {
-    // DEV: We include nav to make sure we have selected the proper link
-    child.load('/application/abcdef-umbrella-corp-uuid', geminiUtils.SETUPS.DEFAULT)
-      .setCaptureElements('body')
-      .capture('default-large', geminiUtils.resizeLarge)
-      .capture('default-medium', geminiUtils.resizeMedium)
-      .capture('default-small', geminiUtils.resizeSmall);
+    gemini.suite('default', function (child) {
+      // DEV: We include nav to make sure we have selected the proper link
+      child.load('/application/abcdef-umbrella-corp-uuid', geminiUtils.SETUPS.DEFAULT)
+        .setCaptureElements('body')
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
+    gemini.suite('invalid', function (child) {
+      child.load('/application/abcdef-umbrella-corp-uuid', geminiUtils.SETUPS.DEFAULT)
+        .setCaptureElements('body')
+        .before(function clearNameAndSubmitForm (actions, find) {
+          geminiUtils.clear(actions, nameSelector);
+          actions.click('form[action="/application/abcdef-umbrella-corp-uuid"] button[type=submit]');
+        })
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
   });
   gemini.suite('waiting-for-response', function (child) {
-    // DEV: We include nav to make sure we have selected the proper link
-    child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
-      .setCaptureElements('body')
-      .capture('default-large', geminiUtils.resizeLarge)
-      .capture('default-medium', geminiUtils.resizeMedium)
-      .capture('default-small', geminiUtils.resizeSmall);
+    gemini.suite('default', function (child) {
+      // DEV: We include nav to make sure we have selected the proper link
+      child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
+        .setCaptureElements('body')
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
+    gemini.suite('invalid', function (child) {
+      child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
+        .setCaptureElements('body')
+        .before(function clearNameAndSubmitForm (actions, find) {
+          geminiUtils.clear(actions, nameSelector);
+          actions.click('form[action="/application/abcdef-sky-networks-uuid"] button[type=submit]');
+        })
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
   });
   gemini.suite('received-offer', function (child) {
-    // DEV: We include nav to make sure we have selected the proper link
-    child.load('/application/abcdef-black-mesa-uuid', geminiUtils.SETUPS.DEFAULT)
-      .setCaptureElements('body')
-      .capture('default-large', geminiUtils.resizeLarge)
-      .capture('default-medium', geminiUtils.resizeMedium)
-      .capture('default-small', geminiUtils.resizeSmall);
+    gemini.suite('default', function (child) {
+      // DEV: We include nav to make sure we have selected the proper link
+      child.load('/application/abcdef-black-mesa-uuid', geminiUtils.SETUPS.DEFAULT)
+        .setCaptureElements('body')
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
+    gemini.suite('invalid', function (child) {
+      child.load('/application/abcdef-black-mesa-uuid', geminiUtils.SETUPS.DEFAULT)
+        .setCaptureElements('body')
+        .before(function clearNameAndSubmitForm (actions, find) {
+          geminiUtils.clear(actions, nameSelector);
+          actions.click('form[action="/application/abcdef-black-mesa-uuid"] button[type=submit]');
+        })
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
   });
   gemini.suite('archive', function (child) {
-    // DEV: We include nav to make sure we selected the proper link
-    child.load('/application/abcdef-monstromart-uuid', geminiUtils.SETUPS.DEFAULT)
-      .setCaptureElements('body')
-      .capture('default-large', geminiUtils.resizeLarge)
-      .capture('default-medium', geminiUtils.resizeMedium)
-      .capture('default-small', geminiUtils.resizeSmall);
+    gemini.suite('default', function (child) {
+      // DEV: We include nav to make sure we selected the proper link
+      child.load('/application/abcdef-monstromart-uuid', geminiUtils.SETUPS.DEFAULT)
+        .setCaptureElements('body')
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
+    gemini.suite('invalid', function (child) {
+      child.load('/application/abcdef-monstromart-uuid', geminiUtils.SETUPS.DEFAULT)
+        .setCaptureElements('body')
+        .before(function clearNameAndSubmitForm (actions, find) {
+          geminiUtils.clear(actions, nameSelector);
+          actions.click('form[action="/application/abcdef-monstromart-uuid"] button[type=submit]');
+        })
+        .capture('default-large', geminiUtils.resizeLarge)
+        .capture('default-medium', geminiUtils.resizeMedium)
+        .capture('default-small', geminiUtils.resizeSmall);
+    });
   });
 
   // One-off visual tests
   // Verify content sync for input works and looks good
-  var nameSelector = '#content input[name=name]';
   gemini.suite('title-sync', function (child) {
     child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')

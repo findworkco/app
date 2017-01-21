@@ -6,16 +6,16 @@ var serverUtils = require('../utils/server');
 
 // Start our tests
 scenario.route('A request to POST /application/:id (generic)', function () {
+  var waitingForResponseDbFixture = dbFixtures.APPLICATION_WAITING_FOR_RESPONSE;
+  var waitingForResponseUrl = '/application/abcdef-sky-networks-uuid';
   scenario.routeTest('from the owner user', {
-    dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
+    dbFixtures: [waitingForResponseDbFixture, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
     // Log in and make our request
-    // TODO: Complete form for test
-    var applicationId = 'abcdef-sky-networks-uuid';
     httpUtils.session.init().login()
-      .save(serverUtils.getUrl('/application/' + applicationId))
+      .save(serverUtils.getUrl(waitingForResponseUrl))
       .save({
-        method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
+        method: 'POST', url: serverUtils.getUrl(waitingForResponseUrl),
         // DEV: We use `followAllRedirects` to follow POST based redirects
         htmlForm: true, followRedirect: true, followAllRedirects: true,
         expectedStatusCode: 200
@@ -30,20 +30,18 @@ scenario.route('A request to POST /application/:id (generic)', function () {
       expect(this.$('#notification-content > [data-notification=success]').text())
         .to.equal('Changes saved');
     });
-
-    it.skip('updates our application in the database', function () {
-      // Verify data in PostgreSQL
-    });
   });
 
-  scenario.nonOwner.skip('from a non-owner user', function () {
-    // Log in (need to do) and make our request
-    var applicationId = 'abcdef-uuid';
-    httpUtils.session.init().save({
-      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId),
-      csrfForm: true, followRedirect: false,
-      expectedStatusCode: 404
-    });
+  scenario.nonOwner('from a non-owner user', {
+    dbFixtures: [waitingForResponseDbFixture, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_ALT)
+      .save({
+        method: 'POST', url: serverUtils.getUrl(waitingForResponseUrl),
+        csrfForm: true, followRedirect: false,
+        expectedStatusCode: 404
+      });
 
     it('recieves a 404', function () {
       // Asserted by `expectedStatusCode` in `httpUtils.save()`

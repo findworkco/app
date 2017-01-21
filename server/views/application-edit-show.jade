@@ -76,6 +76,13 @@ block content
     //- DEV: On small screens, display "All changes saved" close to content
     i.muted(data-autosave) All changes saved
   .cf
+    if locals.validation_errors
+      //- DEV: Id is for testing only
+      #validation-errors.section--error.push--bottom
+        | The following errors have occurred:
+        ul.flush--bottom
+          for error in validation_errors
+            li= error.message
     form(method="POST", action=selectedApplication.url)
       +csrf-input()
       .grid
