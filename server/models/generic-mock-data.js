@@ -159,7 +159,8 @@ exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
 ];
 
 // Upcoming interview applications
-exports.APPLICATION_UPCOMING_INTERVIEW_KEY = 'upcoming-interview__application';
+exports.APPLICATION_UPCOMING_INTERVIEW_KEY = exports.APPLICATION_UMBRELLA_CORP_KEY =
+  'upcoming-interview__application';
 exports.INTERVIEW_UPCOMING_INTERVIEW_KEY = 'upcoming-interview__interview';
 exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
   addApplication(exports.APPLICATION_UPCOMING_INTERVIEW_KEY, {

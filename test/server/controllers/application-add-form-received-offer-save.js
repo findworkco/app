@@ -33,7 +33,9 @@ scenario.route('A request to POST /add-application/received-offer (specific)', {
         method: 'POST', url: serverUtils.getUrl('/add-application/received-offer'),
         // DEV: We use `followAllRedirects` to follow POST based redirects
         htmlForm: validFormData, followRedirect: true, followAllRedirects: true,
-        expectedStatusCode: 200, validateHtmlFormDifferent: true
+        expectedStatusCode: 200, validateHtmlFormDifferent: {exclude: [
+          // DEV: We exclude time as it changes over the course of a day
+          'received_offer_reminder_time']}
       });
 
     it('redirects to the new application\'s page', function () {
@@ -96,7 +98,9 @@ scenario.route('A request to POST /add-application/received-offer (specific)', {
           name: ''
         }, validFormData),
         followRedirect: false,
-        expectedStatusCode: 400, validateHtmlFormDifferent: true
+        expectedStatusCode: 400, validateHtmlFormDifferent: {exclude: [
+          // DEV: We exclude time as it changes over the course of a day
+          'received_offer_reminder_time']}
       });
 
     it('outputs validation errors on page', function () {

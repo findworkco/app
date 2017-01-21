@@ -32,7 +32,9 @@ scenario.route('A request to POST /add-application/save-for-later (specific)', {
         method: 'POST', url: serverUtils.getUrl('/add-application/save-for-later'),
         // DEV: We use `followAllRedirects` to follow POST based redirects
         htmlForm: validFormData, followRedirect: true, followAllRedirects: true,
-        expectedStatusCode: 200, validateHtmlFormDifferent: true
+        expectedStatusCode: 200, validateHtmlFormDifferent: {exclude: [
+          // DEV: We exclude time as it changes over the course of a day
+          'saved_for_later_reminder_time']}
       });
 
     it('redirects to the new application\'s page', function () {
@@ -95,7 +97,9 @@ scenario.route('A request to POST /add-application/save-for-later (specific)', {
           name: ''
         }, validFormData),
         followRedirect: false,
-        expectedStatusCode: 400, validateHtmlFormDifferent: true
+        expectedStatusCode: 400, validateHtmlFormDifferent: {exclude: [
+          // DEV: We exclude time as it changes over the course of a day
+          'saved_for_later_reminder_time']}
       });
 
     it('outputs validation errors on page', function () {

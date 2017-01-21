@@ -29,11 +29,6 @@ scenario('A request for a missing page', {
     expect(this.body).to.contain('We were unable to find the requested page');
   });
 
-  it('loads navigation content', function () {
-    // Recently viewed applications
-    expect(this.$('#nav').text()).to.contain('Umbrella Corporation');
-  });
-
   it('doesn\'t report the error to Sentry', function () {
     var captureErrorSpy = app.sentryClient.captureError;
     expect(captureErrorSpy.callCount).to.equal(0);

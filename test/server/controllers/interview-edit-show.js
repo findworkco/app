@@ -26,6 +26,11 @@ scenario.route('A request to GET /interview/:id', function () {
       expect(this.$('title').text()).to.equal('Interview - Sky Networks - Find Work');
     });
 
+    it('shows its application as recently viewed in navigation', function () {
+      expect(this.$('.nav-row--selected.nav-row--application')).to.have.length(1);
+      expect(this.$('.nav-row--selected.nav-row--application').text()).to.contain('Sky Networks');
+    });
+
     // Test that all fields exist
     it.skip('has our expected fields', function () {
       expect(this.$('input[name=...]').val()).to.equal('Test me');

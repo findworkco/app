@@ -24,7 +24,7 @@ var validFormData = exports.validFormData = {
 
   pre_interview_reminder_enabled: 'yes',
   pre_interview_reminder_date: '2022-03-05',
-  pre_interview_reminder_time: '12:00',
+  pre_interview_reminder_time: '13:00',
   pre_interview_reminder_timezone: 'US-America/Los_Angeles',
 
   post_interview_reminder_enabled: 'yes',
@@ -45,7 +45,10 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         // DEV: We use `followAllRedirects` to follow POST based redirects
         htmlForm: validFormData, followRedirect: true, followAllRedirects: true,
         expectedStatusCode: 200,
-        validateHtmlFormDifferent: {exclude: ['pre_interview_reminder_enabled', 'post_interview_reminder_enabled']}
+        validateHtmlFormDifferent: {exclude: [
+          'pre_interview_reminder_enabled', 'pre_interview_reminder_time',
+          // DEV: We exclude time as it changes over the course of a day
+          'post_interview_reminder_enabled', 'post_interview_reminder_time']}
       });
 
     it('redirects to the new application\'s page', function () {
@@ -112,7 +115,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         expect(reminders[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(reminders[0].get('interview_id')).to.be.a('string');
         expect(reminders[0].get('type')).to.equal('pre_interview');
-        expect(reminders[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T20:00:00.000Z');
+        expect(reminders[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T21:00:00.000Z');
         expect(reminders[0].get('date_time_timezone')).to.equal('US-America/Los_Angeles');
         expect(reminders[0].get('is_enabled')).to.equal(true);
         expect(reminders[0].get('sent_at_datetime')).to.equal(null);
@@ -145,7 +148,10 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         }, validFormData),
         followRedirect: false,
         expectedStatusCode: 400,
-        validateHtmlFormDifferent: {exclude: ['pre_interview_reminder_enabled', 'post_interview_reminder_enabled']}
+        validateHtmlFormDifferent: {exclude: [
+          'pre_interview_reminder_enabled', 'pre_interview_reminder_time',
+          // DEV: We exclude time as it changes over the course of a day
+          'post_interview_reminder_enabled', 'post_interview_reminder_time']}
       });
 
     it('outputs validation errors on page', function () {

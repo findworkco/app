@@ -1,6 +1,7 @@
 // Load in our dependencies
 var expect = require('chai').expect;
 var Promise = require('bluebird');
+var app = require('./utils/server').app;
 var Application = require('../../server/models/application');
 var ApplicationReminder = require('../../server/models/application-reminder');
 var dbFixtures = require('./utils/db-fixtures');
@@ -70,7 +71,7 @@ scenario('A request to a page from a logged in user', function () {
 });
 
 scenario.route('A request to a page which loads navigation', function () {
-  scenario.routeTest('from a logged in user with applications', {
+  scenario.routeTest('from a logged in user with applications and has recently viewed them', {
     dbFixtures: recentlyViewedApplicationFixtures
   }, function () {
     // Log in our user, add recently viewed applications, spy on our database connection, and make our request
@@ -87,17 +88,32 @@ scenario.route('A request to a page which loads navigation', function () {
     });
 
     it('notifies user about their applications', function () {
-      expect(this.$('#nav').text()).to.contain('Umbrella Corporation');
+      expect(this.$('.nav-row--application')).to.have.length(3);
+      expect(this.$('.nav-row--application').eq(0).text()).to.contain('Monstromart');
+      expect(this.$('.nav-row--application').eq(1).text()).to.contain('Globo Gym');
+      expect(this.$('.nav-row--application').eq(2).text()).to.contain('Umbrella Corporation');
     });
   });
 
-  scenario.nonExistent.skip('from a logged in user with no applications', function () {
+  scenario.routeTest('from a logged in user with applications and no recently viewed applications', {
+    dbFixtures: recentlyViewedApplicationFixtures
+  }, function () {
     // Log in our user and make our request
     httpUtils.session.init().login()
       .save({url: serverUtils.getUrl('/404'), expectedStatusCode: 404});
 
     it('notifies user about no applications', function () {
-      // TODO: Complete me
+      expect(this.$('#nav').text()).to.contain('No applications have been recently viewed');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with no applications', function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/404'), expectedStatusCode: 404});
+
+    it('notifies user about no applications', function () {
+      expect(this.$('#nav').text()).to.contain('No applications have been recently viewed');
     });
   });
 
@@ -143,9 +159,231 @@ scenario.route('A request to a page which loads navigation', function () {
       expect(findAllSpy.callCount).to.equal(0);
     });
 
-    // DEV: We are skipping these for now to allow prototyping flexibility
-    it.skip('notifies user about no applications', function () {
-      // TODO: Complete me
+    it('notifies user about no applications', function () {
+      expect(this.$('#nav').text()).to.contain('No applications have been recently viewed');
+    });
+  });
+
+  // DEV: We test application associations in specific controllers (e.g. `/application/:id`, `/interview/:id`)
+  //   This is more of the selection itself
+  scenario.routeTest('with an associated application', {
+    dbFixtures: [dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Login, view an application, and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'), expectedStatusCode: 200});
+
+    it('doesn\'t select a recently viewed application', function () {
+      expect(this.$('.nav-row--selected.nav-row--application')).to.have.length(1);
+      expect(this.$('.nav-row--selected.nav-row--application').text()).to.contain('Umbrella Corporation');
+    });
+  });
+
+  scenario.routeTest('without an associated application', {
+    dbFixtures: [dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Login, view an application, and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
+      .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
+
+    it('doesn\'t select a recently viewed application', function () {
+      expect(this.$('.nav-row--selected.nav-row--application')).to.have.length(0);
+    });
+  });
+
+  // Edge case tests
+  scenario.routeTest('with multiple recently viewed applications', {
+    dbFixtures: [dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.APPLICATION_GLOBO_GYM,
+      dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Login, view applications, and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
+      .save({url: serverUtils.getUrl('/application/abcdef-globo-gym-uuid'), expectedStatusCode: 200});
+
+    it('lists current application as most recently viewed', function () {
+      expect(this.$('.nav-row--application')).to.have.length(2);
+      expect(this.$('.nav-row--application').eq(0).text()).to.contain('Globo Gym');
+      expect(this.$('.nav-row--application').eq(1).text()).to.contain('Umbrella Corporation');
+    });
+  });
+
+  scenario.nonExistent('with a recently viewed yet deleted application', {
+    dbFixtures: [dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Login, verify URL is accurate, delete our application, and make our request
+    var applicationUrl = '/application/abcdef-umbrella-corp-uuid';
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl(applicationUrl), expectedStatusCode: 200});
+    before(function deleteApplication (done) {
+      var application = this.models[dbFixtures.APPLICATION_UMBRELLA_CORP_KEY];
+      application.destroy({_allowNoTransaction: true, _sourceType: 'server'}).asCallback(done);
+    });
+    httpUtils.session.save({url: serverUtils.getUrl(applicationUrl), expectedStatusCode: 404});
+
+    it('doesn\'t list deleted application as a recently viewed application', function () {
+      expect(this.$('.nav-row--application')).to.have.length(0);
+    });
+  });
+
+  scenario.routeTest('with more than 3 recently viewed applications', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.APPLICATION_GLOBO_GYM,
+      dbFixtures.APPLICATION_MONSTROMART, dbFixtures.APPLICATION_BLACK_MESA,
+      dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Login, view our applications, and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
+      .save(serverUtils.getUrl('/application/abcdef-globo-gym-uuid'))
+      .save(serverUtils.getUrl('/application/abcdef-monstromart-uuid'))
+      .save({url: serverUtils.getUrl('/application/abcdef-black-mesa-uuid'), expectedStatusCode: 200});
+
+    it('lists 3 most recent applications', function () {
+      expect(this.$('.nav-row--application')).to.have.length(3);
+      expect(this.$('.nav-row--application').eq(0).text()).to.contain('Black Mesa');
+      expect(this.$('.nav-row--application').eq(1).text()).to.contain('Monstromart');
+      expect(this.$('.nav-row--application').eq(2).text()).to.contain('Globo Gym');
+      expect(this.$('.nav-row--application').text()).to.not.contain('Umbrella Corporation');
+    });
+  });
+
+  scenario.routeTest('viewing an already recently viewed application', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_UMBRELLA_CORP, dbFixtures.APPLICATION_GLOBO_GYM,
+      dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Login, view our applications, and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'))
+      .save(serverUtils.getUrl('/application/abcdef-globo-gym-uuid'))
+      .save({url: serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'), expectedStatusCode: 200});
+
+    it('lists recently viewed application once', function () {
+      expect(this.$('.nav-row--application')).to.have.length(2);
+      expect(this.$('.nav-row--application').eq(0).text()).to.contain('Umbrella Corporation');
+      expect(this.$('.nav-row--application').eq(1).text()).to.contain('Globo Gym');
+    });
+  });
+
+  scenario.routeTest('accessing a non-existent page', {
+    dbFixtures: recentlyViewedApplicationFixtures
+  }, function () {
+    // Log in our user, add recently viewed applications, and make our request
+    httpUtils.session.init().login();
+    addRecentlyViewedApplications();
+    httpUtils.session.save({url: serverUtils.getUrl('/404'), expectedStatusCode: 404});
+
+    it('loads recently viewed applications if available', function () {
+      expect(this.$('.nav-row--application')).to.have.length(3);
+      expect(this.$('.nav-row--application').text()).to.contain('Umbrella Corporation');
+    });
+  });
+
+  scenario.routeTest('accessing an error-prone page', {
+    dbFixtures: recentlyViewedApplicationFixtures
+  }, function () {
+    // Silence Winston, log in our user, add recently viewed applications, and make our request
+    sinonUtils.stub(app.notWinston, 'error');
+    httpUtils.session.init().login();
+    addRecentlyViewedApplications();
+    httpUtils.session.save({url: serverUtils.getUrl('/_dev/500'), expectedStatusCode: 500});
+
+    it('tolerate recently viewed applications not being available', function () {
+      // Verify non-application nav content is present
+      expect(this.$('#nav').text()).to.contain('Schedule');
+    });
+  });
+
+  // Application variants
+  scenario.routeTest('from a logged in user with a received offer application', {
+    dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/abcdef-black-mesa-uuid'), expectedStatusCode: 200});
+
+    it('lists application-specific content in the nav', function () {
+      var $navApplication = this.$('.nav-row--application');
+      expect($navApplication).to.have.length(1);
+      expect($navApplication.find('a[href="/application/abcdef-black-mesa-uuid"]')).to.have.length(1);
+      expect($navApplication.text()).to.contain('Black Mesa');
+      expect($navApplication.text()).to.contain('Status: Received offer');
+      expect($navApplication.text()).to.contain('Last contact: Mon Dec 14');
+      expect($navApplication.text()).to.contain('Respond by: Fri Jan 1');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with an upcoming interview application', {
+    dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'), expectedStatusCode: 200});
+
+    it('lists application-specific content in the nav', function () {
+      var $navApplication = this.$('.nav-row--application');
+      expect($navApplication).to.have.length(1);
+      expect($navApplication.find('a[href="/application/abcdef-umbrella-corp-uuid"]')).to.have.length(1);
+      expect($navApplication.text()).to.contain('Umbrella Corporation');
+      expect($navApplication.text()).to.contain('Status: Upcoming interview');
+      expect($navApplication.find('a[href="/interview/abcdef-umbrella-corp-interview-uuid"]')).to.have.length(1);
+      expect($navApplication.text()).to.contain('Thu Jan 20');
+      expect($navApplication.text()).to.contain('Go to 1200 Lake St');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with a waiting for response application', {
+    dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/abcdef-sky-networks-uuid'), expectedStatusCode: 200});
+
+    it('lists application-specific content in the nav', function () {
+      var $navApplication = this.$('.nav-row--application');
+      expect($navApplication).to.have.length(1);
+      expect($navApplication.find('a[href="/application/abcdef-sky-networks-uuid"]')).to.have.length(1);
+      expect($navApplication.text()).to.contain('Sky Networks');
+      expect($navApplication.text()).to.contain('Status: Waiting for response');
+      expect($navApplication.text()).to.contain('Last contact: Fri Jan 15');
+      expect($navApplication.text()).to.contain('Follow-up on: Mon Jan 25');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with a saved for later application', {
+    dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/abcdef-intertrode-uuid'), expectedStatusCode: 200});
+
+    it('lists application-specific content in the nav', function () {
+      var $navApplication = this.$('.nav-row--application');
+      expect($navApplication).to.have.length(1);
+      expect($navApplication.find('a[href="/application/abcdef-intertrode-uuid"]')).to.have.length(1);
+      expect($navApplication.text()).to.contain('Intertrode');
+      expect($navApplication.text()).to.contain('Status: Saved for later');
+      expect($navApplication.text()).to.contain('Saved on: Sat Dec 19');
+      expect($navApplication.text()).to.contain('Apply by: Mon Jun 20');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with an archived application', {
+    dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/abcdef-monstromart-uuid'), expectedStatusCode: 200});
+
+    it('lists application-specific content in the nav', function () {
+      var $navApplication = this.$('.nav-row--application');
+      expect($navApplication).to.have.length(1);
+      expect($navApplication.find('a[href="/application/abcdef-monstromart-uuid"]')).to.have.length(1);
+      expect($navApplication.text()).to.contain('Monstromart');
+      expect($navApplication.text()).to.contain('Status: Archived');
+      expect($navApplication.text()).to.contain('Archived on: Mon Jan 18');
     });
   });
 });

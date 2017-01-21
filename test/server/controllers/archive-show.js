@@ -41,9 +41,13 @@ scenario.route('A request to GET /archive', function () {
       .save({url: serverUtils.getUrl('/archive'), expectedStatusCode: 200});
 
     it('lists the application', function () {
-      expect(this.$('#content .schedule-row--application').text()).to.contain('Monstromart');
-      expect(this.$('#content .schedule-row--application a').attr('href'))
-        .to.equal('/application/abcdef-monstromart-uuid');
+      var $application = this.$('#content .schedule-row--application');
+      expect($application.text()).to.contain('Monstromart');
+      // Links = [Heading, button]
+      expect($application.find('a[href="/application/abcdef-monstromart-uuid"]')).to.have.length(2);
+      expect($application.text()).to.contain('Monstromart');
+      expect($application.text()).to.contain('Archived on: Mon Jan 18');
+      expect($application.find('.schedule-notes').text()).to.contain('Sounds like a great career opportunity');
     });
   });
 

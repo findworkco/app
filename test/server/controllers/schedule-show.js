@@ -90,7 +90,13 @@ scenario.route('A request to GET /schedule', function () {
       .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
     it('lists the application', function () {
-      expect(this.$('#content #schedule__received-offer').text()).to.contain('Black Mesa');
+      var $section = this.$('#content #schedule__received-offer');
+      // Links = [Heading, button]
+      expect($section.find('a[href="/application/abcdef-black-mesa-uuid"]')).to.have.length(2);
+      expect($section.text()).to.contain('Black Mesa');
+      expect($section.text()).to.contain('Last contact: Mon Dec 14');
+      expect($section.text()).to.contain('Respond by: Fri Jan 1');
+      expect($section.find('.schedule-notes').text()).to.contain('300 employees');
     });
   });
 
@@ -102,7 +108,15 @@ scenario.route('A request to GET /schedule', function () {
       .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
     it('lists the application', function () {
-      expect(this.$('#content #schedule__upcoming-interviews').text()).to.contain('Umbrella Corporation');
+      var $section = this.$('#content #schedule__upcoming-interviews');
+      // Links = [Heading, button]
+      expect($section.find('a[href="/application/abcdef-umbrella-corp-uuid"]')).to.have.length(2);
+      expect($section.text()).to.contain('Umbrella Corporation');
+      // Links = [Date/time line, button]
+      expect($section.find('a[href="/interview/abcdef-umbrella-corp-interview-uuid"]')).to.have.length(2);
+      expect($section.text()).to.contain('Thu Jan 20 at 2:00PM CST');
+      expect($section.text()).to.contain('Go to 1200 Lake St');
+      expect($section.find('.schedule-notes').text()).to.contain('1000 employees');
     });
   });
 
@@ -114,7 +128,14 @@ scenario.route('A request to GET /schedule', function () {
       .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
     it('lists the application', function () {
-      expect(this.$('#content #schedule__waiting-for-response').text()).to.contain('Sky Networks');
+      var $section = this.$('#content #schedule__waiting-for-response');
+      // Links = [Heading, button]
+      expect($section.find('a[href="/application/abcdef-sky-networks-uuid"]')).to.have.length(2);
+      expect($section.find('a[href="/application/abcdef-sky-networks-uuid/add-interview"]')).to.have.length(1);
+      expect($section.text()).to.contain('Sky Networks');
+      expect($section.text()).to.contain('Last contact: Fri Jan 15');
+      expect($section.text()).to.contain('Follow-up on: Mon Jan 25');
+      expect($section.find('.schedule-notes').text()).to.contain('100 employees');
     });
   });
 
@@ -126,7 +147,14 @@ scenario.route('A request to GET /schedule', function () {
       .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
     it('lists the application', function () {
-      expect(this.$('#content #schedule__saved-for-later').text()).to.contain('Intertrode');
+      var $section = this.$('#content #schedule__saved-for-later');
+      // Links = [Heading, button]
+      expect($section.find('a[href="/application/abcdef-intertrode-uuid"]')).to.have.length(2);
+      expect($section.find('a[href="/application/abcdef-intertrode-uuid/add-interview"]')).to.have.length(1);
+      expect($section.text()).to.contain('Intertrode');
+      expect($section.text()).to.contain('Saved on: Sat Dec 19');
+      expect($section.text()).to.contain('Apply by: Mon Jun 20');
+      expect($section.find('.schedule-notes').text()).to.contain('Website: http://intertrode.net/');
     });
   });
 

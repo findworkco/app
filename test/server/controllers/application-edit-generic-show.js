@@ -53,6 +53,11 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
         // DEV: We have title testing as we cannot test it in visual tests
         expect(this.$('title').text()).to.equal('Job application - ' + applicationData.name + ' - Find Work');
       });
+
+      it('displays application as recently viewed in navigation', function () {
+        expect(this.$('.nav-row--selected.nav-row--application')).to.have.length(1);
+        expect(this.$('.nav-row--selected.nav-row--application').text()).to.contain(applicationData.name);
+      });
     });
   });
 });

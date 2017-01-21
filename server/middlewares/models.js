@@ -154,7 +154,7 @@ exports.resolveModelsAsLocals = function (params, resolver) {
 
           // If we have over 3 items, cut off the last ones
           // DEV: We use splice as a safety check for more than 4 applications (e.g. count changed in design)
-          // [new, 0, 1, 2, ...] -> [new, 0 ,1]
+          // [new, 0, 1, 2, ...] -> [new, 0, 1]
           if (models.recentlyViewedApplications.length > 3) {
             models.recentlyViewedApplications.splice(3, models.recentlyViewedApplications.length - 3);
           }

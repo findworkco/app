@@ -33,7 +33,9 @@ scenario.route('A request to POST /add-application/waiting-for-response (specifi
         method: 'POST', url: serverUtils.getUrl('/add-application/waiting-for-response'),
         // DEV: We use `followAllRedirects` to follow POST based redirects
         htmlForm: validFormData, followRedirect: true, followAllRedirects: true,
-        expectedStatusCode: 200, validateHtmlFormDifferent: true
+        expectedStatusCode: 200, validateHtmlFormDifferent: {exclude: [
+          // DEV: We exclude time as it changes over the course of a day
+          'waiting_for_response_reminder_time']}
       });
 
     it('redirects to the new application\'s page', function () {
@@ -96,7 +98,9 @@ scenario.route('A request to POST /add-application/waiting-for-response (specifi
           name: ''
         }, validFormData),
         followRedirect: false,
-        expectedStatusCode: 400, validateHtmlFormDifferent: true
+        expectedStatusCode: 400, validateHtmlFormDifferent: {exclude: [
+          // DEV: We exclude time as it changes over the course of a day
+          'waiting_for_response_reminder_time']}
       });
 
     it('outputs validation errors on page', function () {
