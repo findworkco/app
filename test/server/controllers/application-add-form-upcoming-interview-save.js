@@ -2,10 +2,12 @@
 var _ = require('underscore');
 var async = require('async');
 var expect = require('chai').expect;
+var moment = require('moment-timezone');
 var httpUtils = require('../utils/http');
 var sinonUtils = require('../utils/sinon');
 var serverUtils = require('../utils/server');
 var Application = require('../../../server/models/application');
+var ApplicationReminder = require('../../../server/models/application-reminder');
 var Interview = require('../../../server/models/interview');
 var InterviewReminder = require('../../../server/models/interview-reminder');
 var AuditLog = require('../../../server/models/audit-log');
@@ -37,7 +39,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
   // DEV: Logged out is tested by generic test
   requiredTests: {nonExistent: false, nonOwner: false, loggedOut: false}
 }, function () {
-  scenario.routeTest('for a logged in user and valid form data', function () {
+  scenario.routeTest('for a logged in user and valid form data for an upcoming interview', function () {
     // Login and make our request
     sinonUtils.spy(Interview.Instance.prototype, 'updateType');
     httpUtils.session.init().login()
@@ -79,6 +81,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         expect(applications[0].get('posting_url')).to.equal('http://google.com/');
         expect(applications[0].get('company_name')).to.equal('Test Corporation search');
         expect(applications[0].get('notes')).to.equal('Test notes');
+        expect(applications[0].get('waiting_for_response_reminder_id')).to.equal(null);
         done();
       });
     });
@@ -136,9 +139,78 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
       });
     });
 
+    it('doesn\'t create an application reminder', function (done) {
+      ApplicationReminder.findAll().asCallback(function handleFindAll (err, reminders) {
+        if (err) { return done(err); }
+        expect(reminders).to.have.length(0);
+        done();
+      });
+    });
+
     it('dynamically handles interview type', function () {
       var updateTypeSpy = Interview.Instance.prototype.updateType;
       expect(updateTypeSpy.callCount).to.equal(1);
+    });
+  });
+
+  scenario.routeTest('for a logged in user and valid form data for a past interview', function () {
+    // Login and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/add-application/upcoming-interview'))
+      .save({
+        method: 'POST', url: serverUtils.getUrl('/add-application/upcoming-interview'),
+        // DEV: We use `followAllRedirects` to follow POST based redirects
+        htmlForm: _.defaults({
+          date_time_date: '2017-01-12',
+          pre_interview_reminder_date: '2017-01-11',
+          post_interview_reminder_date: '2017-01-14'
+        }, validFormData), followRedirect: true, followAllRedirects: true,
+        expectedStatusCode: 200,
+        validateHtmlFormDifferent: {exclude: [
+          // DEV: We exclude time as it changes over the course of a day
+          'date_time_time',
+          'pre_interview_reminder_enabled', 'pre_interview_reminder_time',
+          'post_interview_reminder_enabled', 'post_interview_reminder_time']}
+      });
+
+    it('creates our application in the database', function (done) {
+      Application.findAll().asCallback(function handleFindAll (err, applications) {
+        if (err) { return done(err); }
+        expect(applications).to.have.length(1);
+        expect(applications[0].get('status')).to.equal('waiting_for_response');
+        expect(applications[0].get('waiting_for_response_reminder_id')).to.be.a('string');
+        done();
+      });
+    });
+
+    it('creates our interview in the database', function (done) {
+      Interview.findAll().asCallback(function handleFindAll (err, interviews) {
+        if (err) { return done(err); }
+        expect(interviews).to.have.length(1);
+        expect(interviews[0].get('type')).to.equal('past_interview');
+        done();
+      });
+    });
+
+    it('creates our interview reminders in the database', function (done) {
+      InterviewReminder.findAll().asCallback(function handleFindAll (err, reminders) {
+        if (err) { return done(err); }
+        expect(reminders).to.have.length(2);
+        done();
+      });
+    });
+
+    it('creates a default waiting for response reminder', function (done) {
+      ApplicationReminder.findAll().asCallback(function handleFindAll (err, reminders) {
+        if (err) { return done(err); }
+        expect(reminders).to.have.length(1);
+        expect(reminders[0].get('type')).to.equal('waiting_for_response');
+        expect(reminders[0].get('application_id')).to.be.a('string');
+        expect(reminders[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
+        expect(reminders[0].get('date_time_moment')).to.be.at.least(moment().add({days: 6, hours: 20}));
+        expect(reminders[0].get('date_time_moment')).to.be.at.most(moment().add({days: 7, hours: 4}));
+        done();
+      });
     });
   });
 

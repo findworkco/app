@@ -26,7 +26,7 @@ var validSavedForLaterApplication = _.defaults({
 scenario.model('A valid Application model', function () {
   it('receives no validation errors', function (done) {
     var application = Application.build(_.clone(validSavedForLaterApplication));
-    application.validate().asCallback(function handleError (err, validationErr) {
+    application.validate({skip: ['statusMatchesInterviews']}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr).to.equal(null);
       done();
@@ -39,7 +39,7 @@ scenario.model('An Application model with an empty name', function () {
     var application = Application.build(_.extend({}, validSavedForLaterApplication, {
       name: ''
     }));
-    application.validate().asCallback(function handleError (err, validationErr) {
+    application.validate({skip: ['statusMatchesInterviews']}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
       expect(validationErr.errors[0]).to.have.property('path', 'name');
@@ -54,7 +54,8 @@ scenario.model('An Application model with an invalid status', function () {
     var application = Application.build(_.extend({}, validBaseApplication, {
       status: 'invalid_status'
     }));
-    application.validate({skip: ['statusHasMatchingApplicationDate', 'statusHasMatchingReminder']})
+    application.validate({skip: ['statusHasMatchingApplicationDate', 'statusHasMatchingReminder',
+        'statusMatchesInterviews']})
         .asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
@@ -66,7 +67,8 @@ scenario.model('An Application model with an invalid status', function () {
 });
 
 // Reminder tests
-var reminderTestSkips = {skip: ['statusHasMatchingApplicationDate', 'statusHasMatchingArchivedDate']};
+var reminderTestSkips = {skip: ['statusHasMatchingApplicationDate', 'statusHasMatchingArchivedDate',
+  'statusMatchesInterviews']};
 scenario.model('A saved for later Application model with no reminder', function () {
   it('receives a validation error', function (done) {
     var application = Application.build(_.extend({}, validBaseApplication, {
@@ -139,7 +141,7 @@ scenario.model('An archived Application model with no reminder', function () {
 });
 
 // Application date tests
-var applicationDateSkips = {skip: ['statusHasMatchingReminder']};
+var applicationDateSkips = {skip: ['statusHasMatchingReminder', 'statusMatchesInterviews']};
 scenario.model('A saved for later Application model with no application date', function () {
   it('receives no validation error', function (done) {
     var application = Application.build(_.extend({}, validBaseApplication, {
@@ -203,7 +205,8 @@ scenario.model('A non-saved for later Application model with an application date
 });
 
 // Archived date tests
-var archivedDateSkips = {skip: ['statusHasMatchingReminder', 'statusHasMatchingApplicationDate']};
+var archivedDateSkips = {skip: ['statusHasMatchingReminder', 'statusHasMatchingApplicationDate',
+  'statusMatchesInterviews']};
 scenario.model('A non-archived Application model with no archived date', function () {
   it('receives no validation error', function (done) {
     var application = Application.build(_.extend({}, validBaseApplication, {

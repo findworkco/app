@@ -82,7 +82,7 @@ var Application = module.exports = _.extend(baseDefine('application', {
         assert(this.getDataValue('waiting_for_response_reminder_id'),
           'Expected "waiting_for_response" application to have a waiting for response reminder set');
       } else if (status === exports.STATUSES.UPCOMING_INTERVIEW) {
-        // No assertions necessary (handled by interview)
+        // No assertions necessary (reminders handled in interview)
       } else if (status === exports.STATUSES.RECEIVED_OFFER) {
         assert(this.getDataValue('received_offer_reminder_id'),
           'Expected "received_offer" application to have a received offer reminder set');
@@ -90,6 +90,29 @@ var Application = module.exports = _.extend(baseDefine('application', {
         // No assertions necessary
       } else {
         throw new Error('Unexpected status received');
+      }
+    },
+    // DEV: We skip `statusMatchesInterviews` during fixture construction due to lack of relationships
+    statusMatchesInterviews: function () {
+      // If we are an interview insensitive model, then ignore interviews
+      var status = this.getDataValue('status');
+      if (status === exports.STATUSES.RECEIVED_OFFER || status === exports.STATUSES.ARCHIVED) {
+        return;
+      }
+
+      // Otherwise, verify status is upcoming interview if and only if
+      // DEV: We don't perform this logic in `statusHasMatchingReminder`
+      //   as that would only be "if" not "only if" behavior
+      var upcomingInterviews = this.get('upcoming_interviews');
+      assert(upcomingInterviews, 'Application being validated/saved must have upcoming interviews set');
+      if (status === exports.STATUSES.UPCOMING_INTERVIEW) {
+        assert.notEqual(upcomingInterviews.length, 0,
+          'Expected upcoming interview application to have upcoming interviews. ' +
+          'Please use `updateToInterviewChanges()` to handle status changes with respect to interviews');
+      } else {
+        assert.strictEqual(upcomingInterviews.length, 0,
+         'Expected non-upcoming interview application to have no upcoming interviews. ' +
+          'Please use `updateToInterviewChanges()` to handle status changes with respect to interviews');
       }
     },
     statusHasMatchingApplicationDate: function () {

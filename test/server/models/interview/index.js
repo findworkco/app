@@ -56,6 +56,7 @@ scenario.model('An Interview model with a past datetime', function () {
 });
 
 // Validation
+// typeMatchesDateTime
 var validBaseInterview = {
   candidate_id: 'mock-candidate-id',
   application_id: 'mock-application-id',
@@ -69,7 +70,7 @@ scenario.model('An upcoming Interview model with a matching type', function () {
       date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
     }, validBaseInterview));
     interview.setDataValue('type', 'upcoming_interview');
-    interview.validate().asCallback(function handleError (err, validationErr) {
+    interview.validate({skip: ['applicationStatusMatchesType']}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr).to.equal(null);
       done();
@@ -78,12 +79,12 @@ scenario.model('An upcoming Interview model with a matching type', function () {
 });
 
 scenario.model('An upcoming Interview model with a non-matching type', function () {
-  it('receives has no validation errors', function (done) {
+  it('receives a validation error', function (done) {
     var interview = Interview.build(_.defaults({
       date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
     }, validBaseInterview));
     interview.setDataValue('type', 'past_interview');
-    interview.validate().asCallback(function handleError (err, validationErr) {
+    interview.validate({skip: ['applicationStatusMatchesType']}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
       expect(validationErr.errors[0]).to.have.property('path', 'typeMatchesDateTime');
@@ -99,7 +100,7 @@ scenario.model('An past Interview model with a matching type', function () {
       date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
     }, validBaseInterview));
     interview.setDataValue('type', 'past_interview');
-    interview.validate().asCallback(function handleError (err, validationErr) {
+    interview.validate({skip: ['applicationStatusMatchesType']}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr).to.equal(null);
       done();
@@ -108,16 +109,130 @@ scenario.model('An past Interview model with a matching type', function () {
 });
 
 scenario.model('An past Interview model with a non-matching type', function () {
-  it('receives has no validation errors', function (done) {
+  it('receives a validation error', function (done) {
     var interview = Interview.build(_.defaults({
       date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
     }, validBaseInterview));
     interview.setDataValue('type', 'upcoming_interview');
-    interview.validate().asCallback(function handleError (err, validationErr) {
+    interview.validate({skip: ['applicationStatusMatchesType']}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
       expect(validationErr.errors[0]).to.have.property('path', 'typeMatchesDateTime');
       expect(validationErr.errors[0].message).to.contain('Expected type for past interview');
+      done();
+    });
+  });
+});
+
+// applicationStatusMatchesType
+scenario.model('An Interview model with an Application model and interview insensitive status', function () {
+  sinonUtils.spy(Application.options.validate, 'statusMatchesInterviews');
+
+  it('receives has no validation errors', function (done) {
+    var application = Application.build({
+      status: 'received_offer'
+    });
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    application.setDataValue('interviews', [interview]);
+    interview.setDataValue('application', application);
+
+    interview.validate().asCallback(function handleError (err, validationErr) {
+      // Perform our assertions
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+
+      // Additionally verify we call an Application validator so we know it'll work on both sides
+      var statusMatchesInterviewsSpy = Application.options.validate.statusMatchesInterviews;
+      expect(statusMatchesInterviewsSpy.callCount).to.equal(1);
+
+      // Callback
+      done();
+    });
+  });
+});
+
+scenario.model('A past Interview model with an Application model and a past-representative status', function () {
+  it('receives has no validation errors', function (done) {
+    var application = Application.build({
+      status: 'waiting_for_response'
+    });
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    application.setDataValue('interviews', [interview]);
+    interview.setDataValue('application', application);
+
+    interview.validate().asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('A past Interview model with an Application model and an upcoming-representative status',
+    function () {
+  it('receives a validation error', function (done) {
+    var application = Application.build({
+      status: 'upcoming_interview'
+    });
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    application.setDataValue('interviews', [interview]);
+    interview.setDataValue('application', application);
+
+    interview.validate().asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr.errors).to.have.length(1);
+      expect(validationErr.errors[0]).to.have.property('path', 'applicationStatusMatchesType');
+      expect(validationErr.errors[0].message).to.contain(
+        'Expected upcoming interview application to have upcoming interviews');
+      done();
+    });
+  });
+});
+
+scenario.model('An upcoming Interview model with an Application model and an upcoming-representative status',
+    function () {
+  it('receives has no validation errors', function (done) {
+    var application = Application.build({
+      status: 'upcoming_interview'
+    });
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    application.setDataValue('interviews', [interview]);
+    interview.setDataValue('application', application);
+
+    interview.validate().asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('An upcoming Interview model with an Application model and a past-representative status',
+    function () {
+  it('receives a validation error', function (done) {
+    var application = Application.build({
+      status: 'waiting_for_response'
+    });
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    application.setDataValue('interviews', [interview]);
+    interview.setDataValue('application', application);
+
+    interview.validate().asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr.errors).to.have.length(1);
+      expect(validationErr.errors[0]).to.have.property('path', 'applicationStatusMatchesType');
+      expect(validationErr.errors[0].message).to.contain(
+        'Expected non-upcoming interview application to have no upcoming interviews');
       done();
     });
   });

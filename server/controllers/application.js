@@ -73,9 +73,10 @@ var applicationAddFormSaveFns = [
       posting_url: req.body.fetch('posting_url'),
       status: req.applicationStatus
     });
+    application.setDataValue('interviews', []);
 
     // If our application is saved for later
-    var reminder;
+    var reminder, modelsToSave;
     if (req.applicationStatus === Application.STATUSES.SAVED_FOR_LATER) {
       // Create our application's remaining parts (e.g. its reminders)
       // DEV: We avoid nested creation due to no transaction support
@@ -119,12 +120,25 @@ var applicationAddFormSaveFns = [
       });
       // DEV: We set up relationships for any validation hooks
       // DEV: We are using `setDataValue` as `set` requires `include` to be passed in options
+      // DEV: We use `.application` for `interview.application` as we get recursion otherwise
       application.setDataValue('interviews', [interview]);
+      interview.application = application;
       preInterviewReminder.setDataValue('interview', interview);
       postInterviewReminder.setDataValue('interview', interview);
+      modelsToSave = [application, interview, preInterviewReminder, postInterviewReminder];
+
+      // Handle edge case of interview being in past
+      application.updateToInterviewChanges();
+      if (application.get('status') === Application.STATUSES.WAITING_FOR_RESPONSE) {
+        reminder = application.createWaitingForResponseReminder({
+          is_enabled: true,
+          date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(req.timezone)
+        });
+        modelsToSave.push(reminder);
+      }
 
       // Save our models
-      saveModels([application, interview, preInterviewReminder, postInterviewReminder]);
+      saveModels(modelsToSave);
     // Otherwise, if our application is received offer
     } else if (req.applicationStatus === Application.STATUSES.RECEIVED_OFFER) {
       // Update our application and create its remaining parts (e.g. reminders)

@@ -146,6 +146,8 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
         return Promise.all(_.values(builtModels).map(function buildAndSaveModel (model) {
           // Skip over model-dependent validation
           var skip = [];
+          if (model.Model === sequelize.models.application) { skip = ['statusMatchesInterviews']; }
+          if (model.Model === sequelize.models.interview) { skip = ['applicationStatusMatchesType']; }
           if (model.Model === sequelize.models.interview_reminder) { skip = ['dateTimeMatchesInterview']; }
 
           // Perform our save

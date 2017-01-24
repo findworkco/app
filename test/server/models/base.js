@@ -308,7 +308,8 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
       }).to.throw(/Expected "date_time_datetime" to not be null/);
     });
     it('generates a validation error', function (done) {
-      this.base.validate({skip: ['type', 'typeMatchesDateTime']}).asCallback(function handleError (err, validationErr) {
+      this.base.validate({skip: ['applicationStatusMatchesType', 'type', 'typeMatchesDateTime']}).asCallback(
+          function handleError (err, validationErr) {
         expect(err).to.equal(null);
         // DEV: Ideally we wouldn't test for 2 errors (e.g. allow moment to be null) but there are no matching models =/
         expect(validationErr.errors).to.have.length(2);
@@ -340,7 +341,8 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
       }).to.throw(/Expected "date_time_timezone" to not be null/);
     });
     it('generates a validation error', function (done) {
-      this.base.validate({skip: ['type', 'typeMatchesDateTime']}).asCallback(function handleError (err, validationErr) {
+      this.base.validate({skip: ['applicationStatusMatchesType', 'type', 'typeMatchesDateTime']}).asCallback(
+          function handleError (err, validationErr) {
         expect(err).to.equal(null);
         // DEV: Ideally we wouldn't test for 2 errors (e.g. allow moment to be null) but there are no matching models =/
         expect(validationErr.errors).to.have.length(2);
@@ -398,7 +400,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
         date_time_datetime: new Date('2016-02-05T14:00:00Z'),
         date_time_timezone: 'America/Nowhere'
       });
-      base.validate().asCallback(function handleError (err, validationErr) {
+      base.validate({skip: ['applicationStatusMatchesType']}).asCallback(function handleError (err, validationErr) {
         expect(err).to.equal(null);
         expect(validationErr.errors).to.have.length(1);
         expect(validationErr.errors[0]).to.have.property('path', 'date_time_timezone');
