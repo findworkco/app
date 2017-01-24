@@ -15,7 +15,7 @@ var validFormData = exports.validFormData = {
   company_name: 'Test Corporation search',
   notes: 'Test notes',
 
-  application_date: '2017-01-31',
+  application_date: '2017-01-06',
   received_offer_reminder_enabled: 'no',
   received_offer_reminder_date: '2022-03-05',
   received_offer_reminder_time: '13:00',
@@ -58,7 +58,7 @@ scenario.route('A request to POST /add-application/received-offer (specific)', {
         expect(applications[0].get('id')).to.be.a('string');
         expect(applications[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(applications[0].get('received_offer_reminder_id')).to.be.a('string');
-        expect(applications[0].get('application_date_datetime').toISOString()).to.equal('2017-01-31T00:00:00.000Z');
+        expect(applications[0].get('application_date_datetime').toISOString()).to.equal('2017-01-06T00:00:00.000Z');
         expect(applications[0].get('status')).to.equal('received_offer');
         expect(applications[0].get('name')).to.equal('Test Corporation');
         expect(applications[0].get('posting_url')).to.equal('http://google.com/');
@@ -110,7 +110,7 @@ scenario.route('A request to POST /add-application/received-offer (specific)', {
     it('reuses submitted values in inputs/textareas', function () {
       expect(this.$('input[name=posting_url]').val()).to.equal('http://google.com/');
       expect(this.$('input[name=company_name]').val()).to.equal('Test Corporation search');
-      expect(this.$('input[name=application_date]').val()).to.equal('2017-01-31');
+      expect(this.$('input[name=application_date]').val()).to.equal('2017-01-06');
       expect(this.$('textarea[name=notes]').val()).to.equal('Test notes');
       expect(this.$('input[name=received_offer_reminder_enabled][value=yes]').attr('checked'))
         .to.equal(undefined);

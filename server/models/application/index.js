@@ -187,9 +187,9 @@ var Application = module.exports = _.extend(baseDefine('application', {
       // TODO: Consider fetching past interviews as a query
       var interviews = this.get('interviews');
       if (interviews) {
-        var now = new Date();
+        var Interview = this.sequelize.models.interview;
         return interviews.filter(function isPastInterview (interview) {
-          return interview.date_time_datetime < now;
+          return interview.get('type') === Interview.TYPES.PAST_INTERVIEW;
         });
       }
       return null;
@@ -210,12 +210,12 @@ var Application = module.exports = _.extend(baseDefine('application', {
       return this.getDataValue('status').toUpperCase();
     },
     upcoming_interviews: function () {
-      // TODO: Consider fetching past interviews as a query
+      // TODO: Consider fetching upcoming interviews as a query
       var interviews = this.get('interviews');
       if (interviews) {
-        var now = new Date();
+        var Interview = this.sequelize.models.interview;
         return interviews.filter(function isUpcomingInterview (interview) {
-          return interview.date_time_datetime >= now;
+          return interview.get('type') === Interview.TYPES.UPCOMING_INTERVIEW;
         });
       }
       return null;

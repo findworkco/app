@@ -308,7 +308,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
       }).to.throw(/Expected "date_time_datetime" to not be null/);
     });
     it('generates a validation error', function (done) {
-      this.base.validate().asCallback(function handleError (err, validationErr) {
+      this.base.validate({skip: ['type', 'typeMatchesDateTime']}).asCallback(function handleError (err, validationErr) {
         expect(err).to.equal(null);
         // DEV: Ideally we wouldn't test for 2 errors (e.g. allow moment to be null) but there are no matching models =/
         expect(validationErr.errors).to.have.length(2);
@@ -340,7 +340,7 @@ scenario.model('A Base model with a moment-based datetime/timezone field', funct
       }).to.throw(/Expected "date_time_timezone" to not be null/);
     });
     it('generates a validation error', function (done) {
-      this.base.validate().asCallback(function handleError (err, validationErr) {
+      this.base.validate({skip: ['type', 'typeMatchesDateTime']}).asCallback(function handleError (err, validationErr) {
         expect(err).to.equal(null);
         // DEV: Ideally we wouldn't test for 2 errors (e.g. allow moment to be null) but there are no matching models =/
         expect(validationErr.errors).to.have.length(2);

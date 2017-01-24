@@ -3,6 +3,7 @@ var _ = require('underscore');
 var async = require('async');
 var expect = require('chai').expect;
 var httpUtils = require('../utils/http');
+var sinonUtils = require('../utils/sinon');
 var serverUtils = require('../utils/server');
 var Application = require('../../../server/models/application');
 var Interview = require('../../../server/models/interview');
@@ -15,7 +16,7 @@ var validFormData = exports.validFormData = {
   posting_url: 'http://google.com/',
   company_name: 'Test Corporation search',
   notes: 'Test notes',
-  application_date: '2017-01-31',
+  application_date: '2017-01-06',
 
   date_time_date: '2022-03-05',
   date_time_time: '16:00',
@@ -38,6 +39,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
 }, function () {
   scenario.routeTest('for a logged in user and valid form data', function () {
     // Login and make our request
+    sinonUtils.spy(Interview.Instance.prototype, 'updateType');
     httpUtils.session.init().login()
       .save(serverUtils.getUrl('/add-application/upcoming-interview'))
       .save({
@@ -46,8 +48,9 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         htmlForm: validFormData, followRedirect: true, followAllRedirects: true,
         expectedStatusCode: 200,
         validateHtmlFormDifferent: {exclude: [
-          'pre_interview_reminder_enabled', 'pre_interview_reminder_time',
           // DEV: We exclude time as it changes over the course of a day
+          'date_time_time',
+          'pre_interview_reminder_enabled', 'pre_interview_reminder_time',
           'post_interview_reminder_enabled', 'post_interview_reminder_time']}
       });
 
@@ -70,7 +73,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         expect(applications).to.have.length(1);
         expect(applications[0].get('id')).to.be.a('string');
         expect(applications[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
-        expect(applications[0].get('application_date_datetime').toISOString()).to.equal('2017-01-31T00:00:00.000Z');
+        expect(applications[0].get('application_date_datetime').toISOString()).to.equal('2017-01-06T00:00:00.000Z');
         expect(applications[0].get('status')).to.equal('upcoming_interview');
         expect(applications[0].get('name')).to.equal('Test Corporation');
         expect(applications[0].get('posting_url')).to.equal('http://google.com/');
@@ -90,6 +93,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         expect(interviews[0].get('id')).to.be.a('string');
         expect(interviews[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(interviews[0].get('application_id')).to.be.a('string');
+        expect(interviews[0].get('type')).to.equal('upcoming_interview');
         expect(interviews[0].get('date_time_datetime').toISOString()).to.equal('2022-03-06T00:00:00.000Z');
         expect(interviews[0].get('date_time_timezone')).to.equal('US-America/Los_Angeles');
         expect(interviews[0].get('pre_interview_reminder_id')).to.be.a('string');
@@ -131,6 +135,11 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         done();
       });
     });
+
+    it('dynamically handles interview type', function () {
+      var updateTypeSpy = Interview.Instance.prototype.updateType;
+      expect(updateTypeSpy.callCount).to.equal(1);
+    });
   });
 
   scenario.routeTest('for a logged in user and invalid form data', function () {
@@ -149,8 +158,9 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         followRedirect: false,
         expectedStatusCode: 400,
         validateHtmlFormDifferent: {exclude: [
-          'pre_interview_reminder_enabled', 'pre_interview_reminder_time',
           // DEV: We exclude time as it changes over the course of a day
+          'date_time_time',
+          'pre_interview_reminder_enabled', 'pre_interview_reminder_time',
           'post_interview_reminder_enabled', 'post_interview_reminder_time']}
       });
 
@@ -164,7 +174,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
       expect(this.$('input[name=posting_url]').val()).to.equal('http://google.com/');
       expect(this.$('input[name=company_name]').val()).to.equal('Test Corporation search');
       expect(this.$('textarea[name=notes]').val()).to.equal('Test notes');
-      expect(this.$('input[name=application_date]').val()).to.equal('2017-01-31');
+      expect(this.$('input[name=application_date]').val()).to.equal('2017-01-06');
 
       expect(this.$('input[name=details]').val()).to.equal('Test details');
       expect(this.$('input[name=date_time_date]').val()).to.equal('2022-03-05');

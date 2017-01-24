@@ -63,15 +63,15 @@ exports.expandMomentAttributes = function (attributes, options) {
       options.getterMethods = options.getterMethods ? _.clone(options.getterMethods) : {};
       options.setterMethods = options.setterMethods ? _.clone(options.setterMethods) : {};
       options.getterMethods[momentKey] = function () {
-        var val = this.getDataValue(dateTimeKey);
+        var val = this.get(dateTimeKey);
         return val !== null ? moment(val) : val;
       };
       options.setterMethods[momentKey] = function (_moment) {
         // http://momentjs.com/docs/#/displaying/as-javascript-date/
         if (_moment !== null) {
-          this.setDataValue(dateTimeKey, _moment.toDate());
+          this.set(dateTimeKey, _moment.toDate());
         } else {
-          this.setDataValue(dateTimeKey, null);
+          this.set(dateTimeKey, null);
         }
       };
     // Otherwise, if the attribute is a moment with a timezone
@@ -109,8 +109,8 @@ exports.expandMomentAttributes = function (attributes, options) {
       options.setterMethods = options.setterMethods ? _.clone(options.setterMethods) : {};
       options.validate = options.validate ? _.clone(options.validate) : {};
       options.getterMethods[momentKey] = function () {
-        var dateTimeVal = this.getDataValue(dateTimeKey);
-        var timezoneVal = this.getDataValue(timezoneKey);
+        var dateTimeVal = this.get(dateTimeKey);
+        var timezoneVal = this.get(timezoneKey);
         if ((dateTimeVal === null || dateTimeVal === undefined) &&
             (timezoneVal === null || timezoneVal === undefined)) {
           return null;
@@ -128,11 +128,11 @@ exports.expandMomentAttributes = function (attributes, options) {
         if (_moment !== null) {
           var timezone = _moment.tz();
           assert(timezone, 'Expected timezone to be set for "' + momentKey + '" but it wasn\'t');
-          this.setDataValue(dateTimeKey, _moment.toDate());
-          this.setDataValue(timezoneKey, _moment.tz());
+          this.set(dateTimeKey, _moment.toDate());
+          this.set(timezoneKey, _moment.tz());
         } else {
-          this.setDataValue(dateTimeKey, null);
-          this.setDataValue(timezoneKey, null);
+          this.set(dateTimeKey, null);
+          this.set(timezoneKey, null);
         }
       };
       // http://docs.sequelizejs.com/en/v3/docs/models-definition/#model-validations

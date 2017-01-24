@@ -14,11 +14,6 @@ function isModel(val) {
   return val && val.$modelOptions;
 }
 
-// TODO: Move to pattern with multiple functions;
-//   retrieve all models `loadModels(function (req, res) { req.models = {a: A.get(1)} })`,
-//   update models `(req, res)`,
-//   save changes `saveModels`, flash + redirect `(req, res)`
-
 // Define our middleware
 // DEV: We considered this against a wrapper around Express routes (e.g. `routes.get`)
 //   We chose a standalone middleware so we can place it as needed (e.g. after `ensureLoggedIn` )

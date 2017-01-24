@@ -83,7 +83,7 @@ scenario.model('An interview-sensitive Application model with an upcoming interv
   before(function addUpcomingInterview () {
     var application = this.models[dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY];
     var interview = Interview.build({date_time_moment: moment().add({weeks: 1}).tz('UTC')});
-    application.set('interviews', [interview]);
+    application.setDataValue('interviews', [interview]);
   });
 
   it('updates its status to "upcoming interview"', function () {
@@ -106,7 +106,7 @@ scenario.model('An interview-sensitive Application model with no upcoming interv
   before(function addPastInterview () {
     var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
     var interview = Interview.build({date_time_moment: moment().subtract({weeks: 1}).tz('UTC')});
-    application.set('interviews', [interview]);
+    application.setDataValue('interviews', [interview]);
   });
 
   // DEV: In saved for later case, this would be "Saved for later" getting a past interview which means they've applied
@@ -159,7 +159,7 @@ scenario.model('A received offer Application model with an upcoming interview re
   before(function addUpcomingInterview () {
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
     var interview = Interview.build({date_time_moment: moment().add({weeks: 1}).tz('UTC')});
-    application.set('interviews', [interview]);
+    application.setDataValue('interviews', [interview]);
   });
 
   it('changes status to "upcoming interview"', function () {
@@ -304,7 +304,7 @@ scenario.model('An archived Application model with no offer but with upcoming in
     var application = this.models[dbFixtures.APPLICATION_ARCHIVED_KEY];
     application.set('received_offer_reminder', null);
     var interview = Interview.build({date_time_moment: moment().add({weeks: 1}).tz('UTC')});
-    application.set('interviews', [interview]);
+    application.setDataValue('interviews', [interview]);
   });
 
   it('changes status to "received offer"', function () {
@@ -325,7 +325,7 @@ scenario.model('An archived Application model with no offer and no upcoming inte
   before(function removeReminderAndInterviews () {
     var application = this.models[dbFixtures.APPLICATION_ARCHIVED_KEY];
     application.set('received_offer_reminder', null);
-    application.set('interviews', []);
+    application.setDataValue('interviews', []);
   });
 
   it('changes status to "waiting for response"', function () {

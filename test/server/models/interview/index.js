@@ -1,11 +1,14 @@
 // Load in our dependencies
+var _ = require('underscore');
 var expect = require('chai').expect;
+var moment = require('moment-timezone');
 var dbFixtures = require('../../utils/db-fixtures');
 var Application = require('../../../../server/models/application');
 var Candidate = require('../../../../server/models/candidate');
 var Interview = require('../../../../server/models/interview');
 var InterviewReminder = require('../../../../server/models/interview-reminder');
 var Reminder = require('../../../../server/models/reminder');
+var sinonUtils = require('../../utils/sinon');
 
 // Start our tests
 scenario.model('An Interview model', function () {
@@ -21,6 +24,102 @@ scenario.model('An Interview model', function () {
   it.skip('requires `post_interview_reminder` to be null or after `date_time`', function () {
     var interview = Interview.build({});
     expect(interview).to.equal(false);
+  });
+});
+
+scenario.model('An Interview model with an upcoming datetime', function () {
+  sinonUtils.spy(Interview.Instance.prototype, 'updateType');
+
+  it('automatically receives its expected type', function () {
+    var interview = Interview.build({
+      date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
+    });
+    expect(interview.get('type')).to.equal('upcoming_interview');
+
+    var updateTypeSpy = Interview.Instance.prototype.updateType;
+    expect(updateTypeSpy.callCount).to.equal(1);
+  });
+});
+
+scenario.model('An Interview model with a past datetime', function () {
+  sinonUtils.spy(Interview.Instance.prototype, 'updateType');
+
+  it('automatically receives its expected type', function () {
+    var interview = Interview.build({
+      date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
+    });
+    expect(interview.get('type')).to.equal('past_interview');
+
+    var updateTypeSpy = Interview.Instance.prototype.updateType;
+    expect(updateTypeSpy.callCount).to.equal(1);
+  });
+});
+
+// Validation
+var validBaseInterview = {
+  candidate_id: 'mock-candidate-id',
+  application_id: 'mock-application-id',
+  details: 'Mock details',
+  pre_interview_reminder_id: 'mock-pre-reminder-id',
+  post_interview_reminder_id: 'mock-post-reminder-id'
+};
+scenario.model('An upcoming Interview model with a matching type', function () {
+  it('receives has no validation errors', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    interview.setDataValue('type', 'upcoming_interview');
+    interview.validate().asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('An upcoming Interview model with a non-matching type', function () {
+  it('receives has no validation errors', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    interview.setDataValue('type', 'past_interview');
+    interview.validate().asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr.errors).to.have.length(1);
+      expect(validationErr.errors[0]).to.have.property('path', 'typeMatchesDateTime');
+      expect(validationErr.errors[0].message).to.contain('Expected type for upcoming interview');
+      done();
+    });
+  });
+});
+
+scenario.model('An past Interview model with a matching type', function () {
+  it('receives has no validation errors', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    interview.setDataValue('type', 'past_interview');
+    interview.validate().asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('An past Interview model with a non-matching type', function () {
+  it('receives has no validation errors', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    interview.setDataValue('type', 'upcoming_interview');
+    interview.validate().asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr.errors).to.have.length(1);
+      expect(validationErr.errors[0]).to.have.property('path', 'typeMatchesDateTime');
+      expect(validationErr.errors[0].message).to.contain('Expected type for past interview');
+      done();
+    });
   });
 });
 
