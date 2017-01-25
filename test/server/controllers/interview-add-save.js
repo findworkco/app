@@ -6,17 +6,17 @@ var serverUtils = require('../utils/server');
 
 // Start our tests
 scenario.route('A request to POST /application/:id/add-interview', function () {
+  var skyNetworksDbFixture = dbFixtures.APPLICATION_SKY_NETWORKS;
+  var skyNetworksAddInterviewUrl = '/application/abcdef-sky-networks-uuid/add-interview';
   scenario.routeTest('from the owner user', {
-    // TODO: Verify application gets new status on save (and isn't an upcoming interview to start)
-    dbFixtures: [dbFixtures.APPLICATION_SKY_NETWORKS, dbFixtures.DEFAULT_FIXTURES]
+    dbFixtures: [skyNetworksDbFixture, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
     // Log in and make our request
     // TODO: Complete form for test
-    var applicationId = 'abcdef-sky-networks-uuid';
     httpUtils.session.init().login()
-      .save(serverUtils.getUrl('/application/' + applicationId + '/add-interview'))
+      .save(serverUtils.getUrl(skyNetworksAddInterviewUrl))
       .save({
-        method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+        method: 'POST', url: serverUtils.getUrl(skyNetworksAddInterviewUrl),
         // DEV: We use `followAllRedirects` to follow POST based redirects
         htmlForm: true, followRedirect: true, followAllRedirects: true,
         expectedStatusCode: 200
@@ -31,6 +31,8 @@ scenario.route('A request to POST /application/:id/add-interview', function () {
       expect(this.$('#notification-content > [data-notification=success]').text())
         .to.equal('Interview saved');
     });
+
+    // TODO: Verify application gets new status on save (and isn't an upcoming interview to start)
 
     it.skip('creates our interview in the database', function () {
       // Verify data in PostgreSQL
@@ -73,14 +75,16 @@ scenario.route('A request to POST /application/:id/add-interview', function () {
     });
   });
 
-  scenario.nonOwner.skip('from a non-owner user', function () {
-    // Log in (need to do) and make our request
-    var applicationId = 'abcdef-uuid';
-    httpUtils.session.init().save({
-      method: 'POST', url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
-      csrfForm: true, followRedirect: false,
-      expectedStatusCode: 404
-    });
+  scenario.nonOwner('from a non-owner user', {
+    dbFixtures: [skyNetworksDbFixture, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_ALT)
+      .save({
+        method: 'POST', url: serverUtils.getUrl(skyNetworksAddInterviewUrl),
+        csrfForm: true, followRedirect: false,
+        expectedStatusCode: 404
+      });
 
     it('recieves a 404', function () {
       // Asserted by `expectedStatusCode` in `httpUtils.save()`

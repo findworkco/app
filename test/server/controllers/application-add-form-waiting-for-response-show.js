@@ -22,11 +22,6 @@ scenario.route('A request to GET /add-application/waiting-for-response (specific
       expect(this.$('#application-status').text()).to.equal('Status: Waiting for response');
     });
 
-    it('has expected specific fields', function () {
-      // DEV: This is redundant to application date checker but consistent with other tests
-      expect(this.$('input[name=application_date]').length).to.equal(1);
-    });
-
     it('sets application date to today', function () {
       // DEV: Our visual tests override this value for consistency in screenshots
       // DEV: We construct values without moment to verify our logic is correct

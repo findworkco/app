@@ -22,8 +22,8 @@ scenario.route('A request to GET /add-application/save-for-later (specific)', {
       expect(this.$('#application-status').text()).to.equal('Status: Saving for later');
     });
 
-    it.skip('has no application date field', function () {
-      expect(this.$('input' /* selector */).length).to.equal(0);
+    it('has no application date field', function () {
+      expect(this.$('input[name=application_date]').length).to.equal(0);
     });
 
     it('sets application reminder to 1 week from now', function () {

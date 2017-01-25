@@ -8,13 +8,14 @@ var serverUtils = require('../utils/server');
 
 // Start our tests
 scenario.route('A request to GET /application/:id/add-interview', function () {
+  var skyNetworksDbFixture = dbFixtures.APPLICATION_SKY_NETWORKS;
+  var skyNetworksAddInterviewUrl = '/application/abcdef-sky-networks-uuid/add-interview';
   scenario.routeTest('from the owner user', {
-    dbFixtures: [dbFixtures.APPLICATION_SKY_NETWORKS, dbFixtures.DEFAULT_FIXTURES]
+    dbFixtures: [skyNetworksDbFixture, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
     // Log in and make our request
-    var applicationId = 'abcdef-sky-networks-uuid';
     httpUtils.session.init().login().save({
-      url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+      url: serverUtils.getUrl(skyNetworksAddInterviewUrl),
       expectedStatusCode: 200
     });
 
@@ -28,12 +29,7 @@ scenario.route('A request to GET /application/:id/add-interview', function () {
       expect(this.$('title').text()).to.equal('Add interview - Sky Networks - Find Work');
     });
 
-    // Test that all fields exist
-    it.skip('has our expected fields', function () {
-      expect(this.$('input[name=...]').val()).to.equal('Test me');
-    });
-
-    it('set our default date/time to tomorrow', function () {
+    it('set our default date/time and reminders to 1 week from now', function () {
       // Prepare our date (including timezone offset for Chicago)
       // DEV: Our visual tests override this value for consistency in screenshots
       // DEV: We construct values without moment to verify our logic is correct
@@ -47,27 +43,33 @@ scenario.route('A request to GET /application/:id/add-interview', function () {
       expect(this.$('input[name=date_time_date]').val()).to.equal(expectedInfo.date);
       expect(this.$('input[name=date_time_time]').val()).to.equal(expectedInfo.time);
       expect(this.$('select[name=date_time_timezone]').val()).to.equal('US-America/Chicago');
+
       expectedDateStr = new Date(expectedDateVal - dateUtils.twoHours()).toISOString();
       expectedInfo = extractValues(expectedDateStr, '{date}T{time}:00.000Z');
       expect(this.$('input[name=pre_interview_reminder_date]').val()).to.equal(expectedInfo.date);
       expect(this.$('input[name=pre_interview_reminder_time]').val()).to.equal(expectedInfo.time);
       expect(this.$('select[name=pre_interview_reminder_timezone]').val()).to.equal('US-America/Chicago');
+
       expectedDateStr = new Date(expectedDateVal + dateUtils.twoHours()).toISOString();
       expectedInfo = extractValues(expectedDateStr, '{date}T{time}:00.000Z');
       expect(this.$('input[name=post_interview_reminder_date]').val()).to.equal(expectedInfo.date);
       expect(this.$('input[name=post_interview_reminder_time]').val()).to.equal(expectedInfo.time);
       expect(this.$('select[name=post_interview_reminder_timezone]').val()).to.equal('US-America/Chicago');
     });
+
+    it('provides link back to application', function () {
+      expect(this.$('#content a[href="/application/abcdef-sky-networks-uuid"]').length)
+        .to.be.at.least(1);
+    });
   });
 
   scenario.nonOwner('from a non-owner user', {
-    dbFixtures: [dbFixtures.APPLICATION_SKY_NETWORKS, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+    dbFixtures: [skyNetworksDbFixture, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
   }, function () {
     // Log in and make our request
-    var applicationId = 'abcdef-sky-networks-uuid';
     httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_ALT)
       .save({
-        url: serverUtils.getUrl('/application/' + applicationId + '/add-interview'),
+        url: serverUtils.getUrl(skyNetworksAddInterviewUrl),
         expectedStatusCode: 404
       });
 

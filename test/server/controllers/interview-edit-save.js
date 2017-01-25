@@ -6,16 +6,17 @@ var serverUtils = require('../utils/server');
 
 // Start our tests
 scenario.route('A request to POST /interview/:id', function () {
+  var skyNetworksDbFixture = dbFixtures.APPLICATION_SKY_NETWORKS;
+  var skyNetworksInterviewUrl = '/interview/abcdef-sky-networks-interview-uuid';
   scenario.routeTest('from the owner user', {
-    dbFixtures: [dbFixtures.APPLICATION_SKY_NETWORKS, dbFixtures.DEFAULT_FIXTURES]
+    dbFixtures: [skyNetworksDbFixture, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
     // Log in and make our request
     // TODO: Complete form for test
-    var interviewId = 'abcdef-sky-networks-interview-uuid';
     httpUtils.session.init().login()
-      .save(serverUtils.getUrl('/interview/' + interviewId))
+      .save(serverUtils.getUrl(skyNetworksInterviewUrl))
       .save({
-        method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
+        method: 'POST', url: serverUtils.getUrl(skyNetworksInterviewUrl),
         // DEV: We use `followAllRedirects` to follow POST based redirects
         htmlForm: true, followRedirect: true, followAllRedirects: true,
         expectedStatusCode: 200
@@ -70,37 +71,19 @@ scenario.route('A request to POST /interview/:id', function () {
     });
   });
 
-  scenario.nonOwner.skip('from a non-owner user', function () {
-    // Log in (need to do) and make our request
-    var interviewId = 'abcdef-uuid';
-    httpUtils.session.init()
-      .save(serverUtils.getUrl('/interview/' + interviewId))
+  scenario.nonOwner('from a non-owner user', {
+    dbFixtures: [skyNetworksDbFixture, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_ALT)
       .save({
-        method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
-        htmlForm: true, followRedirect: false,
+        method: 'POST', url: serverUtils.getUrl(skyNetworksInterviewUrl),
+        csrfForm: true, followRedirect: false,
         expectedStatusCode: 404
       });
 
     it('recieves a 404', function () {
       // Asserted by `expectedStatusCode` in `httpUtils.save()`
-    });
-  });
-
-  scenario.routeTest.skip('from a user that owns the interview yet doesn\'t own the application', function () {
-    // TODO: Enforce interview must have the same owner as application via DB restrictions
-    // Log in (need to do) and make our request
-    var interviewId = 'abcdef-uuid';
-    httpUtils.session.init()
-      .save(serverUtils.getUrl('/interview/' + interviewId))
-      .save({
-        method: 'POST', url: serverUtils.getUrl('/interview/' + interviewId),
-        htmlForm: true, followRedirect: false,
-        expectedStatusCode: 500
-      });
-
-    it('recieves an error', function () {
-      // DEV: This verifies we don't leak sensitive info if something goes wrong
-      // TODO: Assert error somehow
     });
   });
 

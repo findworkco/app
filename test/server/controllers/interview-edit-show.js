@@ -6,13 +6,14 @@ var serverUtils = require('../utils/server');
 
 // Start our tests
 scenario.route('A request to GET /interview/:id', function () {
+  var skyNetworksDbFixture = dbFixtures.APPLICATION_SKY_NETWORKS;
+  var skyNetworksInterviewUrl = '/interview/abcdef-sky-networks-interview-uuid';
   scenario.routeTest('from the owner user', {
-    dbFixtures: [dbFixtures.APPLICATION_SKY_NETWORKS, dbFixtures.DEFAULT_FIXTURES]
+    dbFixtures: [skyNetworksDbFixture, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
     // Log in (need to do) and make our request
-    var interviewId = 'abcdef-sky-networks-interview-uuid';
     httpUtils.session.init().login().save({
-      url: serverUtils.getUrl('/interview/' + interviewId),
+      url: serverUtils.getUrl(skyNetworksInterviewUrl),
       expectedStatusCode: 200
     });
 
@@ -31,40 +32,40 @@ scenario.route('A request to GET /interview/:id', function () {
       expect(this.$('.nav-row--selected.nav-row--application').text()).to.contain('Sky Networks');
     });
 
-    // Test that all fields exist
-    it.skip('has our expected fields', function () {
-      expect(this.$('input[name=...]').val()).to.equal('Test me');
+    it('has our expected fields', function () {
+      expect(this.$('input[name=date_time_date]').val()).to.equal('2016-01-15');
+      expect(this.$('input[name=date_time_time]').val()).to.equal('09:00');
+      expect(this.$('select[name=date_time_timezone]').val()).to.equal('US-America/Los_Angeles');
+
+      expect(this.$('input[name=details]').val()).to.equal('Call 555-123-4567');
+
+      expect(this.$('input[name=pre_interview_reminder_date]').val()).to.equal('2016-01-15');
+      expect(this.$('input[name=pre_interview_reminder_time]').val()).to.equal('08:00');
+      expect(this.$('select[name=pre_interview_reminder_timezone]').val()).to.equal('US-America/Los_Angeles');
+
+      expect(this.$('input[name=post_interview_reminder_date]').val()).to.equal('2016-01-15');
+      expect(this.$('input[name=post_interview_reminder_time]').val()).to.equal('11:00');
+      expect(this.$('select[name=post_interview_reminder_timezone]').val()).to.equal('US-America/Los_Angeles');
+    });
+
+    it('links back to job application', function () {
+      expect(this.$('#content a[href="/application/abcdef-sky-networks-uuid"]').length)
+        .to.be.at.least(1);
     });
   });
 
   scenario.nonOwner('from a non-owner user', {
-    dbFixtures: [dbFixtures.APPLICATION_SKY_NETWORKS, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+    dbFixtures: [skyNetworksDbFixture, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
   }, function () {
     // Log in and make our request
-    var interviewId = 'abcdef-sky-networks-interview-uuid';
     httpUtils.session.init().loginAs(dbFixtures.CANDIDATE_ALT)
       .save({
-        url: serverUtils.getUrl('/interview/' + interviewId),
+        url: serverUtils.getUrl(skyNetworksInterviewUrl),
         expectedStatusCode: 404
       });
 
     it('recieves a 404', function () {
       // Asserted by `expectedStatusCode` in `httpUtils.save()`
-    });
-  });
-
-  scenario.routeTest.skip('from a user that owns the interview yet doesn\'t own the application', function () {
-    // TODO: Enforce interview must have the same owner as application via DB restrictions
-    // Log in (need to do) and make our request
-    var interviewId = 'abcdef-uuid';
-    httpUtils.session.init().save({
-      url: serverUtils.getUrl('/interview/' + interviewId),
-      expectedStatusCode: 500
-    });
-
-    it('recieves an error', function () {
-      // DEV: This verifies we don't leak sensitive info if something goes wrong
-      // TODO: Assert error somehow
     });
   });
 
