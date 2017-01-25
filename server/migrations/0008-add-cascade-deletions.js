@@ -34,6 +34,7 @@ exports.up = function (queryInterface) {
       ALTER TABLE interviews ADD CONSTRAINT "interviews_application_id_fkey"
         FOREIGN KEY (application_id) REFERENCES applications(id)
         ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED;
+      -- See `0011-candidate-id-consistency.js` for updated constraint
       ALTER TABLE interviews DROP CONSTRAINT "interviews_candidate_id_fkey";
       ALTER TABLE interviews ADD CONSTRAINT "interviews_candidate_id_fkey"
         FOREIGN KEY (candidate_id) REFERENCES candidates(id)
@@ -58,6 +59,7 @@ exports.up = function (queryInterface) {
       ALTER TABLE application_reminders ADD CONSTRAINT "application_reminders_application_id_fkey"
         FOREIGN KEY (application_id) REFERENCES applications(id)
         ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED;
+      -- See `0011-candidate-id-consistency.js` for updated constraint
       ALTER TABLE application_reminders DROP CONSTRAINT "application_reminders_candidate_id_fkey";
       ALTER TABLE application_reminders ADD CONSTRAINT "application_reminders_candidate_id_fkey"
         FOREIGN KEY (candidate_id) REFERENCES candidates(id)
@@ -68,6 +70,7 @@ exports.up = function (queryInterface) {
       ALTER TABLE interview_reminders ADD CONSTRAINT "interview_reminders_interview_id_fkey"
         FOREIGN KEY (interview_id) REFERENCES interviews(id)
         ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED;
+      -- See `0011-candidate-id-consistency.js` for updated constraint
       ALTER TABLE interview_reminders DROP CONSTRAINT "interview_reminders_candidate_id_fkey";
       ALTER TABLE interview_reminders ADD CONSTRAINT "interview_reminders_candidate_id_fkey"
         FOREIGN KEY (candidate_id) REFERENCES candidates(id)

@@ -17,6 +17,8 @@ exports.TYPES = {
 var InterviewReminder = module.exports = _.extend(baseDefine('interview_reminder', _.defaults({
   interview_id: {
     type: baseDefine.ID, allowNull: false,
+    // DEV: Additionally, we make our foreign key double bound to Interview's interview_id/candidate_id via SQL
+    //   This is to prevent candidate_id ever getting out of sync via attacks
     references: {model: Interview, key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
     onUpdate: 'CASCADE', onDelete: 'CASCADE'
   }

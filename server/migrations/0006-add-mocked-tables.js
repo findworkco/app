@@ -18,6 +18,8 @@ exports.up = function (queryInterface) {
         // Missed `deferrable` and `onUpdate/onDelete` settings initially
         // references: {model: 'candidates', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
         // onUpdate: 'CASCADE', onDelete: 'CASCADE'
+        // Missed UNIQUE (id, candidate_id) -- must be done via SQL
+        //   See `0011-candidate-id-consistency.js`
       },
       parent_id: {type: baseDefine.ID, allowNull: false},
       parent_type: {type: Sequelize.STRING(36), allowNull: false},
@@ -41,6 +43,8 @@ exports.up = function (queryInterface) {
         // Missed `deferrable` and `onUpdate/onDelete` settings initially
         // references: {model: 'candidates', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
         // onUpdate: 'CASCADE', onDelete: 'CASCADE'
+        // Missed UNIQUE (id, candidate_id) -- must be done via SQL
+        //   See `0011-candidate-id-consistency.js`
       },
       // DEV: Original type no longer defined
       // application_date_moment: {type: baseDefine.MOMENT_DATEONLY, defaultValue: null, allowNull: true},
@@ -88,6 +92,8 @@ exports.up = function (queryInterface) {
         // Missed `deferrable` and `onUpdate/onDelete` settings initially
         // references: {model: 'candidates', key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
         // onUpdate: 'CASCADE', onDelete: 'CASCADE'
+        // Missed UNIQUE (id, candidate_id) -- must be done via SQL
+        //   See `0011-candidate-id-consistency.js`
       },
       application_id: {
         type: baseDefine.ID, allowNull: false,

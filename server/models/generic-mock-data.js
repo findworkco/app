@@ -162,6 +162,8 @@ exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
 exports.APPLICATION_UPCOMING_INTERVIEW_KEY = exports.APPLICATION_UMBRELLA_CORP_KEY =
   'upcoming-interview__application';
 exports.INTERVIEW_UPCOMING_INTERVIEW_KEY = 'upcoming-interview__interview';
+exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY = 'upcoming-interview__reminder--pre-interview';
+exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY = 'upcoming-interview__reminder--post-interview';
 exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
   addApplication(exports.APPLICATION_UPCOMING_INTERVIEW_KEY, {
     id: 'abcdef-umbrella-corp-uuid',
@@ -195,7 +197,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
       pre_interview_reminder_id: 'umbrella-corp-reminder-pre-int-uuid',
       post_interview_reminder_id: 'umbrella-corp-reminder-post-int-uuid'
     }),
-    addInterviewReminder('upcoming-interview__reminder--pre-interview', {
+    addInterviewReminder(exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY, {
       id: interviews[interviews.length - 1].pre_interview_reminder_id,
       candidate_id: DEFAULT_CANDIDATE_ID,
       interview_id: interviews[interviews.length - 1].id,
@@ -203,7 +205,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
       date_time_moment: moment.tz('2022-01-20T11:00', 'US-America/Chicago'),
       is_enabled: false
     }),
-    addInterviewReminder('upcoming-interview__reminder--post-interview', {
+    addInterviewReminder(exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY, {
       id: interviews[interviews.length - 1].post_interview_reminder_id,
       candidate_id: DEFAULT_CANDIDATE_ID,
       interview_id: interviews[interviews.length - 1].id,

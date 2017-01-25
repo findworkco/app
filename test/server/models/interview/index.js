@@ -260,6 +260,25 @@ scenario.model('An Interview model with reminders', {
   });
 });
 
+// DEV: These tests verify our database requires candidate ids align between application/interview
+scenario.model('An Interview model with a different candidate id from its Application model', {
+  dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+}, function () {
+  it('cannot be saved due to rejection at the database level', function (done) {
+    // DEV: We enforce this at the database level to prevent accidental bugs
+    var interview = this.models[dbFixtures.INTERVIEW_UPCOMING_INTERVIEW_KEY];
+    interview.setDataValue('candidate_id', 'alt00000-0000-0000-0000-000000000000');
+    interview.save({validate: false, _allowNoTransaction: true, _sourceType: 'server'}).asCallback(
+        function handleSave (err) {
+      expect(err).to.not.equal(null);
+      expect(err.name).to.equal('SequelizeForeignKeyConstraintError');
+      expect(err.original.detail).to.contain('Key (application_id, candidate_id)=');
+      expect(err.original.detail).to.contain('is not present in table "applications"');
+      done();
+    });
+  });
+});
+
 // DEV: This test verifies our database has proper cascading deletion hooks
 scenario.model('An Interview model being deleted which has reminders', {
   dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]

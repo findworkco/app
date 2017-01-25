@@ -6,6 +6,25 @@ var Candidate = require('../../../server/models/candidate');
 var ApplicationReminder = require('../../../server/models/application-reminder');
 
 // Start our tests
+// DEV: These tests verify our database requires candidate ids align between application/application reminder
+scenario.model('An ApplicationReminder model with a different candidate id from its Application model', {
+  dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+}, function () {
+  it('cannot be saved due to rejection at the database level', function (done) {
+    // DEV: We enforce this at the database level to prevent accidental bugs
+    var reminder = this.models[dbFixtures.REMINDER_WAITING_FOR_RESPONSE_KEY];
+    reminder.setDataValue('candidate_id', 'alt00000-0000-0000-0000-000000000000');
+    reminder.save({validate: false, _allowNoTransaction: true, _sourceType: 'server'}).asCallback(
+        function handleSave (err) {
+      expect(err).to.not.equal(null);
+      expect(err.name).to.equal('SequelizeForeignKeyConstraintError');
+      expect(err.original.detail).to.contain('Key (application_id, candidate_id)=');
+      expect(err.original.detail).to.contain('is not present in table "applications"');
+      done();
+    });
+  });
+});
+
 // DEV: This test verifies our database has proper cascading deletion hooks
 scenario.model('An ApplicationReminder model being deleted', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]

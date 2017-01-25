@@ -134,11 +134,13 @@ scenario.route('A request to a page which loads navigation', function () {
       // https://github.com/sequelize/sequelize/blob/v3.29.0/lib/model.js#L1740-L1748
       var application = Application.build({id: 'abcdef-intertrode-uuid'}, {isNewRecord: false});
       var reminder = ApplicationReminder.build({id: 'abcdef-intertrode-reminder-uuid'}, {isNewRecord: false});
-      var updateOptions = {_allowNoTransaction: true, _sourceType: 'server', validate: false};
-      Promise.all([
-        application.update({candidate_id: 'alt00000-0000-0000-0000-000000000000'}, updateOptions),
-        reminder.update({candidate_id: 'alt00000-0000-0000-0000-000000000000'}, updateOptions)
-      ]).asCallback(done);
+      Application.sequelize.transaction(function handleTransaction (t) {
+        var updateOptions = {transaction: t, _sourceType: 'server', validate: false};
+        return Promise.all([
+          application.update({candidate_id: 'alt00000-0000-0000-0000-000000000000'}, updateOptions),
+          reminder.update({candidate_id: 'alt00000-0000-0000-0000-000000000000'}, updateOptions)
+        ]);
+      }).asCallback(done);
     });
     httpUtils.session
         .save({url: serverUtils.getUrl('/404'), expectedStatusCode: 404});

@@ -17,6 +17,8 @@ exports.TYPES = {
 var ApplicationReminder = module.exports = _.extend(baseDefine('application_reminder', _.defaults({
   application_id: {
     type: baseDefine.ID, allowNull: false,
+    // DEV: Additionally, we make our foreign key double bound to Application's application_id/candidate_id via SQL
+    //   This is to prevent candidate_id ever getting out of sync via attacks
     references: {model: Application, key: 'id', deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED},
     onUpdate: 'CASCADE', onDelete: 'CASCADE'
   }

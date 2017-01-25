@@ -29,6 +29,8 @@ exports.up = function (queryInterface) {
         FOREIGN KEY (candidate_id) REFERENCES candidates(id);
         -- Missed DEFERRABLE and ON UPDATE/ON DELETE initially
         -- ON UPDATE CASCADE ON DELETE CASCADE DEFERRED INITIALLY DEFERRED;
+        -- Missed UNIQUE (id, candidate_id) -- must be done via SQL
+        --   See `0011-candidate-id-consistency.js`
       -- Move parent-pointing foreign keys from parent to child
       ALTER TABLE "applications" DROP CONSTRAINT "applications_received_offer_reminder_id_fkey";
       ALTER TABLE "applications" ADD CONSTRAINT "applications_received_offer_reminder_id_fkey"
@@ -55,6 +57,8 @@ exports.up = function (queryInterface) {
         FOREIGN KEY (candidate_id) REFERENCES candidates(id);
         -- Missed DEFERRABLE and ON UPDATE/ON DELETE initially
         -- ON UPDATE CASCADE ON DELETE CASCADE DEFERRED INITIALLY DEFERRED;
+        -- Missed UNIQUE (id, candidate_id) -- must be done via SQL
+        --   See `0011-candidate-id-consistency.js`
       ALTER TABLE "interviews" DROP CONSTRAINT "interviews_post_interview_reminder_id_fkey";
       ALTER TABLE "interviews" ADD CONSTRAINT "interviews_post_interview_reminder_id_fkey"
         FOREIGN KEY (post_interview_reminder_id) REFERENCES interview_reminders(id);
