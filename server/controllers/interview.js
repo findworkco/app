@@ -189,11 +189,31 @@ app.post('/interview/:id/delete', _.flatten([
   // DEV: We don't include as a nav as this is an action only
   resolveInterviewById({nav: false}),
   function interviewDeleteSave (req, res, next) {
-    var mockInterview = req.models.selectedInterview;
-    var mockApplication = mockInterview.get('application');
-    assert(mockApplication);
-    // TODO: Update applicaiton status if interview was upcoming
+    // Remove interview from application's relationship
+    var interview = req.models.selectedInterview;
+    var application = req.models.selectedInterview.get('application');
+    assert(application);
+    application.setDataValue('interviews', application.getDataValue('interviews').filter(
+        function isNotDeletedInterview (_interview) {
+      return _interview.get('id') !== interview.get('id');
+    }));
+
+    // Update our application status
+    var modelsToSave = [application];
+    modelsToSave = _.union(modelsToSave,
+        application.updateToInterviewChanges(req));
+
+    // Perform our save/delete
+    saveModelsViaCandidate({
+      models: modelsToSave,
+      destroyModels: [interview],
+      candidate: req.candidate
+    }, next);
+  },
+  function interviewDeleteSaveSuccess (req, res, next) {
+    var application = req.models.selectedInterview.get('application');
+    assert(application);
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Interview deleted');
-    res.redirect(mockApplication.get('url'));
+    res.redirect(application.get('url'));
   }
 ]));
