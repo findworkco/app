@@ -2,7 +2,6 @@
 var _ = require('underscore');
 var async = require('async');
 var expect = require('chai').expect;
-var moment = require('moment-timezone');
 var httpUtils = require('../utils/http');
 var sinonUtils = require('../utils/sinon');
 var serverUtils = require('../utils/server');
@@ -200,18 +199,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
       });
     });
 
-    it('creates a default waiting for response reminder', function (done) {
-      ApplicationReminder.findAll().asCallback(function handleFindAll (err, reminders) {
-        if (err) { return done(err); }
-        expect(reminders).to.have.length(1);
-        expect(reminders[0].get('type')).to.equal('waiting_for_response');
-        expect(reminders[0].get('application_id')).to.be.a('string');
-        expect(reminders[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
-        expect(reminders[0].get('date_time_moment')).to.be.at.least(moment().add({days: 6, hours: 20}));
-        expect(reminders[0].get('date_time_moment')).to.be.at.most(moment().add({days: 7, hours: 4}));
-        done();
-      });
-    });
+    // DEV: We don't assert default properties as those are managed by `_createOrRemoveDefaultContent`
   });
 
   scenario.routeTest('for a logged in user and invalid form data', function () {

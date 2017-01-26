@@ -1,7 +1,5 @@
 // Load in our dependencies
-var assert = require('assert');
 var _ = require('underscore');
-var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
 var app = require('../index.js').app;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
@@ -13,7 +11,6 @@ var applicationMockData = require('../models/application-mock-data');
 var companyMockData = require('../models/company-mock-data');
 var Interview = require('../models/interview');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
-var reminderUtils = require('../utils/reminder');
 
 // Define our controllers
 app.get('/add-application', [
@@ -128,14 +125,8 @@ var applicationAddFormSaveFns = [
       modelsToSave = [application, interview, preInterviewReminder, postInterviewReminder];
 
       // Handle edge case of interview being in past
-      application.updateToInterviewChanges();
-      if (application.get('status') === Application.STATUSES.WAITING_FOR_RESPONSE) {
-        reminder = application.createWaitingForResponseReminder({
-          is_enabled: true,
-          date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(req.timezone)
-        });
-        modelsToSave.push(reminder);
-      }
+      modelsToSave = _.unique(modelsToSave.concat(
+        application.updateToInterviewChanges(req)));
 
       // Save our models
       saveModels(modelsToSave);
@@ -354,20 +345,10 @@ app.post('/application/:id/applied', _.flatten([
   function applicationAppliedSave (req, res, next) {
     // Update our model
     var application = req.models.selectedApplication;
-    application.updateToApplied();
-    application.set('application_date_moment', moment());
-
-    // Build our model's reminder
-    // Sanity check there isn't a reminder yet (there's no way to get to saved for later)
-    // DEV: This comes after `updateToApplied()` so it can 400 non-saved for later applications
-    assert(!application.get('waiting_for_response_reminder'));
-    var reminder = application.createWaitingForResponseReminder({
-      is_enabled: true,
-      date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(req.timezone)
-    });
+    var modelsToSave = application.updateToApplied(req);
 
     // Save our changes
-    saveModelsViaCandidate({models: [application, reminder], candidate: req.candidate}, next);
+    saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
   },
   function applicationAppliedSaveSuccess (req, res, next) {
     // Notify user of success
@@ -384,23 +365,10 @@ app.post('/application/:id/received-offer', _.flatten([
   function applicationRecievedOfferSave (req, res, next) {
     // Update our model
     var application = req.models.selectedApplication;
-    application.updateToReceivedOffer();
-    if (!application.get('application_date_moment')) {
-      application.set('application_date_moment', moment());
-    }
-
-    // If we don't have a reminder yet, build one
-    // DEV: We reuse old reminders to support undo-like behavior
-    var reminder = application.get('received_offer_reminder');
-    if (!reminder) {
-      reminder = application.createReceivedOfferReminder({
-        is_enabled: true,
-        date_time_moment: reminderUtils.getReceivedOfferDefaultMoment(req.timezone)
-      });
-    }
+    var modelsToSave = application.updateToReceivedOffer(req);
 
     // Save our changes
-    saveModelsViaCandidate({models: [application, reminder], candidate: req.candidate}, next);
+    saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
   },
   function applicationRecievedOfferSaveSuccess (req, res, next) {
     // Notify user of success
@@ -416,19 +384,7 @@ app.post('/application/:id/remove-offer', _.flatten([
   function applicationRemoveOfferSave (req, res, next) {
     // Update our model and save
     var application = req.models.selectedApplication;
-    application.updateToRemoveOffer();
-    var modelsToSave = [application];
-
-    // If we downgraded to waiting for response and it lacks a reminder, then add one
-    // DEV: We can get here via add application "Received offer" -> "Remove offer"
-    if (application.get('status') === Application.STATUSES.WAITING_FOR_RESPONSE &&
-        !application.get('waiting_for_response_reminder')) {
-      var reminder = application.createWaitingForResponseReminder({
-        is_enabled: true,
-        date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(req.timezone)
-      });
-      modelsToSave.push(reminder);
-    }
+    var modelsToSave = application.updateToRemoveOffer(req);
 
     // Save our models
     saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
@@ -446,9 +402,8 @@ app.post('/application/:id/archive', _.flatten([
   function applicationArchiveSave (req, res, next) {
     // Update our model and save
     var application = req.models.selectedApplication;
-    application.updateToArchived();
-    application.set('archived_at_moment', moment());
-    saveModelsViaCandidate({models: [application], candidate: req.candidate}, next);
+    var modelsToSave = application.updateToArchived(req);
+    saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
   },
   function applicationArchiveSaveSuccess (req, res, next) {
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application archived');
@@ -463,9 +418,8 @@ app.post('/application/:id/restore', _.flatten([
   function applicationRestoreSave (req, res, next) {
     // Update our model and save
     var application = req.models.selectedApplication;
-    application.updateToRestore();
-    application.set('archived_at_moment', null);
-    saveModelsViaCandidate({models: [application], candidate: req.candidate}, next);
+    var modelsToSave = application.updateToRestore(req);
+    saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
   },
   function applicationRestoreSaveSuccess (req, res, next) {
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application restored');

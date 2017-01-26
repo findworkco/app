@@ -43,13 +43,12 @@ scenario.route('A request to a POST /application/:id/received-offer', function (
       expect(updateToReceivedOfferSpy.callCount).to.equal(1);
     });
 
-    it('updates application to "received offer" and doesn\'t overwrite application date in database', function (done) {
+    it('updates application to "received offer" in database', function (done) {
       Application.findAll().asCallback(function handleFindAll (err, applications) {
         if (err) { return done(err); }
         expect(applications).to.have.length(1);
         expect(applications[0].get('status')).to.equal('received_offer');
         expect(applications[0].get('received_offer_reminder_id')).to.be.a('string');
-        expect(applications[0].get('application_date_moment').toISOString()).to.equal('2016-01-08T00:00:00.000Z');
         done();
       });
     });
@@ -68,31 +67,6 @@ scenario.route('A request to a POST /application/:id/received-offer', function (
     });
   });
 
-  scenario.routeTest('from an application with a received offer reminder', {
-    dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_WITH_RECEIVED_OFFER_REMINDER, dbFixtures.DEFAULT_FIXTURES]
-  }, function () {
-    // Log in and make our request
-    httpUtils.session.init().login()
-      .save(serverUtils.getUrl('/application/abcdef-sky-networks-uuid'))
-      .save({
-        method: 'POST', url: serverUtils.getUrl(waitingForResponseReceivedOfferUrl),
-        // DEV: We use `followAllRedirects` as this is a POST submission (which `request` doesn't respect)
-        //   https://github.com/request/request/blob/v2.78.1/lib/redirect.js#L57-L63
-        htmlForm: true, followRedirect: true, followAllRedirects: true,
-        expectedStatusCode: 200
-      });
-
-    it('reuses existing received offer reminder', function (done) {
-      ApplicationReminder.findAll({where: {type: 'received_offer'}}).asCallback(
-          function handleFindAll (err, reminders) {
-        if (err) { return done(err); }
-        expect(reminders).to.have.length(1);
-        expect(reminders[0].get('date_time_moment').toISOString()).to.equal('2016-01-01T18:00:00.000Z');
-        done();
-      });
-    });
-  });
-
   scenario.routeTest('from a saved for later application', {
     dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
@@ -101,20 +75,12 @@ scenario.route('A request to a POST /application/:id/received-offer', function (
       .save(serverUtils.getUrl('/application/abcdef-intertrode-uuid'))
       .save({
         method: 'POST', url: serverUtils.getUrl('/application/abcdef-intertrode-uuid/received-offer'),
-        // DEV: We use `followAllRedirects` as this is a POST submission (which `request` doesn't respect)
-        //   https://github.com/request/request/blob/v2.78.1/lib/redirect.js#L57-L63
-        htmlForm: true, followRedirect: true, followAllRedirects: true,
-        expectedStatusCode: 200
+        htmlForm: true, followRedirect: true,
+        expectedStatusCode: 302
       });
 
-    it('receives application date', function (done) {
-      Application.findAll().asCallback(function handleFindAll (err, applications) {
-        if (err) { return done(err); }
-        expect(applications).to.have.length(1);
-        expect(applications[0].get('application_date_moment')).to.be.at.least(moment().subtract({hours: 1}));
-        expect(applications[0].get('application_date_moment')).to.be.at.most(moment().add({hours: 1}));
-        done();
-      });
+    it('has no errors', function () {
+      // Asserted via `expectedStatusCode`
     });
   });
 

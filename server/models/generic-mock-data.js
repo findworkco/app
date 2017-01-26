@@ -518,25 +518,6 @@ exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
 ];
 
 // Overridden fixtures
-exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_RECEIVED_OFFER_REMINDER = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_WAITING_FOR_RESPONSE,
-      exports.REMINDER_RECEIVED_OFFER
-    ]),
-    exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
-    exports.REMINDER_RECEIVED_OFFER_KEY),
-  {
-    // application = {id: sky-networks, reminder_id: black-mesa}
-    key: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
-    overrides: {received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid'}
-  },
-  {
-    // reminder = {id: black-mesa, application_id: sky-networks}
-    key: exports.REMINDER_RECEIVED_OFFER_KEY,
-    overrides: {application_id: 'abcdef-sky-networks-uuid'}
-  }
-];
 exports.APPLICATION_RECEIVED_OFFER_WITH_UPCOMING_INTERVIEW = [
   _.without(
     _.flatten([
@@ -547,25 +528,6 @@ exports.APPLICATION_RECEIVED_OFFER_WITH_UPCOMING_INTERVIEW = [
   {
     // interview = {id: umbrella-corp, application_id: black-mesa}
     key: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
-    overrides: {application_id: 'abcdef-black-mesa-uuid'}
-  }
-];
-exports.APPLICATION_RECEIVED_OFFER_WITH_WAITING_FOR_RESPONSE_REMINDER = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_RECEIVED_OFFER,
-      exports.REMINDER_WAITING_FOR_RESPONSE
-    ]),
-    exports.APPLICATION_RECEIVED_OFFER_KEY,
-    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
-  {
-    // application = {id: black-mesa, reminder_id: sky-networks}
-    key: exports.APPLICATION_RECEIVED_OFFER_KEY,
-    overrides: {waiting_for_response_reminder_id: 'abcdef-sky-networks-reminder-uuid'}
-  },
-  {
-    // reminder = {id: sky-networks, application_id: black-mesa}
-    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
     overrides: {application_id: 'abcdef-black-mesa-uuid'}
   }
 ];

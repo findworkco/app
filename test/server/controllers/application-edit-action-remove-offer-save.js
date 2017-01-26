@@ -1,6 +1,5 @@
 // Load in our dependencies
 var expect = require('chai').expect;
-var moment = require('moment-timezone');
 var Application = require('../../../server/models/application');
 var ApplicationReminder = require('../../../server/models/application-reminder');
 var dbFixtures = require('../utils/db-fixtures');
@@ -43,13 +42,12 @@ scenario.route('A request to a POST /application/:id/remove-offer', function () 
       expect(updateToReceivedOfferSpy.callCount).to.equal(1);
     });
 
-    it('updates application status, keeps old reminder reference, and falls back "wating for response" reminder',
+    it('updates application status and keeps old reminder reference',
         function (done) {
       Application.findAll().asCallback(function handleFindAll (err, applications) {
         if (err) { return done(err); }
         expect(applications).to.have.length(1);
         expect(applications[0].get('status')).to.equal('waiting_for_response');
-        expect(applications[0].get('waiting_for_response_reminder_id')).to.be.a('string');
         expect(applications[0].get('received_offer_reminder_id')).to.be.a('string');
         done();
       });
@@ -60,19 +58,6 @@ scenario.route('A request to a POST /application/:id/remove-offer', function () 
           function handleFindAll (err, reminders) {
         if (err) { return done(err); }
         expect(reminders).to.have.length(1);
-        done();
-      });
-    });
-
-    it('creates a default waiting for response reminder', function (done) {
-      ApplicationReminder.findAll({where: {type: 'waiting_for_response'}}).asCallback(
-          function handleFindAll (err, reminders) {
-        if (err) { return done(err); }
-        expect(reminders).to.have.length(1);
-        expect(reminders[0].get('application_id')).to.equal('abcdef-black-mesa-uuid');
-        expect(reminders[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
-        expect(reminders[0].get('date_time_moment')).to.be.at.least(moment().add({days: 6, hours: 20}));
-        expect(reminders[0].get('date_time_moment')).to.be.at.most(moment().add({days: 7, hours: 4}));
         done();
       });
     });
@@ -92,47 +77,13 @@ scenario.route('A request to a POST /application/:id/remove-offer', function () 
         expectedStatusCode: 200
       });
 
-    it('updates application status, keeps old reminder reference, and doesn\'t create "wating for response" reminder',
+    it('updates application status and keeps old reminder reference',
         function (done) {
       Application.findAll().asCallback(function handleFindAll (err, applications) {
         if (err) { return done(err); }
         expect(applications).to.have.length(1);
         expect(applications[0].get('status')).to.equal('upcoming_interview');
         expect(applications[0].get('waiting_for_response_reminder_id')).to.equal(null);
-        done();
-      });
-    });
-
-    it('doesn\'t create a waiting for response reminder', function (done) {
-      ApplicationReminder.findAll({where: {type: 'waiting_for_response'}}).asCallback(
-          function handleFindAll (err, reminders) {
-        if (err) { return done(err); }
-        expect(reminders).to.have.length(0);
-        done();
-      });
-    });
-  });
-
-  scenario.routeTest('from a received offer application with an existing waiting for response reminder', {
-    dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER_WITH_WAITING_FOR_RESPONSE_REMINDER, dbFixtures.DEFAULT_FIXTURES]
-  }, function () {
-    // Log in and make our request
-    httpUtils.session.init().login()
-      .save(serverUtils.getUrl('/application/abcdef-black-mesa-uuid'))
-      .save({
-        method: 'POST', url: serverUtils.getUrl(receivedOfferRemoveOfferUrl),
-        // DEV: We use `followAllRedirects` as this is a POST submission (which `request` doesn't respect)
-        //   https://github.com/request/request/blob/v2.78.1/lib/redirect.js#L57-L63
-        htmlForm: true, followRedirect: true, followAllRedirects: true,
-        expectedStatusCode: 200
-      });
-
-    it('reuses existing waiting for response reminder', function (done) {
-      ApplicationReminder.findAll({where: {type: 'waiting_for_response'}}).asCallback(
-          function handleFindAll (err, reminders) {
-        if (err) { return done(err); }
-        expect(reminders).to.have.length(1);
-        expect(reminders[0].get('date_time_moment').toISOString()).to.equal('2016-01-25T18:00:00.000Z');
         done();
       });
     });
