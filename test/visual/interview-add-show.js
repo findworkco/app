@@ -27,7 +27,7 @@ gemini.suite('interview-add-show', function (suite) {
   gemini.suite('invalid', function (child) {
     child.load('/application/abcdef-sky-networks-uuid/add-interview', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
-      .before(function normalizeRelativeValues (actions, find) {
+      .before(function normalizeRelativeValuesAndInvalidateForm (actions, find) {
         // Reset date/time inputs to consistent time
         actions.executeJS(function handleExecuteJS (window) {
           window.document.querySelector('[name=date_time_date]').value = '2016-05-20';

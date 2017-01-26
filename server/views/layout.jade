@@ -32,7 +32,9 @@ block base-content
         block
 
   mixin nav-row--application(application)
-    +nav-row({selected: (locals.selectedApplication && locals.selectedApplication.id === application.id)}).nav-row--application.push--bottom
+    - var selectedApplication = locals.selectedApplication;
+    - if (!selectedApplication && locals.selectedInterview) { selectedApplication = locals.selectedInterview.application; }
+    +nav-row({selected: (selectedApplication && selectedApplication.id === application.id)}).nav-row--application.push--bottom
       div
         a(href=application.url)= application.name
       div Status: #{application.human_status}

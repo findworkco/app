@@ -2,6 +2,10 @@ extends layout
 include interview-mixins
 
 block title
+  //- Resolve selected application
+  //- DEV: This must be done in a block, otherwise it's inaccessible
+  - var selectedApplication = selectedInterview.application;
+  - assert(selectedApplication);
   title Interview - #{selectedApplication.name} - Find Work
 
 block content
@@ -21,6 +25,13 @@ block content
   p.large-hidden.push-half--bottom
     //- DEV: On small/medium screens, display "All changes saved" close to content
     i.muted(data-autosave) All changes saved
+  if locals.validation_errors
+    //- DEV: Id is for testing only
+    #validation-errors.section--error.push--bottom
+      | The following errors have occurred:
+      ul.flush--bottom
+        for error in validation_errors
+          li= error.message
   .grid
     .grid__item.one-whole.medium-one-half.large-four-ninths
       form(method="POST", action=selectedInterview.url)

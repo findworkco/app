@@ -54,7 +54,7 @@ app.post('/application/:id/add-interview', _.flatten([
   // DEV: We include nav in case of a validation error
   resolveApplicationById({nav: true}),
   function interviewAddSave (req, res, next) {
-    // Update our interview and build our interview models
+    // Update our application and build our interview models
     var application = req.models.selectedApplication;
     var interview = Interview.build({
       candidate_id: req.candidate.get('id'),
@@ -118,9 +118,7 @@ app.get('/interview/:id', _.flatten([
     req.addRecentlyViewedApplication(selectedApplication);
 
     // Render our content
-    res.render('interview-edit-show.jade', {
-      selectedApplication: selectedApplication
-    });
+    res.render('interview-edit-show.jade');
   }
 ]));
 app.post('/interview/:id', _.flatten([
@@ -128,10 +126,61 @@ app.post('/interview/:id', _.flatten([
   // DEV: We include nav in case of a validation error
   resolveInterviewById({nav: true}),
   function interviewEditSave (req, res, next) {
-    var mockInterview = req.models.selectedInterview;
-    // TODO: Update applicaiton status if interview is upcoming
+    // Update our interview and update/replace its reminders
+    var interview = req.models.selectedInterview;
+    var application = req.models.selectedInterview.get('application');
+    assert(application);
+    interview.set({
+      date_time_moment: req.body.fetchMomentTimezone('date_time'),
+      details: req.body.fetch('details')
+    });
+    var preInterviewReminder = interview.updateOrReplacePreInterviewReminder({
+      is_enabled: req.body.fetchBoolean('pre_interview_reminder_enabled'),
+      date_time_moment: req.body.fetchMomentTimezone('pre_interview_reminder')
+    });
+    var postInterviewReminder = interview.updateOrReplacePostInterviewReminder({
+      is_enabled: req.body.fetchBoolean('post_interview_reminder_enabled'),
+      date_time_moment: req.body.fetchMomentTimezone('post_interview_reminder')
+    });
+    // DEV: We set up relationships for any validation hooks
+    // DEV: We update nested interview so application gets status changes properly
+    //   We can't replace it in the array as that leads to recursion during serialization
+    // DEV: We are using `setDataValue` as `set` requires `include` to be passed in options
+    application.get('interviews').forEach(function updateAlteredInterview (_interview) {
+      if (_interview.get('id') === interview.get('id')) {
+        _interview.set(interview.dataValues, {raw: true});
+      }
+    });
+    preInterviewReminder.setDataValue('interview', interview);
+    postInterviewReminder.setDataValue('interview', interview);
+    var modelsToSave = [interview, preInterviewReminder, postInterviewReminder];
+
+    // Update application to handle status changes
+    modelsToSave = _.union(modelsToSave,
+      application.updateToInterviewChanges(req));
+
+    // Save our changes
+    saveModelsViaCandidate({
+      models: modelsToSave,
+      candidate: req.candidate
+    }, next);
+  },
+  function interviewEditSaveError (err, req, res, next) {
+    // If we have an error and it's a validation error, re-render with it
+    if (err instanceof Sequelize.ValidationError) {
+      res.status(400).render('interview-edit-show.jade', {
+        form_data: req.body,
+        validation_errors: err.errors
+      });
+      return;
+    }
+
+    // Otherwise, callback with our error
+    return next(err);
+  },
+  function interviewEditSaveSuccess (req, res, next) {
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Changes saved');
-    res.redirect(mockInterview.get('url'));
+    res.redirect(req.models.selectedInterview.get('url'));
   }
 ]));
 
