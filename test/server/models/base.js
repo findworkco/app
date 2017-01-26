@@ -5,6 +5,7 @@ var moment = require('moment-timezone');
 var dbFixtures = require('../utils/db-fixtures');
 var AuditLog = require('../../../server/models/audit-log');
 var Application = require('../../../server/models/application');
+var ApplicationReminder = require('../../../server/models/application-reminder');
 var Interview = require('../../../server/models/interview');
 var Candidate = require('../../../server/models/candidate');
 var scenario = require('../utils/test').scenario;
@@ -175,6 +176,49 @@ scenario.model('A Base model being deleted with a transaction', {
         'mock-email@mock-domain.test');
       expect(auditLogs[0].get('current_values')).to.have.property('email',
         'mock-email@mock-domain.test');
+      done();
+    });
+  });
+});
+
+// Edge case for `dataValues`
+scenario.model('A Base model with loaded relationship data', {
+  dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  before(function loadArrayAndSingleRelationships (done) {
+    var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
+    application.reload({include: [
+      // Array relationship
+      {model: Interview},
+      // Instance relationship (null)
+      {model: ApplicationReminder, as: 'waiting_for_response_reminder'},
+      // Instance relationship (not null)
+      {model: ApplicationReminder, as: 'received_offer_reminder'}
+    ]}).asCallback(done);
+  });
+  before(function updateApplication (done) {
+    var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
+    application.set('notes', 'Test notes');
+    Application.sequelize.transaction(function handleTransaction (t) {
+      return application.save({
+        _sourceType: 'server',
+        transaction: t
+      });
+    }).asCallback(done);
+  });
+
+  // DEV: We don't save nested data due to it being redundant and causing recursion issues
+  it('doesn\'t save relationship model content to its audit log', function (done) {
+    AuditLog.findAll({where: {table_name: 'applications', action: 'update'}}).asCallback(
+        function handleAuditLogs (err, auditLogs) {
+      if (err) { return done(err); }
+      expect(auditLogs).to.have.length(1);
+      expect(auditLogs[0].get('previous_values')).to.not.have.property('interviews');
+      expect(auditLogs[0].get('previous_values')).to.not.have.property('waiting_for_response_reminder');
+      expect(auditLogs[0].get('previous_values')).to.not.have.property('received_offer_reminder');
+      expect(auditLogs[0].get('current_values')).to.not.have.property('interviews');
+      expect(auditLogs[0].get('current_values')).to.not.have.property('waiting_for_response_reminder');
+      expect(auditLogs[0].get('current_values')).to.not.have.property('received_offer_reminder');
       done();
     });
   });

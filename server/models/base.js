@@ -173,6 +173,7 @@ module.exports = _.extend(function (modelName, attributes, options) {
 
     // Resolve our model's constructor
     var Model = model.Model;
+    var attributeKeys = Object.keys(Model.attributes);
     var auditLog = AuditLog.build({
       source_type: options._sourceType, // 'server', 'candidates'
       source_id: options._sourceId, // NULL (server), candidate.id
@@ -182,8 +183,8 @@ module.exports = _.extend(function (modelName, attributes, options) {
       timestamp: new Date(),
       // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L86-L87
       // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L417-L433
-      previous_values: model._previousDataValues,
-      current_values: model.dataValues
+      previous_values: _.pick(model._previousDataValues, attributeKeys),
+      current_values: _.pick(model.dataValues, attributeKeys)
     });
     return auditLog.save({transaction: options.transaction});
   }

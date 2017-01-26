@@ -75,7 +75,7 @@ var Interview = module.exports = _.extend(baseDefine('interview', {
     },
     // DEV: We skip `applicationStatusMatchesType` during fixture construction due to lack of relationships
     applicationStatusMatchesType: function () {
-      var application = this.get('application') || this.application;
+      var application = this.get('application');
       assert(application, 'Interview must have an `application` property to validate/save');
       return application.$modelOptions.validate.statusMatchesInterviews.call(application);
     }

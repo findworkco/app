@@ -72,9 +72,8 @@ app.post('/application/:id/add-interview', _.flatten([
     });
     // DEV: We set up relationships for any validation hooks
     // DEV: We are using `setDataValue` as `set` requires `include` to be passed in options
-    // DEV: We use `.application` for `interview.application` as we get recursion otherwise
     application.setDataValue('interviews', [interview]);
-    interview.application = application;
+    interview.setDataValue('application', application);
     preInterviewReminder.setDataValue('interview', interview);
     postInterviewReminder.setDataValue('interview', interview);
     var modelsToSave = [application, interview, preInterviewReminder, postInterviewReminder];
