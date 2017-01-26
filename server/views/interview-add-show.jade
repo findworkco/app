@@ -17,7 +17,13 @@ block content
     = " "
     //- TODO: If we ever introduce a better menu which has schedule in it, then ditch this button
     a.btn.btn--default.btn--thin(href="/schedule") Return to schedule
-
+  if locals.validation_errors
+    //- DEV: Id is for testing only
+    #validation-errors.section--error.push--bottom
+      | The following errors have occurred:
+      ul.flush--bottom
+        for error in validation_errors
+          li= error.message
   form.cf(method="POST", action=selectedApplication.add_interview_url)
     +csrf-input()
     .grid

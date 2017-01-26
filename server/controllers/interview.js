@@ -1,6 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
+var Sequelize = require('sequelize');
 var app = require('../index.js').app;
 var Application = require('../models/application');
 var includes = require('../models/utils/includes');
@@ -9,6 +10,7 @@ var InterviewReminder = require('../models/interview-reminder');
 var resolveApplicationById = require('./application').resolveApplicationById;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
+var saveModelsViaCandidate = require('../models/utils/save-models').saveModelsViaCandidate;
 var interviewMockData = require('../models/interview-mock-data');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
@@ -52,10 +54,58 @@ app.post('/application/:id/add-interview', _.flatten([
   // DEV: We include nav in case of a validation error
   resolveApplicationById({nav: true}),
   function interviewAddSave (req, res, next) {
-    // TODO: Update status if interview is upcoming
-    var mockApplication = req.models.selectedApplication;
+    // Update our interview and build our interview models
+    var application = req.models.selectedApplication;
+    var interview = Interview.build({
+      candidate_id: req.candidate.get('id'),
+      application_id: application.get('id'),
+      date_time_moment: req.body.fetchMomentTimezone('date_time'),
+      details: req.body.fetch('details')
+    });
+    var preInterviewReminder = interview.createPreInterviewReminder({
+      is_enabled: req.body.fetchBoolean('pre_interview_reminder_enabled'),
+      date_time_moment: req.body.fetchMomentTimezone('pre_interview_reminder')
+    });
+    var postInterviewReminder = interview.createPostInterviewReminder({
+      is_enabled: req.body.fetchBoolean('post_interview_reminder_enabled'),
+      date_time_moment: req.body.fetchMomentTimezone('post_interview_reminder')
+    });
+    // DEV: We set up relationships for any validation hooks
+    // DEV: We are using `setDataValue` as `set` requires `include` to be passed in options
+    // DEV: We use `.application` for `interview.application` as we get recursion otherwise
+    application.setDataValue('interviews', [interview]);
+    interview.application = application;
+    preInterviewReminder.setDataValue('interview', interview);
+    postInterviewReminder.setDataValue('interview', interview);
+    var modelsToSave = [application, interview, preInterviewReminder, postInterviewReminder];
+
+    // Update application to handle status changes
+    modelsToSave = _.union(modelsToSave,
+      application.updateToInterviewChanges(req));
+
+    // Save our changes
+    saveModelsViaCandidate({
+      models: modelsToSave,
+      candidate: req.candidate
+    }, next);
+  },
+  function interviewAddSaveError (err, req, res, next) {
+    // If we have an error and it's a validation error, re-render with it
+    if (err instanceof Sequelize.ValidationError) {
+      res.status(400).render('interview-add-show.jade', {
+        form_data: req.body,
+        validation_errors: err.errors
+      });
+      return;
+    }
+
+    // Otherwise, callback with our error
+    return next(err);
+  },
+  function interviewAddSaveSuccess (req, res, next) {
+    var application = req.models.selectedApplication;
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Interview saved');
-    res.redirect(mockApplication.get('url'));
+    res.redirect(application.get('url'));
   }
 ]));
 

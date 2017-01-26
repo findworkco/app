@@ -125,8 +125,8 @@ var applicationAddFormSaveFns = [
       modelsToSave = [application, interview, preInterviewReminder, postInterviewReminder];
 
       // Handle edge case of interview being in past
-      modelsToSave = _.unique(modelsToSave.concat(
-        application.updateToInterviewChanges(req)));
+      modelsToSave = _.union(modelsToSave,
+        application.updateToInterviewChanges(req));
 
       // Save our models
       saveModels(modelsToSave);
