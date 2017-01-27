@@ -90,6 +90,20 @@ ENV=development npm run migrate-undo
 ENV=development npm run migrate-undo-all
 ```
 
+### Database development
+We suggest using `stellar` for database management during development. It manages backing up/restoring databases locally. To use it, run the following:
+
+```bash
+# Inside of Vagrant, install Stellar and its dependencies
+sudo pip install stellar==0.4.3 psycopg2==2.6.2
+
+# Record a snapshot
+stellar snapshot
+
+# Restore a snapshot
+stellar restore
+```
+
 ### Connecting to a database
 To connnect to the development database, the simplest way is:
 
