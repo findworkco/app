@@ -258,17 +258,29 @@ scenario.model('A Base model being bulk deleted', function () {
   });
 });
 
-// DEV: Test is currently skipped due to no applications in database
-scenario.model.skip('A Base model being created with a candidate source', function () {
-  before(function createApplication (done) {
-    var application = Application.build({name: 'Candidate source application'});
-    application._sourceType = 'candidates';
-    application._sourceId = 'mock-candidate-id';
-    application.save().asCallback(done);
+// DEV: We verify candidate id is tested in audit log tests
+scenario.model('A Base model being updated with a candidate source', {
+  dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  before(function reloadAppliationWithInterviews (done) {
+    var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
+    application.reload({include: [{model: Interview}]}).asCallback(done);
+  });
+
+  before(function updateApplication (done) {
+    var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
+    application.set('notes', 'Test notes');
+    Application.sequelize.transaction(function handleTransaction (t) {
+      return application.save({
+        _sourceType: 'candidates',
+        _sourceId: 'mock-candidate-id',
+        transaction: t
+      });
+    }).asCallback(done);
   });
 
   it('saves candidate source to its audit log', function (done) {
-    AuditLog.findAll().asCallback(function handleAuditLogs (err, auditLogs) {
+    AuditLog.findAll({where: {source_type: 'candidates'}}).asCallback(function handleAuditLogs (err, auditLogs) {
       if (err) { return done(err); }
       expect(auditLogs).to.have.length(1);
       expect(auditLogs[0].get('source_type')).to.equal('candidates');

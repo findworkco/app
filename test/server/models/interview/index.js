@@ -11,22 +11,6 @@ var Reminder = require('../../../../server/models/reminder');
 var sinonUtils = require('../../utils/sinon');
 
 // Start our tests
-scenario.model('An Interview model', function () {
-  it.skip('requires `date_time` to be non-empty', function () {
-    var interview = Interview.build({});
-    expect(interview).to.equal(false);
-  });
-
-  it.skip('requires `pre_interview_reminder` to be null or before `date_time`', function () {
-    var interview = Interview.build({});
-    expect(interview).to.equal(false);
-  });
-  it.skip('requires `post_interview_reminder` to be null or after `date_time`', function () {
-    var interview = Interview.build({});
-    expect(interview).to.equal(false);
-  });
-});
-
 scenario.model('An Interview model with an upcoming datetime', function () {
   sinonUtils.spy(Interview.Instance.prototype, 'updateType');
 
