@@ -1,7 +1,10 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var dbFixtures = require('../utils/db-fixtures');
+var fakeGoogleFactory = require('../utils/fake-google');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
+var Candidate = require('../../../server/models/candidate');
 
 // Start our tests
 scenario.route('A request to POST /delete-account', {
@@ -70,12 +73,23 @@ scenario.route('A request to POST /delete-account', {
       });
     });
 
-    it.skip('deletes the account', function () {
-      // Verify user doesn't exist in our database
+    // DEV: Applications and interviews will be deleted via database cascade (tested in models)
+    it('deletes the account', function (done) {
+      Candidate.findAll().asCallback(function handleFindAll (err, candidates) {
+        // If there was an error, callback with it
+        if (err) { return done(err); }
+
+        // Otherwise, assert our data
+        expect(candidates).to.have.length(0);
+        done();
+      });
     });
   });
 
-  scenario.loggedOut('from a logged out user', function () {
+  scenario.loggedOut('from a logged out user', {
+    dbFixtures: [dbFixtures.DEFAULT_FIXTURES],
+    googleFixtures: fakeGoogleFactory.DEFAULT_FIXTURES
+  }, function () {
     // Make our request
     httpUtils.session.init().save({
       method: 'POST', url: serverUtils.getUrl('/delete-account'),
@@ -87,8 +101,26 @@ scenario.route('A request to POST /delete-account', {
       expect(this.res.headers).to.have.property('location', '/login');
     });
 
-    it.skip('does not execute account deletion on login completion', function () {
-      expect(false).to.equal(true);
+    // DEV: We automatically run "application add" on login completion for logged out users
+    //   We want to guarantee the same behavior never occurs in our tests
+    describe('on login completion', function () {
+      httpUtils.session.login()
+        .save({
+          url: serverUtils.getUrl('/settings'),
+          followRedirect: false,
+          expectedStatusCode: 200
+        });
+
+      it('doesn\'t automatically delete the account', function (done) {
+        Candidate.findAll().asCallback(function handleFindAll (err, candidates) {
+          // If there was an error, callback with it
+          if (err) { return done(err); }
+
+          // Otherwise, assert our data
+          expect(candidates).to.have.length(1);
+          done();
+        });
+      });
     });
   });
 });

@@ -4,6 +4,7 @@ var app = require('../index.js').app;
 var config = require('../index.js').config;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
+var saveModelsViaCandidate = require('../models/utils/save-models').saveModelsViaCandidate;
 var applicationMockData = require('../models/application-mock-data');
 var Application = require('../models/application');
 var includes = require('../models/utils/includes');
@@ -97,7 +98,10 @@ app.post('/delete-account', [
   ensureLoggedIn,
   // No models need to be loaded
   function deleteAccountSave (req, res, next) {
-    // TODO: Destroy our user/cascade destroy applications/interviews
+    // Delete our candidate, we will cascade delete its items
+    saveModelsViaCandidate({destroyModels: [req.candidate], candidate: req.candidate}, next);
+  },
+  function deleteAccountSaveSuccess (req, res, next) {
     // Destroy our session
     req.session.destroy(function handleDestroy (err) {
       // If there wasn an error, capture it in a non-failing manner
