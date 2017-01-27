@@ -31,7 +31,6 @@ mixin timepicker(moment)
 mixin timezonepicker(moment)
   //- DEV: We were initially going to use a modal similar to Google Calendar
   //-   However, we realized that (1) the terms are different than CST/CDT abbreviations and (2) modals are a complex interaction
-  //- TODO: Sort countries by their name, not code; UAE should be next to USA
   - var selectedTimezone = moment.tz();
   select(data-chosen)&attributes(attributes)
     //- [{countryCode: 'US', name: 'United States', locales:

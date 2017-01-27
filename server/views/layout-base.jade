@@ -5,7 +5,6 @@ html
   head
     //- Declare our content as UTF-8
     //- DEV: This is necessary to render i18n strings like Afghanistan
-    //- TODO: Add a favicon
     meta(charset="utf-8")
 
     //- Declare our page title
@@ -21,9 +20,10 @@ html
     link(rel="shortcut icon", href="/favicon.ico")
 
     //- Add our CSS
-    //- TODO: Remove all inline styles
+    //- TODO: Remove all inline styles https://trello.com/c/d6Bnh1ak/8-remove-all-inline-styles
+    //-   This should include making headings not bold by default
     link(rel="stylesheet", href="/dist/css/index.css")
-    //- TODO: Don't use all of FontAwesome (it's 71kb gzipped with 605 icons)
+    //- TODO: Don't use all of FontAwesome (it's 71kb gzipped with 605 icons) https://trello.com/c/uQUdwHTv/264-reduce-size-of-prebuilt-dependencies
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
 
     //- If there's a request for clean CSS
@@ -84,7 +84,6 @@ html
     //- Load Sentry to catch/record errors
     //- https://docs.sentry.io/hosted/clients/javascript/
     //- DEV: Sentry is loaded separate from other scripts to prevent blocking one another
-    //- TODO: Save user context
     script(src="https://cdn.ravenjs.com/3.7.0/raven.min.js")
     if locals.sentryBrowserDSN
       script
@@ -124,8 +123,7 @@ html
           span(aria-label="love")= "<3"
           = " by Shoulders of Titans LLC"
         p
-          //- TODO: Create about, privacy, and terms pages
-          //-  https://trello.com/c/BbhzXH5B/15-create-about-privacy-and-terms-pages
+          //- TODO: Create about, privacy, and terms pages https://trello.com/c/BbhzXH5B/15-create-about-privacy-and-terms-pages
           a.footer-link(href="/about") About
           a.footer-link(href="/privacy") Privacy
           a.footer-link(href="/terms") Terms

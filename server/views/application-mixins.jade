@@ -15,7 +15,6 @@ mixin posting-url(values)
     input#posting_url.form-control.input--block(name="posting_url", type="text", value=postingUrl, placeholder="https://job-board.com/url/of/listing")
 
 mixin application-date(values)
-  //- TODO: Reuse with edit field
   .form-group
     label(for="application_date")
       = "Applied on: "
@@ -27,13 +26,14 @@ mixin application-date(values)
     - applicationDateMoment = applicationDateMoment.tz('UTC');
     +datepicker(applicationDateMoment)#application_date.form-control(name="application_date")
 
-mixin saved-for-later-reminder(values, options)
+mixin saved-for-later-reminder(values)
   .form-group&attributes(attributes)
     h4.flush--bottom(style="font-weight: normal")
       = "Application reminder: "
       span.text--normal
         i.fa.fa-reply(style="font-size: 1.5em")
-    if options.showInfo
+    //- TODO: Link reminder text to show based on user config https://trello.com/c/kqvMBI6P/222-move-reminder-info-text-to-dismiss-settings-that-can-be-toggled-via-settings
+    if true
       .section--info.push-half--ends We will send you a reminder email to apply to this posting
     //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
     - var savedForLaterDefaultMoment = reminderUtils.getSavedForLaterDefaultMoment(timezone);
@@ -45,7 +45,8 @@ mixin waiting-for-response-reminder(values, options)
       = "Follow up reminder: "
       span.text--normal
         i.fa.fa-reply(style="font-size: 1.5em")
-    if options.showInfo
+    //- TODO: Link reminder text to show based on user config https://trello.com/c/kqvMBI6P/222-move-reminder-info-text-to-dismiss-settings-that-can-be-toggled-via-settings
+    if true
       .section--info.push-half--ends We will send you a reminder email to follow up to this posting
     //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
     - var waitingForResponseDefaultMoment = reminderUtils.getWaitingForResponseDefaultMoment(timezone);
@@ -57,7 +58,8 @@ mixin received-offer-reminder(values, options)
       = "Response reminder: "
       span.text--normal
         i.fa.fa-reply(style="font-size: 1.5em")
-    if options.showInfo
+    //- TODO: Link reminder text to show based on user config https://trello.com/c/kqvMBI6P/222-move-reminder-info-text-to-dismiss-settings-that-can-be-toggled-via-settings
+    if true
       .section--info.push-half--ends We will send you a reminder email to respond to your offer
     //- If there is no existing reminder, then default to 1 week from today (raised to nearest hour)
     - var receivedOfferDefaultMoment = reminderUtils.getReceivedOfferDefaultMoment(timezone);
@@ -77,7 +79,7 @@ mixin company-notes-and-research(values)
     //-   We could design away the need for "Ctrl+Enter" by generating a loading image
     //-      when the user starts typing
 
-    //- TODO: For now, prob go with:
+    //- For now, prob go with:
     //-   JS binding for Ctrl+Enter
     //-   Make button a link to /research-company
     //-   When JS is bound though, make it a turbolink loader
@@ -87,6 +89,11 @@ mixin company-notes-and-research(values)
     //- - Embedded iframe (best idea yet, is it accessible?)
     //-    It works buuut need to autosize content
     //- - Redesign flow so search is elsewhere (e.g. another page)
+
+    //- Connect to search mechanism on click
+    //- Alter button to link and link to standalone page
+    //-   but allow JS to switch back to button for inline form
+    //-   so we can save `company_name` as part of application
     h4.push-half--bottom(style="font-weight: normal")
       span.small-hidden Research company:
       span.medium-and-up-hidden
@@ -102,10 +109,6 @@ mixin company-notes-and-research(values)
           input.form-control.input--block#company_name(name="company_name", type="text", value=form_data.get('company_name') || values.company_name || locals.query_company_name, placeholder="Examples: Google, Acme Corp")
         .flexbox__item
           button.btn.btn--small.btn--wide.btn--default(type="button") Search
-      //- TODO: Connect to search mechanism on click
-      //- TODO: Alter button to link and link to standalone page
-      //-   but allow JS to switch back to button for inline form
-      //-   so we can save `company_name` as part of application
     h5.text--normal.flush--bottom Glassdoor results:
     p
       +glassdoor-result(locals.glassdoorResult, {expanded: false})

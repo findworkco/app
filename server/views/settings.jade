@@ -28,7 +28,6 @@ block content
           .grid__item
             a.btn.btn--default(href="https://gravatar.com/") Edit Gravatar
   +logout-form().push-double--bottom
-  //- TODO: Use a modal with confirmation of email address for deletion
   form(method="POST", action="/delete-account", onsubmit="javascript:return confirm('Are you sure you would like to delete the \"#{candidate.email}\" Find Work account?')")
     +csrf-input()
     button.btn.btn--danger(type="submit") Delete

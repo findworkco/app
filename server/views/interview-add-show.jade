@@ -14,9 +14,6 @@ block content
     = selectedApplication.name
   p.medium-and-up-hidden
     a.btn.btn--default.btn--thin(href=selectedApplication.url) Cancel and return to job application
-    = " "
-    //- TODO: If we ever introduce a better menu which has schedule in it, then ditch this button
-    a.btn.btn--default.btn--thin(href="/schedule") Return to schedule
   if locals.validation_errors
     //- DEV: Id is for testing only
     #validation-errors.section--error.push--bottom
@@ -28,7 +25,7 @@ block content
     +csrf-input()
     .grid
       .grid__item.one-whole.medium-one-half.large-four-ninths
-        +interview-fields(submissionData, {showInfo: true})
+        +interview-fields(submissionData)
         div
           button.btn.btn--primary(type="submit") Save interview
       .grid__item.one-whole.medium-one-half.large-five-ninths

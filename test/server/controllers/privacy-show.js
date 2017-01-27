@@ -13,7 +13,7 @@ scenario.route('A request to GET /privacy', {
 
     it('recieves the privacy page', function () {
       expect(this.$('title').text()).to.equal('Privacy policy - Find Work');
-      expect(this.body).to.contain('TODO: Add Privacy policy');
+      expect(this.body).to.contain('Add Privacy policy');
     });
   });
 });

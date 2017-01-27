@@ -86,9 +86,6 @@ exports.expandMomentAttributes = function (attributes, options) {
       dateTimeKey = attributeKey.replace('_moment', '_datetime');
       timezoneKey = attributeKey.replace('_moment', '_timezone');
       var validateKey = inflection.camelize('both_' + attributeKey.replace('_moment', '_values_or_none'), true);
-      // TODO: Isolate `datetime` validation from `timezone` validation
-      //   so we can have `<` or `>` other date times
-      //   This is likely by not reusing validation for timezone
       attributes[dateTimeKey] = _.defaults({
         type: Sequelize.DATE
       }, attribute);
@@ -98,6 +95,7 @@ exports.expandMomentAttributes = function (attributes, options) {
       //   require('underscore').values(require('moment-timezone').tz._names).sort(function (a, b) { return a.length - b.length; });
       //   Longest: America/Argentina/ComodRivadavia
       // jscs:enable maximumLineLength
+      // DEV: We intentionally overwrite `validate` so `datetime` can use `_moment's` validation for `<`/`>` comparison
       attributes[timezoneKey] = _.defaults({
         type: Sequelize.STRING(255),
         validate: {isIn: {args: [validTimezoneValues], msg: 'Invalid timezone provided'}}

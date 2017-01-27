@@ -13,7 +13,7 @@ scenario.route('A request to GET /terms', {
 
     it('recieves the terms page', function () {
       expect(this.$('title').text()).to.equal('Terms of service - Find Work');
-      expect(this.body).to.contain('TODO: Add Terms of service');
+      expect(this.body).to.contain('Add Terms of service');
     });
   });
 });

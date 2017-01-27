@@ -1,6 +1,5 @@
 mixin interview-fields(values, options)
   //- Default moment for 1 week from now with reminders 2 hours before/after
-  //- TODO: Restrict pre/post interview reminders to be before/after date/time
   - var dateTimeMoment = form_data.getMomentTimezone('date_time') || values.date_time_moment || moment().tz(timezone).startOf('hour').add({weeks: 1, hours: 1});
   - var preInterviewDefaultMoment = dateTimeMoment.clone().subtract({hours: 2});
   - var postInterviewDefaultMoment = dateTimeMoment.clone().add({hours: 2});
@@ -21,12 +20,12 @@ mixin interview-fields(values, options)
   .form-group
     //- DESIGN: If date/time of interview shifts, then shift pre/post reminders as well
     h4.flush--bottom(style="font-weight: normal") Pre-interview reminder:
-    //- TODO: Hide reminders when people have seen them before
-    if options.showInfo
+    //- TODO: Link reminder text to show based on user config https://trello.com/c/kqvMBI6P/222-move-reminder-info-text-to-dismiss-settings-that-can-be-toggled-via-settings
+    if true
       .section--info We will send you a reminder email to review your notes before the interview
     +reminderpicker("pre_interview_reminder", values, preInterviewDefaultMoment)
   .form-group
     h4.flush--bottom(style="font-weight: normal") Post-interview reminder:
-    if options.showInfo
+    if true
       .section--info We will send you a reminder email to update your notes after the interview
     +reminderpicker("post_interview_reminder", values, postInterviewDefaultMoment)

@@ -6,6 +6,7 @@ var geminiUtils = require('./utils/gemini').bind(gemini);
 // DEV: These tests are for our landing screen screenshots
 gemini.suite('screenshots', function (suite) {
   // Capture unaltered large screenshot
+  // TODO: Hide info box when dismisses are allowed
   gemini.suite('large', function (child) {
     child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.SCREENSHOT)
       .setCaptureElements('body')

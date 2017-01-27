@@ -399,7 +399,6 @@ scenario.route('A request to a page which doesn\'t load navigation', {
   }, function () {
     // Log in our user, add recently viewed applications, load our page
     // DEV: We login and load page first to avoid counting it hitting nav as we login
-    // TODO: Complete form for test
     var interviewId = 'abcdef-sky-networks-interview-uuid';
     httpUtils.session.init().login();
     addRecentlyViewedApplications();

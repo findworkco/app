@@ -26,6 +26,8 @@ var InterviewReminder = module.exports = _.extend(baseDefine('interview_reminder
   VALID_TYPES: _.values(exports.TYPES),
   validate: {
     // DEV: We skip this validation by default on fixture create in `utils/test` as models are standalone
+    // DEV: We can only have this validation located in interview or reminder.
+    //   If we do both, then we get double errors in browser
     dateTimeMatchesInterview: function () {
       // Verify we have an interview
       var interview = this.get('interview');

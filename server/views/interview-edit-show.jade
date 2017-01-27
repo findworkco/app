@@ -19,9 +19,6 @@ block content
     = selectedApplication.name
   p.medium-and-up-hidden
     a.btn.btn--default.btn--thin(href=selectedApplication.url) Back to application
-    = " "
-    //- TODO: If we ever introduce a better menu which has schedule in it, then ditch this button
-    a.btn.btn--default.btn--thin(href="/schedule") Return to schedule
   p.large-hidden.push-half--bottom
     //- DEV: On small/medium screens, display "All changes saved" close to content
     i.muted(data-autosave) All changes saved
@@ -36,7 +33,7 @@ block content
     .grid__item.one-whole.medium-one-half.large-four-ninths
       form(method="POST", action=selectedInterview.url)
         +csrf-input()
-        +interview-fields(selectedInterview, {showInfo: false})
+        +interview-fields(selectedInterview)
         p.large-hidden
           //- DEV: On small/medium screens, display "All changes saved" close to content
           i.muted(data-autosave) All changes saved

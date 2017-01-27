@@ -40,17 +40,16 @@ block content
         +company-notes-and-research({})
       .grid__item.one-whole.medium-one-half.large-four-ninths
         if application_status === APPLICATION_STATUSES.SAVED_FOR_LATER
-          +saved-for-later-reminder({}, {showInfo: true})
+          +saved-for-later-reminder({})
         else if application_status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
-          +waiting-for-response-reminder({}, {showInfo: true})
+          +waiting-for-response-reminder({})
         else if application_status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
           h4.push-half--bottom(style="font-weight: normal") Interview information:
           //- DEV: We could shift follow up dates with application info but
           //-   it's sanest to keep relevant/changing info next to each other
-          //- TODO: Hide reminders when people have seen them before
-          +interview-fields({}, {showInfo: true})
+          +interview-fields({})
         else if application_status === APPLICATION_STATUSES.RECEIVED_OFFER
-          +received-offer-reminder({}, {showInfo: true})
+          +received-offer-reminder({})
         else
           throw new Error('Unrecognized status "' + application_status + '"');
         p.push-triple--bottom

@@ -24,7 +24,7 @@ mixin application-info(mixin, application)
       a(href=closestInterview.url)
         = closestInterview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
     +#{mixin}({icon: 'fa-info-circle'})
-      //- TODO: Sanitize and linkify details (e.g. map)
+      //- TODO: Sanitize and linkify details (e.g. map) https://trello.com/c/UMUrlgw1/258-render-interview-details-as-html-in-nav-schedule
       if closestInterview.details
         = closestInterview.details
       else
