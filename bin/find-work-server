@@ -21,10 +21,14 @@ if (cluster.isMaster) {
   });
 
   // Notify the user that the server is running
-  // DEV: We load server
   server = require('../server/index.js');
   var serverUrl = url.format(server.config.url.external) + '/';
   console.log('Server running at ' + serverUrl);
+
+  // Guarantee reminders are being processed
+  // DEV: We load this in `bin` to prevent accidentally running this multiple times
+  var queue = require('../server/queue');
+  queue.loopGuaranteeProcessReminders();
 // Otherwise (we are on the worker)
 } else {
   // Monkey patch Express with domain handle

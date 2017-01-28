@@ -1,4 +1,5 @@
 // Load in our dependencies
+var async = require('async');
 var assert = require('assert');
 var domain = require('domain');
 var AuditLog = require('../models/audit-log');
@@ -63,6 +64,12 @@ function registerJob(name, concurrency, fn) {
 exports.create = function () {
   // Generate our job
   var job = kueQueue.create.apply(kueQueue, arguments);
+
+  // Define a default TTL to prevent our task from persisting perminently
+  // DEV: Running `ttl` again will overwrite this value
+  // DEV: This guarantees jobs won't be considered active on server restart
+  // https://github.com/Automattic/kue/tree/v0.11.5#job-ttl
+  job.ttl(60 * 1000); // 1 minute
 
   // Set up clean up bindings
   // DEV: We could use `removeOnComplete` but we always want to clean our job on failure/completion
@@ -146,4 +153,44 @@ registerJob(JOBS.SEND_WELCOME_EMAIL, 5, function sendWelcomeEmail (job, done) {
       }).asCallback(done);
     });
   });
+});
+
+JOBS.PROCESS_REMINDERS = 'processReminders';
+exports.PROCESS_REMINDERS_FREQUENCY = 1 * 1000; // 1 minute
+exports.loopGuaranteeProcessReminders = function () {
+  // Guarantee our reminder queue has at least 1 job in it
+  var guaranteeReminderQueueNotEmpty = function () {
+    // https://github.com/Automattic/kue/tree/v0.11.5#queue-maintenance
+    // https://github.com/Automattic/kue/blob/v0.11.5/lib/kue.js#L615-L661
+    async.parallel([
+      kueQueue.inactiveCount.bind(kueQueue, JOBS.PROCESS_REMINDERS),
+      kueQueue.activeCount.bind(kueQueue, JOBS.PROCESS_REMINDERS)
+    ], function handleCounts (err, results) {
+      // If there was an error, log it
+      // DEV: We intentionally don't return so we keep on looping
+      if (err) {
+        app.notWinston.error(err);
+        app.sentryClient.captureError(err);
+      // Otherwise
+      } else {
+        // If we have nothing in progress and nothing queued, add a new task to our queue
+        var totalCount = results[0] + results[1];
+        if (totalCount === 0) {
+          exports.create(JOBS.PROCESS_REMINDERS)
+            .ttl(exports.PROCESS_REMINDERS_FREQUENCY)
+            .save();
+        }
+      }
+
+      // Start our check again in a bit
+      setTimeout(guaranteeReminderQueueNotEmpty, exports.PROCESS_REMINDERS_FREQUENCY);
+    });
+  };
+  setTimeout(guaranteeReminderQueueNotEmpty, exports.PROCESS_REMINDERS_FREQUENCY);
+};
+// DEV: We only process 1 set of reminders at a time to prevent double sending
+registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
+  setTimeout(function () {
+    done(null);
+  }, exports.PROCESS_REMINDERS_FREQUENCY);
 });
