@@ -388,6 +388,43 @@ scenario.route('A request to a page which loads navigation', function () {
       expect($navApplication.text()).to.contain('Archived on: Mon Jan 18');
     });
   });
+
+  scenario.routeTest('from a logged in user with applications with disabled reminders', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_RECEIVED_OFFER_EMPTY,
+      dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_EMPTY,
+      dbFixtures.APPLICATION_SAVED_FOR_LATER_EMPTY,
+      dbFixtures.DEFAULT_FIXTURES
+    ]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-black-mesa-uuid'))
+      .save(serverUtils.getUrl('/application/abcdef-sky-networks-uuid'))
+      .save(serverUtils.getUrl('/application/abcdef-intertrode-uuid'));
+
+    it('lists applications with reminder disabled text', function () {
+      var $navApplications = this.$('.nav-row--application');
+      expect($navApplications).to.have.length(3);
+      expect($navApplications.eq(0).html()).to.contain('<i>No reminder set</i>');
+      expect($navApplications.eq(1).html()).to.contain('<i>No reminder set</i>');
+      expect($navApplications.eq(2).html()).to.contain('<i>No reminder set</i>');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with applications with no interview details', {
+    dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW_EMPTY, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-umbrella-corp-uuid'));
+
+    it('lists applications with no details text', function () {
+      var $navApplications = this.$('.nav-row--application');
+      expect($navApplications).to.have.length(1);
+      expect($navApplications.eq(0).html()).to.contain('<i>No details provided</i>');
+    });
+  });
 });
 
 scenario.route('A request to a page which doesn\'t load navigation', {

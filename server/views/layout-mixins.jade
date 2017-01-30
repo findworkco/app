@@ -15,8 +15,7 @@ mixin application-info(mixin, application)
         //- Tue Feb 23
         = "Respond by: " + application.received_offer_reminder.date_time_moment.format('ddd MMM D')
       else
-        i TODO: Add placeholder text for no reminder set
-        //- i No reminder set
+        i No reminder set
   else if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
     - var closestInterview = application.closest_upcoming_interview;
     +#{mixin}({icon: 'fa-calendar-o', iconContent: closestInterview.date_time_moment.format('D')})
@@ -41,8 +40,7 @@ mixin application-info(mixin, application)
         //- Tue Feb 23
         = "Follow-up on: " + application.waiting_for_response_reminder.date_time_moment.format('ddd MMM D')
       else
-        i TODO: Add placeholder text for no reminder set
-        //- i No reminder set
+        i No reminder set
   else if status == APPLICATION_STATUSES.SAVED_FOR_LATER
     - var createdAtMoment = moment(application.created_at).tz(timezone);
     +#{mixin}({icon: 'fa-calendar-o', iconContent: createdAtMoment.format('D')})
@@ -53,8 +51,7 @@ mixin application-info(mixin, application)
         //- Tue Feb 23
         = "Apply by: " + application.saved_for_later_reminder.date_time_moment.format('ddd MMM D')
       else
-        i TODO: Add placeholder text for no reminder set
-        //- i No reminder set
+        i No reminder set
   else if status == APPLICATION_STATUSES.ARCHIVED
     - var archivedAtMoment = application.archived_at_moment.tz(timezone);
     +#{mixin}({icon: 'fa-calendar-o', iconContent: archivedAtMoment.format('D')})

@@ -198,4 +198,36 @@ scenario.route('A request to GET /schedule', function () {
       expect(this.$('#content').text()).to.not.contain('Monstromart');
     });
   });
+
+  // Edge case for alternative text
+  scenario.routeTest('from a logged in user with applications with no details, no notes, and disabled reminders', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_RECEIVED_OFFER_EMPTY,
+      dbFixtures.APPLICATION_UPCOMING_INTERVIEW_EMPTY,
+      dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_EMPTY,
+      dbFixtures.APPLICATION_SAVED_FOR_LATER_EMPTY,
+      dbFixtures.DEFAULT_FIXTURES
+    ]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
+
+    it('renders non-upcoming interview applications with reminder disabled text', function () {
+      expect(this.$('#schedule__received-offer').html()).to.contain('<i>No reminder set</i>');
+      expect(this.$('#schedule__waiting-for-response').html()).to.contain('<i>No reminder set</i>');
+      expect(this.$('#schedule__saved-for-later').html()).to.contain('<i>No reminder set</i>');
+    });
+
+    it('renders upcoming interview applications with no details text', function () {
+      expect(this.$('#schedule__upcoming-interviews').html()).to.contain('<i>No details provided</i>');
+    });
+
+    it('renders applications with no notes text', function () {
+      expect(this.$('#schedule__received-offer').html()).to.contain('<i>No notes recorded</i>');
+      expect(this.$('#schedule__upcoming-interviews').html()).to.contain('<i>No notes recorded</i>');
+      expect(this.$('#schedule__waiting-for-response').html()).to.contain('<i>No notes recorded</i>');
+      expect(this.$('#schedule__saved-for-later').html()).to.contain('<i>No notes recorded</i>');
+    });
+  });
 });

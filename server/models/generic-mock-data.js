@@ -438,6 +438,7 @@ exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPO
 
 // Saved for later applications
 exports.APPLICATION_SAVED_FOR_LATER_KEY = 'saved-for-later__application';
+exports.REMINDER_SAVED_FOR_LATER_KEY = 'saved-for-later__reminder--application';
 exports.APPLICATION_SAVED_FOR_LATER = exports.APPLICATION_INTERTRODE = [
   addApplication(exports.APPLICATION_SAVED_FOR_LATER_KEY, {
     id: 'abcdef-intertrode-uuid',
@@ -453,7 +454,7 @@ exports.APPLICATION_SAVED_FOR_LATER = exports.APPLICATION_INTERTRODE = [
     posting_url: 'https://www.dice.com/jobs/detail/Business-Systems-Analyst-Springfield-USA-12345/1234567/123456',
     status: Application.STATUSES.SAVED_FOR_LATER
   }),
-  addApplicationReminder('saved-for-later__reminder--application', {
+  addApplicationReminder(exports.REMINDER_SAVED_FOR_LATER_KEY, {
     id: applications[applications.length - 1].saved_for_later_reminder_id,
     application_id: applications[applications.length - 1].id,
     candidate_id: DEFAULT_CANDIDATE_ID,
@@ -465,6 +466,7 @@ exports.APPLICATION_SAVED_FOR_LATER = exports.APPLICATION_INTERTRODE = [
 
 // Archived applications
 exports.APPLICATION_ARCHIVED_KEY = 'archived__application';
+exports.REMINDER_ARCHIVED_KEY = 'archived__reminder--application';
 exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
   addApplication(exports.APPLICATION_ARCHIVED_KEY, {
     id: 'abcdef-monstromart-uuid',
@@ -481,7 +483,7 @@ exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
     name: 'Monstromart',
     notes: 'Sounds like a great career opportunity'
   }),
-  addApplicationReminder('archived__reminder--application', {
+  addApplicationReminder(exports.REMINDER_ARCHIVED_KEY, {
     id: applications[applications.length - 1].waiting_for_response_reminder_id,
     application_id: applications[applications.length - 1].id,
     candidate_id: DEFAULT_CANDIDATE_ID,
@@ -529,5 +531,100 @@ exports.APPLICATION_RECEIVED_OFFER_WITH_UPCOMING_INTERVIEW = [
     // interview = {id: umbrella-corp, application_id: black-mesa}
     key: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
     overrides: {application_id: 'abcdef-black-mesa-uuid'}
+  }
+];
+
+exports.APPLICATION_RECEIVED_OFFER_EMPTY = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_RECEIVED_OFFER
+    ]),
+    exports.APPLICATION_RECEIVED_OFFER_KEY,
+    exports.REMINDER_RECEIVED_OFFER_KEY),
+  {
+    key: exports.APPLICATION_RECEIVED_OFFER_KEY,
+    overrides: {notes: ''}
+  },
+  {
+    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    overrides: {is_enabled: false}
+  }
+];
+
+exports.APPLICATION_UPCOMING_INTERVIEW_EMPTY = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_UPCOMING_INTERVIEW
+    ]),
+    exports.APPLICATION_UPCOMING_INTERVIEW_KEY,
+    exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
+    exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
+    exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY),
+  {
+    key: exports.APPLICATION_UPCOMING_INTERVIEW_KEY,
+    overrides: {notes: ''}
+  },
+  {
+    key: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
+    overrides: {details: ''}
+  },
+  {
+    key: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
+    overrides: {is_enabled: false}
+  },
+  {
+    key: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY,
+    overrides: {is_enabled: false}
+  }
+];
+
+exports.APPLICATION_WAITING_FOR_RESPONSE_EMPTY = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_WAITING_FOR_RESPONSE
+    ]),
+    exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+  {
+    key: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    overrides: {notes: ''}
+  },
+  {
+    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    overrides: {is_enabled: false}
+  }
+];
+
+exports.APPLICATION_SAVED_FOR_LATER_EMPTY = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_SAVED_FOR_LATER
+    ]),
+    exports.APPLICATION_SAVED_FOR_LATER_KEY,
+    exports.REMINDER_SAVED_FOR_LATER_KEY),
+  {
+    key: exports.APPLICATION_SAVED_FOR_LATER_KEY,
+    overrides: {notes: ''}
+  },
+  {
+    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
+    overrides: {is_enabled: false}
+  }
+];
+
+exports.APPLICATION_ARCHIVED_EMPTY = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_ARCHIVED
+    ]),
+    exports.APPLICATION_ARCHIVED_KEY,
+    exports.REMINDER_ARCHIVED_KEY),
+  {
+    key: exports.APPLICATION_ARCHIVED_KEY,
+    overrides: {notes: ''}
+  },
+  {
+    key: exports.REMINDER_ARCHIVED_KEY,
+    overrides: {is_enabled: false}
   }
 ];

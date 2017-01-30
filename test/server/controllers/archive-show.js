@@ -76,4 +76,18 @@ scenario.route('A request to GET /archive', function () {
       expect(this.$('#content').text()).to.not.contain('Monstromart');
     });
   });
+
+  // Edge case for alternative text
+  scenario.routeTest('from a logged in user with applications with no notes', {
+    dbFixtures: [dbFixtures.APPLICATION_ARCHIVED_EMPTY, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/archive'), expectedStatusCode: 200});
+
+    it('renders applications with no notes text', function () {
+      var $application = this.$('#content .schedule-row--application');
+      expect($application.find('.schedule-notes').html()).to.contain('<i>No notes recorded</i>');
+    });
+  });
 });
