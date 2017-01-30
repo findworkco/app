@@ -150,6 +150,7 @@ module.exports = _.extend(function (modelName, attributes, options) {
   //   We opted for this setup instead of separate files for easier maintenance
   AuditLog = AuditLog || require('./audit-log');
   sequelize = sequelize || require('../index.js').app.sequelize;
+  assert(AuditLog.build);
 
   // Fallback/clone our options (prevents contamination)
   options = options ? _.clone(options) : {};

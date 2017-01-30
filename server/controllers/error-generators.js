@@ -29,6 +29,17 @@ app.get('/error/non-critical-error', function nonCriticalErrorShow (req, res, ne
   req.captureError(err);
   res.send('Non-critical error captured');
 });
+// Test via: curl http://localhost:9000/error/queue/failure
+app.get('/error/queue/failure', [
+  function queueFailureShow (req, res, next) {
+    queue.create(queue.JOBS.GENERATE_FAILURE_ERROR, {
+      title: 'queueFailureError'
+    }).save(next);
+  },
+  function sendResponse (req, res, next) {
+    res.send('OK');
+  }
+]);
 // Test via: curl http://localhost:9000/error/queue/sync-error
 app.get('/error/queue/sync-error', [
   function queueSyncErrorShow (req, res, next) {

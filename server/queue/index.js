@@ -2,12 +2,13 @@
 var async = require('async');
 var assert = require('assert');
 var domain = require('domain');
-var AuditLog = require('../models/audit-log');
-var Candidate = require('../models/candidate');
-var emails = require('../emails');
+// DEV: We load `app` before `AuditLog` to prevent order issues
 var app = require('../index.js').app;
 var kueQueue = require('../index.js').app.kueQueue;
 var getExternalUrl = require('../index.js').getExternalUrl;
+var AuditLog = require('../models/audit-log');
+var Candidate = require('../models/candidate');
+var emails = require('../emails');
 var sentryClient = exports.sentryClient = app.sentryClient;
 
 // If we are in a Kue environment, enable cleanup
@@ -44,6 +45,7 @@ function registerJob(name, concurrency, fn) {
 
       // When we encounter an error
       // DEV: We could use `queue.on('job failed')` but errors were converted to strings (i.e. no stacktrace)
+      //   This is due to using Redis pub/sub
       jobDomain.on('error', function handleError (err) {
         // Report/log our error
         // DEV: We could throw errors in testing but they won't be caught due to being async
@@ -54,7 +56,16 @@ function registerJob(name, concurrency, fn) {
         done(err);
       });
       jobDomain.run(function callFn () {
-        fn.call(that, job, done);
+        fn.call(that, job, function handleDone (err) {
+          // If there was an error, log it
+          if (err) {
+            app.notWinston.error(err);
+            sentryClient.captureError(err, getSentryKwargsForJob(job));
+          }
+
+          // Callback with error
+          done(err);
+        });
       });
     });
   }
@@ -102,6 +113,13 @@ registerJob(JOBS.SEND_TEST_EMAIL, 2, function sendTestEmail (job, done) {
   }, {
     url: 'welcome.com/queue'
   }, done);
+});
+
+JOBS.GENERATE_FAILURE_ERROR = 'generateFailureError';
+registerJob(JOBS.GENERATE_FAILURE_ERROR, 1, function generateFailureErrorFn (job, done) {
+  process.nextTick(function handleNextTick () {
+    done(new Error('Failure error'));
+  });
 });
 
 JOBS.GENERATE_SYNC_ERROR = 'generateSyncError';
@@ -156,7 +174,7 @@ registerJob(JOBS.SEND_WELCOME_EMAIL, 5, function sendWelcomeEmail (job, done) {
 });
 
 JOBS.PROCESS_REMINDERS = 'processReminders';
-exports.PROCESS_REMINDERS_FREQUENCY = 1 * 1000; // 1 minute
+exports.PROCESS_REMINDERS_FREQUENCY = 60 * 1000; // 1 minute
 exports.loopGuaranteeProcessReminders = function () {
   // Guarantee our reminder queue has at least 1 job in it
   var guaranteeReminderQueueNotEmpty = function () {
