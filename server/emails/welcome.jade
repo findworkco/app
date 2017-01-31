@@ -1,0 +1,25 @@
+subject Welcome to Find Work!
+html
+  | Hi #{email},
+  br
+  | Thanks for signing up for Find Work!
+  br
+  br
+  //- DESIGN: We initially said to not include "If you haven't" if candidate has no application but I think redundancy is fine
+  = "If you haven't began tracking your job applications, then you can get started at "
+  a(href=add_application_url)= add_application_url
+  br
+  br
+  = "Have questions or ideas? Email me any time at "
+  a(href="mailto:todd@findwork.co") todd@findwork.co
+  = ". I will personally reply to every email."
+  br
+  br
+  | Best of luck on your job search!
+  br
+  br
+  | Sincerely,
+  br
+  | Todd Wolfson, Founder
+  br
+  a(href="mailto:todd@findwork.co") todd@findwork.co

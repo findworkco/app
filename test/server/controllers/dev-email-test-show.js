@@ -21,9 +21,9 @@ scenario.route('A request to GET /_dev/email/test', {
       var data = emailSendStub.args[0][0].data;
       expect(data.from).to.deep.equal({name: 'Todd Wolfson', address: 'todd@findwork.co'});
       expect(data.to).to.equal('todd@findwork.co');
-      expect(data.text).to.contain('This is a test text email');
+      expect(data.text).to.contain('This is a test email');
       expect(data.text).to.contain('welcome.com');
-      expect(data.html).to.contain('This is a test HTML email');
+      expect(data.html).to.contain('This is a test email');
       expect(data.html).to.contain('welcome.com');
     });
   });

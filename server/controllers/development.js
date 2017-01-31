@@ -3,6 +3,11 @@ var HttpError = require('http-errors');
 var app = require('../index.js').app;
 var emails = require('../emails');
 var queue = require('../queue');
+var Application = require('../models/application');
+var applicationMockData = require('../models/application-mock-data');
+var ApplicationReminder = require('../models/application-reminder');
+var interviewMockData = require('../models/interview-mock-data');
+var InterviewReminder = require('../models/interview-reminder');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // Bind our controllers
@@ -14,6 +19,92 @@ app.get('/_dev/email/test', [
       to: 'todd@findwork.co'
     }, {
       url: 'welcome.com'
+    }, next);
+  },
+  function handleSend (req, res, next) {
+    res.send('OK');
+  }
+]);
+app.get('/_dev/email/saved-for-later-reminder', [
+  function devEmailSavedForLaterReminder (req, res, next) {
+    // Send a test email
+    emails.savedForLaterReminder({
+      to: 'todd@findwork.co'
+    }, {
+      email: 'todd@findwork.co',
+      application: applicationMockData.getById('abcdef-intertrode-uuid')
+    }, next);
+  },
+  function handleSend (req, res, next) {
+    res.send('OK');
+  }
+]);
+app.get('/_dev/email/waiting-for-response-reminder', [
+  function devEmailWaitingForResponseReminder (req, res, next) {
+    // Send a test email
+    emails.waitingForResponseReminder({
+      to: 'todd@findwork.co'
+    }, {
+      email: 'todd@findwork.co',
+      application: applicationMockData.getById('abcdef-sky-networks-uuid')
+    }, next);
+  },
+  function handleSend (req, res, next) {
+    res.send('OK');
+  }
+]);
+app.get('/_dev/email/pre-interview-reminder', [
+  function devEmailPreInterviewReminder (req, res, next) {
+    // Send a test email
+    var interview = interviewMockData.getById('abcdef-umbrella-corp-interview-uuid', {
+      include: [
+        {model: Application},
+        {model: InterviewReminder, as: 'post_interview_reminder'}
+      ]
+    });
+    emails.preInterviewReminder({
+      to: 'todd@findwork.co'
+    }, {
+      email: 'todd@findwork.co',
+      application: interview.get('application'),
+      interview: interview
+    }, next);
+  },
+  function handleSend (req, res, next) {
+    res.send('OK');
+  }
+]);
+app.get('/_dev/email/post-interview-reminder', [
+  function devEmailPostInterviewReminder (req, res, next) {
+    // Send a test email
+    var interview = interviewMockData.getById('abcdef-sky-networks-interview-uuid', {
+      include: [{
+        model: Application,
+        include: [
+          {model: ApplicationReminder, as: 'waiting_for_response_reminder'}
+        ]
+      }]
+    });
+    emails.postInterviewReminder({
+      to: 'todd@findwork.co'
+    }, {
+      email: 'todd@findwork.co',
+      application: interview.get('application'),
+      interview: interview
+    }, next);
+  },
+  function handleSend (req, res, next) {
+    res.send('OK');
+  }
+]);
+app.get('/_dev/email/received-offer-reminder', [
+  function devEmailReceivedOfferReminder (req, res, next) {
+    // Send a test email
+    emails.receivedOfferReminder({
+      to: 'todd@findwork.co'
+    }, {
+      email: 'todd@findwork.co',
+      application: applicationMockData.getById('abcdef-black-mesa-uuid')
     }, next);
   },
   function handleSend (req, res, next) {

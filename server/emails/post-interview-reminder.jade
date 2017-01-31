@@ -1,0 +1,36 @@
+//- DESIGN: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/aef700c53
+subject Post-interview reminder for "#{application.name}"
+html
+  | Hi #{email},
+  br
+  | We hope your interview went well =) This is your post-interview reminder for "#{application.name}" to record any notes from the interview.
+  br
+  br
+  - var applicationUrl = getExternalUrl(application.url);
+  b
+    a(href=applicationUrl) Click here to update your application notes
+  br
+  br
+  b= "Posting URL: "
+  a(href=application.posting_url)= application.posting_url
+  br
+  b= "Application link: "
+  a(href=applicationUrl)= applicationUrl
+  br
+  b= "Interview link: "
+  - var interviewUrl = getExternalUrl(interview.url);
+  a(href=interviewUrl)= interviewUrl
+  br
+  br
+  | We have schedule a follow-up reminder for you in 7 days. It will remind you to check in to prevent falling between the cracks.
+  br
+  br
+  b
+    = "Follow-up reminder ("
+    a(href=applicationUrl) edit reminder
+    = "): "
+  //- Mon Mar 14 at 2:00PM CST
+  = application.waiting_for_response_reminder.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+  br
+  br
+  | - The Find Work team

@@ -378,6 +378,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_3 = exports.APPLICATION_MULTIPLE_UPCOMING
 
 // Waiting for response applications
 exports.APPLICATION_WAITING_FOR_RESPONSE_KEY = 'waiting-for-response__application';
+exports.INTERVIEW_WAITING_FOR_RESPONSE_KEY = 'waiting-for-response__interview';
 exports.REMINDER_WAITING_FOR_RESPONSE_KEY = 'waiting-for-response__reminder--application';
 exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_PAST_INTERVIEWS =
     exports.APPLICATION_SKY_NETWORKS = [
@@ -408,7 +409,7 @@ exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPO
       })
     ]
   ],
-  addInterview('waiting-for-response__interview', {
+  addInterview(exports.INTERVIEW_WAITING_FOR_RESPONSE_KEY, {
     id: 'abcdef-sky-networks-interview-uuid',
     candidate_id: DEFAULT_CANDIDATE_ID,
     application_id: applications[applications.length - 1].id,
@@ -548,6 +549,23 @@ exports.APPLICATION_RECEIVED_OFFER_EMPTY = [
   {
     key: exports.REMINDER_RECEIVED_OFFER_KEY,
     overrides: {is_enabled: false}
+  }
+];
+
+exports.APPLICATION_UPCOMING_INTERVIEW_FULL = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_UPCOMING_INTERVIEW
+    ]),
+    exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
+    exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY),
+  {
+    key: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
+    overrides: {is_enabled: true}
+  },
+  {
+    key: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY,
+    overrides: {is_enabled: true}
   }
 ];
 

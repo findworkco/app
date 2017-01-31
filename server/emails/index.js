@@ -1,6 +1,10 @@
 // Load in our dependencies
-var emailClient = require('../index').app.emailClient;
-var multiline = require('multiline');
+var assert = require('assert');
+var _ = require('underscore');
+var jade = require('jade');
+var app = require('../index.js').app;
+var emailClient = require('../index.js').app.emailClient;
+var getExternalUrl = require('../index.js').getExternalUrl;
 
 // Define email constants
 var DEFAULT_FROM_EMAIL = {
@@ -9,53 +13,64 @@ var DEFAULT_FROM_EMAIL = {
 };
 
 // Define our email templates
-// https://github.com/nodemailer/nodemailer/tree/v2.6.4#using-templates
-exports.test = emailClient.templateSender({
-  subject: 'Test email',
-  text: multiline.stripIndent(function () {/*
-    This is a test text email. Here is a link below:
+// https://github.com/nodemailer/nodemailer/tree/v2.6.4#custom-renderer
+function jadeSender(filepath, options) {
+  // Create our render function
+  var jadeFn = jade.compileFile(filepath);
+  var renderFn = function (context, callback) {
+    // Render our email
+    var result = jadeFn(_.defaults({
+      getExternalUrl: getExternalUrl
+    }, context, app.locals));
 
-    http://google.com/
+    // Break up result into subject/HTML
+    // <subject>Test email</subject><html>This is a test email</html>
+    //   -> "Test email", "This is a test email"
+    // DEV: We could use an HTML parser but this is simple enough by convention
+    // DEV: We consolidate all pieces into a single file to ease of reference/to prevent sync mistakes
+    var parts = result.split('</subject><html>');
+    assert.strictEqual(parts.length, 2);
+    var subject = parts[0].replace('<subject>', '');
+    var html = parts[1].replace('</html>', '');
 
-    Test data: {{url}}
-  */}),
-  html: multiline.stripIndent(function () {/*
-    This is a test HTML email
-    <br/>
-    <a href="http://google.com/">This is a test link</a>
-    <br/>
-    Test data: {{url}}
-  */})
-}, {
+    // Callback with result
+    callback(null, {
+      subject: subject,
+      // text: Set up via `nodemailer-html-to-text`,
+      html: html
+    });
+  };
+
+  // Bind our render function and re-expose render function for testing
+  var retVal = emailClient.templateSender({
+    render: renderFn
+  }, options);
+  retVal._testRender = renderFn;
+
+  // Return our nodemailer integration
+  return retVal;
+}
+
+exports.test = jadeSender(__dirname + '/test.jade', {
   from: DEFAULT_FROM_EMAIL
 });
 
-// DESIGN: We initially said to not include "If you haven't" line if candidate has no application
-//   but I think redundancy is fine
-exports.welcome = emailClient.templateSender({
-  subject: 'Welcome to Find Work!',
-  // text: Set up via `nodemailer-html-to-text`,
-  html: multiline.stripIndent(function () {/*
-    Hi {{email}},
-    <br/>
-    Thanks for signing up for Find Work!
-    <br/>
-    <br/>
-    If you haven't began tracking your job applications, then you can get started at <a href="{{add_application_url}}">{{add_application_url}}</a>
-    <br/>
-    <br/>
-    Have questions or ideas? Email me any time at <a href="mailto:todd@findwork.co">todd@findwork.co</a>. I will personally reply to every email.
-    <br/>
-    <br/>
-    Best of luck on your job search!
-    <br/>
-    <br/>
-    Sincerely,
-    <br/>
-    Todd Wolfson, Founder
-    <br/>
-    <a href="mailto:todd@findwork.co">todd@findwork.co</a>
-  */})
-}, {
+exports.welcome = jadeSender(__dirname + '/welcome.jade', {
+  from: DEFAULT_FROM_EMAIL
+});
+
+exports.savedForLaterReminder = jadeSender(__dirname + '/saved-for-later-reminder.jade', {
+  from: DEFAULT_FROM_EMAIL
+});
+exports.waitingForResponseReminder = jadeSender(__dirname + '/waiting-for-response-reminder.jade', {
+  from: DEFAULT_FROM_EMAIL
+});
+exports.preInterviewReminder = jadeSender(__dirname + '/pre-interview-reminder.jade', {
+  from: DEFAULT_FROM_EMAIL
+});
+exports.postInterviewReminder = jadeSender(__dirname + '/post-interview-reminder.jade', {
+  from: DEFAULT_FROM_EMAIL
+});
+exports.receivedOfferReminder = jadeSender(__dirname + '/received-offer-reminder.jade', {
   from: DEFAULT_FROM_EMAIL
 });

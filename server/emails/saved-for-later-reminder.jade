@@ -1,0 +1,31 @@
+//- DESIGN: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a1e96e88e
+//- DEV: We use "Application reminder" as it's consistent with UI
+subject Application reminder for "#{application.name}"
+html
+  | Hi #{email},
+  br
+  | This is your reminder to apply to "#{application.name}". Here's your saved information:
+  br
+  br
+  b= "Posting URL: "
+  a(href=application.posting_url)= application.posting_url
+  br
+  b= "Application link: "
+  - var applicationUrl = getExternalUrl(application.url);
+  a(href=applicationUrl)= applicationUrl
+  br
+  br
+  b Application notes:
+  br
+  if application.notes
+    != sanitizeHtml(application.notes)
+  else
+    i No notes recorded
+  br
+  br
+  = "If you would like to create another application reminder, then "
+  a(href=applicationUrl) click here to set up a new reminder
+  = "."
+  br
+  br
+  | - The Find Work team

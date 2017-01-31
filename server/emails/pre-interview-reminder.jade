@@ -1,0 +1,80 @@
+//- DESIGN: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a7dbb9086
+subject Pre-interview reminder for "#{application.name}"
+html
+  | Hi #{email},
+  br
+  | This is your reminder about the upcoming interview for "#{application.name}". Here's a motivational quote to get you psyched:
+  br
+  br
+  - var quotes = [];
+  //- https://github.com/macalinao/motivate/blob/76cffd991f8874c60be89acc9c83d7f22a00ca35/quotes.json
+  - quotes.push({"body": "Choose a job you love and you will never have to work a day of your life.", source: "Confucius"});
+  - quotes.push({"body": "The journey of a thousand miles begins with a single step.", "source": "Unknown"});
+  - quotes.push({"body": "Yesterday is history; tomorrow is a mystery. Today is a gift, which is why we call it the present.", "source": "Bil Keane"});
+  - quotes.push({"body": "Don't think about what might go wrong, think about what could go right.", "source": "Unknown"});
+  - quotes.push({"body": "What the caterpillar calls the end, the rest of the world calls a butterfly.", "source": "Lao Tzu"});
+  - quotes.push({"body": "The future depends on what we do in the present.", "source": "Mahatma Gandhi"});
+  //- https://www.brainyquote.com/quotes/topics/topic_motivational.html
+  - quotes.push({"body": "The secret of getting ahead is getting started.", "source": "Mark Twain"});
+  - quotes.push({"body": "If you think you can do it, you can.", "source": "John Burroughs"});
+  - var quote = _.sample(quotes);
+  blockquote(style="margin: 0; border-left: #BBB 4px solid; padding-left: 16px")
+    | "#{quote.body}"
+    br
+    | - #{quote.source}
+  //- DEV: `blockquote` is a block element so it has a break already
+  br
+  //- Mon Mar 14 at 2:00PM CST
+  b= "Date/time: "
+  = interview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+  br
+  //- TODO: Sanitize and linkify details (e.g. map) https://trello.com/c/UMUrlgw1/258-render-interview-details-as-html-in-nav-schedule
+  b= "Details: "
+  if interview.details
+    = interview.details
+  else
+    i No details provided
+  br
+  br
+  b= "Posting URL: "
+  a(href=application.posting_url)= application.posting_url
+  br
+  b= "Application link: "
+  - var applicationUrl = getExternalUrl(application.url);
+  a(href=applicationUrl)= applicationUrl
+  br
+  b= "Interview link: "
+  - var interviewUrl = getExternalUrl(interview.url);
+  a(href=interviewUrl)= interviewUrl
+  br
+  br
+  //- DEV: We initially said don't empty notes but we think it's better to always show them
+  | We suggest reviewing your notes before the interview so here they are:
+  br
+  br
+  b
+    = "Application notes ("
+    a(href=applicationUrl) edit notes
+    = "):"
+  br
+  if application.notes
+    != sanitizeHtml(application.notes)
+  else
+    i No notes recorded
+  br
+  br
+  b
+    = "Post-interview reminder ("
+    a(href=interviewUrl) edit reminder
+    = "): "
+  //- Mon Mar 14 at 2:00PM CST
+  if interview.post_interview_reminder.is_enabled
+    = interview.post_interview_reminder.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+  else
+    i No reminder scheduled
+  br
+  br
+  | Good luck on your interview!
+  br
+  br
+  | - The Find Work team
