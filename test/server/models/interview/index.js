@@ -14,11 +14,12 @@ var sinonUtils = require('../../utils/sinon');
 scenario.model('An Interview model with an upcoming datetime', function () {
   sinonUtils.spy(Interview.Instance.prototype, 'updateType');
 
-  it('automatically receives its expected type', function () {
+  it('automatically receives its expected type and can send reminders', function () {
     var interview = Interview.build({
       date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
     });
     expect(interview.get('type')).to.equal('upcoming_interview');
+    expect(interview.get('can_send_reminders')).to.equal(true);
 
     var updateTypeSpy = Interview.Instance.prototype.updateType;
     expect(updateTypeSpy.callCount).to.equal(1);
@@ -28,14 +29,34 @@ scenario.model('An Interview model with an upcoming datetime', function () {
 scenario.model('An Interview model with a past datetime', function () {
   sinonUtils.spy(Interview.Instance.prototype, 'updateType');
 
-  it('automatically receives its expected type', function () {
+  it('automatically receives its expected type and can send reminders', function () {
     var interview = Interview.build({
       date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
     });
     expect(interview.get('type')).to.equal('past_interview');
+    expect(interview.get('can_send_reminders')).to.equal(false);
 
     var updateTypeSpy = Interview.Instance.prototype.updateType;
     expect(updateTypeSpy.callCount).to.equal(1);
+  });
+});
+
+// Direct setting
+scenario.model('An Interview model setting type directly', function () {
+  it('is rejected', function () {
+    var interview = Interview.build({});
+    expect(function setInterviewType () {
+      interview.set('type', 'upcoming_interview');
+    }).to.throw(Error, /`type` cannot be set directly/);
+  });
+});
+
+scenario.model('An Interview model setting can_send_reminders directly', function () {
+  it('is rejected', function () {
+    var interview = Interview.build({});
+    expect(function setInterviewCanSendReminders () {
+      interview.set('can_send_reminders', 'upcoming_interview');
+    }).to.throw(Error, /`can_send_reminders` cannot be set directly/);
   });
 });
 
@@ -48,13 +69,14 @@ var validBaseInterview = {
   pre_interview_reminder_id: 'mock-pre-reminder-id',
   post_interview_reminder_id: 'mock-post-reminder-id'
 };
+var typeMatchesDateTimeSkip = ['applicationStatusMatchesType', 'typeMatchesCanSendReminders'];
 scenario.model('An upcoming Interview model with a matching type', function () {
   it('receives has no validation errors', function (done) {
     var interview = Interview.build(_.defaults({
       date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
     }, validBaseInterview));
     interview.setDataValue('type', 'upcoming_interview');
-    interview.validate({skip: ['applicationStatusMatchesType']}).asCallback(function handleError (err, validationErr) {
+    interview.validate({skip: typeMatchesDateTimeSkip}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr).to.equal(null);
       done();
@@ -68,7 +90,7 @@ scenario.model('An upcoming Interview model with a non-matching type', function 
       date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
     }, validBaseInterview));
     interview.setDataValue('type', 'past_interview');
-    interview.validate({skip: ['applicationStatusMatchesType']}).asCallback(function handleError (err, validationErr) {
+    interview.validate({skip: typeMatchesDateTimeSkip}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
       expect(validationErr.errors[0]).to.have.property('path', 'typeMatchesDateTime');
@@ -84,7 +106,7 @@ scenario.model('An past Interview model with a matching type', function () {
       date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
     }, validBaseInterview));
     interview.setDataValue('type', 'past_interview');
-    interview.validate({skip: ['applicationStatusMatchesType']}).asCallback(function handleError (err, validationErr) {
+    interview.validate({skip: typeMatchesDateTimeSkip}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr).to.equal(null);
       done();
@@ -98,11 +120,76 @@ scenario.model('An past Interview model with a non-matching type', function () {
       date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
     }, validBaseInterview));
     interview.setDataValue('type', 'upcoming_interview');
-    interview.validate({skip: ['applicationStatusMatchesType']}).asCallback(function handleError (err, validationErr) {
+    interview.validate({skip: typeMatchesDateTimeSkip}).asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
       expect(validationErr.errors[0]).to.have.property('path', 'typeMatchesDateTime');
       expect(validationErr.errors[0].message).to.contain('Expected type for past interview');
+      done();
+    });
+  });
+});
+
+// typeMatchesCanSendReminders
+var typeMatchesCanSendRemindersSkip = ['applicationStatusMatchesType'];
+scenario.model('An upcoming Interview model that can send reminders', function () {
+  it('receives has no validation errors', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    expect(interview.get('type')).to.equal('upcoming_interview');
+    interview.setDataValue('can_send_reminders', true);
+    interview.validate({skip: typeMatchesCanSendRemindersSkip}).asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('An upcoming Interview model that cannot send reminders', function () {
+  it('receives a validation error', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2022-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    expect(interview.get('type')).to.equal('upcoming_interview');
+    interview.setDataValue('can_send_reminders', false);
+    interview.validate({skip: typeMatchesCanSendRemindersSkip}).asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr.errors).to.have.length(1);
+      expect(validationErr.errors[0]).to.have.property('path', 'typeMatchesCanSendReminders');
+      expect(validationErr.errors[0].message).to.contain(
+        'Expected can_send_reminders for upcoming interview to be true');
+      done();
+    });
+  });
+});
+
+scenario.model('A past Interview model that can send reminders', function () {
+  it('receives has no validation errors', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    expect(interview.get('type')).to.equal('past_interview');
+    interview.setDataValue('can_send_reminders', true);
+    interview.validate({skip: typeMatchesCanSendRemindersSkip}).asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('A past Interview model that cannot send reminders', function () {
+  it('receives has no validation errors', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2016-01-04T03:04', 'US-America/Chicago')
+    }, validBaseInterview));
+    expect(interview.get('type')).to.equal('past_interview');
+    interview.setDataValue('can_send_reminders', false);
+    interview.validate({skip: typeMatchesCanSendRemindersSkip}).asCallback(function handleError (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
       done();
     });
   });

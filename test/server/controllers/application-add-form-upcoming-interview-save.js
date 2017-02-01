@@ -96,6 +96,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         expect(interviews[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(interviews[0].get('application_id')).to.be.a('string');
         expect(interviews[0].get('type')).to.equal('upcoming_interview');
+        expect(interviews[0].get('can_send_reminders')).to.equal(true);
         expect(interviews[0].get('date_time_datetime').toISOString()).to.equal('2022-03-06T00:00:00.000Z');
         expect(interviews[0].get('date_time_timezone')).to.equal('US-America/Los_Angeles');
         expect(interviews[0].get('pre_interview_reminder_id')).to.be.a('string');
@@ -187,6 +188,7 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
         if (err) { return done(err); }
         expect(interviews).to.have.length(1);
         expect(interviews[0].get('type')).to.equal('past_interview');
+        expect(interviews[0].get('can_send_reminders')).to.equal(false);
         done();
       });
     });

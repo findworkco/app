@@ -64,6 +64,7 @@ scenario.route('A request to POST /interview/:id', function () {
         expect(interviews[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(interviews[0].get('application_id')).to.equal('abcdef-sky-networks-uuid');
         expect(interviews[0].get('type')).to.equal('upcoming_interview');
+        expect(interviews[0].get('can_send_reminders')).to.equal(true);
         expect(interviews[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T21:00:00.000Z');
         expect(interviews[0].get('date_time_timezone')).to.equal('US-America/New_York');
         expect(interviews[0].get('pre_interview_reminder_id')).to.equal('sky-networks-reminder-pre-int-uuid');
@@ -147,6 +148,7 @@ scenario.route('A request to POST /interview/:id', function () {
         // Otherwise, assert our data
         expect(interviews).to.have.length(1);
         expect(interviews[0].get('type')).to.equal('past_interview');
+        expect(interviews[0].get('can_send_reminders')).to.equal(false);
         done();
       });
     });

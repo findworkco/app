@@ -42,6 +42,10 @@ var Interview = module.exports = _.extend(baseDefine('interview', {
     type: Sequelize.STRING(36), allowNull: false,
     validate: {isIn: {args: [_.values(exports.TYPES)], msg: 'Invalid type provided'}}
   },
+  // DEV: We store `can_send_reminders` on interview instead of looking at reminders
+  //   so we can allow easy reminder restoration for past/upcoming toggles
+  //   and preserve reminder intent when moving from upcoming to past interviews
+  can_send_reminders: {type: Sequelize.BOOLEAN, allowNull: false},
 
   // Allow long notes for interview (prevent null, only empty strings)
   // DEV: Alternative names for `details` are `instructions`, `info`, and `information`
@@ -73,6 +77,16 @@ var Interview = module.exports = _.extend(baseDefine('interview', {
           'Expected type for past interview to be "past interview" but it wasn\'t');
       }
     },
+    typeMatchesCanSendReminders: function () {
+      // If we are a past interview, allow both reminders being sent (upcoming -> past)/not sent (past -> past)
+      if (this.get('type') === exports.TYPES.PAST_INTERVIEW) {
+        // Do nothing
+      // Otherwise, if we are an upcoming interview, require reminders to be sent
+      } else {
+        assert.strictEqual(this.get('can_send_reminders'), true,
+          'Expected can_send_reminders for upcoming interview to be true but it wasn\'t');
+      }
+    },
     // DEV: We skip `applicationStatusMatchesType` during fixture construction due to lack of relationships
     applicationStatusMatchesType: function () {
       var application = this.get('application');
@@ -93,8 +107,10 @@ var Interview = module.exports = _.extend(baseDefine('interview', {
       // Otherwise, update our type to match
       if (new Date() < dateTimeDatetime) {
         this.setDataValue('type', exports.TYPES.UPCOMING_INTERVIEW);
+        this.setDataValue('can_send_reminders', true);
       } else {
         this.setDataValue('type', exports.TYPES.PAST_INTERVIEW);
+        this.setDataValue('can_send_reminders', false);
       }
     }
   }, reminderInstanceMethods),
@@ -111,6 +127,9 @@ var Interview = module.exports = _.extend(baseDefine('interview', {
   },
 
   setterMethods: {
+    can_send_reminders: function (val) {
+      throw new Error('`can_send_reminders` cannot be set directly. Please update date/time or use `updateType()`');
+    },
     date_time_datetime: function (val) {
       // DEV: We don't proxy `date_time_timezone` as it's presentation only
       var retVal = this.setDataValue('date_time_datetime', val);

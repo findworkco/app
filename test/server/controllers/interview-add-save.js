@@ -69,6 +69,7 @@ scenario.route('A request to POST /application/:id/add-interview', function () {
         expect(interviews[0].get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
         expect(interviews[0].get('application_id')).to.equal('abcdef-sky-networks-uuid');
         expect(interviews[0].get('type')).to.equal('upcoming_interview');
+        expect(interviews[0].get('can_send_reminders')).to.equal(true);
         expect(interviews[0].get('date_time_datetime').toISOString()).to.equal('2022-03-06T00:00:00.000Z');
         expect(interviews[0].get('date_time_timezone')).to.equal('US-America/Los_Angeles');
         expect(interviews[0].get('pre_interview_reminder_id')).to.be.a('string');
@@ -150,6 +151,17 @@ scenario.route('A request to POST /application/:id/add-interview', function () {
         if (err) { return done(err); }
         expect(applications).to.have.length(1);
         expect(applications[0].get('status')).to.equal('waiting_for_response');
+        done();
+      });
+    });
+
+    it('creates our interview as a past interview', function (done) {
+      Interview.findAll({where: {id: {$not: 'abcdef-sky-networks-interview-uuid'}}}).asCallback(
+          function handleFindAll (err, interviews) {
+        if (err) { return done(err); }
+        expect(interviews).to.have.length(1);
+        expect(interviews[0].get('type')).to.equal('past_interview');
+        expect(interviews[0].get('can_send_reminders')).to.equal(false);
         done();
       });
     });
