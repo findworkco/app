@@ -2,11 +2,14 @@
 var async = require('async');
 var assert = require('assert');
 var domain = require('domain');
+var moment = require('moment-timezone');
 // DEV: We load `app` before `AuditLog` to prevent order issues
 var app = require('../index.js').app;
 var kueQueue = require('../index.js').app.kueQueue;
 var getExternalUrl = require('../index.js').getExternalUrl;
 var AuditLog = require('../models/audit-log');
+var Application = require('../models/application');
+var ApplicationReminder = require('../models/application-reminder');
 var Candidate = require('../models/candidate');
 var emails = require('../emails');
 var sentryClient = exports.sentryClient = app.sentryClient;
@@ -175,6 +178,7 @@ registerJob(JOBS.SEND_WELCOME_EMAIL, 5, function sendWelcomeEmail (job, done) {
 
 JOBS.PROCESS_REMINDERS = 'processReminders';
 exports.PROCESS_REMINDERS_FREQUENCY = 60 * 1000; // 1 minute
+exports.PROCESS_REMINDERS_BATCH_SIZE = 100;
 exports.loopGuaranteeProcessReminders = function () {
   // Guarantee our reminder queue has at least 1 job in it
   var guaranteeReminderQueueNotEmpty = function () {
@@ -207,8 +211,129 @@ exports.loopGuaranteeProcessReminders = function () {
   setTimeout(guaranteeReminderQueueNotEmpty, exports.PROCESS_REMINDERS_FREQUENCY);
 };
 // DEV: We only process 1 set of reminders at a time to prevent double sending
+function markReminderAsSent(reminder, cb) {
+  app.sequelize.transaction(function handleTransaction (t) {
+    return reminder.update({
+      sent_at_moment: moment()
+    }, {
+      _sourceType: AuditLog.SOURCE_QUEUE,
+      transaction: t
+    });
+  }).asCallback(cb);
+}
+function logError(err, job, cb) {
+  // Report/log our error
+  app.notWinston.error(err);
+  sentryClient.captureError(err, getSentryKwargsForJob(job));
+
+  // Callback with nothing as we don't want to halt batch processing
+  cb(null);
+}
 registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
-  setTimeout(function () {
-    done(null);
-  }, exports.PROCESS_REMINDERS_FREQUENCY);
+  // In parallel
+  var whereReminerDue = {
+    date_time_datetime: {$lte: new Date()},
+    is_enabled: true,
+    sent_at_datetime: null
+  };
+  async.parallel([
+    function updateSavedForLaterReminders (callback) {
+      Application.findAll({
+        where: {
+          status: Application.STATUSES.SAVED_FOR_LATER
+        },
+        include: [{
+          model: Candidate
+        }, {
+          model: ApplicationReminder,
+          as: 'saved_for_later_reminder',
+          where: whereReminerDue
+        }],
+        limit: exports.PROCESS_REMINDERS_BATCH_SIZE
+      }).asCallback(function handleFindAll (err, applications) {
+        // If there was an error, callback with it
+        if (err) {
+          return logError(err, job, callback);
+        }
+
+        // For each of our applications
+        async.forEach(applications, function handleApplication (application, cb) {
+          var candidate = application.get('candidate');
+          emails.savedForLaterReminder({
+            to: candidate.get('email')
+          }, {
+            application: application.get({plain: true}),
+            email: candidate.get('email')
+          }, function handleSend (err) {
+            // If there was an error, callback with it
+            if (err) { return logError(err, job, cb); }
+
+            // Update our model
+            var reminder = application.get('saved_for_later_reminder');
+            markReminderAsSent(reminder, cb);
+          });
+        }, callback);
+      });
+    },
+    function updateWaitingForResponseReminders (callback) {
+      Application.findAll({
+        where: {
+          status: Application.STATUSES.WAITING_FOR_RESPONSE
+        },
+        include: [{
+          model: Candidate
+        }, {
+          model: ApplicationReminder,
+          as: 'waiting_for_response_reminder',
+          where: whereReminerDue
+        }],
+        limit: exports.PROCESS_REMINDERS_BATCH_SIZE
+      }).asCallback(function handleFindAll (err, applications) {
+        if (err) { return logError(err, job, callback); }
+        async.forEach(applications, function handleApplication (application, cb) {
+          var candidate = application.get('candidate');
+          emails.waitingForResponseReminder({
+            to: candidate.get('email')
+          }, {
+            application: application.get({plain: true}),
+            email: candidate.get('email')
+          }, function handleSend (err) {
+            if (err) { return logError(err, job, cb); }
+            var reminder = application.get('waiting_for_response_reminder');
+            markReminderAsSent(reminder, cb);
+          });
+        }, callback);
+      });
+    },
+    function updateReceivedOfferReminders (callback) {
+      Application.findAll({
+        where: {
+          status: Application.STATUSES.RECEIVED_OFFER
+        },
+        include: [{
+          model: Candidate
+        }, {
+          model: ApplicationReminder,
+          as: 'received_offer_reminder',
+          where: whereReminerDue
+        }],
+        limit: exports.PROCESS_REMINDERS_BATCH_SIZE
+      }).asCallback(function handleFindAll (err, applications) {
+        if (err) { return logError(err, job, callback); }
+        async.forEach(applications, function handleApplication (application, cb) {
+          var candidate = application.get('candidate');
+          emails.receivedOfferReminder({
+            to: candidate.get('email')
+          }, {
+            application: application,
+            email: candidate.get('email')
+          }, function handleSend (err) {
+            if (err) { return logError(err, job, cb); }
+            var reminder = application.get('received_offer_reminder');
+            markReminderAsSent(reminder, cb);
+          });
+        }, callback);
+      });
+    }
+  ], done);
 });

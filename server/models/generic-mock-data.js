@@ -646,3 +646,239 @@ exports.APPLICATION_ARCHIVED_EMPTY = [
     overrides: {is_enabled: false}
   }
 ];
+
+exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_SAVED_FOR_LATER
+    ]),
+    exports.REMINDER_SAVED_FOR_LATER_KEY),
+  {
+    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
+    overrides: {date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')}
+  }
+];
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_WAITING_FOR_RESPONSE
+    ]),
+    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+  {
+    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    overrides: {date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')}
+  }
+];
+exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_RECEIVED_OFFER
+    ]),
+    exports.REMINDER_RECEIVED_OFFER_KEY),
+  {
+    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    overrides: {date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')}
+  }
+];
+
+exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_SAVED_FOR_LATER_REMINDER_DUE = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_WAITING_FOR_RESPONSE,
+      exports.REMINDER_SAVED_FOR_LATER_KEY
+    ]),
+    exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    exports.REMINDER_SAVED_FOR_LATER_KEY,
+    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+  {
+    // application = {id: 'sky-networks', reminder: 'intertrode'}
+    key: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    overrides: {saved_for_later_reminder_id: 'abcdef-intertrode-reminder-uuid'}
+  },
+  {
+    // reminder = {id: 'intertrode', application_id: 'sky-networks', date_time: '2016-01-15'}
+    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
+    overrides: {
+      application_id: 'abcdef-sky-networks-uuid',
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')
+    }
+  },
+  {
+    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    overrides: {is_enabled: false}
+  }
+];
+exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_RECEIVED_OFFER_REMINDER_DUE = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_WAITING_FOR_RESPONSE,
+      exports.REMINDER_RECEIVED_OFFER_KEY
+    ]),
+    exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    exports.REMINDER_RECEIVED_REMINDER_KEY,
+    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+  {
+    // application = {id: 'sky-networks', reminder: 'black-mesa'}
+    key: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    overrides: {received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid'}
+  },
+  {
+    // reminder = {id: 'black-mesa', application_id: 'sky-networks', date_time: '2016-01-15'}
+    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    overrides: {
+      application_id: 'abcdef-sky-networks-uuid',
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')
+    }
+  },
+  {
+    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    overrides: {is_enabled: false}
+  }
+];
+exports.APPLICATION_RECEIVED_OFFER_WITH_WAITING_FOR_RESPONSE_REMINDER_DUE = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_RECEIVED_OFFER,
+      exports.REMINDER_WAITING_FOR_RESPONSE_KEY
+    ]),
+    exports.APPLICATION_RECEIVED_OFFER_KEY,
+    exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    exports.REMINDER_RECEIVED_OFFER_KEY),
+  {
+    // application = {id: 'black-mesa', reminder: 'sky-networks'}
+    key: exports.APPLICATION_RECEIVED_OFFER_KEY,
+    overrides: {waiting_for_response_reminder_id: 'abcdef-sky-networks-reminder-uuid'}
+  },
+  {
+    // reminder = {id: 'sky-networks', application_id: 'black-mesa', date_time: '2016-01-15'}
+    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    overrides: {
+      application_id: 'abcdef-black-mesa-uuid',
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')
+    }
+  },
+  {
+    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    overrides: {is_enabled: false}
+  }
+];
+
+exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_DISABLED = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_SAVED_FOR_LATER
+    ]),
+    exports.REMINDER_SAVED_FOR_LATER_KEY),
+  {
+    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
+    overrides: {
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
+      is_enabled: false
+    }
+  }
+];
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_DISABLED = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_WAITING_FOR_RESPONSE
+    ]),
+    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+  {
+    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    overrides: {
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
+      is_enabled: false
+    }
+  }
+];
+exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_DISABLED = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_RECEIVED_OFFER
+    ]),
+    exports.REMINDER_RECEIVED_OFFER_KEY),
+  {
+    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    overrides: {
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
+      is_enabled: false
+    }
+  }
+];
+
+exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_SENT = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_SAVED_FOR_LATER
+    ]),
+    exports.REMINDER_SAVED_FOR_LATER_KEY),
+  {
+    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
+    overrides: {
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
+      sent_at_moment: moment('2016-01-15T09:30')
+    }
+  }
+];
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_SENT = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_WAITING_FOR_RESPONSE
+    ]),
+    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+  {
+    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    overrides: {
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
+      sent_at_moment: moment('2016-01-15T09:30')
+    }
+  }
+];
+exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_SENT = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_RECEIVED_OFFER
+    ]),
+    exports.REMINDER_RECEIVED_OFFER_KEY),
+  {
+    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    overrides: {
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
+      sent_at_moment: moment('2016-01-15T09:30')
+    }
+  }
+];
+
+exports.APPLICATION_SAVED_FOR_LATER_REMINDER_NOT_DUE = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_SAVED_FOR_LATER
+    ]),
+    exports.REMINDER_SAVED_FOR_LATER_KEY),
+  {
+    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
+    overrides: {date_time_moment: moment.tz('2022-12-01T09:00', 'US-America/Chicago')}
+  }
+];
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_NOT_DUE = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_WAITING_FOR_RESPONSE
+    ]),
+    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+  {
+    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    overrides: {date_time_moment: moment.tz('2022-12-01T09:00', 'US-America/Chicago')}
+  }
+];
+exports.APPLICATION_RECEIVED_OFFER_REMINDER_NOT_DUE = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_RECEIVED_OFFER
+    ]),
+    exports.REMINDER_RECEIVED_OFFER_KEY),
+  {
+    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    overrides: {date_time_moment: moment.tz('2022-12-01T09:00', 'US-America/Chicago')}
+  }
+];
