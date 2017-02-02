@@ -24,3 +24,15 @@ exports.stub = function (obj, method/*, func*/) {
     obj[method].restore();
   });
 };
+
+// Bespoke non-Sinon method but whatevs
+exports.swap = function (obj, key, val) {
+  var origVal;
+  before(function setupStub () {
+    origVal = obj[key];
+    obj[key] = val;
+  });
+  after(function cleanup () {
+    obj[key] = origVal;
+  });
+};

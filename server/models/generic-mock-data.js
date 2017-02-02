@@ -882,3 +882,27 @@ exports.APPLICATION_RECEIVED_OFFER_REMINDER_NOT_DUE = [
     overrides: {date_time_moment: moment.tz('2022-12-01T09:00', 'US-America/Chicago')}
   }
 ];
+
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_2 = [
+  _.without(
+    _.flatten([
+      exports.APPLICATION_RECEIVED_OFFER
+    ]),
+    exports.APPLICATION_RECEIVED_OFFER_KEY,
+    exports.REMINDER_RECEIVED_OFFER_KEY),
+  {
+    key: exports.APPLICATION_RECEIVED_OFFER_KEY,
+    overrides: {
+      status: Application.STATUSES.WAITING_FOR_RESPONSE,
+      waiting_for_response_reminder_id: 'abcdef-black-mesa-reminder-uuid',
+      received_offer_reminder_id: null
+    }
+  },
+  {
+    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    overrides: {
+      type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')
+    }
+  }
+];

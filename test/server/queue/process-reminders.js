@@ -332,3 +332,46 @@ scenario.job('Reminders that match status, are unsent, are enabled yet aren\'t d
     });
   });
 });
+
+// SCENARIO: Batch processing
+scenario.job('Reminders that are due and within the batch size being processed', {
+  dbFixtures: [
+    dbFixtures.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE,
+    dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE,
+    dbFixtures.APPLICATION_RECEIVED_OFFER_REMINDER_DUE,
+    dbFixtures.DEFAULT_FIXTURES
+  ]
+}, function () {
+  sinonUtils.spy(queue, '_triggerProcessReminders');
+  serverUtils.stubEmails();
+  processReminders();
+  before(function waitForPotentialOverrun (done) {
+    setTimeout(done, 100);
+  });
+
+  it('doesn\'t trigger more reminder processing', function () {
+    var triggerProcessRemindersSpy = queue._triggerProcessReminders;
+    expect(triggerProcessRemindersSpy.callCount).to.equal(0);
+  });
+});
+
+scenario.job('Reminders that are due but exceed the batch size being processed', {
+  dbFixtures: [
+    dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE,
+    dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_2,
+    dbFixtures.DEFAULT_FIXTURES
+  ]
+}, function () {
+  sinonUtils.swap(queue, 'PROCESS_REMINDERS_BATCH_SIZE', 1);
+  sinonUtils.spy(queue, '_triggerProcessReminders');
+  serverUtils.stubEmails();
+  processReminders();
+  before(function waitForPotentialOverrun (done) {
+    setTimeout(done, 100);
+  });
+
+  it('triggers more reminder processing', function () {
+    var triggerProcessRemindersSpy = queue._triggerProcessReminders;
+    expect(triggerProcessRemindersSpy.callCount).to.equal(1);
+  });
+});

@@ -176,9 +176,19 @@ registerJob(JOBS.SEND_WELCOME_EMAIL, 5, function sendWelcomeEmail (job, done) {
   });
 });
 
+// DEV: We only process 1 set of reminders at a time to prevent double sending
+// DEV: We could use a main job which counts/queues other jobs with offsets (e.g. by id)
+//   However that has its own complexities (e.g. can't use numeric offsets due to potentially double send of tail/head)
+//   Work around would split UUID range but that adds more complexity as mentioned
+//   https://gist.github.com/twolfson/6751d2a1a529eceec604a5c1c7f62668
 JOBS.PROCESS_REMINDERS = 'processReminders';
 exports.PROCESS_REMINDERS_FREQUENCY = 60 * 1000; // 1 minute
 exports.PROCESS_REMINDERS_BATCH_SIZE = 100;
+exports._triggerProcessReminders = function () {
+  return exports.create(JOBS.PROCESS_REMINDERS)
+    .ttl(exports.PROCESS_REMINDERS_FREQUENCY)
+    .save();
+};
 exports.loopGuaranteeProcessReminders = function () {
   // Guarantee our reminder queue has at least 1 job in it
   var guaranteeReminderQueueNotEmpty = function () {
@@ -198,9 +208,7 @@ exports.loopGuaranteeProcessReminders = function () {
         // If we have nothing in progress and nothing queued, add a new task to our queue
         var totalCount = results[0] + results[1];
         if (totalCount === 0) {
-          exports.create(JOBS.PROCESS_REMINDERS)
-            .ttl(exports.PROCESS_REMINDERS_FREQUENCY)
-            .save();
+          exports._triggerProcessReminders();
         }
       }
 
@@ -210,7 +218,6 @@ exports.loopGuaranteeProcessReminders = function () {
   };
   setTimeout(guaranteeReminderQueueNotEmpty, exports.PROCESS_REMINDERS_FREQUENCY);
 };
-// DEV: We only process 1 set of reminders at a time to prevent double sending
 function markReminderAsSent(reminder, cb) {
   app.sequelize.transaction(function handleTransaction (t) {
     return reminder.update({
@@ -230,27 +237,57 @@ function logError(err, job, cb) {
   cb(null);
 }
 registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
-  // In parallel
+  // Define our queries for reuse
+  // DEV: We define queries in a function so it gets dynamic exports changes during testing
   var whereReminerDue = {
     date_time_datetime: {$lte: new Date()},
     is_enabled: true,
     sent_at_datetime: null
   };
+  var savedForLaterQuery = {
+    where: {
+      status: Application.STATUSES.SAVED_FOR_LATER
+    },
+    include: [{
+      model: Candidate
+    }, {
+      model: ApplicationReminder,
+      as: 'saved_for_later_reminder',
+      where: whereReminerDue
+    }],
+    limit: exports.PROCESS_REMINDERS_BATCH_SIZE
+  };
+  var waitingForResponseQuery = {
+    where: {
+      status: Application.STATUSES.WAITING_FOR_RESPONSE
+    },
+    include: [{
+      model: Candidate
+    }, {
+      model: ApplicationReminder,
+      as: 'waiting_for_response_reminder',
+      where: whereReminerDue
+    }],
+    limit: exports.PROCESS_REMINDERS_BATCH_SIZE
+  };
+  var receivedOfferQuery = {
+    where: {
+      status: Application.STATUSES.RECEIVED_OFFER
+    },
+    include: [{
+      model: Candidate
+    }, {
+      model: ApplicationReminder,
+      as: 'received_offer_reminder',
+      where: whereReminerDue
+    }],
+    limit: exports.PROCESS_REMINDERS_BATCH_SIZE
+  };
+
+  // In parallel
   async.parallel([
     function updateSavedForLaterReminders (callback) {
-      Application.findAll({
-        where: {
-          status: Application.STATUSES.SAVED_FOR_LATER
-        },
-        include: [{
-          model: Candidate
-        }, {
-          model: ApplicationReminder,
-          as: 'saved_for_later_reminder',
-          where: whereReminerDue
-        }],
-        limit: exports.PROCESS_REMINDERS_BATCH_SIZE
-      }).asCallback(function handleFindAll (err, applications) {
+      Application.findAll(savedForLaterQuery).asCallback(function handleFindAll (err, applications) {
         // If there was an error, callback with it
         if (err) {
           return logError(err, job, callback);
@@ -276,19 +313,7 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
       });
     },
     function updateWaitingForResponseReminders (callback) {
-      Application.findAll({
-        where: {
-          status: Application.STATUSES.WAITING_FOR_RESPONSE
-        },
-        include: [{
-          model: Candidate
-        }, {
-          model: ApplicationReminder,
-          as: 'waiting_for_response_reminder',
-          where: whereReminerDue
-        }],
-        limit: exports.PROCESS_REMINDERS_BATCH_SIZE
-      }).asCallback(function handleFindAll (err, applications) {
+      Application.findAll(waitingForResponseQuery).asCallback(function handleFindAll (err, applications) {
         if (err) { return logError(err, job, callback); }
         async.forEach(applications, function handleApplication (application, cb) {
           var candidate = application.get('candidate');
@@ -306,19 +331,7 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
       });
     },
     function updateReceivedOfferReminders (callback) {
-      Application.findAll({
-        where: {
-          status: Application.STATUSES.RECEIVED_OFFER
-        },
-        include: [{
-          model: Candidate
-        }, {
-          model: ApplicationReminder,
-          as: 'received_offer_reminder',
-          where: whereReminerDue
-        }],
-        limit: exports.PROCESS_REMINDERS_BATCH_SIZE
-      }).asCallback(function handleFindAll (err, applications) {
+      Application.findAll(receivedOfferQuery).asCallback(function handleFindAll (err, applications) {
         if (err) { return logError(err, job, callback); }
         async.forEach(applications, function handleApplication (application, cb) {
           var candidate = application.get('candidate');
@@ -335,5 +348,27 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
         }, callback);
       });
     }
-  ], done);
+  ], function handleResult (err) {
+    // If there was an error (there shouldn't be as they're logged), then call back with it
+    if (err) {
+      return done(err);
+    }
+
+    // Otherwise, determine if we should re-run ourself
+    async.parallel([
+      function (cb) { Application.count(savedForLaterQuery).asCallback(cb); },
+      function (cb) { Application.count(waitingForResponseQuery).asCallback(cb); },
+      function (cb) { Application.count(receivedOfferQuery).asCallback(cb); }
+    ], function handleCounts (err, counts) {
+      // If there was an error, call back with it
+      if (err) { return done(err); }
+
+      // If we have at least 1 incomplete, then re-run ourselves
+      var total = counts.reduce(function (a, b) { return a + b; }, 0);
+      if (total > 0) {
+        exports._triggerProcessReminders();
+      }
+      done();
+    });
+  });
 });
