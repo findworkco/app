@@ -114,11 +114,13 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
       // Resolve our fixtures
       var selectedFixtureKeys = [];
       var selectedFixtureOverrides = {};
+      var selectedFixtureOverrideDataValues = {};
       _.flatten(options.dbFixtures).forEach(function resolveKeyAndOverrides (dbFixtureInfo) {
         // If we received an object, extract its parts
         if (typeof dbFixtureInfo === 'object') {
           assert(dbFixtureInfo.key, 'Expected "' + JSON.stringify(dbFixtureInfo) + '" to have property "key"');
           selectedFixtureOverrides[dbFixtureInfo.key] = dbFixtureInfo.overrides;
+          selectedFixtureOverrideDataValues[dbFixtureInfo.key] = dbFixtureInfo.overrideDataValues;
           selectedFixtureKeys.push(dbFixtureInfo.key);
         // Otherwise, save our info as a string
         } else {
@@ -135,10 +137,19 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
       // Build and expose our fixtures for easy access in testing
       // DEV: We use bespoke fixture loader instead of `sequelize-fixtures` due to wanting `.build` support
       var builtModels = this.models = _.mapObject(selectedFixturesObj, function buildModel (fixture, key) {
+        // Build our model with `.set()` based data
         var modelClass = sequelize.models[fixture.model];
         assert(modelClass, 'Fixture model not found "' + fixture.model + '"');
         var overriddenData = _.extend({}, fixture.data, selectedFixtureOverrides[key]);
-        return modelClass.build(overriddenData);
+        var builtModel = modelClass.build(overriddenData);
+
+        // Write in `.setDataValue()` for harder to test info
+        _.map(selectedFixtureOverrideDataValues[key] || {}, function setDataValues (val, key) {
+          builtModel.setDataValue(key, val);
+        });
+
+        // Return our model
+        return builtModel;
       });
 
       // Save our built models ot the database

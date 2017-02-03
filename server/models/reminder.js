@@ -74,6 +74,12 @@ var options = {
       throw new Error('Direct deletion of Reminder not supported. ' +
         'Please use ApplicationReminder or InterviewReminder instead');
     }
+  },
+
+  instanceMethods: {
+    isExpired: function () {
+      return this.get('date_time_moment') < new Date();
+    }
   }
 };
 var Reminder = module.exports = _.extend(

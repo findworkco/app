@@ -11,8 +11,11 @@ var AuditLog = require('../models/audit-log');
 var Application = require('../models/application');
 var ApplicationReminder = require('../models/application-reminder');
 var Candidate = require('../models/candidate');
+var Interview = require('../models/interview');
+var InterviewReminder = require('../models/interview-reminder');
 var emails = require('../emails');
 var sentryClient = exports.sentryClient = app.sentryClient;
+var reminderUtils = require('../utils/reminder');
 
 // If we are in a Kue environment, enable cleanup
 // https://github.com/Automattic/kue/tree/v0.11.5#unstable-redis-connections
@@ -228,6 +231,18 @@ function markReminderAsSent(reminder, cb) {
     });
   }).asCallback(cb);
 }
+function handleInterviewChanges(interview) {
+  var application = interview.get('application');
+  var timezone = interview.get('candidate').get('timezone');
+  var reminder = application.get('waiting_for_response_reminder');
+  if (!reminder || reminder.isExpired() || reminder.get('sent_at_moment')) {
+    reminder = application.createWaitingForResponseReminder({
+      is_enabled: true,
+      date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(timezone)
+    });
+  }
+  return [interview, application, reminder];
+}
 function logError(err, job, cb) {
   // Report/log our error
   app.notWinston.error(err);
@@ -266,6 +281,51 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
     }, {
       model: ApplicationReminder,
       as: 'waiting_for_response_reminder',
+      where: whereReminerDue
+    }],
+    limit: exports.PROCESS_REMINDERS_BATCH_SIZE
+  };
+  var preInterviewQuery = {
+    where: {
+      can_send_reminders: true
+    },
+    include: [{
+      model: Candidate
+    }, {
+      model: Application,
+      where: {
+        // Allow any active applications to get reminders for their interviews (e.g. received offer)
+        status: {$not: Application.STATUSES.ARCHIVED}
+      }
+    }, {
+      model: InterviewReminder,
+      as: 'pre_interview_reminder',
+      where: whereReminerDue
+    }, {
+      model: InterviewReminder,
+      as: 'post_interview_reminder'
+    }],
+    limit: exports.PROCESS_REMINDERS_BATCH_SIZE
+  };
+  var postInterviewQuery = {
+    where: {
+      can_send_reminders: true
+    },
+    include: [{
+      model: Candidate
+    }, {
+      model: Application,
+      include: {
+        model: ApplicationReminder,
+        as: 'waiting_for_response_reminder'
+      },
+      where: {
+        // Allow any active applications to get reminders for their interviews (e.g. received offer)
+        status: {$not: Application.STATUSES.ARCHIVED}
+      }
+    }, {
+      model: InterviewReminder,
+      as: 'post_interview_reminder',
       where: whereReminerDue
     }],
     limit: exports.PROCESS_REMINDERS_BATCH_SIZE
@@ -330,6 +390,51 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
         }, callback);
       });
     },
+    function updatePreInterviewReminders (callback) {
+      Interview.findAll(preInterviewQuery).asCallback(function handleFindAll (err, interviews) {
+        if (err) {
+          return callback(err);
+        }
+        async.forEach(interviews, function handleInterview (interview, cb) {
+          var candidate = interview.get('candidate');
+          emails.preInterviewReminder({
+            to: candidate.get('email')
+          }, {
+            interview: interview.get({plain: true}),
+            application: interview.get('application').get({plain: true}),
+            email: candidate.get('email')
+          }, function handleSend (err) {
+            if (err) { return cb(err); }
+            var reminder = interview.get('pre_interview_reminder');
+            reminder.setDataValue('interview', interview);
+            markReminderAsSent(reminder, cb);
+          });
+        }, callback);
+      });
+    },
+    function updatePostInterviewReminders (callback) {
+      Interview.findAll(postInterviewQuery).asCallback(function handleFindAll (err, interviews) {
+        if (err) {
+          return callback(err);
+        }
+        async.forEach(interviews, function handleInterview (interview, cb) {
+          var candidate = interview.get('candidate');
+          handleInterviewChanges(interview);
+          emails.postInterviewReminder({
+            to: candidate.get('email')
+          }, {
+            interview: interview.get({plain: true}),
+            application: interview.get('application').get({plain: true}),
+            email: candidate.get('email')
+          }, function handleSend (err) {
+            if (err) { return cb(err); }
+            var reminder = interview.get('post_interview_reminder');
+            reminder.setDataValue('interview', interview);
+            markReminderAsSent(reminder, cb);
+          });
+        }, callback);
+      });
+    },
     function updateReceivedOfferReminders (callback) {
       Application.findAll(receivedOfferQuery).asCallback(function handleFindAll (err, applications) {
         if (err) { return logError(err, job, callback); }
@@ -358,6 +463,8 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
     async.parallel([
       function (cb) { Application.count(savedForLaterQuery).asCallback(cb); },
       function (cb) { Application.count(waitingForResponseQuery).asCallback(cb); },
+      function (cb) { Interview.count(preInterviewQuery).asCallback(cb); },
+      function (cb) { Interview.count(postInterviewQuery).asCallback(cb); },
       function (cb) { Application.count(receivedOfferQuery).asCallback(cb); }
     ], function handleCounts (err, counts) {
       // If there was an error, call back with it

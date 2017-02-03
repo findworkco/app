@@ -24,7 +24,7 @@ var InterviewReminder = module.exports = _.extend(baseDefine('interview_reminder
   }
 }, Reminder._cleanAttributes), {
   VALID_TYPES: _.values(exports.TYPES),
-  validate: {
+  validate: _.defaults({
     // DEV: We skip this validation by default on fixture create in `utils/test` as models are standalone
     // DEV: We can only have this validation located in interview or reminder.
     //   If we do both, then we get double errors in browser
@@ -56,7 +56,11 @@ var InterviewReminder = module.exports = _.extend(baseDefine('interview_reminder
         throw new Error('Unexpected InterviewReminder type received');
       }
     }
-  }
+  }, Reminder.options.validate),
+
+  instanceMethods: _.defaults({
+    // Instance methods go here
+  }, Reminder.options.instanceMethods)
 }), exports);
 // DEV: To prevent circular dependencies, we define parent/child relationships in model where foreign key is
 //   Unfortunately, Application/ApplicationReminder both have foreign keys so we choose the stronger form

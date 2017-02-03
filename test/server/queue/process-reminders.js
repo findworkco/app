@@ -3,6 +3,7 @@ var expect = require('chai').expect;
 var dbFixtures = require('../utils/db-fixtures');
 var ApplicationReminder = require('../../../server/models/application-reminder');
 var emails = require('../../../server/emails');
+var InterviewReminder = require('../../../server/models/interview-reminder');
 var serverUtils = require('../utils/server');
 var sinonUtils = require('../utils/sinon');
 var queue = require('../../../server/queue');
@@ -102,6 +103,72 @@ scenario.job('A waiting for response application with enabled, matching, due, ' 
   });
 });
 
+scenario.job('An upcoming interview application with enabled, matching, sendable, due, ' +
+    'and unsent reminders being processed', {
+  dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  sinonUtils.spy(emails, 'preInterviewReminder');
+  sinonUtils.spy(emails, 'postInterviewReminder');
+  serverUtils.stubEmails();
+  before(function verifyNoWaitingForResponseReminder () {
+    // DEV: By using a "waiting for response reminder"-less application, we verify we can tolerate missing data
+    var application = this.models[dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY];
+    expect(application.get('waiting_for_response_reminder_id')).to.equal(null);
+  });
+  processReminders();
+
+  it('sends the reminder email', function () {
+    // Verify email sent
+    var emailSendStub = this.emailSendStub;
+    expect(emailSendStub.callCount).to.equal(2);
+
+    // Verify email metadata
+    var emailSendStubArgs = emailSendStub.args.slice().sort(function (argsA, argsB) {
+      return argsB[0].data.subject.localeCompare(argsA[0].data.subject);
+    });
+    var data = emailSendStubArgs[0][0].data;
+    expect(data.from).to.deep.equal({name: 'Todd Wolfson', address: 'todd@findwork.co'});
+    expect(data.to).to.equal('mock-email@mock-domain.test');
+
+    // Spot-check email content, trust email tests for deeper vetting
+    expect(data.subject).to.equal('Pre-interview reminder for "Umbrella Corporation"');
+    expect(data.html).to.contain('Hi mock-email@mock-domain.test,');
+    expect(data.html).to.contain('https://findwork.test/application/abcdef-umbrella-corp-uuid');
+    expect(data.html).to.not.contain('undefined');
+    var preInterviewReminderSpy = emails.preInterviewReminder;
+    expect(preInterviewReminderSpy.callCount).to.equal(1);
+    expect(preInterviewReminderSpy.args[0][1]).to.have.property('application');
+    expect(preInterviewReminderSpy.args[0][1]).to.have.property('interview');
+    expect(preInterviewReminderSpy.args[0][1].interview.post_interview_reminder).to.be.an('object');
+    expect(preInterviewReminderSpy.args[0][1]).to.have.property('email');
+
+    // Verify similar setup for post interview reminder
+    data = emailSendStubArgs[1][0].data;
+    expect(data.from).to.deep.equal({name: 'Todd Wolfson', address: 'todd@findwork.co'});
+    expect(data.to).to.equal('mock-email@mock-domain.test');
+    expect(data.subject).to.equal('Post-interview reminder for "Umbrella Corporation"');
+    expect(data.html).to.contain('Hi mock-email@mock-domain.test,');
+    expect(data.html).to.contain('https://findwork.test/application/abcdef-umbrella-corp-uuid');
+    expect(data.html).to.not.contain('undefined');
+    var postInterviewReminderSpy = emails.postInterviewReminder;
+    expect(postInterviewReminderSpy.callCount).to.equal(1);
+    expect(postInterviewReminderSpy.args[0][1]).to.have.property('application');
+    expect(postInterviewReminderSpy.args[0][1].application.waiting_for_response_reminder).to.be.an('object');
+    expect(postInterviewReminderSpy.args[0][1]).to.have.property('interview');
+    expect(postInterviewReminderSpy.args[0][1]).to.have.property('email');
+  });
+
+  it('marks the reminders as sent', function (done) {
+    InterviewReminder.findAll().asCallback(function handleFindAll (err, reminders) {
+      if (err) { return done(err); }
+      expect(reminders).to.have.length(2);
+      expect(reminders[0].get('sent_at_datetime')).to.be.a('date');
+      expect(reminders[1].get('sent_at_datetime')).to.be.a('date');
+      done();
+    });
+  });
+});
+
 scenario.job('A received offer application with enabled, matching, due, ' +
     'and unsent reminder being processed', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER_REMINDER_DUE, dbFixtures.DEFAULT_FIXTURES]
@@ -138,6 +205,35 @@ scenario.job('A received offer application with enabled, matching, due, ' +
       if (err) { return done(err); }
       expect(reminders).to.have.length(1);
       expect(reminders[0].get('sent_at_datetime')).to.be.a('date');
+      done();
+    });
+  });
+});
+
+// SCENARIO: Due yet not sendable (e.g. past interviews)
+scenario.job('Interview reminders that are enabled, due, matching, and unsent yet ' +
+    'are unsendable being processed', {
+  dbFixtures: [
+    dbFixtures.APPLICATION_RECEIVED_OFFER_WITH_INTERVIEW_REMINDERS_DUE_YET_UNSENDABLE,
+    dbFixtures.DEFAULT_FIXTURES
+  ]
+}, function () {
+  serverUtils.stubEmails();
+  processReminders();
+
+  it('sends no emails', function () {
+    var emailSendStub = this.emailSendStub;
+    expect(emailSendStub.callCount).to.equal(0);
+  });
+
+  it('updates no reminders as sent', function (done) {
+    InterviewReminder.findAll({where: {
+      id: {$in: ['umbrella-corp-reminder-pre-int-uuid', 'umbrella-corp-reminder-post-int-uuid']}
+    }}).asCallback(function handleFindAll (err, reminders) {
+      if (err) { return done(err); }
+      expect(reminders).to.have.length(2);
+      expect(reminders[0].get('sent_at_datetime')).to.equal(null);
+      expect(reminders[1].get('sent_at_datetime')).to.equal(null);
       done();
     });
   });
@@ -210,6 +306,38 @@ scenario.job('A waiting for response reminder that is enabled, due, and unsent y
   });
 });
 
+scenario.job('Interview reminders that are enabled, due, sendable, and unsent yet ' +
+    'have a non-matching status being processed', {
+  dbFixtures: [
+    dbFixtures.APPLICATION_ARCHIVED_WITH_INTERVIEW_REMINDERS_DUE,
+    dbFixtures.DEFAULT_FIXTURES
+  ]
+}, function () {
+  before(function sanityCheckFixtures () {
+    var interview = this.models[dbFixtures.INTERVIEW_UPCOMING_INTERVIEW_KEY];
+    expect(interview.get('can_send_reminders')).to.equal(true);
+  });
+  serverUtils.stubEmails();
+  processReminders();
+
+  it('sends no emails', function () {
+    var emailSendStub = this.emailSendStub;
+    expect(emailSendStub.callCount).to.equal(0);
+  });
+
+  it('updates no reminders as sent', function (done) {
+    InterviewReminder.findAll({where: {
+      id: {$in: ['umbrella-corp-reminder-pre-int-uuid', 'umbrella-corp-reminder-post-int-uuid']}
+    }}).asCallback(function handleFindAll (err, reminders) {
+      if (err) { return done(err); }
+      expect(reminders).to.have.length(2);
+      expect(reminders[0].get('sent_at_datetime')).to.equal(null);
+      expect(reminders[1].get('sent_at_datetime')).to.equal(null);
+      done();
+    });
+  });
+});
+
 scenario.job('A received offer reminder that is enabled, due, and unsent yet ' +
     'has a non-matching status being processed', {
   dbFixtures: [
@@ -251,6 +379,7 @@ scenario.job('Reminders that match status, are due, and are unsent yet ' +
   dbFixtures: [
     dbFixtures.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_DISABLED,
     dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_DISABLED,
+    dbFixtures.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE_YET_DISABLED,
     dbFixtures.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_DISABLED,
     dbFixtures.DEFAULT_FIXTURES
   ]
@@ -263,13 +392,25 @@ scenario.job('Reminders that match status, are due, and are unsent yet ' +
     expect(emailSendStub.callCount).to.equal(0);
   });
 
-  it('updates no reminders as sent', function (done) {
+  it('updates no application reminders as sent', function (done) {
     ApplicationReminder.findAll().asCallback(function handleFindAll (err, reminders) {
       if (err) { return done(err); }
       expect(reminders).to.have.length(3);
       expect(reminders[0].get('sent_at_datetime')).to.equal(null);
       expect(reminders[1].get('sent_at_datetime')).to.equal(null);
       expect(reminders[2].get('sent_at_datetime')).to.equal(null);
+      done();
+    });
+  });
+
+  it('updates no interview reminders as sent', function (done) {
+    InterviewReminder.findAll({
+      where: {interview_id: 'abcdef-umbrella-corp-interview-uuid'}
+    }).asCallback(function handleFindAll (err, reminders) {
+      if (err) { return done(err); }
+      expect(reminders).to.have.length(2);
+      expect(reminders[0].get('sent_at_datetime')).to.equal(null);
+      expect(reminders[1].get('sent_at_datetime')).to.equal(null);
       done();
     });
   });
@@ -280,6 +421,7 @@ scenario.job('Reminders that match status, are due, enabled yet are sent being p
   dbFixtures: [
     dbFixtures.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_SENT,
     dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_SENT,
+    dbFixtures.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE_YET_SENT,
     dbFixtures.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_SENT,
     dbFixtures.DEFAULT_FIXTURES
   ]
@@ -292,13 +434,25 @@ scenario.job('Reminders that match status, are due, enabled yet are sent being p
     expect(emailSendStub.callCount).to.equal(0);
   });
 
-  it('updates doesn\'t update reminder sent status', function (done) {
+  it('updates doesn\'t update application reminder sent status', function (done) {
     ApplicationReminder.findAll().asCallback(function handleFindAll (err, reminders) {
       if (err) { return done(err); }
       expect(reminders).to.have.length(3);
       expect(reminders[0].get('sent_at_datetime').toISOString()).to.equal('2016-01-15T09:30:00.000Z');
       expect(reminders[1].get('sent_at_datetime').toISOString()).to.equal('2016-01-15T09:30:00.000Z');
       expect(reminders[2].get('sent_at_datetime').toISOString()).to.equal('2016-01-15T09:30:00.000Z');
+      done();
+    });
+  });
+
+  it('updates doesn\'t update interview reminder sent status', function (done) {
+    InterviewReminder.findAll({
+      where: {interview_id: 'abcdef-umbrella-corp-interview-uuid'}
+    }).asCallback(function handleFindAll (err, reminders) {
+      if (err) { return done(err); }
+      expect(reminders).to.have.length(2);
+      expect(reminders[0].get('sent_at_datetime').toISOString()).to.equal('2016-01-15T14:30:00.000Z');
+      expect(reminders[1].get('sent_at_datetime').toISOString()).to.equal('2016-01-15T14:30:00.000Z');
       done();
     });
   });
@@ -309,6 +463,7 @@ scenario.job('Reminders that match status, are unsent, are enabled yet aren\'t d
   dbFixtures: [
     dbFixtures.APPLICATION_SAVED_FOR_LATER_REMINDER_NOT_DUE,
     dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_NOT_DUE,
+    dbFixtures.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_NOT_DUE,
     dbFixtures.APPLICATION_RECEIVED_OFFER_REMINDER_NOT_DUE,
     dbFixtures.DEFAULT_FIXTURES
   ]
@@ -321,13 +476,25 @@ scenario.job('Reminders that match status, are unsent, are enabled yet aren\'t d
     expect(emailSendStub.callCount).to.equal(0);
   });
 
-  it('updates no reminders as sent', function (done) {
+  it('updates no application reminders as sent', function (done) {
     ApplicationReminder.findAll().asCallback(function handleFindAll (err, reminders) {
       if (err) { return done(err); }
       expect(reminders).to.have.length(3);
       expect(reminders[0].get('sent_at_datetime')).to.equal(null);
       expect(reminders[1].get('sent_at_datetime')).to.equal(null);
       expect(reminders[2].get('sent_at_datetime')).to.equal(null);
+      done();
+    });
+  });
+
+  it('updates no interview reminders as sent', function (done) {
+    InterviewReminder.findAll({
+      where: {interview_id: 'abcdef-umbrella-corp-interview-uuid'}
+    }).asCallback(function handleFindAll (err, reminders) {
+      if (err) { return done(err); }
+      expect(reminders).to.have.length(2);
+      expect(reminders[0].get('sent_at_datetime')).to.equal(null);
+      expect(reminders[1].get('sent_at_datetime')).to.equal(null);
       done();
     });
   });

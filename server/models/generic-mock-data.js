@@ -685,6 +685,30 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE = overrideFixtures(
     overrides: {date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')}
   }
 );
+exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_UPCOMING_INTERVIEW
+  ]),
+  exports.INTERVIEW_UPCOMING_INTERVIEW_REMINDER_DUE = {
+    base: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
+    overrides: {date_time_moment: moment.tz('2016-01-15T11:00', 'US-America/Chicago')},
+    overrideDataValues: {can_send_reminders: true}
+  },
+  exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_REMINDER_DUE = {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
+    overrides: {
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
+      is_enabled: true
+    }
+  },
+  exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_REMINDER_DUE = {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY,
+    overrides: {
+      date_time_moment: moment.tz('2016-01-15T13:00', 'US-America/Chicago'),
+      is_enabled: true
+    }
+  }
+);
 exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE = overrideFixtures(
   _.flatten([
     exports.APPLICATION_RECEIVED_OFFER
@@ -692,6 +716,28 @@ exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE = overrideFixtures(
   exports.REMINDER_RECEIVED_OFFER_REMINDER_DUE = {
     base: exports.REMINDER_RECEIVED_OFFER_KEY,
     overrides: {date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')}
+  }
+);
+
+// GROUP: Due yet unsendable
+exports.APPLICATION_RECEIVED_OFFER_WITH_INTERVIEW_REMINDERS_DUE_YET_UNSENDABLE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE,
+    exports.REMINDER_RECEIVED_OFFER_KEY
+  ]),
+  {
+    // application = {id: 'umbrella-corp', status: 'received_offer', reminder: 'black-mesa'}
+    base: exports.APPLICATION_UPCOMING_INTERVIEW_KEY,
+    overrides: {status: 'received_offer', received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid'}
+  },
+  {
+    base: exports.INTERVIEW_UPCOMING_INTERVIEW_REMINDER_DUE,
+    overrideDataValues: {can_send_reminders: false}
+  },
+  {
+    // reminder = {id: 'black-mesa', application_id: 'umbrella-corp', is_enabled: false}
+    base: exports.REMINDER_RECEIVED_OFFER_KEY,
+    overrides: {application_id: 'abcdef-umbrella-corp-uuid', is_enabled: false}
   }
 );
 
@@ -756,6 +802,15 @@ exports.APPLICATION_RECEIVED_OFFER_WITH_WAITING_FOR_RESPONSE_REMINDER_DUE = over
     overrides: {is_enabled: false}
   }
 );
+exports.APPLICATION_ARCHIVED_WITH_INTERVIEW_REMINDERS_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE
+  ]),
+  {
+    base: exports.APPLICATION_UPCOMING_INTERVIEW_KEY,
+    overrides: {status: 'archived', archived_at_moment: moment('2016-02-01T11:00:00')}
+  }
+);
 
 // GROUP: Due yet disabled
 exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_DISABLED = overrideFixtures(
@@ -773,6 +828,19 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_DISABLED = overrideFix
   ]),
   {
     base: exports.REMINDER_WAITING_FOR_RESPONSE_REMINDER_DUE,
+    overrides: {is_enabled: false}
+  }
+);
+exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE_YET_DISABLED = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE
+  ]),
+  {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_REMINDER_DUE,
+    overrides: {is_enabled: false}
+  },
+  {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_REMINDER_DUE,
     overrides: {is_enabled: false}
   }
 );
@@ -805,6 +873,19 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_SENT = overrideFixture
     overrides: {sent_at_moment: moment('2016-01-15T09:30')}
   }
 );
+exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE_YET_SENT = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE
+  ]),
+  {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_REMINDER_DUE,
+    overrides: {sent_at_moment: moment('2016-01-15T14:30')}
+  },
+  {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_REMINDER_DUE,
+    overrides: {sent_at_moment: moment('2016-01-15T14:30')}
+  }
+);
 exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_SENT = overrideFixtures(
   _.flatten([
     exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE
@@ -832,6 +913,24 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_NOT_DUE = overrideFixtures(
   {
     base: exports.REMINDER_WAITING_FOR_RESPONSE_REMINDER_DUE,
     overrides: {date_time_moment: moment.tz('2022-12-01T09:00', 'US-America/Chicago')}
+  }
+);
+exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_NOT_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE
+  ]),
+  {
+    base: exports.INTERVIEW_UPCOMING_INTERVIEW_REMINDER_DUE,
+    overrides: {date_time_moment: moment.tz('2022-12-01T11:00', 'US-America/Chicago')},
+    overrideDataValues: {can_send_reminders: true}
+  },
+  {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_REMINDER_DUE,
+    overrides: {date_time_moment: moment.tz('2022-12-01T09:00', 'US-America/Chicago')}
+  },
+  {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_REMINDER_DUE,
+    overrides: {date_time_moment: moment.tz('2022-12-01T14:00', 'US-America/Chicago')}
   }
 );
 exports.APPLICATION_RECEIVED_OFFER_REMINDER_NOT_DUE = overrideFixtures(

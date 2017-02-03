@@ -24,6 +24,7 @@ exports.instanceMethods = {
     // Create, set, and return our reminder
     var reminder = this._buildReminder('SAVED_FOR_LATER', attrs);
     this.set('saved_for_later_reminder_id', reminder.get('id'));
+    this.setDataValue('saved_for_later_reminder', reminder);
     return reminder;
   },
   updateOrReplaceSavedForLaterReminder: function (attrs) {
@@ -41,6 +42,7 @@ exports.instanceMethods = {
   createWaitingForResponseReminder: function (attrs) {
     var reminder = this._buildReminder('WAITING_FOR_RESPONSE', attrs);
     this.set('waiting_for_response_reminder_id', reminder.get('id'));
+    this.setDataValue('waiting_for_response_reminder', reminder);
     return reminder;
   },
   updateOrReplaceWaitingForResponseReminder: function (attrs) {
@@ -56,6 +58,7 @@ exports.instanceMethods = {
   createReceivedOfferReminder: function (attrs) {
     var reminder = this._buildReminder('RECEIVED_OFFER', attrs);
     this.set('received_offer_reminder_id', reminder.get('id'));
+    this.setDataValue('received_offer_reminder', reminder);
     return reminder;
   },
   updateOrReplaceReceivedOfferReminder: function (attrs) {

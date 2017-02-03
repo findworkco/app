@@ -19,4 +19,11 @@ module.exports = _.extend(baseDefine('candidate', {
   //   but we are using 1024 to future proof in case this moves to another table
   google_access_token: {type: Sequelize.STRING(1024), allowNull: true},
   welcome_email_sent: {type: Sequelize.BOOLEAN, defaultValue: false, allowNull: false}
+}, {
+  getterMethods: {
+    timezone: function () {
+      // Placeholder for candidate timezone, should be resolved via IP initially and managed by settings
+      return 'US-America/Chicago';
+    }
+  }
 }), exports);

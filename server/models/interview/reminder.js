@@ -24,6 +24,7 @@ exports.instanceMethods = {
     // Create, set, and return our reminder
     var reminder = this._buildReminder('PRE_INTERVIEW', attrs);
     this.set('pre_interview_reminder_id', reminder.get('id'));
+    this.setDataValue('pre_interview_reminder', reminder);
     return reminder;
   },
   updateOrReplacePreInterviewReminder: function (attrs) {
@@ -42,6 +43,7 @@ exports.instanceMethods = {
     // Create, set, and return our reminder
     var reminder = this._buildReminder('POST_INTERVIEW',attrs);
     this.set('post_interview_reminder_id', reminder.get('id'));
+    this.setDataValue('post_interview_reminder', reminder);
     return reminder;
   },
   updateOrReplacePostInterviewReminder: function (attrs) {

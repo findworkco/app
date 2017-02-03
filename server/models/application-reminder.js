@@ -23,7 +23,14 @@ var ApplicationReminder = module.exports = _.extend(baseDefine('application_remi
     onUpdate: 'CASCADE', onDelete: 'CASCADE'
   }
 }, Reminder._cleanAttributes), {
-  VALID_TYPES: _.values(exports.TYPES)
+  VALID_TYPES: _.values(exports.TYPES),
+  validate: _.defaults({
+    // Validate methods go here
+  }, Reminder.options.validate),
+
+  instanceMethods: _.defaults({
+    // Instance methods go here
+  }, Reminder.options.instanceMethods)
 }), exports);
 // DEV: To prevent circular dependencies, we define parent/child relationships in model where foreign key is
 //   Unfortunately, Application/ApplicationReminder both have foreign keys so we choose the stronger form
