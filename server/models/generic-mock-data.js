@@ -5,6 +5,7 @@ var moment = require('moment-timezone');
 var Application = require('./application');
 var ApplicationReminder = require('./application-reminder');
 var InterviewReminder = require('./interview-reminder');
+var slice = Array.prototype.slice;
 
 // DEV: We define all our mock data side by side for easy tweaking
 // DEV: We store 2 kinds of fixtures on `exports.fixtures`
@@ -521,377 +522,335 @@ exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
 ];
 
 // Overridden fixtures
-exports.APPLICATION_RECEIVED_OFFER_WITH_UPCOMING_INTERVIEW = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_RECEIVED_OFFER,
-      exports.INTERVIEW_UPCOMING_INTERVIEW
-    ]),
-    exports.INTERVIEW_UPCOMING_INTERVIEW_KEY),
+function overrideFixtures(baseArr/*, overrideFixtures...*/) {
+  // Normalize our base array to use `{key, overrides, overrideDataValues}` syntax
+  var retArr = baseArr.map(function normalizeBaseVal (obj) {
+    assert(obj);
+    return typeof obj === 'object' ? obj : {key: obj};
+  });
+  var overrideFixtures = slice.call(arguments, 1);
+
+  // For each of our override objects
+  var fixtureOverrides = {};
+  overrideFixtures.forEach(function handleOverrideObj (overriddenFixture, i) {
+    // Resolve our base fixture's key
+    assert(overriddenFixture.base, 'Expected "' + JSON.stringify(overriddenFixture) + '" ' +
+      '(override #' + (i + 1) + ') to have "base" key but it didn\'t');
+    var fixtureKey = typeof overriddenFixture.base === 'string' ? overriddenFixture.base : overriddenFixture.base.key;
+    assert(fixtureKey, 'Unable to resolve fixture key for "' + JSON.stringify(overriddenFixture) + '" ' +
+      '(override #' + (i + 1) + ')');
+    assert.strictEqual(fixtureOverrides[fixtureKey], undefined,
+      'Multiple overrides requested for same key "' + fixtureKey + '". ' +
+      'Please only override once per `overrideFixtures` call');
+    fixtureOverrides[fixtureKey] = true;
+
+    // Find our base fixture
+    var index = _.findIndex(retArr, {key: fixtureKey});
+    assert.notEqual(index, -1, 'Unable to find fixture "' + fixtureKey + '" in fixtures being overridden');
+    var baseFixture = retArr[index];
+
+    // Perform our overrides and swap our value
+    // DEV: This mutates the override fixture so further objects inherit from its overrides
+    overriddenFixture.key = baseFixture.key;
+    overriddenFixture.overrides = _.extend({}, baseFixture.overrides,
+      overriddenFixture.overrides);
+    overriddenFixture.overrideDataValues = _.extend({}, baseFixture.overrideDataValues,
+      overriddenFixture.overrideDataValues);
+    retArr.splice(index, 1, overriddenFixture);
+  });
+
+  // Return our modified array
+  return retArr;
+}
+exports.APPLICATION_RECEIVED_OFFER_WITH_UPCOMING_INTERVIEW = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_RECEIVED_OFFER,
+    exports.INTERVIEW_UPCOMING_INTERVIEW
+  ]),
   {
     // interview = {id: umbrella-corp, application_id: black-mesa}
-    key: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
+    base: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
     overrides: {application_id: 'abcdef-black-mesa-uuid'}
   }
-];
+);
 
-exports.APPLICATION_RECEIVED_OFFER_EMPTY = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_RECEIVED_OFFER
-    ]),
-    exports.APPLICATION_RECEIVED_OFFER_KEY,
-    exports.REMINDER_RECEIVED_OFFER_KEY),
+exports.APPLICATION_RECEIVED_OFFER_EMPTY = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_RECEIVED_OFFER
+  ]),
   {
-    key: exports.APPLICATION_RECEIVED_OFFER_KEY,
+    base: exports.APPLICATION_RECEIVED_OFFER_KEY,
     overrides: {notes: ''}
   },
   {
-    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    base: exports.REMINDER_RECEIVED_OFFER_KEY,
     overrides: {is_enabled: false}
   }
-];
+);
 
-exports.APPLICATION_UPCOMING_INTERVIEW_FULL = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_UPCOMING_INTERVIEW
-    ]),
-    exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
-    exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY),
+exports.APPLICATION_UPCOMING_INTERVIEW_FULL = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_UPCOMING_INTERVIEW
+  ]),
   {
-    key: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
+    base: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
     overrides: {is_enabled: true}
   },
   {
-    key: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY,
+    base: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY,
     overrides: {is_enabled: true}
   }
-];
+);
 
-exports.APPLICATION_UPCOMING_INTERVIEW_EMPTY = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_UPCOMING_INTERVIEW
-    ]),
-    exports.APPLICATION_UPCOMING_INTERVIEW_KEY,
-    exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
-    exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
-    exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY),
+exports.APPLICATION_UPCOMING_INTERVIEW_EMPTY = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_UPCOMING_INTERVIEW
+  ]),
   {
-    key: exports.APPLICATION_UPCOMING_INTERVIEW_KEY,
+    base: exports.APPLICATION_UPCOMING_INTERVIEW_KEY,
     overrides: {notes: ''}
   },
   {
-    key: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
+    base: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
     overrides: {details: ''}
   },
   {
-    key: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
+    base: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
     overrides: {is_enabled: false}
   },
   {
-    key: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY,
+    base: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY,
     overrides: {is_enabled: false}
   }
-];
+);
 
-exports.APPLICATION_WAITING_FOR_RESPONSE_EMPTY = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_WAITING_FOR_RESPONSE
-    ]),
-    exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
-    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+exports.APPLICATION_WAITING_FOR_RESPONSE_EMPTY = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_WAITING_FOR_RESPONSE
+  ]),
   {
-    key: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    base: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
     overrides: {notes: ''}
   },
   {
-    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    base: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
     overrides: {is_enabled: false}
   }
-];
+);
 
-exports.APPLICATION_SAVED_FOR_LATER_EMPTY = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_SAVED_FOR_LATER
-    ]),
-    exports.APPLICATION_SAVED_FOR_LATER_KEY,
-    exports.REMINDER_SAVED_FOR_LATER_KEY),
+exports.APPLICATION_SAVED_FOR_LATER_EMPTY = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_SAVED_FOR_LATER
+  ]),
   {
-    key: exports.APPLICATION_SAVED_FOR_LATER_KEY,
+    base: exports.APPLICATION_SAVED_FOR_LATER_KEY,
     overrides: {notes: ''}
   },
   {
-    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
+    base: exports.REMINDER_SAVED_FOR_LATER_KEY,
     overrides: {is_enabled: false}
   }
-];
+);
 
-exports.APPLICATION_ARCHIVED_EMPTY = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_ARCHIVED
-    ]),
-    exports.APPLICATION_ARCHIVED_KEY,
-    exports.REMINDER_ARCHIVED_KEY),
+exports.APPLICATION_ARCHIVED_EMPTY = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_ARCHIVED
+  ]),
   {
-    key: exports.APPLICATION_ARCHIVED_KEY,
+    base: exports.APPLICATION_ARCHIVED_KEY,
     overrides: {notes: ''}
   },
   {
-    key: exports.REMINDER_ARCHIVED_KEY,
+    base: exports.REMINDER_ARCHIVED_KEY,
     overrides: {is_enabled: false}
   }
-];
+);
 
-exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_SAVED_FOR_LATER
-    ]),
-    exports.REMINDER_SAVED_FOR_LATER_KEY),
-  {
-    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
+// GROUP: Due with matching status
+exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_SAVED_FOR_LATER
+  ]),
+  exports.REMINDER_SAVED_FOR_LATER_REMINDER_DUE = {
+    base: exports.REMINDER_SAVED_FOR_LATER_KEY,
     overrides: {date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')}
   }
-];
-exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_WAITING_FOR_RESPONSE
-    ]),
-    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
-  {
-    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+);
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_WAITING_FOR_RESPONSE
+  ]),
+  exports.REMINDER_WAITING_FOR_RESPONSE_REMINDER_DUE = {
+    base: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
     overrides: {date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')}
   }
-];
-exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_RECEIVED_OFFER
-    ]),
-    exports.REMINDER_RECEIVED_OFFER_KEY),
-  {
-    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+);
+exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_RECEIVED_OFFER
+  ]),
+  exports.REMINDER_RECEIVED_OFFER_REMINDER_DUE = {
+    base: exports.REMINDER_RECEIVED_OFFER_KEY,
     overrides: {date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')}
   }
-];
+);
 
-exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_SAVED_FOR_LATER_REMINDER_DUE = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_WAITING_FOR_RESPONSE,
-      exports.REMINDER_SAVED_FOR_LATER_KEY
-    ]),
-    exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
-    exports.REMINDER_SAVED_FOR_LATER_KEY,
-    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+// GROUP: Due with mismatched status
+exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_SAVED_FOR_LATER_REMINDER_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_WAITING_FOR_RESPONSE,
+    exports.REMINDER_SAVED_FOR_LATER_KEY
+  ]),
   {
     // application = {id: 'sky-networks', reminder: 'intertrode'}
-    key: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    base: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
     overrides: {saved_for_later_reminder_id: 'abcdef-intertrode-reminder-uuid'}
   },
   {
-    // reminder = {id: 'intertrode', application_id: 'sky-networks', date_time: '2016-01-15'}
-    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
-    overrides: {
-      application_id: 'abcdef-sky-networks-uuid',
-      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')
-    }
+    // reminder = {id: 'intertrode', application_id: 'sky-networks'}
+    base: exports.REMINDER_SAVED_FOR_LATER_REMINDER_DUE,
+    overrides: {application_id: 'abcdef-sky-networks-uuid'}
   },
   {
-    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    base: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
     overrides: {is_enabled: false}
   }
-];
-exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_RECEIVED_OFFER_REMINDER_DUE = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_WAITING_FOR_RESPONSE,
-      exports.REMINDER_RECEIVED_OFFER_KEY
-    ]),
-    exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
-    exports.REMINDER_RECEIVED_REMINDER_KEY,
-    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+);
+exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_RECEIVED_OFFER_REMINDER_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_WAITING_FOR_RESPONSE,
+    exports.REMINDER_RECEIVED_OFFER_KEY
+  ]),
   {
     // application = {id: 'sky-networks', reminder: 'black-mesa'}
-    key: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    base: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
     overrides: {received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid'}
   },
   {
-    // reminder = {id: 'black-mesa', application_id: 'sky-networks', date_time: '2016-01-15'}
-    key: exports.REMINDER_RECEIVED_OFFER_KEY,
-    overrides: {
-      application_id: 'abcdef-sky-networks-uuid',
-      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')
-    }
+    // reminder = {id: 'black-mesa', application_id: 'sky-networks'}
+    base: exports.REMINDER_RECEIVED_OFFER_REMINDER_DUE,
+    overrides: {application_id: 'abcdef-sky-networks-uuid'}
   },
   {
-    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    base: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
     overrides: {is_enabled: false}
   }
-];
-exports.APPLICATION_RECEIVED_OFFER_WITH_WAITING_FOR_RESPONSE_REMINDER_DUE = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_RECEIVED_OFFER,
-      exports.REMINDER_WAITING_FOR_RESPONSE_KEY
-    ]),
-    exports.APPLICATION_RECEIVED_OFFER_KEY,
-    exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
-    exports.REMINDER_RECEIVED_OFFER_KEY),
+);
+exports.APPLICATION_RECEIVED_OFFER_WITH_WAITING_FOR_RESPONSE_REMINDER_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_RECEIVED_OFFER,
+    exports.REMINDER_WAITING_FOR_RESPONSE_KEY
+  ]),
   {
     // application = {id: 'black-mesa', reminder: 'sky-networks'}
-    key: exports.APPLICATION_RECEIVED_OFFER_KEY,
+    base: exports.APPLICATION_RECEIVED_OFFER_KEY,
     overrides: {waiting_for_response_reminder_id: 'abcdef-sky-networks-reminder-uuid'}
   },
   {
-    // reminder = {id: 'sky-networks', application_id: 'black-mesa', date_time: '2016-01-15'}
-    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
-    overrides: {
-      application_id: 'abcdef-black-mesa-uuid',
-      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')
-    }
+    // reminder = {id: 'sky-networks', application_id: 'black-mesa'}
+    base: exports.REMINDER_WAITING_FOR_RESPONSE_REMINDER_DUE,
+    overrides: {application_id: 'abcdef-black-mesa-uuid'}
   },
   {
-    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    base: exports.REMINDER_RECEIVED_OFFER_KEY,
     overrides: {is_enabled: false}
   }
-];
+);
 
-exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_DISABLED = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_SAVED_FOR_LATER
-    ]),
-    exports.REMINDER_SAVED_FOR_LATER_KEY),
+// GROUP: Due yet disabled
+exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_DISABLED = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE
+  ]),
   {
-    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
-    overrides: {
-      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
-      is_enabled: false
-    }
+    base: exports.REMINDER_SAVED_FOR_LATER_REMINDER_DUE,
+    overrides: {is_enabled: false}
   }
-];
-exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_DISABLED = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_WAITING_FOR_RESPONSE
-    ]),
-    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+);
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_DISABLED = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE
+  ]),
   {
-    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
-    overrides: {
-      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
-      is_enabled: false
-    }
+    base: exports.REMINDER_WAITING_FOR_RESPONSE_REMINDER_DUE,
+    overrides: {is_enabled: false}
   }
-];
-exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_DISABLED = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_RECEIVED_OFFER
-    ]),
-    exports.REMINDER_RECEIVED_OFFER_KEY),
+);
+exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_DISABLED = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE
+  ]),
   {
-    key: exports.REMINDER_RECEIVED_OFFER_KEY,
-    overrides: {
-      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
-      is_enabled: false
-    }
+    base: exports.REMINDER_RECEIVED_OFFER_REMINDER_DUE,
+    overrides: {is_enabled: false}
   }
-];
+);
 
-exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_SENT = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_SAVED_FOR_LATER
-    ]),
-    exports.REMINDER_SAVED_FOR_LATER_KEY),
+// GROUP: Due yet sent
+exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_SENT = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE
+  ]),
   {
-    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
-    overrides: {
-      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
-      sent_at_moment: moment('2016-01-15T09:30')
-    }
+    base: exports.REMINDER_SAVED_FOR_LATER_REMINDER_DUE,
+    overrides: {sent_at_moment: moment('2016-01-15T09:30')}
   }
-];
-exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_SENT = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_WAITING_FOR_RESPONSE
-    ]),
-    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+);
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_SENT = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE
+  ]),
   {
-    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
-    overrides: {
-      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
-      sent_at_moment: moment('2016-01-15T09:30')
-    }
+    base: exports.REMINDER_WAITING_FOR_RESPONSE_REMINDER_DUE,
+    overrides: {sent_at_moment: moment('2016-01-15T09:30')}
   }
-];
-exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_SENT = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_RECEIVED_OFFER
-    ]),
-    exports.REMINDER_RECEIVED_OFFER_KEY),
+);
+exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_SENT = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE
+  ]),
   {
-    key: exports.REMINDER_RECEIVED_OFFER_KEY,
-    overrides: {
-      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
-      sent_at_moment: moment('2016-01-15T09:30')
-    }
+    base: exports.REMINDER_RECEIVED_OFFER_REMINDER_DUE,
+    overrides: {sent_at_moment: moment('2016-01-15T09:30')}
   }
-];
+);
 
-exports.APPLICATION_SAVED_FOR_LATER_REMINDER_NOT_DUE = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_SAVED_FOR_LATER
-    ]),
-    exports.REMINDER_SAVED_FOR_LATER_KEY),
+// GROUP: Not due
+exports.APPLICATION_SAVED_FOR_LATER_REMINDER_NOT_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE
+  ]),
   {
-    key: exports.REMINDER_SAVED_FOR_LATER_KEY,
+    base: exports.REMINDER_SAVED_FOR_LATER_REMINDER_DUE,
     overrides: {date_time_moment: moment.tz('2022-12-01T09:00', 'US-America/Chicago')}
   }
-];
-exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_NOT_DUE = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_WAITING_FOR_RESPONSE
-    ]),
-    exports.REMINDER_WAITING_FOR_RESPONSE_KEY),
+);
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_NOT_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE
+  ]),
   {
-    key: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
+    base: exports.REMINDER_WAITING_FOR_RESPONSE_REMINDER_DUE,
     overrides: {date_time_moment: moment.tz('2022-12-01T09:00', 'US-America/Chicago')}
   }
-];
-exports.APPLICATION_RECEIVED_OFFER_REMINDER_NOT_DUE = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_RECEIVED_OFFER
-    ]),
-    exports.REMINDER_RECEIVED_OFFER_KEY),
+);
+exports.APPLICATION_RECEIVED_OFFER_REMINDER_NOT_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE
+  ]),
   {
-    key: exports.REMINDER_RECEIVED_OFFER_KEY,
+    base: exports.REMINDER_RECEIVED_OFFER_REMINDER_DUE,
     overrides: {date_time_moment: moment.tz('2022-12-01T09:00', 'US-America/Chicago')}
   }
-];
+);
 
-exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_2 = [
-  _.without(
-    _.flatten([
-      exports.APPLICATION_RECEIVED_OFFER
-    ]),
-    exports.APPLICATION_RECEIVED_OFFER_KEY,
-    exports.REMINDER_RECEIVED_OFFER_KEY),
+// NO MORE GROUPS
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_2 = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_RECEIVED_OFFER_REMINDER_DUE
+  ]),
   {
-    key: exports.APPLICATION_RECEIVED_OFFER_KEY,
+    base: exports.APPLICATION_RECEIVED_OFFER_KEY,
     overrides: {
       status: Application.STATUSES.WAITING_FOR_RESPONSE,
       waiting_for_response_reminder_id: 'abcdef-black-mesa-reminder-uuid',
@@ -899,10 +858,7 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_2 = [
     }
   },
   {
-    key: exports.REMINDER_RECEIVED_OFFER_KEY,
-    overrides: {
-      type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
-      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')
-    }
+    base: exports.REMINDER_RECEIVED_OFFER_REMINDER_DUE,
+    overrides: {type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE}
   }
-];
+);
