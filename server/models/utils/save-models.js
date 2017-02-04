@@ -1,19 +1,18 @@
 // Load in our dependencies
 var assert = require('assert');
+var _ = require('underscore');
 var async = require('async');
 var Promise = require('bluebird');
 var Sequelize = require('sequelize');
-var app = require('../../index.js').app;
+var sequelize = require('../../index.js').app.sequelize;
 var AuditLog = require('../audit-log');
 
 // Export our function
-exports.saveModelsViaCandidate = function (params, _callback) {
+exports._saveModels = function (params, _queryOptions, _callback) {
   // Assert our parameters
-  // DEV: We could support server based saving but this is simpler for now
   var models = params.models;
   var destroyModels = params.destroyModels;
   assert(models || destroyModels);
-  assert(params.candidate);
 
   // Fallback models/destroy models
   models = models || [];
@@ -49,12 +48,8 @@ exports.saveModelsViaCandidate = function (params, _callback) {
       });
     },
     function saveModels (callback) {
-      app.sequelize.transaction(function handleTransaction (t) {
-        var queryOptions = {
-          _sourceType: AuditLog.SOURCE_CANDIDATES,
-          _sourceId: params.candidate.get('id'),
-          transaction: t
-        };
+      sequelize.transaction(function handleTransaction (t) {
+        var queryOptions = _.defaults({transaction: t}, _queryOptions);
         return Promise.all(models.map(function getSaveQuery (model) {
           return model.save(queryOptions);
         }).concat(destroyModels.map(function getDestroyQuery (model) {
@@ -63,4 +58,24 @@ exports.saveModelsViaCandidate = function (params, _callback) {
       }).asCallback(callback);
     }
   ], _callback);
+};
+exports.saveModelsViaCandidate = function (params, _callback) {
+  // Resolve our query options
+  assert(params.candidate);
+
+  // Run our saveModels function
+  return exports._saveModels(params, {
+    _sourceType: AuditLog.SOURCE_CANDIDATES,
+    _sourceId: params.candidate.get('id')
+  }, _callback);
+};
+exports.saveModelsViaQueue = function (params, _callback) {
+  return exports._saveModels(params, {
+    _sourceType: AuditLog.SOURCE_QUEUE
+  }, _callback);
+};
+exports.saveModelsViaServer = function (params, _callback) {
+  return exports._saveModels(params, {
+    _sourceType: AuditLog.SOURCE_SERVER
+  }, _callback);
 };

@@ -3,11 +3,10 @@ var async = require('async');
 var assert = require('assert');
 var domain = require('domain');
 var moment = require('moment-timezone');
-// DEV: We load `app` before `AuditLog` to prevent order issues
+// DEV: We load `app` before `saveModelsViaQueue` to prevent order issues
 var app = require('../index.js').app;
 var kueQueue = require('../index.js').app.kueQueue;
 var getExternalUrl = require('../index.js').getExternalUrl;
-var AuditLog = require('../models/audit-log');
 var Application = require('../models/application');
 var ApplicationReminder = require('../models/application-reminder');
 var Candidate = require('../models/candidate');
@@ -16,6 +15,7 @@ var InterviewReminder = require('../models/interview-reminder');
 var emails = require('../emails');
 var sentryClient = exports.sentryClient = app.sentryClient;
 var reminderUtils = require('../utils/reminder');
+var saveModelsViaQueue = require('../models/utils/save-models').saveModelsViaQueue;
 
 // If we are in a Kue environment, enable cleanup
 // https://github.com/Automattic/kue/tree/v0.11.5#unstable-redis-connections
@@ -167,14 +167,8 @@ registerJob(JOBS.SEND_WELCOME_EMAIL, 5, function sendWelcomeEmail (job, done) {
       if (err) { return done(err); }
 
       // Update our candidate with a `welcome_email_sent` attribute
-      app.sequelize.transaction(function handleTransaction (t) {
-        return candidate.update({
-          welcome_email_sent: true
-        }, {
-          _sourceType: AuditLog.SOURCE_QUEUE,
-          transaction: t
-        });
-      }).asCallback(done);
+      candidate.set('welcome_email_sent', true);
+      saveModelsViaQueue({models: [candidate]}, done);
     });
   });
 });
@@ -222,14 +216,8 @@ exports.loopGuaranteeProcessReminders = function () {
   setTimeout(guaranteeReminderQueueNotEmpty, exports.PROCESS_REMINDERS_FREQUENCY);
 };
 function markReminderAsSent(reminder, cb) {
-  app.sequelize.transaction(function handleTransaction (t) {
-    return reminder.update({
-      sent_at_moment: moment()
-    }, {
-      _sourceType: AuditLog.SOURCE_QUEUE,
-      transaction: t
-    });
-  }).asCallback(cb);
+  reminder.set('sent_at_moment', moment());
+  saveModelsViaQueue({models: [reminder]}, cb);
 }
 function handleInterviewChanges(interview) {
   var application = interview.get('application');

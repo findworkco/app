@@ -5,11 +5,11 @@ var _ = require('underscore');
 var HttpError = require('http-errors');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var passport = require('passport');
-var AuditLog = require('../models/audit-log');
 var Candidate = require('../models/candidate');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
 var queue = require('../queue');
+var saveModelsViaServer = require('../models/utils/save-models').saveModelsViaServer;
 
 // DEV: Google set up instructions
 //   https://developers.google.com/identity/protocols/OAuth2WebServer
@@ -57,14 +57,8 @@ passport.use(new GoogleStrategy({
       // If we have a candidate
       if (_candidate) {
         // Update their access token (refresh token isn't defined for us)
-        app.sequelize.transaction(function handleTransaction (t) {
-          return _candidate.update({
-            google_access_token: accessToken
-          }, {
-            _sourceType: AuditLog.SOURCE_SERVER,
-            transaction: t
-          });
-        }).asCallback(function handleUpdate (err) {
+        _candidate.set('google_access_token', accessToken);
+        saveModelsViaServer({models: [_candidate]}, function handleUpdate (err) {
           // If there was an error, send it to Sentry (no need to bail)
           if (err) { app.sentryClient.captureError(err); }
 
@@ -81,12 +75,7 @@ passport.use(new GoogleStrategy({
         email: accountEmail,
         google_access_token: accessToken
       });
-      app.sequelize.transaction(function handleTransaction (t) {
-        return candidate.save({
-          _sourceType: AuditLog.SOURCE_SERVER,
-          transaction: t
-        });
-      }).asCallback(function handleSave (err) {
+      saveModelsViaServer({models: [candidate]}, function handleSave (err) {
         // If there was an error, callback with it
         if (err) { return cb(err); }
 
