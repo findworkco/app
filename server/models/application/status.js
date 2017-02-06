@@ -28,10 +28,10 @@ exports.EDIT_HUMAN_STATUSES = _.defaults({
 // DEV: These are quite bulky so we offload them to another file
 // DEV: We intentionally keep these long/stupid to avoid edge cases from being clever
 exports.instanceMethods = {
-  _createOrRemoveDefaultContent: function (req) {
+  _createOrRemoveDefaultContent: function (candidate) {
     // DEV: This is a catch-all method to create default reminders for when shifting between statuses
-    // DEV: We assert `req` upfront as it isn't always used for all statuses but each update has potential to use it
-    assert(req);
+    // DEV: We assert `candidate` upfront as it isn't always used but each update has potential to use it
+    assert(candidate);
     var status = this.getDataValue('status');
     if (status === exports.STATUSES.SAVED_FOR_LATER) {
       // We don't know how to handle removal/preservation of application date so we ignore it
@@ -61,7 +61,7 @@ exports.instanceMethods = {
       if (!this.get('waiting_for_response_reminder_id')) {
         reminder = this.createWaitingForResponseReminder({
           is_enabled: true,
-          date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(req.timezone)
+          date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(candidate.get('timezone'))
         });
         retVal.push(reminder);
       }
@@ -73,7 +73,7 @@ exports.instanceMethods = {
       if (!this.get('received_offer_reminder_id')) {
         reminder = this.createReceivedOfferReminder({
           is_enabled: true,
-          date_time_moment: reminderUtils.getReceivedOfferDefaultMoment(req.timezone)
+          date_time_moment: reminderUtils.getReceivedOfferDefaultMoment(candidate.get('timezone'))
         });
         retVal.push(reminder);
       }
@@ -85,7 +85,7 @@ exports.instanceMethods = {
     return retVal;
   },
 
-  updateToApplied: function (req) {
+  updateToApplied: function (candidate) {
     // If the application is "saved for later", then move it to "waiting for response"
     // DEV: Validation will ensure we have a `waiting_for_response` reminder set
     if (this.getDataValue('status') === exports.STATUSES.SAVED_FOR_LATER) {
@@ -96,9 +96,9 @@ exports.instanceMethods = {
     }
 
     // Create and return our default content
-    return this._createOrRemoveDefaultContent(req);
+    return this._createOrRemoveDefaultContent(candidate);
   },
-  updateToInterviewChanges: function (req) {
+  updateToInterviewChanges: function (candidate) {
     // Verify we have upcoming interviews loaded
     var upcomingInterviews = this.get('upcoming_interviews');
     assert(upcomingInterviews, '`updateToInterviewChanges()` requires upcoming interviews are loaded');
@@ -122,9 +122,9 @@ exports.instanceMethods = {
     }
 
     // Create and return our default content
-    return this._createOrRemoveDefaultContent(req);
+    return this._createOrRemoveDefaultContent(candidate);
   },
-  updateToReceivedOffer: function (req) {
+  updateToReceivedOffer: function (candidate) {
     // If the application is before "received offer", then move it to "received offer"
     // DEV: Validation will ensure we have a `received_offer` reminder set
     // DEV: We could blacklist `RECEIVED_OFFER` and `ARCHIVED` but whitelist will cause less issues
@@ -137,9 +137,9 @@ exports.instanceMethods = {
     }
 
     // Create and return our default content
-    return this._createOrRemoveDefaultContent(req);
+    return this._createOrRemoveDefaultContent(candidate);
   },
-  updateToRemoveOffer: function (req) {
+  updateToRemoveOffer: function (candidate) {
     // Verify we have upcoming interviews loaded AND waiting for response reminder
     var upcomingInterviews = this.get('upcoming_interviews');
     assert(upcomingInterviews, '`updateToInterviewChanges()` requires upcoming interviews are loaded');
@@ -159,9 +159,9 @@ exports.instanceMethods = {
     }
 
     // Create and return our default content
-    return this._createOrRemoveDefaultContent(req);
+    return this._createOrRemoveDefaultContent(candidate);
   },
-  updateToArchived: function (req) {
+  updateToArchived: function (candidate) {
     // If the application is archivable, then archive it
     if ([exports.STATUSES.WAITING_FOR_RESPONSE, exports.STATUSES.UPCOMING_INTERVIEW, exports.STATUSES.RECEIVED_OFFER]
         .indexOf(this.getDataValue('status')) !== -1) {
@@ -172,9 +172,9 @@ exports.instanceMethods = {
     }
 
     // Create and return our default content
-    return this._createOrRemoveDefaultContent(req);
+    return this._createOrRemoveDefaultContent(candidate);
   },
-  updateToRestore: function (req) {
+  updateToRestore: function (candidate) {
     // Verify we have upcoming interviews loaded AND waiting for response reminder
     var upcomingInterviews = this.get('upcoming_interviews');
     assert(upcomingInterviews, '`updateToRestore()` requires upcoming interviews are loaded');
@@ -199,6 +199,6 @@ exports.instanceMethods = {
     }
 
     // Create and return our default content
-    return this._createOrRemoveDefaultContent(req);
+    return this._createOrRemoveDefaultContent(candidate);
   }
 };

@@ -80,7 +80,7 @@ app.post('/application/:id/add-interview', _.flatten([
 
     // Update application to handle status changes
     modelsToSave = _.union(modelsToSave,
-      application.updateToInterviewChanges(req));
+      application.updateToInterviewChanges(req.candidate));
 
     // Save our changes
     saveModelsViaCandidate({
@@ -157,7 +157,7 @@ app.post('/interview/:id', _.flatten([
 
     // Update application to handle status changes
     modelsToSave = _.union(modelsToSave,
-      application.updateToInterviewChanges(req));
+      application.updateToInterviewChanges(req.candidate));
 
     // Save our changes
     saveModelsViaCandidate({
@@ -201,7 +201,7 @@ app.post('/interview/:id/delete', _.flatten([
     // Update our application status
     var modelsToSave = [application];
     modelsToSave = _.union(modelsToSave,
-        application.updateToInterviewChanges(req));
+        application.updateToInterviewChanges(req.candidate));
 
     // Perform our save/delete
     saveModelsViaCandidate({

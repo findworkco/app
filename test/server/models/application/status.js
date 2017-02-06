@@ -32,15 +32,15 @@ scenario.model('An existing Application model', {
 
 // ACTION: Applied
 // Saved for later -> Waiting for response
-var mockReq = {timezone: 'US-America/Chicago'};
 scenario.model('A saved for later Application model being applied to', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   sinonUtils.spy(Application.Instance.prototype, '_createOrRemoveDefaultContent');
   it('updates status to "Waiting for response" and creates default content', function () {
     // Assert status
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
-    var updatedModels = application.updateToApplied(mockReq);
+    var updatedModels = application.updateToApplied(candidate);
     expect(application.get('status')).to.equal('waiting_for_response');
 
     // Assert default content
@@ -55,9 +55,10 @@ scenario.model('A non-saved for later Application model being applied to', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('rejects the change', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
     expect(function () {
-      application.updateToApplied(mockReq);
+      application.updateToApplied(candidate);
     }).to.throw(HttpError.BadRequest, /already been applied to/);
   });
 });
@@ -73,8 +74,9 @@ scenario.model('An interview-insensitive Application model with an interview add
   });
 
   it('doesn\'t affect its status', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
-    application.updateToInterviewChanges(mockReq);
+    application.updateToInterviewChanges(candidate);
     expect(application.get('status')).to.equal('received_offer');
   });
 });
@@ -98,8 +100,9 @@ scenario.model('An interview-sensitive Application model with an upcoming interv
 
   it('updates its status to "upcoming interview" and creates default content', function () {
     // Assert status
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY];
-    var updatedModels = application.updateToInterviewChanges(mockReq);
+    var updatedModels = application.updateToInterviewChanges(candidate);
     expect(application.get('status')).to.equal('upcoming_interview');
 
     // Assert default content
@@ -127,8 +130,9 @@ scenario.model('An interview-sensitive Application model with no upcoming interv
 
   // DEV: In saved for later case, this would be "Saved for later" getting a past interview which means they've applied
   it('updates its status to "waiting for response"', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
-    application.updateToInterviewChanges(mockReq);
+    application.updateToInterviewChanges(candidate);
     expect(application.get('status')).to.equal('waiting_for_response');
   });
 });
@@ -141,8 +145,9 @@ scenario.model('An offer-tolerant Application model receiving an offer', {
   sinonUtils.spy(Application.Instance.prototype, '_createOrRemoveDefaultContent');
   it('updates status to "Received offer" and created default content', function () {
     // Assert status
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY];
-    var updatedModels = application.updateToReceivedOffer(mockReq);
+    var updatedModels = application.updateToReceivedOffer(candidate);
     expect(application.get('status')).to.equal('received_offer');
 
     // Assert default content
@@ -157,9 +162,10 @@ scenario.model('An offer-intolerant Application model receiving an offer', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('rejects the change', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
     expect(function () {
-      application.updateToReceivedOffer(mockReq);
+      application.updateToReceivedOffer(candidate);
     }).to.throw(HttpError.BadRequest, /already received an offer or is archived/);
   });
 });
@@ -185,8 +191,9 @@ scenario.model('A received offer Application model with an upcoming interview re
 
   it('changes status to "upcoming interview" and creates default content', function () {
     // Assert status
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
-    var updatedModels = application.updateToRemoveOffer(mockReq);
+    var updatedModels = application.updateToRemoveOffer(candidate);
     expect(application.get('status')).to.equal('upcoming_interview');
 
     // Assert default content
@@ -211,8 +218,9 @@ scenario.model('A received offer Application model ' +
   });
 
   it('changes status to "waiting for response"', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
-    application.updateToRemoveOffer(mockReq);
+    application.updateToRemoveOffer(candidate);
     expect(application.get('status')).to.equal('waiting_for_response');
   });
 });
@@ -233,8 +241,9 @@ scenario.model('A received offer Application model ' +
   });
 
   it('changes status to "waiting for response"', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
-    application.updateToRemoveOffer(mockReq);
+    application.updateToRemoveOffer(candidate);
     expect(application.get('status')).to.equal('waiting_for_response');
   });
 });
@@ -249,9 +258,10 @@ scenario.model('A non-received offer Application model removing an offer', {
   });
 
   it('rejects the change', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY];
     expect(function () {
-      application.updateToRemoveOffer(mockReq);
+      application.updateToRemoveOffer(candidate);
     }).to.throw(HttpError.BadRequest, /doesn\'t have an offer or is archived/);
   });
 });
@@ -265,8 +275,9 @@ scenario.model('A non-archived non-saved for later Application model being archi
 
   it('updates status to "Archived" and creates default content', function () {
     // Assert status
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY];
-    var updatedModels = application.updateToArchived(mockReq);
+    var updatedModels = application.updateToArchived(candidate);
     expect(application.get('status')).to.equal('archived');
 
     // Assert default content
@@ -281,9 +292,10 @@ scenario.model('A saved for later Application model being archived', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('rejects the change', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
     expect(function () {
-      application.updateToArchived(mockReq);
+      application.updateToArchived(candidate);
     }).to.throw(HttpError.BadRequest, /is already archived or cannot be/);
   });
 });
@@ -293,9 +305,10 @@ scenario.model('An archived Application model being archived', {
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('rejects the change', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_ARCHIVED_KEY];
     expect(function () {
-      application.updateToArchived(mockReq);
+      application.updateToArchived(candidate);
     }).to.throw(HttpError.BadRequest, /is already archived or cannot be/);
   });
 });
@@ -320,8 +333,9 @@ scenario.model('An archived Application model that had received an offer being r
 
   it('changes status to "received offer"', function () {
     // Assert status
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_ARCHIVED_KEY];
-    var updatedModels = application.updateToRestore(mockReq);
+    var updatedModels = application.updateToRestore(candidate);
     expect(application.get('status')).to.equal('received_offer');
 
     // Assert default content
@@ -347,8 +361,9 @@ scenario.model('An archived Application model with no offer but with upcoming in
   });
 
   it('changes status to "upcoming interview"', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_ARCHIVED_KEY];
-    application.updateToRestore(mockReq);
+    application.updateToRestore(candidate);
     expect(application.get('status')).to.equal('upcoming_interview');
   });
 });
@@ -368,8 +383,9 @@ scenario.model('An archived Application model with no offer and no upcoming inte
   });
 
   it('changes status to "waiting for response"', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_ARCHIVED_KEY];
-    application.updateToRestore(mockReq);
+    application.updateToRestore(candidate);
     expect(application.get('status')).to.equal('waiting_for_response');
   });
 });
@@ -384,9 +400,10 @@ scenario.model('A non-archived Application model being restored', {
   });
 
   it('rejects the change', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY];
     expect(function () {
-      application.updateToRestore(mockReq);
+      application.updateToRestore(candidate);
     }).to.throw(HttpError.BadRequest, /is not archived/);
   });
 });
@@ -397,9 +414,10 @@ scenario.model('An Application model being backfilled without an application dat
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('receives default application date', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
     expect(application.get('application_date_moment')).to.equal(null);
-    var updatedModels = application.updateToApplied(mockReq);
+    var updatedModels = application.updateToApplied(candidate);
     expect(updatedModels).to.contain(application);
     expect(application.get('application_date_moment')).to.not.equal(null);
     expect(application.get('application_date_moment')).to.be.at.least(moment().subtract({hours: 1}));
@@ -416,9 +434,10 @@ scenario.model('An Application model being backfilled with an application date',
   });
 
   it('doesn\'t lose original application date', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY];
     expect(application.get('application_date_moment').toISOString()).to.equal('2016-01-08T00:00:00.000Z');
-    var updatedModels = application.updateToInterviewChanges(mockReq);
+    var updatedModels = application.updateToInterviewChanges(candidate);
     expect(updatedModels).to.contain(application);
     expect(application.get('application_date_moment').toISOString()).to.equal('2016-01-08T00:00:00.000Z');
   });
@@ -429,9 +448,10 @@ scenario.model('An archived Application model being backfilled without an archiv
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('receives default archived timestamp', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
     expect(application.get('archived_at_moment')).to.equal(null);
-    var updatedModels = application.updateToArchived(mockReq);
+    var updatedModels = application.updateToArchived(candidate);
     expect(updatedModels).to.contain(application);
     expect(application.get('archived_at_moment')).to.not.equal(null);
     expect(application.get('archived_at_moment')).to.be.at.least(moment().subtract({hours: 1}));
@@ -443,10 +463,11 @@ scenario.model('An archived Application model being backfilled with an archived 
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('doesn\'t lose original archived timestamp', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_ARCHIVED_KEY];
     expect(application.get('archived_at_moment').toISOString()).to.equal('2016-01-18T21:00:00.000Z');
     // DEV: We have no `updateTo` methods which backfill already archived applications but this is future proofing
-    var updatedModels = application._createOrRemoveDefaultContent(mockReq);
+    var updatedModels = application._createOrRemoveDefaultContent(candidate);
     expect(updatedModels).to.contain(application);
     expect(application.get('archived_at_moment').toISOString()).to.equal('2016-01-18T21:00:00.000Z');
   });
@@ -461,9 +482,10 @@ scenario.model('A non-archived Application model being backfilled with an archiv
   });
 
   it('removes archived timestamp', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_ARCHIVED_KEY];
     expect(application.get('archived_at_moment')).to.not.equal(null);
-    var updatedModels = application.updateToRestore(mockReq);
+    var updatedModels = application.updateToRestore(candidate);
     expect(updatedModels).to.contain(application);
     expect(application.get('archived_at_moment')).to.equal(null);
   });
@@ -474,9 +496,10 @@ scenario.model('A waiting for response Application model being backfilled withou
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('receives a default reminder', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
     expect(application.get('waiting_for_response_reminder_id')).to.equal(null);
-    var updatedModels = application.updateToApplied(mockReq);
+    var updatedModels = application.updateToApplied(candidate);
     expect(updatedModels).to.have.length(2);
     var reminder = _.findWhere(updatedModels, {type: 'waiting_for_response'});
     expect(application.get('waiting_for_response_reminder_id')).to.not.equal(null);
@@ -495,9 +518,10 @@ scenario.model('A waiting for response Application model being backfilled with a
   });
 
   it('doesn\'t lose original reminder', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY];
     expect(application.get('waiting_for_response_reminder_id')).to.equal('abcdef-sky-networks-reminder-uuid');
-    var updatedModels = application.updateToInterviewChanges(mockReq);
+    var updatedModels = application.updateToInterviewChanges(candidate);
     expect(updatedModels).to.deep.equal([application]);
     expect(application.get('waiting_for_response_reminder_id')).to.equal('abcdef-sky-networks-reminder-uuid');
   });
@@ -513,8 +537,9 @@ scenario.model('An upcoming interview Application model being backfilled', {
 
   // DEV: We are verifying we don't generate reminders
   it('only updates application', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY];
-    var updatedModels = application.updateToInterviewChanges(mockReq);
+    var updatedModels = application.updateToInterviewChanges(candidate);
     expect(updatedModels).to.deep.equal([application]);
   });
 });
@@ -523,9 +548,10 @@ scenario.model('A received offer Application model being backfilled without a re
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('receives a default reminder', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY];
     expect(application.get('received_offer_reminder_id')).to.equal(null);
-    var updatedModels = application.updateToReceivedOffer(mockReq);
+    var updatedModels = application.updateToReceivedOffer(candidate);
     expect(updatedModels).to.have.length(2);
     var reminder = _.findWhere(updatedModels, {type: 'received_offer'});
     expect(application.get('received_offer_reminder_id')).to.not.equal(null);
@@ -539,10 +565,11 @@ scenario.model('A received offer Application model being backfilled with a remin
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   it('doesn\'t lose original reminder', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
     expect(application.get('received_offer_reminder_id')).to.equal('abcdef-black-mesa-reminder-uuid');
     // DEV: We would encounter this when restoring from archived but this is simpler to test
-    var updatedModels = application._createOrRemoveDefaultContent(mockReq);
+    var updatedModels = application._createOrRemoveDefaultContent(candidate);
     expect(updatedModels).to.deep.equal([application]);
     expect(application.get('received_offer_reminder_id')).to.equal('abcdef-black-mesa-reminder-uuid');
   });
@@ -553,9 +580,10 @@ scenario.model('An archived Application model being backfilled', {
 }, function () {
   // DEV: We are verifying we don't generate reminders
   it('only updates application', function () {
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT];
     var application = this.models[dbFixtures.APPLICATION_ARCHIVED_KEY];
     // DEV: We have no `updateTo` methods which backfill already archived applications but this is future proofing
-    var updatedModels = application._createOrRemoveDefaultContent(mockReq);
+    var updatedModels = application._createOrRemoveDefaultContent(candidate);
     expect(updatedModels).to.deep.equal([application]);
   });
 });

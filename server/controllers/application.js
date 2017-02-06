@@ -125,7 +125,7 @@ var applicationAddFormSaveFns = [
 
       // Handle edge case of interview being in past
       modelsToSave = _.union(modelsToSave,
-        application.updateToInterviewChanges(req));
+        application.updateToInterviewChanges(req.candidate));
 
       // Save our models
       saveModels(modelsToSave);
@@ -344,7 +344,7 @@ app.post('/application/:id/applied', _.flatten([
   function applicationAppliedSave (req, res, next) {
     // Update our model
     var application = req.models.selectedApplication;
-    var modelsToSave = application.updateToApplied(req);
+    var modelsToSave = application.updateToApplied(req.candidate);
 
     // Save our changes
     saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
@@ -364,7 +364,7 @@ app.post('/application/:id/received-offer', _.flatten([
   function applicationRecievedOfferSave (req, res, next) {
     // Update our model
     var application = req.models.selectedApplication;
-    var modelsToSave = application.updateToReceivedOffer(req);
+    var modelsToSave = application.updateToReceivedOffer(req.candidate);
 
     // Save our changes
     saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
@@ -383,7 +383,7 @@ app.post('/application/:id/remove-offer', _.flatten([
   function applicationRemoveOfferSave (req, res, next) {
     // Update our model and save
     var application = req.models.selectedApplication;
-    var modelsToSave = application.updateToRemoveOffer(req);
+    var modelsToSave = application.updateToRemoveOffer(req.candidate);
 
     // Save our models
     saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
@@ -401,7 +401,7 @@ app.post('/application/:id/archive', _.flatten([
   function applicationArchiveSave (req, res, next) {
     // Update our model and save
     var application = req.models.selectedApplication;
-    var modelsToSave = application.updateToArchived(req);
+    var modelsToSave = application.updateToArchived(req.candidate);
     saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
   },
   function applicationArchiveSaveSuccess (req, res, next) {
@@ -417,7 +417,7 @@ app.post('/application/:id/restore', _.flatten([
   function applicationRestoreSave (req, res, next) {
     // Update our model and save
     var application = req.models.selectedApplication;
-    var modelsToSave = application.updateToRestore(req);
+    var modelsToSave = application.updateToRestore(req.candidate);
     saveModelsViaCandidate({models: modelsToSave, candidate: req.candidate}, next);
   },
   function applicationRestoreSaveSuccess (req, res, next) {
