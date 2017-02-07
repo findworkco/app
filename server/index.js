@@ -1,7 +1,6 @@
 // Load in our dependencies
 var assert = require('assert');
 var domain = require('domain');
-var fs = require('fs');
 var url = require('url');
 var _ = require('underscore');
 var connectFlash = require('connect-flash');
@@ -17,8 +16,7 @@ var qsMultiDict = require('querystring-multidict');
 var RedisSessionStore = require('connect-redis')(expressSession);
 var raven = require('raven');
 var redis = require('redis');
-// DEV: ORM evaluation -- https://gist.github.com/twolfson/13eeeb547271c8ee32707f7b02c2ed90
-var Sequelize = require('sequelize');
+var sequelize = require('./models/_sequelize');
 var bodyParserMultiDict = require('./utils/body-parser-multidict');
 var sentryUtils = require('./utils/sentry');
 var appLocals = {
@@ -94,29 +92,8 @@ function Server(config) {
   // Create a Redis client
   app.redisClient = redis.createClient(config.redisUrl);
 
-  // Create a PostgreSQL client
-  // http://docs.sequelizejs.com/en/latest/docs/getting-started/#setting-up-a-connection
-  // http://docs.sequelizejs.com/en/v3/api/sequelize/#new-sequelizedatabase-usernamenull-passwordnull-options
-  var psqlConfig = config.postgresql;
-  var queryLogFileStream;
-  if (config.logQueries) {
-    console.log('Recording queries to "queries.log"');
-    queryLogFileStream = fs.createWriteStream('queries.log');
-  }
-  app.sequelize = new Sequelize(psqlConfig.database, psqlConfig.username, psqlConfig.password, {
-    host: psqlConfig.host,
-    port: psqlConfig.port,
-    dialect: 'postgres',
-    logging: config.logQueries ? function handleQuery (query) {
-      console.log(query.slice(0, 80) + '... (' + query.length + ')');
-      queryLogFileStream.write(query + '\n');
-    } : false,
-    define: {
-      // http://docs.sequelizejs.com/en/v3/docs/models-definition/#configuration
-      timestamps: true,
-      underscored: true
-    }
-  });
+  // Expose our Sequelize setup
+  app.sequelize = sequelize;
 
   // Create a queue
   // https://github.com/Automattic/kue/tree/v0.11.5#redis-connection-settings
@@ -303,6 +280,9 @@ var Application = require('./models/application');
 app.locals.APPLICATION_STATUSES = Application.STATUSES;
 app.locals.APPLICATION_ADD_HUMAN_STATUSES = Application.ADD_HUMAN_STATUSES;
 app.locals.APPLICATION_EDIT_HUMAN_STATUSES = Application.EDIT_HUMAN_STATUSES;
+
+// Expose utilities for email views
+app.locals.getExternalUrl = module.exports.getExternalUrl;
 
 // Load our controller bindings
 void require('./controllers/index.js');

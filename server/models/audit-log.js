@@ -2,7 +2,7 @@
 var assert = require('assert');
 var _ = require('underscore');
 var Sequelize = require('sequelize');
-var sequelize = require('../index.js').app.sequelize;
+var sequelize = require('./_sequelize');
 var customTypes = require('./utils/custom-types');
 
 // Define our constants

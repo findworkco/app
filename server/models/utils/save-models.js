@@ -4,7 +4,7 @@ var _ = require('underscore');
 var async = require('async');
 var Promise = require('bluebird');
 var Sequelize = require('sequelize');
-var sequelize = require('../../index.js').app.sequelize;
+var sequelize = require('../_sequelize');
 var AuditLog = require('../audit-log');
 
 // Export our function

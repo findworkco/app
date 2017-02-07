@@ -6,6 +6,10 @@ var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
 var timezones = require('../utils/tz-stable.js');
 var customTypes = require('./utils/custom-types');
+var AuditLog = require('./audit-log');
+var sequelize =  require('./_sequelize');
+// DEV: Legacy assertion for circular dependencies
+assert(AuditLog.build);
 
 // Expose our custom types
 // DEV: We originally had a `DATEONLY` type but additionally storing time costs only a little extra on space
@@ -142,16 +146,7 @@ exports.expandMomentAttributes = function (attributes, options) {
   });
 };
 
-// Define would-be dependencies for reuse
-var AuditLog, sequelize;
 module.exports = _.extend(function (modelName, attributes, options) {
-  // Lazy load our dependencies to prevent circular dependencies
-  // DEV: We have circular dependency when loading `baseDefine` from migrations
-  //   We opted for this setup instead of separate files for easier maintenance
-  AuditLog = AuditLog || require('./audit-log');
-  sequelize = sequelize || require('../index.js').app.sequelize;
-  assert(AuditLog.build);
-
   // Fallback/clone our options (prevents contamination)
   options = options ? _.clone(options) : {};
 
