@@ -5,6 +5,7 @@ var baseDefine = require('../base.js');
 var Sequelize = require('sequelize');
 var Application = require('../application');
 var Candidate = require('../candidate');
+var getExternalUrl = require('../../utils/url').getExternalUrl;
 var reminderInstanceMethods = require('./reminder').instanceMethods;
 
 // Define our constants
@@ -129,6 +130,9 @@ var Interview = module.exports = _.extend(baseDefine('interview', {
     delete_url: function () {
       // Example: /interview/abcdef-sky-networks-interview-uuid/delete
       return '/interview/' + encodeURIComponent(this.getDataValue('id')) + '/delete';
+    },
+    external_url: function () {
+      return getExternalUrl(this.get('url'));
     },
     url: function () {
       // Example: /interview/abcdef-sky-networks-interview-uuid

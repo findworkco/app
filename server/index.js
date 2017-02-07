@@ -1,7 +1,6 @@
 // Load in our dependencies
 var assert = require('assert');
 var domain = require('domain');
-var url = require('url');
 var _ = require('underscore');
 var connectFlash = require('connect-flash');
 var csurf = require('csurf');
@@ -217,22 +216,6 @@ Server.prototype.close = function (cb) {
   this._app.close(cb);
   delete this._app;
 };
-/**
- * Retrieve a URL for our running server
- * @param params {Object|String} Information for URL
- *   If this is a string, we will assume it's the URL path
- *   Otherwise (object), we will treat it as `url.format` parameters
- * @returns URL string (e.g. `https://findwork.co/hello`)
- */
-Server.prototype.getExternalUrl = function (params) {
-  // If the parameter is a string, upcast it to an object
-  if (typeof params === 'string') {
-    params = {pathname: params};
-  }
-
-  // Return our formatted URL
-  return url.format(_.defaults(params, config.url.external));
-};
 
 // Export a new server
 module.exports = new Server(config);
@@ -280,9 +263,6 @@ var Application = require('./models/application');
 app.locals.APPLICATION_STATUSES = Application.STATUSES;
 app.locals.APPLICATION_ADD_HUMAN_STATUSES = Application.ADD_HUMAN_STATUSES;
 app.locals.APPLICATION_EDIT_HUMAN_STATUSES = Application.EDIT_HUMAN_STATUSES;
-
-// Expose utilities for email views
-app.locals.getExternalUrl = module.exports.getExternalUrl;
 
 // Load our controller bindings
 void require('./controllers/index.js');

@@ -1,5 +1,6 @@
 //- DESIGN: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a32cea087
 //- DEV: We use "Follow-up reminder" as it's consistent with UI
+include mixins
 subject Follow-up reminder for "#{application.name}"
 html
   | Hi #{email},
@@ -7,25 +8,17 @@ html
   | This is your reminder to follow-up to "#{application.name}". Here's some information from your application:
   br
   br
-  b= "Posting URL: "
-  a(href=application.posting_url)= application.posting_url
+  +email-posting-url(application)
   br
-  b= "Application link: "
-  - var applicationUrl = getExternalUrl(application.url);
-  a(href=applicationUrl)= applicationUrl
+  +email-application-link(application)
   br
   br
   //- DEV: We initially designed to list "Past interviews" but notes is more relevant
-  b Application notes:
-  br
-  if application.notes
-    != sanitizeHtml(application.notes)
-  else
-    i No notes recorded
+  +email-application-notes(application)
   br
   br
   = "If you would like to create another application reminder, then "
-  a(href=applicationUrl) click here to set up a new reminder
+  a(href=application.external_url) click here to set up a new reminder
   = "."
   br
   br

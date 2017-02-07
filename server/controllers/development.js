@@ -32,7 +32,7 @@ app.get('/_dev/email/saved-for-later-reminder', [
       to: 'todd@findwork.co'
     }, {
       email: 'todd@findwork.co',
-      application: applicationMockData.getById('abcdef-intertrode-uuid')
+      application: applicationMockData.getById('abcdef-intertrode-uuid').get({plain: true})
     }, next);
   },
   function handleSend (req, res, next) {
@@ -46,7 +46,7 @@ app.get('/_dev/email/waiting-for-response-reminder', [
       to: 'todd@findwork.co'
     }, {
       email: 'todd@findwork.co',
-      application: applicationMockData.getById('abcdef-sky-networks-uuid')
+      application: applicationMockData.getById('abcdef-sky-networks-uuid').get({plain: true})
     }, next);
   },
   function handleSend (req, res, next) {
@@ -66,8 +66,8 @@ app.get('/_dev/email/pre-interview-reminder', [
       to: 'todd@findwork.co'
     }, {
       email: 'todd@findwork.co',
-      application: interview.get('application'),
-      interview: interview
+      application: interview.get('application').get({plain: true}),
+      interview: interview.get({plain: true})
     }, next);
   },
   function handleSend (req, res, next) {
@@ -78,14 +78,17 @@ app.get('/_dev/email/post-interview-reminder', [
   function devEmailPostInterviewReminder (req, res, next) {
     // Send a test email
     var interview = interviewMockData.getById('abcdef-sky-networks-interview-uuid', {
-      include: includes.updateInterviewApplication
+      include: [{
+        model: Application,
+        include: includes.updateInterviewApplication
+      }]
     });
     emails.postInterviewReminder({
       to: 'todd@findwork.co'
     }, {
       email: 'todd@findwork.co',
-      application: interview.get('application'),
-      interview: interview
+      application: interview.get('application').get({plain: true}),
+      interview: interview.get({plain: true})
     }, next);
   },
   function handleSend (req, res, next) {
@@ -99,7 +102,7 @@ app.get('/_dev/email/received-offer-reminder', [
       to: 'todd@findwork.co'
     }, {
       email: 'todd@findwork.co',
-      application: applicationMockData.getById('abcdef-black-mesa-uuid')
+      application: applicationMockData.getById('abcdef-black-mesa-uuid').get({plain: true})
     }, next);
   },
   function handleSend (req, res, next) {

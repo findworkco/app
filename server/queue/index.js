@@ -7,7 +7,6 @@ var moment = require('moment-timezone');
 // DEV: We load `app` before `saveModelsViaQueue` to prevent order issues
 var app = require('../index.js').app;
 var kueQueue = require('../index.js').app.kueQueue;
-var getExternalUrl = require('../index.js').getExternalUrl;
 var Application = require('../models/application');
 var ApplicationReminder = require('../models/application-reminder');
 var Candidate = require('../models/candidate');
@@ -161,7 +160,7 @@ registerJob(JOBS.SEND_WELCOME_EMAIL, 5, function sendWelcomeEmail (job, done) {
     emails.welcome({
       to: candidate.get('email')
     }, {
-      add_application_url: getExternalUrl('/add-application'),
+      add_application_url: candidate.get('external_add_application_url'),
       email: candidate.get('email')
     }, function handleSend (err) {
       // If there was an error, callback with it

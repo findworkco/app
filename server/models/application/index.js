@@ -4,6 +4,7 @@ var _ = require('underscore');
 var Sequelize = require('sequelize');
 var baseDefine = require('../base');
 var Candidate = require('../candidate');
+var getExternalUrl = require('../../utils/url').getExternalUrl;
 var reminderInstanceMethods = require('./reminder').instanceMethods;
 var statusInstanceMethods = require('./status').instanceMethods;
 
@@ -184,6 +185,9 @@ var Application = module.exports = _.extend(baseDefine('application', {
     delete_url: function () {
       // Example: /application/abcdef-sky-networks-uuid/delete
       return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/delete';
+    },
+    external_url: function () {
+      return getExternalUrl(this.get('url'));
     },
     human_status: function () {
       return exports.EDIT_HUMAN_STATUSES[this.get('status_key')];

@@ -1,4 +1,5 @@
 //- DESIGN: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/aef700c53
+include mixins
 subject Post-interview reminder for "#{application.name}"
 html
   | Hi #{email},
@@ -6,20 +7,15 @@ html
   | We hope your interview went well =) This is your post-interview reminder for "#{application.name}" to record any notes from the interview.
   br
   br
-  - var applicationUrl = getExternalUrl(application.url);
   b
-    a(href=applicationUrl) Click here to update your application notes
+    a(href=application.external_url) Click here to update your application notes
   br
   br
-  b= "Posting URL: "
-  a(href=application.posting_url)= application.posting_url
+  +email-posting-url(application)
   br
-  b= "Application link: "
-  a(href=applicationUrl)= applicationUrl
+  +email-application-link(application)
   br
-  b= "Interview link: "
-  - var interviewUrl = getExternalUrl(interview.url);
-  a(href=interviewUrl)= interviewUrl
+  +email-interview-link(interview)
   br
   br
   if application.status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
@@ -28,7 +24,7 @@ html
     br
     b
       = "Follow-up reminder ("
-      a(href=applicationUrl) edit reminder
+      a(href=application.external_url) edit reminder
       = "): "
     //- Mon Mar 14 at 2:00PM CST
     = application.waiting_for_response_reminder.date_time_moment.format('ddd MMM D [at] h:mmA zz')
@@ -38,8 +34,7 @@ html
     br
     for upcomingInterview, i in application.upcoming_interviews
       //- Mon Mar 14 at 2:00PM CST
-      - var upcomingInterviewUrl = getExternalUrl(upcomingInterview.url);
-      a(href=upcomingInterviewUrl)= upcomingInterview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+      a(href=upcomingInterview.external_url)= upcomingInterview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
       if i != application.upcoming_interviews.length - 1
         br
   else if application.status === APPLICATION_STATUSES.RECEIVED_OFFER
@@ -48,7 +43,7 @@ html
     br
     b
       = "Response reminder ("
-      a(href=applicationUrl) edit reminder
+      a(href=application.external_url) edit reminder
       = "): "
     //- Mon Mar 14 at 2:00PM CST
     = application.received_offer_reminder.date_time_moment.format('ddd MMM D [at] h:mmA zz')

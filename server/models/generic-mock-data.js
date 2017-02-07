@@ -589,7 +589,7 @@ exports.APPLICATION_RECEIVED_OFFER_EMPTY = overrideFixtures(
   ]),
   {
     base: exports.APPLICATION_RECEIVED_OFFER_KEY,
-    overrides: {notes: ''}
+    overrides: {notes: '', posting_url: ''}
   },
   {
     base: exports.REMINDER_RECEIVED_OFFER_KEY,
@@ -617,7 +617,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_EMPTY = overrideFixtures(
   ]),
   {
     base: exports.APPLICATION_UPCOMING_INTERVIEW_KEY,
-    overrides: {notes: ''}
+    overrides: {notes: '', posting_url: ''}
   },
   {
     base: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
@@ -639,7 +639,7 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_EMPTY = overrideFixtures(
   ]),
   {
     base: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
-    overrides: {notes: ''}
+    overrides: {notes: '', posting_url: ''}
   },
   {
     base: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
@@ -653,7 +653,7 @@ exports.APPLICATION_SAVED_FOR_LATER_EMPTY = overrideFixtures(
   ]),
   {
     base: exports.APPLICATION_SAVED_FOR_LATER_KEY,
-    overrides: {notes: ''}
+    overrides: {notes: '', posting_url: ''}
   },
   {
     base: exports.REMINDER_SAVED_FOR_LATER_KEY,
@@ -667,7 +667,7 @@ exports.APPLICATION_ARCHIVED_EMPTY = overrideFixtures(
   ]),
   {
     base: exports.APPLICATION_ARCHIVED_KEY,
-    overrides: {notes: ''}
+    overrides: {notes: '', posting_url: ''}
   },
   {
     base: exports.REMINDER_ARCHIVED_KEY,

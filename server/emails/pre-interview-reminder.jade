@@ -1,4 +1,5 @@
 //- DESIGN: https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a7dbb9086
+include mixins
 subject Pre-interview reminder for "#{application.name}"
 html
   | Hi #{email},
@@ -36,16 +37,11 @@ html
     i No details provided
   br
   br
-  b= "Posting URL: "
-  a(href=application.posting_url)= application.posting_url
+  +email-posting-url(application)
   br
-  b= "Application link: "
-  - var applicationUrl = getExternalUrl(application.url);
-  a(href=applicationUrl)= applicationUrl
+  +email-application-link(application)
   br
-  b= "Interview link: "
-  - var interviewUrl = getExternalUrl(interview.url);
-  a(href=interviewUrl)= interviewUrl
+  +email-interview-link(interview)
   br
   br
   //- DEV: We initially said don't empty notes but we think it's better to always show them
@@ -54,7 +50,7 @@ html
   br
   b
     = "Application notes ("
-    a(href=applicationUrl) edit notes
+    a(href=application.external_url) edit notes
     = "):"
   br
   if application.notes
@@ -65,7 +61,7 @@ html
   br
   b
     = "Post-interview reminder ("
-    a(href=interviewUrl) edit reminder
+    a(href=interview.external_url) edit reminder
     = "): "
   //- Mon Mar 14 at 2:00PM CST
   if interview.post_interview_reminder.is_enabled

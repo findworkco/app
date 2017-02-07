@@ -40,7 +40,7 @@ function renderSavedForLaterEmail() {
   emailUtils.saveEmail(function generateEmail (callback) {
     emails.savedForLaterReminder._testRender({
       email: 'mock-user',
-      application: this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY]
+      application: this.models[dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY].get({plain: true})
     }, callback);
   });
 }
@@ -63,12 +63,13 @@ scenario('A saved for later reminder email with application notes', {
   });
 });
 
-scenario('A saved for later reminder email without application notes', {
+scenario('A saved for later reminder email without application notes nor posting URL', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER_EMPTY, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   renderSavedForLaterEmail();
 
-  it('includes application notes', function () {
+  it('includes no application notes nor posting URL', function () {
+    expect(this.html).to.contain('<i>No URL provided</i>');
     expect(this.html).to.contain('<i>No notes recorded</i>');
   });
 });
@@ -78,7 +79,7 @@ function renderWaitingForResponseEmail() {
   emailUtils.saveEmail(function generateEmail (callback) {
     emails.waitingForResponseReminder._testRender({
       email: 'mock-user',
-      application: this.models[dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY]
+      application: this.models[dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY].get({plain: true})
     }, callback);
   });
 }
@@ -101,12 +102,13 @@ scenario('A waiting for response reminder email with application notes', {
   });
 });
 
-scenario('A waiting for response reminder email without application notes', {
+scenario('A waiting for response reminder email without application notes nor posting URL', {
   dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_EMPTY, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   renderWaitingForResponseEmail();
 
-  it('includes no notes text', function () {
+  it('includes no notes text nor posting URL', function () {
+    expect(this.html).to.contain('<i>No URL provided</i>');
     expect(this.html).to.contain('<i>No notes recorded</i>');
   });
 });
@@ -126,8 +128,8 @@ function renderPreInterviewEmail() {
     var interview = this.models[dbFixtures.INTERVIEW_UPCOMING_INTERVIEW_KEY];
     emails.preInterviewReminder._testRender({
       email: 'mock-user',
-      application: interview.get('application'),
-      interview: interview
+      application: interview.get('application').get({plain: true}),
+      interview: interview.get({plain: true})
     }, callback);
   });
 }
@@ -170,6 +172,10 @@ scenario('A pre-interview reminder email with no notes, no details, and no post-
 }, function () {
   renderPreInterviewEmail();
 
+  it('includes no posting URL', function () {
+    expect(this.html).to.contain('<i>No URL provided</i>');
+  });
+
   it('includes no notes text', function () {
     expect(this.html).to.contain('<i>No notes recorded</i>');
   });
@@ -198,8 +204,8 @@ function renderPostInterviewEmail(interviewKey) {
     var interview = this.models[interviewKey];
     emails.postInterviewReminder._testRender({
       email: 'mock-user',
-      application: interview.get('application'),
-      interview: interview
+      application: interview.get('application').get({plain: true}),
+      interview: interview.get({plain: true})
     }, callback);
   });
 }
@@ -220,6 +226,16 @@ scenario('A post-interview reminder email for a follow-up interview', {
   // Application status specific
   it('includes waiting for response reminder info', function () {
     expect(this.html).to.contain('Mon Jan 25 at 12:00PM CST');
+  });
+});
+
+scenario('A post-interview reminder email for an application with no posting URL', {
+  dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_EMPTY, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  renderPostInterviewEmail(dbFixtures.INTERVIEW_WAITING_FOR_RESPONSE_KEY);
+
+  it('includes no posting URL', function () {
+    expect(this.html).to.contain('<i>No URL provided</i>');
   });
 });
 
@@ -248,7 +264,7 @@ function renderReceivedOfferEmail() {
   emailUtils.saveEmail(function generateEmail (callback) {
     emails.receivedOfferReminder._testRender({
       email: 'mock-user',
-      application: this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY]
+      application: this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY].get({plain: true})
     }, callback);
   });
 }
@@ -271,12 +287,13 @@ scenario('A received offer reminder email with application notes', {
   });
 });
 
-scenario('A received offer reminder email without application notes', {
+scenario('A received offer reminder email without application notes nor posting URL', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER_EMPTY, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   renderReceivedOfferEmail();
 
-  it('includes application notes', function () {
+  it('includes no application notes nor posting URL', function () {
+    expect(this.html).to.contain('<i>No URL provided</i>');
     expect(this.html).to.contain('<i>No notes recorded</i>');
   });
 });

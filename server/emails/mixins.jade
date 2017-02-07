@@ -1,0 +1,22 @@
+mixin email-posting-url(application)
+  b= "Posting URL: "
+  if application.posting_url
+    a(href=application.posting_url)= application.posting_url
+  else
+    i No URL provided
+
+mixin email-application-link(application)
+  b= "Application link: "
+  a(href=application.external_url)= application.external_url
+
+mixin email-interview-link(interview)
+  b= "Interview link: "
+  a(href=interview.external_url)= interview.external_url
+
+mixin email-application-notes(application)
+  b Application notes:
+  br
+  if application.notes
+    != sanitizeHtml(application.notes)
+  else
+    i No notes recorded

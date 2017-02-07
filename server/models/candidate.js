@@ -2,6 +2,7 @@
 var _ = require('underscore');
 var Sequelize = require('sequelize');
 var baseDefine = require('./base.js');
+var getExternalUrl = require('../utils/url').getExternalUrl;
 
 // Define and export our model
 // http://docs.sequelizejs.com/en/v3/docs/models-definition/
@@ -21,6 +22,12 @@ module.exports = _.extend(baseDefine('candidate', {
   welcome_email_sent: {type: Sequelize.BOOLEAN, defaultValue: false, allowNull: false}
 }, {
   getterMethods: {
+    add_application_url: function () {
+      return '/add-application';
+    },
+    external_add_application_url: function () {
+      return getExternalUrl(this.get('add_application_url'));
+    },
     timezone: function () {
       // Placeholder for candidate timezone, should be resolved via IP initially and managed by settings
       return 'US-America/Chicago';

@@ -2,6 +2,7 @@
 var assert = require('assert');
 var _ = require('underscore');
 var Application = require('./application');
+var Candidate = require('./candidate');
 var Interview = require('./interview');
 var ApplicationReminder = require('./application-reminder');
 var genericMockData = require('./generic-mock-data');
@@ -14,6 +15,7 @@ genericMockData.applications.forEach(function saveApplicationById (application) 
 
 // Define application builder
 // http://docs.sequelizejs.com/en/v3/docs/associations/#creating-with-associations
+var candidateMocks = genericMockData.candidates;
 var interviewMocks = genericMockData.interviews;
 var applicationReminderMocks = genericMockData.applicationReminders;
 exports._buildApplicationAttrs = function (attrs, options) {
@@ -32,7 +34,7 @@ exports._buildApplicationAttrs = function (attrs, options) {
       if (includeItem.model === Interview) {
         assert(!includeItem.as, 'Received unexpected "as" key for Interview');
         retVal.interviews = _.where(interviewMocks, {application_id: attrs.id});
-      // If the include is a reminder , build the matching reminder type
+      // If the include is a reminder, build the matching reminder type
       } else if (includeItem.model === ApplicationReminder) {
         assert(includeItem.as, 'Missing "as" parameter for ApplicationReminder include');
         if (includeItem.as === 'saved_for_later_reminder') {
@@ -47,6 +49,9 @@ exports._buildApplicationAttrs = function (attrs, options) {
         } else {
           throw new Error('Unrecognized "as" parameter for ApplicationReminder: "' + includeItem.as + '"');
         }
+      // If the include is an interview, build its matching info
+      } else if (includeItem.model === Candidate) {
+        retVal.candidate = _.where(candidateMocks, {id: attrs.candidate_id});
       // Otherwise, complain and leave
       } else {
         throw new Error('Unrecognized model type "' + includeItem.model + '"');
