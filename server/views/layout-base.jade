@@ -96,6 +96,8 @@ html
           | Raven.setUserContext({id: '#{candidate.id}'});
 
     //- If we are serving analytics, then output it
+    //- https://developers.google.com/analytics/devguides/collection/analyticsjs/pages#pageview_fields
+    //- DEV: We naively normalize URLs instead of using internal routes to prevent exposing DoS vectors (paranoia)
     if locals.serveAnalytics
       script window._gaqId = '#{googleAnalyticsId}';
       script.
@@ -104,6 +106,7 @@ html
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
         })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
         ga('create', window._gaqId, 'auto');
+        ga('set', 'page', document.location.pathname.replace(/[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/ig, ':uuid'));
         ga('send', 'pageview');
   body
     //- Define server level locals
