@@ -115,12 +115,14 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
       var selectedFixtureKeys = [];
       var selectedFixtureOverrides = {};
       var selectedFixtureOverrideDataValues = {};
+      var selectedFixtureSkip = {};
       _.flatten(options.dbFixtures).forEach(function resolveKeyAndOverrides (dbFixtureInfo) {
         // If we received an object, extract its parts
         if (typeof dbFixtureInfo === 'object') {
           assert(dbFixtureInfo.key, 'Expected "' + JSON.stringify(dbFixtureInfo) + '" to have property "key"');
           selectedFixtureOverrides[dbFixtureInfo.key] = dbFixtureInfo.overrides;
           selectedFixtureOverrideDataValues[dbFixtureInfo.key] = dbFixtureInfo.overrideDataValues;
+          selectedFixtureSkip[dbFixtureInfo.key] = dbFixtureInfo.skip;
           selectedFixtureKeys.push(dbFixtureInfo.key);
         // Otherwise, save our info as a string
         } else {
@@ -154,12 +156,14 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
 
       // Save our built models ot the database
       sequelize.transaction({deferrable: Sequelize.Deferrable.SET_DEFERRED}, function handleTransaction (t) {
-        return Promise.all(_.values(builtModels).map(function buildAndSaveModel (model) {
+        return Promise.all(_.map(builtModels, function buildAndSaveModel (model, key) {
           // Skip over model-dependent validation
           var skip = [];
           if (model.Model === sequelize.models.application) { skip = ['statusMatchesInterviews']; }
           if (model.Model === sequelize.models.interview) { skip = ['applicationStatusMatchesType']; }
           if (model.Model === sequelize.models.interview_reminder) { skip = ['dateTimeMatchesInterview']; }
+          var additionalSkip = selectedFixtureSkip[key];
+          skip = _.union(skip, additionalSkip);
 
           // Perform our save
           return model.save({skip: skip, _sourceType: 'server', transaction: t});

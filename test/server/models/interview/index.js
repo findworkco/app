@@ -13,6 +13,7 @@ var sinonUtils = require('../../utils/sinon');
 // Start our tests
 scenario.model('An Interview model with an upcoming datetime', function () {
   sinonUtils.spy(Interview.Instance.prototype, 'updateType');
+  sinonUtils.spy(Interview.Instance.prototype, 'updateCanSendReminders');
 
   it('automatically receives its expected type and can send reminders', function () {
     var interview = Interview.build({
@@ -23,11 +24,14 @@ scenario.model('An Interview model with an upcoming datetime', function () {
 
     var updateTypeSpy = Interview.Instance.prototype.updateType;
     expect(updateTypeSpy.callCount).to.equal(1);
+    var updateCanSendRemindersSpy = Interview.Instance.prototype.updateCanSendReminders;
+    expect(updateCanSendRemindersSpy.callCount).to.equal(1);
   });
 });
 
 scenario.model('An Interview model with a past datetime', function () {
   sinonUtils.spy(Interview.Instance.prototype, 'updateType');
+  sinonUtils.spy(Interview.Instance.prototype, 'updateCanSendReminders');
 
   it('automatically receives its expected type and can send reminders', function () {
     var interview = Interview.build({
@@ -38,6 +42,8 @@ scenario.model('An Interview model with a past datetime', function () {
 
     var updateTypeSpy = Interview.Instance.prototype.updateType;
     expect(updateTypeSpy.callCount).to.equal(1);
+    var updateCanSendRemindersSpy = Interview.Instance.prototype.updateCanSendReminders;
+    expect(updateCanSendRemindersSpy.callCount).to.equal(1);
   });
 });
 

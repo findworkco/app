@@ -298,6 +298,24 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
     }],
     limit: exports.PROCESS_REMINDERS_BATCH_SIZE
   };
+  // Resolve all due upcoming interviews with their non-due upcoming interviews via a nested include
+  // DEV: We must query non-due upcoming interviews to allow status preservation
+  // DEV: Our current query strategy requires deduplicating applications
+  //   This doesn't work when we have multiple workers but multiple due upcoming interviews are rare so we're fine
+  // DEV: Alternative solutions are getting a query with a `COUNT()` filter on it
+  //   as well as query interview with filter then re-query interview without filter
+  //   as well as query application with interview filter with includes for application and interviews
+  var updateInterviewQuery = {
+    where: {
+      date_time_datetime: {$lte: new Date()},
+      type: Interview.TYPES.UPCOMING_INTERVIEW
+    },
+    include: [{
+      model: Application,
+      include: includes.updateInterviewApplication
+    }],
+    limit: 100
+  };
   var postInterviewQuery = {
     where: {
       can_send_reminders: true
@@ -401,6 +419,34 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
         }, callback);
       });
     },
+    function updateInterviews (callback) {
+      Interview.findAll(updateInterviewQuery).asCallback(function handleFindAll (err, interviews) {
+        // If there was an error, callback with it
+        if (err) {
+          return logError(err, job, callback);
+        }
+
+        // Resolve and deduplicate our applications
+        var duplicatedApplications = interviews.map(function pluckApplication (interview) {
+          return interview.get('application');
+        });
+        var seenApplicationIds = {};
+        var applications = duplicatedApplications.filter(function deduplicateApplicaiton (application) {
+          var seenApplication = seenApplicationIds[application.get('id')];
+          seenApplicationIds[application.get('id')] = true;
+          return !seenApplication;
+        });
+
+        // For each of our applications, update them and save the results
+        async.forEach(applications, function handleApplication (application, cb) {
+          var modelsToSave = handleApplicationInterviews(application);
+          saveModelsViaQueue({models: modelsToSave}, function handleSave (err) {
+            if (err) { return logError(err, job, cb); }
+            cb();
+          });
+        }, callback);
+      });
+    },
     function updatePostInterviewReminders (callback) {
       Interview.findAll(postInterviewQuery).asCallback(function handleFindAll (err, interviews) {
         if (err) { return logError(err, job, callback); }
@@ -451,6 +497,7 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
       function (cb) { Application.count(savedForLaterQuery).asCallback(cb); },
       function (cb) { Application.count(waitingForResponseQuery).asCallback(cb); },
       function (cb) { Interview.count(preInterviewQuery).asCallback(cb); },
+      function (cb) { Interview.count(updateInterviewQuery).asCallback(cb); },
       function (cb) { Interview.count(postInterviewQuery).asCallback(cb); },
       function (cb) { Application.count(receivedOfferQuery).asCallback(cb); }
     ], function handleCounts (err, counts) {

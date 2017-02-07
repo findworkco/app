@@ -96,6 +96,7 @@ var Interview = module.exports = _.extend(baseDefine('interview', {
   },
 
   instanceMethods: _.extend({
+    // DEV: Type and `can_send_reminders` are related but exclusive so we have different methods
     updateType: function () {
       // If we don't have a datetime to compare to, then ignore update
       // DEV: This can occur on initial `build`
@@ -107,9 +108,18 @@ var Interview = module.exports = _.extend(baseDefine('interview', {
       // Otherwise, update our type to match
       if (new Date() < dateTimeDatetime) {
         this.setDataValue('type', exports.TYPES.UPCOMING_INTERVIEW);
-        this.setDataValue('can_send_reminders', true);
       } else {
         this.setDataValue('type', exports.TYPES.PAST_INTERVIEW);
+      }
+    },
+    updateCanSendReminders: function () {
+      var dateTimeDatetime = this.get('date_time_datetime');
+      if (!dateTimeDatetime) {
+        return;
+      }
+      if (new Date() < dateTimeDatetime) {
+        this.setDataValue('can_send_reminders', true);
+      } else {
         this.setDataValue('can_send_reminders', false);
       }
     }
@@ -128,12 +138,14 @@ var Interview = module.exports = _.extend(baseDefine('interview', {
 
   setterMethods: {
     can_send_reminders: function (val) {
-      throw new Error('`can_send_reminders` cannot be set directly. Please update date/time or use `updateType()`');
+      throw new Error('`can_send_reminders` cannot be set directly. Please update date/time ' +
+        'or use `updateCanSendReminders()`');
     },
     date_time_datetime: function (val) {
       // DEV: We don't proxy `date_time_timezone` as it's presentation only
       var retVal = this.setDataValue('date_time_datetime', val);
       this.updateType();
+      this.updateCanSendReminders();
       return retVal;
     },
     type: function (val) {

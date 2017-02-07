@@ -4,6 +4,7 @@ var assert = require('assert');
 var moment = require('moment-timezone');
 var Application = require('./application');
 var ApplicationReminder = require('./application-reminder');
+var Interview = require('./interview');
 var InterviewReminder = require('./interview-reminder');
 var slice = Array.prototype.slice;
 
@@ -217,6 +218,9 @@ exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
     })
   ]
 ];
+exports.INTERVIEW_UPCOMING_INTERVIEW_2_UPCOMING_KEY = 'upcoming-interview-2__interview';
+exports.REMINDER_UPCOMING_INTERVIEW_2_UPCOMING_PRE_INTERVIEW_KEY = 'upcoming-interview-2__reminder--pre-interview';
+exports.REMINDER_UPCOMING_INTERVIEW_2_UPCOMING_POST_INTERVIEW_KEY = 'upcoming-interview-2__reminder--post-interview';
 exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_MULTIPLE_PAST_INTERVIEWS =
     exports.APPLICATION_GLOBO_GYM = [
   addApplication('upcoming-interview-2__application', {
@@ -231,32 +235,34 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_MULTIPLE_PAST_INT
     posting_url: 'http://job-openings.monster.com/monster/abcdef-ghij-klmn-opqr-stuvwxyz',
     status: Application.STATUSES.UPCOMING_INTERVIEW
   }),
-  addInterview('upcoming-interview-2__interview', {
-    id: 'abcdef-globo-gym-interview-uuid',
-    application_id: applications[applications.length - 1].id,
-    candidate_id: DEFAULT_CANDIDATE_ID,
-    // Mon Mar 14 at 2:00PM CST
-    date_time_moment: moment.tz('2022-03-14T14:00', 'US-America/Chicago'),
-    details: '',
-    pre_interview_reminder_id: 'globo-gym-reminder-pre-int-uuid',
-    post_interview_reminder_id: 'globo-gym-reminder-post-int-uuid'
-  }),
-  addInterviewReminder('upcoming-interview-2__reminder--pre-interview', {
-    id: interviews[interviews.length - 1].pre_interview_reminder_id,
-    candidate_id: DEFAULT_CANDIDATE_ID,
-    interview_id: interviews[interviews.length - 1].id,
-    type: InterviewReminder.TYPES.PRE_INTERVIEW,
-    date_time_moment: moment.tz('2022-03-14T11:00', 'US-America/Chicago'),
-    is_enabled: false
-  }),
-  addInterviewReminder('upcoming-interview-2__reminder--post-interview', {
-    id: interviews[interviews.length - 1].post_interview_reminder_id,
-    candidate_id: DEFAULT_CANDIDATE_ID,
-    interview_id: interviews[interviews.length - 1].id,
-    type: InterviewReminder.TYPES.POST_INTERVIEW,
-    date_time_moment: moment.tz('2022-03-14T17:00', 'US-America/Chicago'),
-    is_enabled: false
-  }),
+  exports.INTERVIEW_UPCOMING_INTERVIEW_2_UPCOMING = [
+    addInterview(exports.INTERVIEW_UPCOMING_INTERVIEW_2_UPCOMING_KEY, {
+      id: 'abcdef-globo-gym-interview-uuid',
+      application_id: applications[applications.length - 1].id,
+      candidate_id: DEFAULT_CANDIDATE_ID,
+      // Mon Mar 14 at 2:00PM CST
+      date_time_moment: moment.tz('2022-03-14T14:00', 'US-America/Chicago'),
+      details: '',
+      pre_interview_reminder_id: 'globo-gym-reminder-pre-int-uuid',
+      post_interview_reminder_id: 'globo-gym-reminder-post-int-uuid'
+    }),
+    addInterviewReminder(exports.REMINDER_UPCOMING_INTERVIEW_2_UPCOMING_PRE_INTERVIEW_KEY, {
+      id: interviews[interviews.length - 1].pre_interview_reminder_id,
+      candidate_id: DEFAULT_CANDIDATE_ID,
+      interview_id: interviews[interviews.length - 1].id,
+      type: InterviewReminder.TYPES.PRE_INTERVIEW,
+      date_time_moment: moment.tz('2022-03-14T11:00', 'US-America/Chicago'),
+      is_enabled: false
+    }),
+    addInterviewReminder(exports.REMINDER_UPCOMING_INTERVIEW_2_UPCOMING_POST_INTERVIEW_KEY, {
+      id: interviews[interviews.length - 1].post_interview_reminder_id,
+      candidate_id: DEFAULT_CANDIDATE_ID,
+      interview_id: interviews[interviews.length - 1].id,
+      type: InterviewReminder.TYPES.POST_INTERVIEW,
+      date_time_moment: moment.tz('2022-03-14T17:00', 'US-America/Chicago'),
+      is_enabled: false
+    })
+  ],
   addInterview('upcoming-interview-2__interview--past-1', {
     id: 'globo-gym-interview-past-1-uuid',
     application_id: applications[applications.length - 1].id,
@@ -557,6 +563,8 @@ function overrideFixtures(baseArr/*, overrideFixtures...*/) {
       overriddenFixture.overrides);
     overriddenFixture.overrideDataValues = _.extend({}, baseFixture.overrideDataValues,
       overriddenFixture.overrideDataValues);
+    overriddenFixture.skip = _.union({}, baseFixture.skip,
+      overriddenFixture.skip);
     retArr.splice(index, 1, overriddenFixture);
   });
 
@@ -693,7 +701,11 @@ exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE = overrideFixtures(
   exports.INTERVIEW_UPCOMING_INTERVIEW_REMINDER_DUE = {
     base: exports.INTERVIEW_UPCOMING_INTERVIEW_KEY,
     overrides: {date_time_moment: moment.tz('2016-01-15T11:00', 'US-America/Chicago')},
-    overrideDataValues: {can_send_reminders: true}
+    overrideDataValues: {
+      type: Interview.TYPES.UPCOMING_INTERVIEW,
+      can_send_reminders: true
+    },
+    skip: ['typeMatchesDateTime']
   },
   exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_REMINDER_DUE = {
     base: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
@@ -733,7 +745,10 @@ exports.APPLICATION_RECEIVED_OFFER_WITH_INTERVIEW_REMINDERS_DUE_YET_UNSENDABLE =
   },
   {
     base: exports.INTERVIEW_UPCOMING_INTERVIEW_REMINDER_DUE,
-    overrideDataValues: {can_send_reminders: false}
+    overrideDataValues: {
+      type: Interview.TYPES.PAST_INTERVIEW,
+      can_send_reminders: false
+    }
   },
   {
     // reminder = {id: 'black-mesa', application_id: 'umbrella-corp', is_enabled: false}
@@ -922,8 +937,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_NOT_DUE = overrideFixtures(
   ]),
   {
     base: exports.INTERVIEW_UPCOMING_INTERVIEW_REMINDER_DUE,
-    overrides: {date_time_moment: moment.tz('2022-12-01T11:00', 'US-America/Chicago')},
-    overrideDataValues: {can_send_reminders: true}
+    overrides: {date_time_moment: moment.tz('2022-12-01T11:00', 'US-America/Chicago')}
   },
   {
     base: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_REMINDER_DUE,
@@ -960,5 +974,54 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_2 = overrideFixtures(
   {
     base: exports.REMINDER_RECEIVED_OFFER_REMINDER_DUE,
     overrides: {type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE}
+  }
+);
+
+exports.APPLICATION_SPLIT_UPCOMING_INTERVIEWS = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE,
+    exports.INTERVIEW_UPCOMING_INTERVIEW_2_UPCOMING
+  ]),
+  exports.INTERIVEW_SPLIT_UPCOMING_INTERVIEWS_2 = {
+    // interview = {id: 'globo-gym', application_id: 'umbrella-corp'}
+    base: exports.INTERVIEW_UPCOMING_INTERVIEW_2_UPCOMING_KEY,
+    overrides: {application_id: 'abcdef-umbrella-corp-uuid'}
+  }
+);
+
+exports.APPLICATION_MULTIPLE_UPCOMING_INTERVIEWS_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_SPLIT_UPCOMING_INTERVIEWS
+  ]),
+  {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
+    overrides: {is_enabled: false}
+  },
+  {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY,
+    overrides: {is_enabled: false}
+  },
+  {
+    base: exports.INTERIVEW_SPLIT_UPCOMING_INTERVIEWS_2,
+    overrides: {date_time_moment: moment.tz('2016-02-20T11:00', 'US-America/Chicago')},
+    overrideDataValues: {
+      type: Interview.TYPES.UPCOMING_INTERVIEW,
+      can_send_reminders: true
+    },
+    skip: ['typeMatchesDateTime']
+  },
+  {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_2_UPCOMING_PRE_INTERVIEW_KEY,
+    overrides: {
+      date_time_moment: moment.tz('2016-02-20T09:00', 'US-America/Chicago'),
+      is_enabled: false
+    }
+  },
+  {
+    base: exports.REMINDER_UPCOMING_INTERVIEW_2_UPCOMING_POST_INTERVIEW_KEY,
+    overrides: {
+      date_time_moment: moment.tz('2016-02-20T13:00', 'US-America/Chicago'),
+      is_enabled: false
+    }
   }
 );

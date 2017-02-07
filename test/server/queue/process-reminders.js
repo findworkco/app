@@ -1,8 +1,10 @@
 // Load in our dependencies
 var expect = require('chai').expect;
 var dbFixtures = require('../utils/db-fixtures');
+var Application = require('../../../server/models/application');
 var ApplicationReminder = require('../../../server/models/application-reminder');
 var emails = require('../../../server/emails');
+var Interview = require('../../../server/models/interview');
 var InterviewReminder = require('../../../server/models/interview-reminder');
 var serverUtils = require('../utils/server');
 var sinonUtils = require('../utils/sinon');
@@ -395,7 +397,10 @@ scenario.job('Reminders that match status, are due, and are unsent yet ' +
   });
 
   it('updates no application reminders as sent', function (done) {
-    ApplicationReminder.findAll().asCallback(function handleFindAll (err, reminders) {
+    // DEV: We ignore application reminder for upcoming interview as it was newly created
+    ApplicationReminder.findAll({
+      where: {application_id: {$not: 'abcdef-umbrella-corp-uuid'}}
+    }).asCallback(function handleFindAll (err, reminders) {
       if (err) { return done(err); }
       expect(reminders).to.have.length(3);
       expect(reminders[0].get('sent_at_datetime')).to.equal(null);
@@ -437,7 +442,10 @@ scenario.job('Reminders that match status, are due, enabled yet are sent being p
   });
 
   it('updates doesn\'t update application reminder sent status', function (done) {
-    ApplicationReminder.findAll().asCallback(function handleFindAll (err, reminders) {
+    // DEV: We ignore application reminder for upcoming interview as it was newly created
+    ApplicationReminder.findAll({
+      where: {application_id: {$not: 'abcdef-umbrella-corp-uuid'}}
+    }).asCallback(function handleFindAll (err, reminders) {
       if (err) { return done(err); }
       expect(reminders).to.have.length(3);
       expect(reminders[0].get('sent_at_datetime').toISOString()).to.equal('2016-01-15T09:30:00.000Z');
@@ -542,5 +550,181 @@ scenario.job('Reminders that are due but exceed the batch size being processed',
   it('triggers more reminder processing', function () {
     var triggerProcessRemindersSpy = queue._triggerProcessReminders;
     expect(triggerProcessRemindersSpy.callCount).to.equal(1);
+  });
+});
+
+// SCENARIO: Interview/application status
+scenario.job('An upcoming due interview being processed', {
+  dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  sinonUtils.spy(Interview.Instance.prototype, 'updateType');
+  sinonUtils.spy(Interview.Instance.prototype, 'updateCanSendReminders');
+  sinonUtils.spy(Application.Instance.prototype, 'updateToInterviewChanges');
+  serverUtils.stubEmails();
+  processReminders();
+
+  it('updates the interview status', function (done) {
+    Interview.findAll().asCallback(function handleFindAll (err, interviews) {
+      if (err) { return done(err); }
+      expect(interviews).to.have.length(1);
+      expect(interviews[0].get('type')).to.equal('past_interview');
+      expect(interviews[0].get('can_send_reminders')).to.equal(true);
+      done();
+    });
+  });
+
+  it('updates the application status', function (done) {
+    Application.findAll().asCallback(function handleFindAll (err, applications) {
+      if (err) { return done(err); }
+      expect(applications).to.have.length(1);
+      expect(applications[0].get('status')).to.equal('waiting_for_response');
+      expect(applications[0].get('waiting_for_response_reminder_id')).to.be.a('string');
+      done();
+    });
+  });
+
+  it('calls `Interview.updateType`', function () {
+    // DEV: We use at least due to post interview reminder using same update logic
+    var updateTypeSpy = Interview.Instance.prototype.updateType;
+    expect(updateTypeSpy.callCount).to.be.at.least(1);
+  });
+
+  it('doesn\'t call `Interview.updateCanSendReminders`', function () {
+    var updateCanSendRemindersSpy = Interview.Instance.prototype.updateCanSendReminders;
+    expect(updateCanSendRemindersSpy.callCount).to.equal(0);
+  });
+
+  it('calls `Application.updateToInterviewChanges()`', function () {
+    // DEV: We use at least due to post interview reminder using same update logic
+    var updateToInterviewChangesSpy = Application.Instance.prototype.updateToInterviewChanges;
+    expect(updateToInterviewChangesSpy.callCount).to.be.at.least(1);
+  });
+});
+
+scenario.job('An upcoming yet not due interview being processed', {
+  dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_NOT_DUE, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  sinonUtils.spy(Application.Instance.prototype, 'updateToInterviewChanges');
+  serverUtils.stubEmails();
+  processReminders();
+
+  // DEV: This verifies we don't waste part of our `limit`
+  it('doesn\'t resolve models in our query', function () {
+    var updateToInterviewChangesSpy = Application.Instance.prototype.updateToInterviewChanges;
+    expect(updateToInterviewChangesSpy.callCount).to.equal(0);
+  });
+
+  it('doesn\'t update the interview status', function (done) {
+    Interview.findAll().asCallback(function handleFindAll (err, interviews) {
+      if (err) { return done(err); }
+      expect(interviews).to.have.length(1);
+      expect(interviews[0].get('type')).to.equal('upcoming_interview');
+      expect(interviews[0].get('can_send_reminders')).to.equal(true);
+      done();
+    });
+  });
+
+  it('doesn\'t update the application status', function (done) {
+    Application.findAll().asCallback(function handleFindAll (err, applications) {
+      if (err) { return done(err); }
+      expect(applications).to.have.length(1);
+      expect(applications[0].get('status')).to.equal('upcoming_interview');
+      done();
+    });
+  });
+});
+
+scenario.job('A past interview being processed', {
+  dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  sinonUtils.spy(Application.Instance.prototype, 'updateToInterviewChanges');
+  serverUtils.stubEmails();
+  processReminders();
+
+  // DEV: This verifies we don't waste part of our `limit`
+  it('doesn\'t resolve models in our query', function () {
+    var updateToInterviewChangesSpy = Application.Instance.prototype.updateToInterviewChanges;
+    expect(updateToInterviewChangesSpy.callCount).to.equal(0);
+  });
+
+  it('doesn\'t update the interview status', function (done) {
+    Interview.findAll().asCallback(function handleFindAll (err, interviews) {
+      if (err) { return done(err); }
+      expect(interviews).to.have.length(1);
+      expect(interviews[0].get('type')).to.equal('past_interview');
+      done();
+    });
+  });
+
+  it('doesn\'t update the application status', function (done) {
+    Application.findAll().asCallback(function handleFindAll (err, applications) {
+      if (err) { return done(err); }
+      expect(applications).to.have.length(1);
+      expect(applications[0].get('status')).to.equal('waiting_for_response');
+      done();
+    });
+  });
+});
+
+// DEV: This prevents against naive queries only fetching due interviews instead of all upcoming interviews
+scenario.job('An upcoming due interview with a sibling not due interview being processed', {
+  dbFixtures: [dbFixtures.APPLICATION_SPLIT_UPCOMING_INTERVIEWS, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  serverUtils.stubEmails();
+  processReminders();
+
+  it('updates the interview status', function (done) {
+    Interview.findAll({order: [['type', 'DESC']]}).asCallback(function handleFindAll (err, interviews) {
+      if (err) { return done(err); }
+      expect(interviews).to.have.length(2);
+      expect(interviews[0].get('type')).to.equal('upcoming_interview');
+      expect(interviews[0].get('can_send_reminders')).to.equal(true);
+      expect(interviews[1].get('type')).to.equal('past_interview');
+      expect(interviews[1].get('can_send_reminders')).to.equal(true);
+      done();
+    });
+  });
+
+  it('doesn\'t update the application status', function (done) {
+    Application.findAll().asCallback(function handleFindAll (err, applications) {
+      if (err) { return done(err); }
+      expect(applications).to.have.length(1);
+      expect(applications[0].get('status')).to.equal('upcoming_interview');
+      done();
+    });
+  });
+});
+
+scenario.job('Multiple upcoming due interviews under the same application being processed', {
+  dbFixtures: [dbFixtures.APPLICATION_MULTIPLE_UPCOMING_INTERVIEWS_DUE, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  sinonUtils.spy(Application.Instance.prototype, 'updateToInterviewChanges');
+  serverUtils.stubEmails();
+  processReminders();
+
+  it('updates the interview statuses', function (done) {
+    Interview.findAll({order: [['type', 'DESC']]}).asCallback(function handleFindAll (err, interviews) {
+      if (err) { return done(err); }
+      expect(interviews).to.have.length(2);
+      expect(interviews[0].get('type')).to.equal('past_interview');
+      expect(interviews[0].get('can_send_reminders')).to.equal(true);
+      expect(interviews[1].get('type')).to.equal('past_interview');
+      expect(interviews[1].get('can_send_reminders')).to.equal(true);
+      done();
+    });
+  });
+
+  it('updates the application status', function (done) {
+    Application.findAll().asCallback(function handleFindAll (err, applications) {
+      if (err) { return done(err); }
+      expect(applications).to.have.length(1);
+      expect(applications[0].get('status')).to.equal('waiting_for_response');
+      done();
+    });
+  });
+
+  it('updates the application once', function () {
+    var updateToInterviewChangesSpy = Application.Instance.prototype.updateToInterviewChanges;
+    expect(updateToInterviewChangesSpy.callCount).to.equal(1);
   });
 });
