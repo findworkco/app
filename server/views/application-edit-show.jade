@@ -109,7 +109,7 @@ block content
             - throw new Error('Unexpected application status');
 
           mixin interviews-list(interviews)
-            each interview in interviews
+            each interview, i in interviews
               //- Fri Jan 15 at 9:00AM PST
               //- TODO: Use dynamic date format https://trello.com/c/nKTzPQFg/165-update-date-formats-to-dynamically-include-year-not
               a(href=interview.url)= interview.date_time_moment.format('ddd MMM D [at] h:mmA zz')

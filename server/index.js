@@ -259,6 +259,7 @@ Server.prototype.getExternalUrl = function (params) {
 
 // Export a new server
 module.exports = new Server(config);
+var app = module.exports.app;
 
 // Configure saving/loading users by their session
 // http://passportjs.org/docs#sessions
@@ -296,6 +297,12 @@ passport.deserializeUser(function handleDeserializeUser (req, id, cb) {
     Candidate.findById(id).asCallback(cb);
   });
 });
+
+// Lazy load/expose Application status info
+var Application = require('./models/application');
+app.locals.APPLICATION_STATUSES = Application.STATUSES;
+app.locals.APPLICATION_ADD_HUMAN_STATUSES = Application.ADD_HUMAN_STATUSES;
+app.locals.APPLICATION_EDIT_HUMAN_STATUSES = Application.EDIT_HUMAN_STATUSES;
 
 // Load our controller bindings
 void require('./controllers/index.js');

@@ -1,4 +1,5 @@
 // Load in our dependencies
+var Candidate = require('../candidate');
 var Interview = require('../interview');
 var ApplicationReminder = require('../application-reminder');
 
@@ -15,3 +16,16 @@ exports.applicationNavContent = [
   {model: ApplicationReminder, as: 'waiting_for_response_reminder'},
   {model: ApplicationReminder, as: 'received_offer_reminder'}
 ];
+exports.updateInterviewApplication = [{
+  model: Candidate
+}, {
+  model: Interview
+}, {
+  // DEV: We include `received_offer_reminder` to detect expiration and for emails
+  model: ApplicationReminder,
+  as: 'received_offer_reminder'
+}, {
+  // DEV: We include `waiting_for_response_reminder` to detect expiration and for emails
+  model: ApplicationReminder,
+  as: 'waiting_for_response_reminder'
+}];

@@ -105,6 +105,7 @@ addCandidate('todd__candidate', {
 
 // Received offer applications
 exports.APPLICATION_RECEIVED_OFFER_KEY = 'received-offer__application';
+exports.INTERVIEW_RECEIVED_OFFER_KEY = 'received-offer__interview';
 exports.REMINDER_RECEIVED_OFFER_KEY = 'received-offer__reminder--application';
 exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
   addApplication(exports.APPLICATION_RECEIVED_OFFER_KEY, {
@@ -131,7 +132,7 @@ exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
       is_enabled: true
     })
   ],
-  addInterview('received-offer__interview', {
+  addInterview(exports.INTERVIEW_RECEIVED_OFFER_KEY, {
     id: 'abcdef-black-mesa-interview-uuid',
     application_id: applications[applications.length - 1].id,
     candidate_id: DEFAULT_CANDIDATE_ID,

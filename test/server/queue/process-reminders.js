@@ -154,6 +154,8 @@ scenario.job('An upcoming interview application with enabled, matching, sendable
     expect(postInterviewReminderSpy.callCount).to.equal(1);
     expect(postInterviewReminderSpy.args[0][1]).to.have.property('application');
     expect(postInterviewReminderSpy.args[0][1].application.waiting_for_response_reminder).to.be.an('object');
+    expect(postInterviewReminderSpy.args[0][1].application).to.have.property('received_offer_reminder');
+    expect(postInterviewReminderSpy.args[0][1].application).to.have.property('upcoming_interviews');
     expect(postInterviewReminderSpy.args[0][1]).to.have.property('interview');
     expect(postInterviewReminderSpy.args[0][1]).to.have.property('email');
   });

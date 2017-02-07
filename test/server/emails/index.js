@@ -4,9 +4,9 @@ var _ = require('underscore');
 var expect = require('chai').expect;
 var cheerio = require('cheerio');
 var Application = require('../../../server/models/application');
-var ApplicationReminder = require('../../../server/models/application-reminder');
 var dbFixtures = require('../utils/db-fixtures');
 var emails = require('../../../server/emails');
+var includes = require('../../../server/models/utils/includes');
 var InterviewReminder = require('../../../server/models/interview-reminder');
 var sinonUtils = require('../utils/sinon');
 
@@ -184,20 +184,18 @@ scenario('A pre-interview reminder email with no notes, no details, and no post-
 });
 
 // EMAIL: Post-interview reminder
-function renderPostInterviewEmail() {
+function renderPostInterviewEmail(interviewKey) {
   before(function reloadInterview (done) {
-    var interview = this.models[dbFixtures.INTERVIEW_WAITING_FOR_RESPONSE_KEY];
+    var interview = this.models[interviewKey];
     interview.reload({
       include: [{
         model: Application,
-        include: [
-          {model: ApplicationReminder, as: 'waiting_for_response_reminder'}
-        ]
+        include: includes.updateInterviewApplication
       }]
     }).asCallback(done);
   });
   emailUtils.saveEmail(function generateEmail (callback) {
-    var interview = this.models[dbFixtures.INTERVIEW_WAITING_FOR_RESPONSE_KEY];
+    var interview = this.models[interviewKey];
     emails.postInterviewReminder._testRender({
       email: 'mock-user',
       application: interview.get('application'),
@@ -205,10 +203,10 @@ function renderPostInterviewEmail() {
     }, callback);
   });
 }
-scenario('A post-interview reminder email', {
+scenario('A post-interview reminder email for a follow-up interview', {
   dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
-  renderPostInterviewEmail();
+  renderPostInterviewEmail(dbFixtures.INTERVIEW_WAITING_FOR_RESPONSE_KEY);
 
   it('includes application details', function () {
     expect(this.subject).to.equal('Post-interview reminder for "Sky Networks"');
@@ -219,8 +217,29 @@ scenario('A post-interview reminder email', {
     expect(this.$('a[href="https://findwork.test/interview/abcdef-sky-networks-interview-uuid"]')).to.have.length(1);
   });
 
-  it('includes follow-up reminder info', function () {
+  // Application status specific
+  it('includes waiting for response reminder info', function () {
     expect(this.html).to.contain('Mon Jan 25 at 12:00PM CST');
+  });
+});
+
+scenario('A post-interview reminder email for an application with an upcoming interview', {
+  dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  renderPostInterviewEmail(dbFixtures.INTERVIEW_UPCOMING_INTERVIEW_KEY);
+
+  it('includes upcoming interview info', function () {
+    expect(this.html).to.contain('Thu Jan 20 at 2:00PM CST');
+  });
+});
+
+scenario('A post-interview reminder email for a received offer application', {
+  dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  renderPostInterviewEmail(dbFixtures.INTERVIEW_RECEIVED_OFFER_KEY);
+
+  it('includes received offer reminder info', function () {
+    expect(this.html).to.contain('Fri Jan 1 at 12:00PM CST');
   });
 });
 

@@ -11,14 +11,8 @@ var includes = require('../models/utils/includes');
 var ApplicationReminder = require('../models/application-reminder');
 var companyMockData = require('../models/company-mock-data');
 
-// Define common data loader for nav
-app.all('*', function loadNavData (req, res, next) {
-  // Define common statuses for all pages
-  // TODO: Consider relocating statuses to `app.locals`
-  res.locals.APPLICATION_STATUSES = Application.STATUSES;
-  res.locals.APPLICATION_ADD_HUMAN_STATUSES = Application.ADD_HUMAN_STATUSES;
-  res.locals.APPLICATION_EDIT_HUMAN_STATUSES = Application.EDIT_HUMAN_STATUSES;
-
+// Define common request configuration
+app.all('*', function configureRequest (req, res, next) {
   // If we have a candidate, set the request's timezone to their timezone
   if (req.candidate) {
     req.timezone = res.locals.timezone = req.candidate.get('timezone');

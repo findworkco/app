@@ -1,7 +1,8 @@
 // Load in our dependencies
-var async = require('async');
 var assert = require('assert');
 var domain = require('domain');
+var _ = require('underscore');
+var async = require('async');
 var moment = require('moment-timezone');
 // DEV: We load `app` before `saveModelsViaQueue` to prevent order issues
 var app = require('../index.js').app;
@@ -10,11 +11,11 @@ var getExternalUrl = require('../index.js').getExternalUrl;
 var Application = require('../models/application');
 var ApplicationReminder = require('../models/application-reminder');
 var Candidate = require('../models/candidate');
+var includes = require('../models/utils/includes');
 var Interview = require('../models/interview');
 var InterviewReminder = require('../models/interview-reminder');
 var emails = require('../emails');
 var sentryClient = exports.sentryClient = app.sentryClient;
-var reminderUtils = require('../utils/reminder');
 var saveModelsViaQueue = require('../models/utils/save-models').saveModelsViaQueue;
 
 // If we are in a Kue environment, enable cleanup
@@ -219,17 +220,19 @@ function markReminderAsSent(reminder, cb) {
   reminder.set('sent_at_moment', moment());
   saveModelsViaQueue({models: [reminder]}, cb);
 }
-function handleInterviewChanges(interview) {
-  var application = interview.get('application');
-  var timezone = interview.get('candidate').get('timezone');
-  var reminder = application.get('waiting_for_response_reminder');
-  if (!reminder || reminder.isExpired() || reminder.get('sent_at_moment')) {
-    reminder = application.createWaitingForResponseReminder({
-      is_enabled: true,
-      date_time_moment: reminderUtils.getWaitingForResponseDefaultMoment(timezone)
-    });
-  }
-  return [interview, application, reminder];
+function handleApplicationInterviews(application) {
+  var modelsToSave = [application];
+  application.get('upcoming_interviews').forEach(function updateUpcomingInterview (interview) {
+    // If the interview is due, then update its type and save it
+    if (interview.get('date_time_moment') <= moment()) {
+      interview.updateType();
+      modelsToSave.push(interview);
+      interview.setDataValue('application', application);
+    }
+  });
+  modelsToSave = _.union(modelsToSave,
+    application.updateToInterviewChanges(application.get('candidate')));
+  return modelsToSave;
 }
 function logError(err, job, cb) {
   // Report/log our error
@@ -303,10 +306,8 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
       model: Candidate
     }, {
       model: Application,
-      include: {
-        model: ApplicationReminder,
-        as: 'waiting_for_response_reminder'
-      },
+      // DEV: We reuse application include so we can detect what the changes will be for our email
+      include: includes.updateInterviewApplication,
       where: {
         // Allow any active applications to get reminders for their interviews (e.g. received offer)
         status: {$not: Application.STATUSES.ARCHIVED}
@@ -381,7 +382,7 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
     function updatePreInterviewReminders (callback) {
       Interview.findAll(preInterviewQuery).asCallback(function handleFindAll (err, interviews) {
         if (err) {
-          return callback(err);
+          return logError(err, job, callback);
         }
         async.forEach(interviews, function handleInterview (interview, cb) {
           var candidate = interview.get('candidate');
@@ -392,7 +393,7 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
             application: interview.get('application').get({plain: true}),
             email: candidate.get('email')
           }, function handleSend (err) {
-            if (err) { return cb(err); }
+            if (err) { return logError(err, job, cb); }
             var reminder = interview.get('pre_interview_reminder');
             reminder.setDataValue('interview', interview);
             markReminderAsSent(reminder, cb);
@@ -402,12 +403,10 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
     },
     function updatePostInterviewReminders (callback) {
       Interview.findAll(postInterviewQuery).asCallback(function handleFindAll (err, interviews) {
-        if (err) {
-          return callback(err);
-        }
+        if (err) { return logError(err, job, callback); }
         async.forEach(interviews, function handleInterview (interview, cb) {
           var candidate = interview.get('candidate');
-          handleInterviewChanges(interview);
+          handleApplicationInterviews(interview.get('application'));
           emails.postInterviewReminder({
             to: candidate.get('email')
           }, {
@@ -415,7 +414,7 @@ registerJob(JOBS.PROCESS_REMINDERS, 1, function processReminders (job, done) {
             application: interview.get('application').get({plain: true}),
             email: candidate.get('email')
           }, function handleSend (err) {
-            if (err) { return cb(err); }
+            if (err) { return logError(err, job, cb); }
             var reminder = interview.get('post_interview_reminder');
             reminder.setDataValue('interview', interview);
             markReminderAsSent(reminder, cb);

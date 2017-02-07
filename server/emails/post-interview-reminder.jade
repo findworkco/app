@@ -22,15 +22,38 @@ html
   a(href=interviewUrl)= interviewUrl
   br
   br
-  | We have schedule a follow-up reminder for you in 7 days. It will remind you to check in to prevent falling between the cracks.
-  br
-  br
-  b
-    = "Follow-up reminder ("
-    a(href=applicationUrl) edit reminder
-    = "): "
-  //- Mon Mar 14 at 2:00PM CST
-  = application.waiting_for_response_reminder.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+  if application.status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
+    | We have scheduled a follow-up reminder for you in 7 days. It will remind you to check in to prevent falling between the cracks.
+    br
+    br
+    b
+      = "Follow-up reminder ("
+      a(href=applicationUrl) edit reminder
+      = "): "
+    //- Mon Mar 14 at 2:00PM CST
+    = application.waiting_for_response_reminder.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+  else if application.status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
+    | Additionally, there are upcoming interviews scheduled on:
+    br
+    br
+    for upcomingInterview, i in application.upcoming_interviews
+      //- Mon Mar 14 at 2:00PM CST
+      - var upcomingInterviewUrl = getExternalUrl(upcomingInterview.url);
+      a(href=upcomingInterviewUrl)= upcomingInterview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+      if i != application.upcoming_interviews.length - 1
+        br
+  else if application.status === APPLICATION_STATUSES.RECEIVED_OFFER
+    | Additionally, there is a response reminder scheduled at:
+    br
+    br
+    b
+      = "Response reminder ("
+      a(href=applicationUrl) edit reminder
+      = "): "
+    //- Mon Mar 14 at 2:00PM CST
+    = application.received_offer_reminder.date_time_moment.format('ddd MMM D [at] h:mmA zz')
+  else
+    - throw new Error('Unexpected application status');
   br
   br
   | - The Find Work team

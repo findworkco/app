@@ -5,7 +5,7 @@ var emails = require('../emails');
 var queue = require('../queue');
 var Application = require('../models/application');
 var applicationMockData = require('../models/application-mock-data');
-var ApplicationReminder = require('../models/application-reminder');
+var includes = require('../models/utils/includes');
 var interviewMockData = require('../models/interview-mock-data');
 var InterviewReminder = require('../models/interview-reminder');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
@@ -78,12 +78,7 @@ app.get('/_dev/email/post-interview-reminder', [
   function devEmailPostInterviewReminder (req, res, next) {
     // Send a test email
     var interview = interviewMockData.getById('abcdef-sky-networks-interview-uuid', {
-      include: [{
-        model: Application,
-        include: [
-          {model: ApplicationReminder, as: 'waiting_for_response_reminder'}
-        ]
-      }]
+      include: includes.updateInterviewApplication
     });
     emails.postInterviewReminder({
       to: 'todd@findwork.co'
