@@ -101,6 +101,8 @@ passport.use(new GoogleStrategy({
 
 // Define our controllers
 // https://github.com/jaredhanson/passport-google-oauth2/tree/v1.0.0#authenticate-requests
+// https://github.com/jaredhanson/connect-ensure-login/tree/v0.1.1#log-in-and-return-to
+// https://github.com/jaredhanson/passport/blob/v0.3.2/lib/middleware/authenticate.js#L239-L245
 // DEV: Scope can be reset during development via
 //   https://security.google.com/settings/security/permissions
 // DEV: We use a map for different OAuth controllers for different callback URLs
@@ -110,6 +112,7 @@ function getOAuthActionController(oauthAction) {
       pathname: '/oauth/google/callback',
       query: {action: oauthAction}
     }, config.url.external)),
+    successReturnToOrRedirect: '/schedule',
     scope: config.google.scope
   });
 }
@@ -171,10 +174,5 @@ app.get('/oauth/google/callback', [
 
     // Otherwise, continue to the corresponding controller
     oauthActionControllers[oauthAction](req, res, next);
-  },
-  function redirectAuthenticatedUser (req, res, next) {
-    // TODO: Handle redirect strategy... (likely via another URL like `continue-after-auth`)
-    //   This is to handle likely split of login and any missing middlewares (e.g. must be admin) for endpoints/actions
-    res.redirect('/schedule');
   }
 ]);

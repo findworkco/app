@@ -20,4 +20,12 @@ gemini.suite('login', function (suite) {
       .capture('default-medium', geminiUtils.resizeMedium)
       .capture('default-small', geminiUtils.resizeSmall);
   });
+
+  gemini.suite('info', function (child) {
+    child.load('/_dev/login/info')
+      .setCaptureElements('body')
+      .capture('default-large', geminiUtils.resizeLarge)
+      .capture('default-medium', geminiUtils.resizeMedium)
+      .capture('default-small', geminiUtils.resizeSmall);
+  });
 });

@@ -1,6 +1,8 @@
 // Load in our dependencies
 var _ = require('underscore');
+var express = require('express');
 var Sequelize = require('sequelize');
+var url = require('url');
 var app = require('../index.js').app;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
@@ -41,23 +43,9 @@ function setReceivedOfferApplicationStatus(req, res, next) {
   next();
 }
 
-var applicationAddFormShowFns = [
-  resolveModelsAsLocals({nav: true}),
-  function applicationAddFormShow (req, res, next) {
-    res.render('application-add-form-show.jade', {
-      page_url: req.url,
-      query_company_name: req.query.get('company_name')
-    });
-  }
-];
-var applicationAddFormSaveFns = [
-  // DEV: We resolve `nav` in case of there being a validation error
-  resolveModelsAsLocals({nav: true}),
+var _applicationAddFormSaveFns = new express.Router();
+_applicationAddFormSaveFns.use([
   function applicationAddFormSave (req, res, next) {
-    // TODO: If user logged out, redirect to login and provide messaging on log in page like:
-    //   "Sorry, you’ll need an account before we can save the job application.
-    //    Don’t worry, we will finish saving it when you are done."
-
     // Create our application to be extended
     var application = req._application = Application.build({
       candidate_id: req.candidate.get('id'),
@@ -169,6 +157,47 @@ var applicationAddFormSaveFns = [
     req.flash(NOTIFICATION_TYPES.SUCCESS, 'Application created');
     res.redirect(req._application.get('url'));
   }
+]);
+var applicationAddFormShowFns = [
+  resolveModelsAsLocals({nav: true}),
+  function applicationAddFormAutosubmit (req, res, next) {
+    // If we have saved form data
+    if (req.session.returnRawBody) {
+      // Move it into memory
+      var returnRawBody = req.session.returnRawBody;
+      delete req.session.returnRawBody;
+
+      // If there is a request to submit said form data, then use it
+      if (req.query.get('autosubmit') === 'true') {
+        req.rawBody = returnRawBody;
+        req.parseRawBody();
+        return _applicationAddFormSaveFns.call(this, req, res, next);
+      }
+    }
+
+    // Otherwise, continue
+    next();
+  },
+  function applicationAddFormShow (req, res, next) {
+    res.render('application-add-form-show.jade', {
+      page_url: req.url,
+      query_company_name: req.query.get('company_name')
+    });
+  }
+];
+var applicationAddFormSaveFns = [
+  // Use a custom ensure logged in wrapper to redirect with a query string to our GET page
+  // https://github.com/jaredhanson/connect-ensure-login/blob/v0.1.1/lib/ensureLoggedIn.js#L44-L46
+  function applicationAddEnsureLoggedIn (req, res, next) {
+    if (!req.isAuthenticated || !req.isAuthenticated()) {
+      req.session.returnTo = url.parse(req.url).pathname + '?autosubmit=true';
+      req.session.returnRawBody = req.rawBody;
+    }
+    return ensureLoggedIn.call(this, req, res, next);
+  },
+  // DEV: We resolve `nav` in case of there being a validation error
+  resolveModelsAsLocals({nav: true}),
+  _applicationAddFormSaveFns
 ];
 
 app.get('/add-application/save-for-later', _.flatten([
@@ -176,7 +205,6 @@ app.get('/add-application/save-for-later', _.flatten([
   applicationAddFormShowFns
 ]));
 app.post('/add-application/save-for-later', _.flatten([
-  ensureLoggedIn,
   setSaveForLaterApplicationStatus,
   applicationAddFormSaveFns
 ]));
@@ -186,7 +214,6 @@ app.get('/add-application/waiting-for-response', _.flatten([
   applicationAddFormShowFns
 ]));
 app.post('/add-application/waiting-for-response', _.flatten([
-  ensureLoggedIn,
   setWaitingForResponseApplicationStatus,
   applicationAddFormSaveFns
 ]));
@@ -196,7 +223,6 @@ app.get('/add-application/upcoming-interview', _.flatten([
   applicationAddFormShowFns
 ]));
 app.post('/add-application/upcoming-interview', _.flatten([
-  ensureLoggedIn,
   setUpcomingInterviewApplicationStatus,
   applicationAddFormSaveFns
 ]));
@@ -206,7 +232,6 @@ app.get('/add-application/received-offer', _.flatten([
   applicationAddFormShowFns
 ]));
 app.post('/add-application/received-offer', _.flatten([
-  ensureLoggedIn,
   setReceivedOfferApplicationStatus,
   applicationAddFormSaveFns
 ]));

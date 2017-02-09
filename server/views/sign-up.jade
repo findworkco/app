@@ -6,8 +6,9 @@ block title
 block content
   h1.content__heading.push--bottom(style="font-weight: normal") Sign up
   if locals.auth_error
-    p
-      span.notification.notification--error= auth_error
+    p.section--error= auth_error
+  else if locals.has_return_raw_body
+    p.section--info Sorry, you need to sign up/log in before we can save the job application. Don't worry, we'll save it when you're done.
   //- DESIGN: If we get AngelList support, build Sign up/Log in with AngelList
   p
     //- DEV: `id` is for testing purposes only

@@ -53,8 +53,16 @@ function handleAuthError(req, res, next) {
   // Continue to next controller
   next();
 }
+function detectAutosubmit(req, res, next) {
+  if ((req.session.returnTo && req.session.returnTo.indexOf('autosubmit') !== -1) &&
+      req.session.returnRawBody) {
+    res.locals.has_return_raw_body = true;
+  }
+  next();
+}
 app.get('/login', [
   handleAuthError,
+  detectAutosubmit,
   resolveModelsAsLocals({nav: true}),
   function loginShow (req, res, next) {
     res.render('login.jade');
@@ -62,6 +70,7 @@ app.get('/login', [
 ]);
 app.get('/sign-up', [
   handleAuthError,
+  detectAutosubmit,
   resolveModelsAsLocals({nav: true}),
   function signUpShow (req, res, next) {
     res.render('sign-up.jade');

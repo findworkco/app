@@ -1,7 +1,7 @@
 // Load in our dependencies
 var expect = require('chai').expect;
-var MultiDictKeyError = require('body-parser-multidict').MultiDictKeyError;
-var MultiDict = require('../../server/utils/body-parser-multidict').MultiDict;
+var MultiDictKeyError = require('querystring-multidict').MultiDictKeyError;
+var MultiDict = require('../../server/utils/querystring-multidict').MultiDict;
 
 // Start our tests
 scenario('An extended MultiDict handling boolean data', {

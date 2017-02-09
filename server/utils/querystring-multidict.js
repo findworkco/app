@@ -1,6 +1,6 @@
 // Load in our dependencies
 var moment = require('moment-timezone');
-var bodyParserMultiDict = require('body-parser-multidict');
+var qsMultiDict = require('querystring-multidict');
 var MultiDict = require('querystring-multidict/lib/multidict');
 
 // Extend MultiDict to support custom types (i.e. booleans, moments)
@@ -62,5 +62,5 @@ MultiDict.prototype.fetchMomentTimezone = function (key) {
 };
 
 // Export our normal parser and re-expose MultiDict for convenience
-module.exports = bodyParserMultiDict;
+module.exports = qsMultiDict;
 module.exports.MultiDict = MultiDict;

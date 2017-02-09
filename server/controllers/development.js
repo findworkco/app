@@ -186,8 +186,19 @@ app.get('/_dev/login/error', function devLoginErrorShow (req, res, next) {
   req.session.authError = 'Access was denied from Google. Please try again.';
   res.redirect('/login');
 });
+app.get('/_dev/login/info', function devLoginErrorinfo (req, res, next) {
+  // Set pending save data and redirect to the login page
+  req.session.returnTo = '/add-application/received-offer?autosubmit=true';
+  req.session.returnRawBody = 'foo=bar';
+  res.redirect('/login');
+});
 app.get('/_dev/sign-up/error', function devSignUpErrorShow (req, res, next) {
   req.session.authError = 'Access was denied from Google. Please try again.';
+  res.redirect('/sign-up');
+});
+app.get('/_dev/sign-up/info', function devSignUpInfoShow (req, res, next) {
+  req.session.returnTo = '/add-application/received-offer?autosubmit=true';
+  req.session.returnRawBody = 'foo=bar';
   res.redirect('/sign-up');
 });
 

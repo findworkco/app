@@ -224,7 +224,7 @@ scenario.route('A request to GET /oauth/google/callback', {
     });
   });
 
-  scenario.loggedOut('with an existent user', {
+  scenario.loggedOut('with an existent user with no previous page', {
     dbFixtures: [dbFixtures.CANDIDATE_DEFAULT],
     googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
   }, function () {
@@ -249,7 +249,7 @@ scenario.route('A request to GET /oauth/google/callback', {
     });
 
     it('is redirected to /schedule', function () {
-      expect(this.$('title').text()).to.equal('Schedule - Find Work');
+      expect(this.lastRedirect.redirectUri).to.match(/\/schedule$/);
     });
 
     it('doesn\'t create a new user', function (done) {
@@ -274,6 +274,40 @@ scenario.route('A request to GET /oauth/google/callback', {
       expect(queueCreateSpy.callCount).to.equal(0);
       var emailSendStub = this.emailSendStub;
       expect(emailSendStub.callCount).to.equal(0);
+    });
+  });
+
+  scenario.routeTest('with an existent user with a previous GET page', {
+    dbFixtures: [dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Make our rejected request and make our login request
+    httpUtils.session.init()
+      .save({
+        url: serverUtils.getUrl('/settings'),
+        followRedirect: false,
+        expectedStatusCode: 302
+      })
+      .login();
+
+    it('is redirected to our original page', function () {
+      expect(this.lastRedirect.redirectUri).to.match(/\/settings$/);
+    });
+  });
+
+  scenario.routeTest('with an existent user with a previous POST page', {
+    dbFixtures: [dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Make our rejected request and make our login request
+    httpUtils.session.init()
+      .save({
+        method: 'POST', url: serverUtils.getUrl('/application/does-not-exist'),
+        csrfForm: true, followRedirect: false,
+        expectedStatusCode: 302
+      })
+      .login();
+
+    it('is redirected to `/schedule`', function () {
+      expect(this.lastRedirect.redirectUri).to.match(/\/schedule$/);
     });
   });
 });

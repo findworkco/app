@@ -2,6 +2,7 @@
 var assert = require('assert');
 var domain = require('domain');
 var _ = require('underscore');
+var bodyParser = require('body-parser');
 var connectFlash = require('connect-flash');
 var csurf = require('csurf');
 var express = require('express');
@@ -11,12 +12,11 @@ var kue = require('kue');
 var nodemailer = require('nodemailer');
 var nodemailerHtmlToText = require('nodemailer-html-to-text').htmlToText;
 var passport = require('passport');
-var qsMultiDict = require('querystring-multidict');
 var RedisSessionStore = require('connect-redis')(expressSession);
 var raven = require('raven');
 var redis = require('redis');
 var sequelize = require('./models/_sequelize');
-var bodyParserMultiDict = require('./utils/body-parser-multidict');
+var qsMultiDict = require('./utils/querystring-multidict');
 var sentryUtils = require('./utils/sentry');
 var appLocals = {
   _: require('underscore'),
@@ -24,7 +24,7 @@ var appLocals = {
   ACCEPTABLE_NOTIFICATION_TYPES: require('./utils/notifications').ACCEPTABLE_TYPES,
   countryData: require('country-data'),
   // DEV: We use multidict in views as we don't know if original data was a string or array
-  form_data: new bodyParserMultiDict.MultiDict(), // Default form data
+  form_data: new qsMultiDict.MultiDict(), // Default form data
   gravatarUrl: require('gravatar-url'),
   moment: require('moment-timezone'),
   reminderUtils: require('./utils/reminder'),
@@ -141,7 +141,23 @@ function Server(config) {
     req.query = qsMultiDict.parse(req._parsedUrl.query);
     next();
   });
-  app.use(bodyParserMultiDict.urlencoded());
+  app.use([
+    // DEV: We parse raw body initially so we can re-parse form data later (e.g. after login)
+    // https://github.com/expressjs/body-parser/blob/1.16.0/lib/types/raw.js#L35-L40
+    // https://github.com/expressjs/body-parser/blob/1.16.0/lib/types/urlencoded.js#L51-L57
+    bodyParser.raw({
+      type: 'application/x-www-form-urlencoded',
+      limit: '100kb'
+    }),
+    function parseBody (req, res, next) {
+      req.rawBody = req.body.toString();
+      req.parseRawBody = function () {
+        req.body = qsMultiDict.parse(req.rawBody);
+      };
+      req.parseRawBody();
+      next();
+    }
+  ]);
 
   // Integrate CSRF on sessions (make sure this comes before flash messages to message loss)
   app.use(csurf({
