@@ -21,11 +21,15 @@ exports.updateInterviewApplication = [{
 }, {
   model: Interview
 }, {
-  // DEV: We include `received_offer_reminder` to detect expiration and for emails
+  // DEV: We include `saved_for_later` to detect expiration
   model: ApplicationReminder,
-  as: 'received_offer_reminder'
+  as: 'saved_for_later_reminder'
 }, {
   // DEV: We include `waiting_for_response_reminder` to detect expiration and for emails
   model: ApplicationReminder,
   as: 'waiting_for_response_reminder'
+}, {
+  // DEV: We include `received_offer_reminder` to detect expiration and for emails
+  model: ApplicationReminder,
+  as: 'received_offer_reminder'
 }];

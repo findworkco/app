@@ -1025,3 +1025,23 @@ exports.APPLICATION_MULTIPLE_UPCOMING_INTERVIEWS_DUE = overrideFixtures(
     }
   }
 );
+
+exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_OLD_YET_NOT_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_NOT_DUE
+  ]),
+  {
+    base: exports.REMINDER_WAITING_FOR_RESPONSE_REMINDER_DUE,
+    overrideDataValues: {updated_at: new Date('2016-03-03T15:00:00.000Z')}
+  }
+);
+
+exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_RECEIVED_OFFER_REMINDER_NOT_DUE = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_RECEIVED_OFFER_REMINDER_DUE
+  ]),
+  {
+    base: exports.REMINDER_RECEIVED_OFFER_REMINDER_DUE,
+    overrides: {date_time_moment: moment.tz('2022-12-09T03:00', 'US-America/Chicago')}
+  }
+);
