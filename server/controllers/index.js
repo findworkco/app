@@ -277,9 +277,9 @@ void require('./oauth-google.js');
 //   https://console.developers.google.com/apis/credentials/consent?project=app-development-144900
 //   https://console.developers.google.com/apis/credentials/consent?project=app-production-144901
 app.get('/privacy', [
-  resolveModelsAsLocals({nav: true}),
+  // No model resolution as this is a simple redirect
   function privacyShow (req, res, next) {
-    res.render('privacy.jade');
+    res.redirect('https://www.iubenda.com/privacy-policy/8032613');
   }
 ]);
 app.get('/terms', [

@@ -9,11 +9,14 @@ scenario.route('A request to GET /privacy', {
 }, function () {
   scenario.loggedOut('from a logged out user', function () {
     // Make our request
-    httpUtils.session.init().save({url: serverUtils.getUrl('/privacy'), expectedStatusCode: 200});
+    httpUtils.session.init().save({
+      url: serverUtils.getUrl('/privacy'),
+      followRedirect: false,
+      expectedStatusCode: 302
+    });
 
-    it('recieves the privacy page', function () {
-      expect(this.$('title').text()).to.equal('Privacy policy - Find Work');
-      expect(this.body).to.contain('Add Privacy policy');
+    it('is redirected to the privacy page', function () {
+      expect(this.res.headers).to.have.property('location', 'https://www.iubenda.com/privacy-policy/8032613');
     });
   });
 });

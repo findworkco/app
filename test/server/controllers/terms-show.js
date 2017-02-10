@@ -12,8 +12,8 @@ scenario.route('A request to GET /terms', {
     httpUtils.session.init().save({url: serverUtils.getUrl('/terms'), expectedStatusCode: 200});
 
     it('recieves the terms page', function () {
-      expect(this.$('title').text()).to.equal('Terms of service - Find Work');
-      expect(this.body).to.contain('Add Terms of service');
+      expect(this.$('title').text()).to.equal('Terms of use - Find Work');
+      expect(this.body).to.contain('Terms of use');
     });
   });
 });
