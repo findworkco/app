@@ -8,7 +8,7 @@ block title
   title Schedule - Find Work
 
 block content
-  h1.content__heading.push-half--bottom(style="font-weight: normal") Schedule
+  h1.content__heading.push-half--bottom Schedule
   - var hasActiveApplications = false;
   - hasActiveApplications = hasActiveApplications || receivedOfferApplications.length !== 0;
   - hasActiveApplications = hasActiveApplications || upcomingInterviewApplications.length !== 0;
@@ -28,14 +28,14 @@ block content
 
     //- Received offer section
     if receivedOfferApplications.length
-      h3.flush--bottom(style="font-weight: normal") Received offer
+      h3.flush--bottom Received offer
       //- DEV: This is actually a 1.5x push due to extra padding for link border
       #schedule__received-offer.push--bottom
         each receivedOfferApplication in receivedOfferApplications
           +schedule-row--application(receivedOfferApplication)
 
     //- Upcoming interviews section
-    h3.flush--bottom(style="font-weight: normal") Upcoming interviews
+    h3.flush--bottom Upcoming interviews
     #schedule__upcoming-interviews.push--bottom
       if upcomingInterviewApplications.length
         each upcomingInterviewApplication in upcomingInterviewApplications
@@ -45,7 +45,7 @@ block content
           i No upcoming interviews.
 
     //- Waiting for response section
-    h3.flush--bottom(style="font-weight: normal") Waiting for response
+    h3.flush--bottom Waiting for response
     #schedule__waiting-for-response.push--bottom
       if waitingForResponseApplications.length
         each waitingForResponseApplication in waitingForResponseApplications
@@ -56,15 +56,15 @@ block content
 
     //- Saved for later section
     if savedForLaterApplications.length
-      h3.flush--bottom(style="font-weight: normal") Saved for later
+      h3.flush--bottom Saved for later
       //- DEV: This is actually a 1.5x push due to extra padding for link border
       #schedule__saved-for-later.push--bottom
         each savedForLaterApplication in savedForLaterApplications
           +schedule-row--application(savedForLaterApplication)
   else
-    h2.content__subheading.flush--bottom(style="font-weight: normal")
+    h2.content__subheading.flush--bottom
       | You have no active job applications.
-    h3(style="font-weight: normal")
+    h3
       | Choose one of the actions below to get started:
     .v-this-or-this__container
       .v-this-or-this__row

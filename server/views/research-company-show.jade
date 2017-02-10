@@ -7,7 +7,7 @@ block title
   title Research company - Find Work
 
 block content
-  h1.content__heading(style="font-weight: normal") Research company
+  h1.content__heading Research company
   //- TODO: Use loading animation + turbolinks for submitting form with progressive enhancement
   //-   https://trello.com/c/g857wfA8/154-add-loading-state-for-research-company-and-its-widget
   //-   https://trello.com/c/B6vvssVI/153-add-turbolinks-support-for-submitting-research-company
@@ -47,11 +47,11 @@ block content
   .grid
     //- DEV: Id is for testing only
     #glassdoor-results.grid__item.one-whole.large-four-ninths
-      h5.text--normal.flush--bottom Glassdoor results:
+      h5.text--normal.flush--bottom(style="font-weight: bold") Glassdoor results:
       p
         +glassdoor-result(locals.glassdoorResult, {extended: true})
     //- DEV: Id is for testing only
     #angellist-results.grid__item.one-whole.large-five-ninths
-      h5.text--normal.flush--bottom AngelList results:
+      h5.text--normal.flush--bottom(style="font-weight: bold") AngelList results:
       p
         +angellist-result(locals.angelListResult, {extended: true})

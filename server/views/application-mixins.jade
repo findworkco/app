@@ -28,7 +28,7 @@ mixin application-date(values)
 
 mixin saved-for-later-reminder(values)
   .form-group&attributes(attributes)
-    h4.flush--bottom(style="font-weight: normal")
+    h4.flush--bottom
       = "Application reminder: "
       span.text--normal
         i.fa.fa-reply(style="font-size: 1.5em")
@@ -41,7 +41,7 @@ mixin saved-for-later-reminder(values)
 
 mixin waiting-for-response-reminder(values, options)
   .form-group
-    h4.flush--bottom(style="font-weight: normal")
+    h4.flush--bottom
       = "Follow up reminder: "
       span.text--normal
         i.fa.fa-reply(style="font-size: 1.5em")
@@ -54,7 +54,7 @@ mixin waiting-for-response-reminder(values, options)
 
 mixin received-offer-reminder(values, options)
   .form-group
-    h4.flush--bottom(style="font-weight: normal")
+    h4.flush--bottom
       = "Response reminder: "
       span.text--normal
         i.fa.fa-reply(style="font-size: 1.5em")
@@ -94,7 +94,7 @@ mixin company-notes-and-research(values)
     //- Alter button to link and link to standalone page
     //-   but allow JS to switch back to button for inline form
     //-   so we can save `company_name` as part of application
-    h4.push-half--bottom(style="font-weight: normal")
+    h4.push-half--bottom
       span.small-hidden Research company:
       span.medium-and-up-hidden
         = "Research company "
@@ -109,10 +109,10 @@ mixin company-notes-and-research(values)
           input.form-control.input--block#company_name(name="company_name", type="text", value=form_data.get('company_name') || values.company_name || locals.query_company_name, placeholder="Examples: Google, Acme Corp")
         .flexbox__item
           button.btn.btn--small.btn--wide.btn--default(type="button") Search
-    h5.text--normal.flush--bottom Glassdoor results:
+    h5.text--normal.flush--bottom(style="font-weight: bold") Glassdoor results:
     p
       +glassdoor-result(locals.glassdoorResult, {expanded: false})
-    h5.text--normal.flush--bottom AngelList results:
+    h5.text--normal.flush--bottom(style="font-weight: bold") AngelList results:
     p
       +angellist-result(locals.angelListResult, {expanded: false})
 

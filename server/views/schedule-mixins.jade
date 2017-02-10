@@ -20,7 +20,7 @@ mixin schedule-info(params)
 mixin schedule-row--application(application)
   - var status = application.status;
   +schedule-row().schedule-row--application
-    h4(style="font-weight: normal; margin-bottom: 4px")
+    h4(style="margin-bottom: 4px")
       a(href=application.url)= application.name
     .grid
       .grid__item.one-half.small-one-whole

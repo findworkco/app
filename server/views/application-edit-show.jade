@@ -10,11 +10,11 @@ block title
 
 block content
   div(style="position: relative")
-    h1.content__heading(style="font-weight: normal") Job application
+    h1.content__heading Job application
     //- DEV: On large screens, display "All changes saved" away from content
     //- DEV: We keep "All changes saved" separate from h1 for a11y clarity
     i.text--normal.muted.medium-and-down-hidden(data-autosave, style="position: absolute; top: 0; right: 0") All changes saved
-  h2.content__subheading(style="font-weight: normal")= form_data.get('name') || selectedApplication.name
+  h2.content__subheading= form_data.get('name') || selectedApplication.name
   //- DEV: We wanted to use a `p` but we can't nest forms in them
   //-   as browsers break up those block in block formations
   .action-bar.push--bottom
@@ -117,7 +117,7 @@ block content
                 br
           if selectedApplication.upcoming_interviews.length > 0
             div.upcoming-interviews
-              h4.push-half--bottom(style="font-weight: normal")
+              h4.push-half--bottom
                 = "Upcoming interviews: "
                 a.text--normal.btn.btn--small.btn--default(href=selectedApplication.add_interview_url)
                   span(aria-hidden="true")= "+ "
@@ -126,7 +126,7 @@ block content
                 +interviews-list(selectedApplication.upcoming_interviews)
           if selectedApplication.status !== APPLICATION_STATUSES.SAVED_FOR_LATER
             div.past-interviews
-              h4.push-half--bottom(style="font-weight: normal")
+              h4.push-half--bottom
                 = "Past interviews: "
                 a.text--normal.btn.btn--small.btn--default(href=selectedApplication.add_interview_url)
                   span(aria-hidden="true")= "+ "
@@ -138,7 +138,7 @@ block content
                   i There are no past interviews for this job application.
           if selectedApplication.status == APPLICATION_STATUSES.ARCHIVED
             .landmark.archive-date(style="margin-top: -18px")
-              h4.push-half--bottom(style="font-weight: normal")
+              h4.push-half--bottom
                 //- DEV: Label is consistent with "Archived on" in nav
                 = "Archived on: "
                 i.fa.fa-calendar-o(style="font-size: 1.5em")

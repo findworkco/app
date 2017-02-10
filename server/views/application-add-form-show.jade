@@ -12,8 +12,8 @@ block title
 
 //- DEV: We cannot share all content with edit page (e.g. it lacks interview fields for upcoming interview)
 block content
-  h1.content__heading(style="font-weight: normal") Add job application
-  h2.content__subheading(style="font-weight: normal")
+  h1.content__heading Add job application
+  h2.content__subheading
     | Please fill out information about the application
   form.cf(method="POST", action=page_url)
     +csrf-input()
@@ -44,7 +44,7 @@ block content
         else if application_status === APPLICATION_STATUSES.WAITING_FOR_RESPONSE
           +waiting-for-response-reminder({})
         else if application_status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
-          h4.push-half--bottom(style="font-weight: normal") Interview information:
+          h4.push-half--bottom Interview information:
           //- DEV: We could shift follow up dates with application info but
           //-   it's sanest to keep relevant/changing info next to each other
           +interview-fields({})

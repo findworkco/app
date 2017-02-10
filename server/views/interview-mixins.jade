@@ -19,13 +19,13 @@ mixin interview-fields(values, options)
     input#details.form-control.input--block(name="details", type="text", value=form_data.get('details') || values.details, placeholder="Instructions (e.g. Call 555-123-4567)")
   .form-group
     //- DESIGN: If date/time of interview shifts, then shift pre/post reminders as well
-    h4.flush--bottom(style="font-weight: normal") Pre-interview reminder:
+    h4.flush--bottom Pre-interview reminder:
     //- TODO: Link reminder text to show based on user config https://trello.com/c/kqvMBI6P/222-move-reminder-info-text-to-dismiss-settings-that-can-be-toggled-via-settings
     if true
       .section--info We will send you a reminder email to review your notes before the interview
     +reminderpicker("pre_interview_reminder", values, preInterviewDefaultMoment)
   .form-group
-    h4.flush--bottom(style="font-weight: normal") Post-interview reminder:
+    h4.flush--bottom Post-interview reminder:
     if true
       .section--info We will send you a reminder email to update your notes after the interview
     +reminderpicker("post_interview_reminder", values, postInterviewDefaultMoment)

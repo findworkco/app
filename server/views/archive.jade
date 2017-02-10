@@ -5,15 +5,15 @@ block title
   title Archived applications - Find Work
 
 block content
-  h1.content__heading(style="font-weight: normal") Archived applications
+  h1.content__heading Archived applications
   if archivedApplications.length
     #schedule__archived.push--bottom
       each archivedApplication in archivedApplications
         +schedule-row--application(archivedApplication)
   else
-    h2.content__subheading.flush--bottom(style="font-weight: normal")
+    h2.content__subheading.flush--bottom
       | You have no archived applications.
-    h3(style="font-weight: normal")
+    h3
       | To archive an application, click the "Archive" button on its page.
     p.gamma.push-double--top
       a(href="/schedule")

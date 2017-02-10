@@ -10,13 +10,12 @@ block title
 
 block content
   div(style="position: relative")
-    h1.content__heading(style="font-weight: normal") Interview
+    h1.content__heading Interview
     //- DEV: On large screens, display "All changes saved" away from content
     //- DEV: We keep "All changes saved" consistently placed with "Application edit" form
     //- DEV: We keep "All changes saved" separate from h1 for a11y clarity
     i.text--normal.muted.medium-and-down-hidden(data-autosave, style="position: absolute; top: 0; right: 0") All changes saved
-  h2.content__subheading(style="font-weight: normal")
-    = selectedApplication.name
+  h2.content__subheading= selectedApplication.name
   p.medium-and-up-hidden
     a.btn.btn--default.btn--thin(href=selectedApplication.url) Back to application
   p.large-hidden.push-half--bottom
