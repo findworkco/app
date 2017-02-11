@@ -1,5 +1,6 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var expressRequest = require('express/lib/request');
 var app = require('../utils/server').app;
 var Candidate = require('../../../server/models/candidate');
 var queue = require('../../../server/queue');
@@ -187,8 +188,13 @@ scenario.route('A request to GET /oauth/google/callback', {
     dbFixtures: [],
     googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
   }, function () {
-    // Make our request
+    // Mock our IP address and make our request
+    // https://www.proxynova.com/proxy-server-list/country-jp/
+    // https://github.com/expressjs/express/blob/4.14.1/lib/request.js#L329-L342
     sinonUtils.spy(queue, 'create');
+    sinonUtils.stub(expressRequest, 'ip', {
+      get: function () { return '122.212.129.9'; }
+    });
     serverUtils.stubEmails();
     httpUtils.session.init().save({
       // Redirects to fake Google OAuth, then to `/oauth/google/callback`
@@ -208,6 +214,8 @@ scenario.route('A request to GET /oauth/google/callback', {
         expect(candidates[0].get('id')).to.be.a('String');
         expect(candidates[0].get('email')).to.equal('mock-email@mock-domain.test');
         expect(candidates[0].get('google_access_token')).to.equal('mock_access_token|default__candidate');
+        // DEV: Verify we use IP address for timezone for user generation
+        expect(candidates[0].get('timezone')).to.equal('JP-Asia/Tokyo');
         expect(candidates[0].get('created_at')).to.be.a('Date');
         expect(candidates[0].get('updated_at')).to.be.a('Date');
         done();

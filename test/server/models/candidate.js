@@ -10,7 +10,7 @@ var Reminder = require('../../../server/models/reminder');
 // Start our tests
 scenario.model('A Candidate model', function () {
   it('requires `email` to be an email', function (done) {
-    var candidate = Candidate.build({email: 'foo'});
+    var candidate = Candidate.build({email: 'foo', timezone: 'US-America/Chicago'});
     candidate.validate().asCallback(function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);

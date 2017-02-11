@@ -75,6 +75,7 @@ exports.CANDIDATE_DEFAULT = [
     id: DEFAULT_CANDIDATE_ID,
     email: 'mock-email@mock-domain.test',
     google_access_token: 'mock_access_token_fixtured',
+    timezone: 'US-America/Chicago',
     welcome_email_sent: true
   })
 ];
@@ -83,6 +84,7 @@ exports.CANDIDATE_ALT = [
     id: 'alt00000-0000-0000-0000-000000000000',
     email: 'alt-email@mock-domain.test',
     google_access_token: 'mock_access_token_fixtured_alt',
+    timezone: 'US-America/Chicago',
     welcome_email_sent: true
   })
 ];
@@ -91,17 +93,20 @@ exports.CANDIDATE_NEW = [
     id: 'newbie00-0000-0000-0000-000000000000',
     email: 'mock-email@mock-domain.test',
     google_access_token: 'mock_access_token_fixtured',
+    timezone: 'US-America/Chicago',
     welcome_email_sent: false
   })
 ];
 // Gemini-only mocks
 addCandidate('dev-user__candidate', {
   id: 'devuser0-0000-0000-0000-000000000000',
-  email: 'dev-user@findwork.test'
+  email: 'dev-user@findwork.test',
+  timezone: 'US-America/Chicago'
 });
 addCandidate('todd__candidate', {
   id: 'todd0000-0000-0000-0000-000000000000',
-  email: 'todd@findwork.co'
+  email: 'todd@findwork.co',
+  timezone: 'US-America/Chicago'
 });
 
 // Received offer applications

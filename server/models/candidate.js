@@ -19,6 +19,12 @@ module.exports = _.extend(baseDefine('candidate', {
   // Google is: xxxx.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
   //   but we are using 1024 to future proof in case this moves to another table
   google_access_token: {type: Sequelize.STRING(1024), allowNull: true},
+  // Same length as `baseDefine's timezone` columns
+  // Examples: US-America/Chicago, GB-Europe/London
+  timezone: {
+    type: Sequelize.STRING(255), allowNull: false,
+    validate: {isIn: {args: [baseDefine.validTimezoneValues], msg: 'Invalid timezone provided'}}
+  },
   welcome_email_sent: {type: Sequelize.BOOLEAN, defaultValue: false, allowNull: false}
 }, {
   getterMethods: {
@@ -27,10 +33,6 @@ module.exports = _.extend(baseDefine('candidate', {
     },
     external_add_application_url: function () {
       return getExternalUrl(this.get('add_application_url'));
-    },
-    timezone: function () {
-      // Placeholder for candidate timezone, should be resolved via IP initially and managed by settings
-      return 'US-America/Chicago';
     }
   }
 }), exports);

@@ -16,8 +16,9 @@ scenario.route('A request to GET /settings', {
       expect(this.$('.content__heading').text()).to.equal('Settings');
     });
 
-    it('uses proper candidate email in page', function () {
+    it('shows candidate info in fields', function () {
       expect(this.$('input[name=email]').val()).to.equal('mock-email@mock-domain.test');
+      expect(this.$('select[name=timezone]').val()).to.equal('US-America/Chicago');
       expect(this.$('form[action="/delete-account"]').attr('onsubmit'))
         .to.contain('mock-email@mock-domain.test');
     });

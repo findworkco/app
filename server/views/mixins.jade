@@ -28,10 +28,9 @@ mixin timepicker(moment)
   //-   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
   input(type="time", value=moment.format(timepickerFormat))&attributes(attributes)
 
-mixin timezonepicker(moment)
+mixin _timezonepicker(selectedTimezone)
   //- DEV: We were initially going to use a modal similar to Google Calendar
   //-   However, we realized that (1) the terms are different than CST/CDT abbreviations and (2) modals are a complex interaction
-  - var selectedTimezone = moment.tz();
   select(data-chosen)&attributes(attributes)
     //- [{countryCode: 'US', name: 'United States', locales:
     //-   [{ianaTimezone: 'America/Chicago', abbrStr: 'CST/CDT', val: 'US-America/Chicago'}, ...], ...]
@@ -41,6 +40,9 @@ mixin timezonepicker(moment)
         each timezoneLocale in timezoneInfo.locales
           //- val=US-America/Chicago, text=CST/CDT
           option(selected=selectedTimezone == timezoneLocale.val, value=timezoneLocale.val)= timezoneLocale.abbrStr
+
+mixin timezonepicker(moment)
+  +_timezonepicker(moment.tz())&attributes(attributes)
 
 mixin datetimepicker(name, moment, options)
   - options = options || {};

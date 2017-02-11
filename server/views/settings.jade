@@ -14,6 +14,10 @@ block content
       //- DESIGN: When we add back email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
       label(for="email") Email (from Google):
       input#email.form-control.input--block(name="email", disabled, value=candidate.email, style="max-width: 220px")
+    .form-group
+      label(for="timezone") Timezone:
+      div(style="max-width: 220px")
+        +_timezonepicker(candidate.timezone).form-control(name="timezone")
     .form-group.push-double--bottom
       //- DEV: We chose to use Gravatar due to its simplicity
       //-   We understand it's not the best choice due to privacy concerns (e.g. Gravatar/Wordpress can track usage)

@@ -30,8 +30,11 @@ passport.use(new GoogleStrategy({
   // Override URLs for `fakeGoogle` during testing
   authorizationURL: config.google.authorizationURL,
   tokenURL: config.google.tokenURL,
-  userProfileURL: config.google.userProfileURL
-}, function handlePassportGoogle (accessToken, refreshToken, profile, cb) {
+  userProfileURL: config.google.userProfileURL,
+  // Explicitly receive `req` in our callback
+  // http://stackoverflow.com/a/11784742
+  passReqToCallback: true
+}, function handlePassportGoogle (req, accessToken, refreshToken, profile, cb) { // jshint ignore:line
   // DEV: Domains are overkill as this is executed in a controller but we use it for clarity
   // DEV: Sync errors are caught and sent back to `next` handler
   var passportDomain = domain.create();
@@ -73,7 +76,8 @@ passport.use(new GoogleStrategy({
       // Otherwise, create our candidate
       var candidate = Candidate.build({
         email: accountEmail,
-        google_access_token: accessToken
+        google_access_token: accessToken,
+        timezone: req.timezone
       });
       saveModelsViaServer({models: [candidate]}, function handleSave (err) {
         // If there was an error, callback with it

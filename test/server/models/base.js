@@ -33,7 +33,7 @@ scenario.model('A Base model with an ID field', function () {
 
 scenario.model('A Base model being created without a transaction', function () {
   it('receives an assertion error', function (done) {
-    var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
+    var candidate = Candidate.build({email: 'mock-email@mock-domain.test', timezone: 'US-America/Chicago'});
     candidate.save({_sourceType: 'server'}).asCallback(function handleSave (err) {
       expect(err).to.not.equal(null);
       expect(err.message).to.contain('All create/update/delete actions must be run in a transaction');
@@ -44,7 +44,7 @@ scenario.model('A Base model being created without a transaction', function () {
 
 scenario.model('A Base model being created with a transaction', function () {
   before(function createCandidate (done) {
-    var candidate = Candidate.build({email: 'mock-email@mock-domain.test'});
+    var candidate = Candidate.build({email: 'mock-email@mock-domain.test', timezone: 'US-America/Chicago'});
     Candidate.sequelize.transaction(function handleTransaction (t) {
       return candidate.save({_sourceType: 'server', transaction: t});
     }).asCallback(done);

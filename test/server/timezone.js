@@ -1,10 +1,10 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var expressRequest = require('express/lib/request');
 var dbFixtures = require('./utils/db-fixtures');
 var httpUtils = require('./utils/http');
 var serverUtils = require('./utils/server');
 var sinonUtils = require('./utils/sinon');
-var expressRequest = require('express/lib/request');
 
 // Start our tests
 scenario('An HTTP request from a logged out user with an unrecognizable IP', {
