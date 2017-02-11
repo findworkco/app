@@ -1,4 +1,5 @@
 // Load in our dependencies
+var assert = require('assert');
 var _ = require('underscore');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
@@ -10,6 +11,8 @@ var Application = require('../models/application');
 var includes = require('../models/utils/includes');
 var ApplicationReminder = require('../models/application-reminder');
 var companyMockData = require('../models/company-mock-data');
+var validTimezoneValues = require('../models/base').validTimezoneValues;
+assert(validTimezoneValues);
 
 // Define common request configuration
 app.all('*', function configureRequest (req, res, next) {
@@ -18,8 +21,25 @@ app.all('*', function configureRequest (req, res, next) {
     req.timezone = res.locals.timezone = req.candidate.get('timezone');
   // Otherwise, resolve their timezone from IP
   } else {
-    // TODO: Resolve timezone from IP (fallback to US PST) or their settings
-    req.timezone = res.locals.timezone = 'US-America/Chicago';
+    // Resolve timezone from IP (fallback to US PST)
+    // DEV: We can encounter bad geolocation info for development servers
+    // {city: {geoname_id: 1111, names: {en: Portland, ...}},
+    //  continent: {geoname_id: 2222, code: 'NA', names: {en: 'North America', ...}}
+    //  country: {geoname_id: 3333, iso_code: 'US', names: {en: 'United States', ...}}
+    //  location: {accuracy_radius: 5, latitude: 45.x, longitude: -122.x,
+    //             metro_code: 820, time_zone: 'America/Los_Angeles'},
+    //  postal: {code: '97206'},
+    //  registered_country: {geoname_id: 4444, iso_code: 'US', names: {en: 'United States', ...}},
+    //  subdivisions: [{geoname_id: 5555, iso_code: 'OR', names: {en: 'Oregon', ...}}]}
+    var reqGeoInfo = app.maxmindClient.get(req.ip) || {};
+    var countryCode = reqGeoInfo.country ? reqGeoInfo.country.iso_code : null;
+    var timezone = reqGeoInfo.location ? reqGeoInfo.location.time_zone : null;
+    var timezoneValue = countryCode + '-' + timezone;
+    if (countryCode && timezone && validTimezoneValues.indexOf(timezoneValue) !== -1) {
+      req.timezone = res.locals.timezone = timezoneValue;
+    } else {
+      req.timezone = res.locals.timezone = 'US-America/Los_Angeles';
+    }
   }
 
   // Continue

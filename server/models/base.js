@@ -35,7 +35,7 @@ moment.prototype.format = function () {
 //   [{ianaTimezone: 'America/Chicago', abbrStr: 'CST/CDT', val: 'US-America/Chicago'}, ...], ...]
 // to
 // ['US-America/Chicago', ...]
-var validTimezoneValues = [];
+var validTimezoneValues = exports.validTimezoneValues = [];
 timezones.forEach(function extractTimezoneValues (timezone) {
   timezone.locales.forEach(function extractLocaleValues (locale) {
     validTimezoneValues.push(locale.val);

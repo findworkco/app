@@ -21,3 +21,4 @@ gemini-report/
 
 # Common project errors
 npm-debug.log
+vendor/GeoLite2-City.mmdb

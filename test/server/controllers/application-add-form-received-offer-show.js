@@ -32,12 +32,12 @@ scenario.route('A request to GET /add-application/received-offer (specific)', {
     });
 
     it('sets response reminder to 1 week from now', function () {
-      var expectedDate = dateUtils.startOfHour(dateUtils.nowInChicago() + dateUtils.oneWeek() + dateUtils.oneHour());
+      var expectedDate = dateUtils.startOfHour(dateUtils.nowInSF() + dateUtils.oneWeek() + dateUtils.oneHour());
       var expectedDateStr = new Date(expectedDate).toISOString();
       var expectedInfo = extractValues(expectedDateStr, '{date}T{time}:00.000Z');
       expect(this.$('input[name=received_offer_reminder_date]').val()).to.equal(expectedInfo.date);
       expect(this.$('input[name=received_offer_reminder_time]').val()).to.equal(expectedInfo.time);
-      expect(this.$('select[name=received_offer_reminder_timezone]').val()).to.equal('US-America/Chicago');
+      expect(this.$('select[name=received_offer_reminder_timezone]').val()).to.equal('US-America/Los_Angeles');
     });
   });
 });

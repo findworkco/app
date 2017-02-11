@@ -32,32 +32,32 @@ scenario.route('A request to GET /add-application/upcoming-interview (specific)'
     });
 
     it('sets interview date/time to 1 week from now', function () {
-      var expectedDate = dateUtils.startOfHour(dateUtils.nowInChicago() + dateUtils.oneWeek() + dateUtils.oneHour());
+      var expectedDate = dateUtils.startOfHour(dateUtils.nowInSF() + dateUtils.oneWeek() + dateUtils.oneHour());
       var expectedDateStr = new Date(expectedDate).toISOString();
       var expectedInfo = extractValues(expectedDateStr, '{date}T{time}:00.000Z');
       expect(this.$('input[name=date_time_date]').val()).to.equal(expectedInfo.date);
       expect(this.$('input[name=date_time_time]').val()).to.equal(expectedInfo.time);
-      expect(this.$('select[name=date_time_timezone]').val()).to.equal('US-America/Chicago');
+      expect(this.$('select[name=date_time_timezone]').val()).to.equal('US-America/Los_Angeles');
     });
 
     it('sets pre-interview reminder to 2 hours before interview', function () {
-      var expectedDate = dateUtils.startOfHour(dateUtils.nowInChicago() + dateUtils.oneWeek() + dateUtils.oneHour() -
+      var expectedDate = dateUtils.startOfHour(dateUtils.nowInSF() + dateUtils.oneWeek() + dateUtils.oneHour() -
         dateUtils.twoHours());
       var expectedDateStr = new Date(expectedDate).toISOString();
       var expectedInfo = extractValues(expectedDateStr, '{date}T{time}:00.000Z');
       expect(this.$('input[name=pre_interview_reminder_date]').val()).to.equal(expectedInfo.date);
       expect(this.$('input[name=pre_interview_reminder_time]').val()).to.equal(expectedInfo.time);
-      expect(this.$('select[name=pre_interview_reminder_timezone]').val()).to.equal('US-America/Chicago');
+      expect(this.$('select[name=pre_interview_reminder_timezone]').val()).to.equal('US-America/Los_Angeles');
     });
 
     it('sets post-interview reminder to 2 hours after interview', function () {
-      var expectedDate = dateUtils.startOfHour(dateUtils.nowInChicago() + dateUtils.oneWeek() + dateUtils.oneHour() +
+      var expectedDate = dateUtils.startOfHour(dateUtils.nowInSF() + dateUtils.oneWeek() + dateUtils.oneHour() +
         dateUtils.twoHours());
       var expectedDateStr = new Date(expectedDate).toISOString();
       var expectedInfo = extractValues(expectedDateStr, '{date}T{time}:00.000Z');
       expect(this.$('input[name=post_interview_reminder_date]').val()).to.equal(expectedInfo.date);
       expect(this.$('input[name=post_interview_reminder_time]').val()).to.equal(expectedInfo.time);
-      expect(this.$('select[name=post_interview_reminder_timezone]').val()).to.equal('US-America/Chicago');
+      expect(this.$('select[name=post_interview_reminder_timezone]').val()).to.equal('US-America/Los_Angeles');
     });
   });
 });

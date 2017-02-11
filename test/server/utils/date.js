@@ -14,6 +14,11 @@ exports.nowInChicago = function () {
   var offset = moment.tz.zone('US-America/Chicago').offset(now);
   return now - (offset * 1000 * 60);
 };
+exports.nowInSF = function () {
+  var now = +new Date();
+  var offset = moment.tz.zone('US-America/Los_Angeles').offset(now);
+  return now - (offset * 1000 * 60);
+};
 exports.oneWeek = function () {
   return 1000 * 60 * 60 * 24 * 7;
 };

@@ -18,6 +18,7 @@ var redis = require('redis');
 var sequelize = require('./models/_sequelize');
 var qsMultiDict = require('./utils/querystring-multidict');
 var sentryUtils = require('./utils/sentry');
+var maxmind = require('maxmind');
 var appLocals = {
   _: require('underscore'),
   assert: require('assert'),
@@ -93,6 +94,10 @@ function Server(config) {
 
   // Expose our Sequelize setup
   app.sequelize = sequelize;
+
+  // Load our MaxMind database
+  // DEV: They say it's slow in the docs but it takes approx 30ms to load for us
+  app.maxmindClient = maxmind.openSync(__dirname + '/../vendor/GeoLite2-City.mmdb');
 
   // Create a queue
   // https://github.com/Automattic/kue/tree/v0.11.5#redis-connection-settings
