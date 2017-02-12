@@ -4,6 +4,7 @@
 var cluster = require('cluster');
 var url = require('url');
 var expressDomainWrapper = require('../server/utils/express-domain-wrapper');
+var sentryClient = require('../server/_sentry').sentryClient;
 
 // If we are on the master
 // DEV: Ideally we skip cluster and use multiple servers but this is for demonstration
@@ -68,7 +69,9 @@ if (cluster.isMaster) {
 process.on('uncaughtException', function handleUncaughtException (err) {
   // TODO: Move to Winston for logging
   console.error(err);
-  if (server.app.sentryClient) {
-    server.app.sentryClient.captureError(err);
+  if (sentryClient) {
+    sentryClient.captureError(err);
+  } else {
+    throw err;
   }
 });

@@ -13,8 +13,8 @@ var nodemailer = require('nodemailer');
 var nodemailerHtmlToText = require('nodemailer-html-to-text').htmlToText;
 var passport = require('passport');
 var RedisSessionStore = require('connect-redis')(expressSession);
-var raven = require('raven');
 var redis = require('redis');
+var sentryClient = require('./_sentry').sentryClient;
 var sequelize = require('./models/_sequelize');
 var qsMultiDict = require('./utils/querystring-multidict');
 var sentryUtils = require('./utils/sentry');
@@ -83,11 +83,8 @@ function Server(config) {
     }
   };
 
-  // Create a Sentry client
-  app.sentryClient = new raven.Client(config.sentry.serverDSN, {
-    environment: config.ENV,
-    release: config.gitRevision
-  });
+  // Expose our Sentry client
+  app.sentryClient = sentryClient;
 
   // Create a Redis client
   app.redisClient = redis.createClient(config.redisUrl);
