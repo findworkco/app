@@ -4,8 +4,6 @@
 var cluster = require('cluster');
 var url = require('url');
 var expressDomainWrapper = require('../server/utils/express-domain-wrapper');
-// DEV: We lazy load server after Express is monkey patched so our domains catch all the things
-var server;
 
 // If we are on the master
 // DEV: Ideally we skip cluster and use multiple servers but this is for demonstration
@@ -21,8 +19,8 @@ if (cluster.isMaster) {
   });
 
   // Notify the user that the server is running
-  server = require('../server/index.js');
-  var serverUrl = url.format(server.config.url.external) + '/';
+  var config = require('../config').getConfig();
+  var serverUrl = url.format(config.url.external) + '/';
   console.log('Server running at ' + serverUrl);
 
   // Guarantee reminders are being processed
@@ -32,6 +30,8 @@ if (cluster.isMaster) {
 // Otherwise (we are on the worker)
 } else {
   // Monkey patch Express with domain handle
+  // DEV: We lazy load server after Express is monkey patched so our domains catch all the things
+  var server;
   expressDomainWrapper.monkeyPatchExpress(function handleControllerDomainError (err, req, res, next) {
     // Make sure we shut this worker down  within 30 seconds
     var killTimeout = setTimeout(function handleSetTimeout () {
