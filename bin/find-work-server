@@ -23,11 +23,6 @@ if (cluster.isMaster) {
   var config = require('../config').getConfig();
   var serverUrl = url.format(config.url.external) + '/';
   console.log('Server running at ' + serverUrl);
-
-  // Guarantee reminders are being processed
-  // DEV: We load this in `bin` to prevent accidentally running this multiple times
-  var queue = require('../server/queue');
-  queue.loopGuaranteeProcessReminders();
 // Otherwise (we are on the worker)
 } else {
   // Monkey patch Express with domain handle

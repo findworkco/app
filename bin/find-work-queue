@@ -8,6 +8,13 @@ var queue = require('../server/queue');
 // Notify the user that the queue is running
 console.log('Queue process is running');
 
+// Guarantee reminders are being processed
+// DEV: We load this in `bin` to prevent accidentally running this multiple times
+// DEV: Ideally this would be in `master` of `find-work-server`
+//   but it causes loading additional content which bloats memory
+var queue = require('../server/queue');
+queue.loopGuaranteeProcessReminders();
+
 // When we encounter an uncaught exception, log it
 // TODO: When we have load balanced servers and can tolerate dropped connections
 //   then hard fail this server in production so it can reboot fresh
