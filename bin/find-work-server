@@ -4,6 +4,7 @@
 var cluster = require('cluster');
 var url = require('url');
 var expressDomainWrapper = require('../server/utils/express-domain-wrapper');
+// DEV: We access Sentry client to remove loading app and its dependencies which bloats `master` process
 var sentryClient = require('../server/_sentry').sentryClient;
 
 // If we are on the master
