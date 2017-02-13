@@ -6,10 +6,18 @@ block title
 block content
   h1.content__heading.push--bottom Settings
   form.cf(method="POST", action="/settings")
+    +csrf-input()
     //- DEV: When not disabled, this will be a link or a button for OAuth
     p
       +google-button({el: 'button', disabled: true})
         = "Connected with Google"
+    if locals.validation_errors
+      //- DEV: Id is for testing only
+      #validation-errors.section--error.push--bottom
+        | The following errors have occurred:
+        ul.flush--bottom
+          for error in validation_errors
+            li= error.message
     .form-group
       //- DESIGN: When we add back email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
       label(for="email") Email (from Google):
@@ -17,8 +25,8 @@ block content
     .form-group
       label(for="timezone") Timezone:
       div(style="max-width: 220px")
-        +_timezonepicker(candidate.timezone).form-control(name="timezone")
-    .form-group.push-double--bottom
+        +_timezonepicker(form_data.get('timezone') || candidate.timezone).form-control(name="timezone")
+    .form-group
       //- DEV: We chose to use Gravatar due to its simplicity
       //-   We understand it's not the best choice due to privacy concerns (e.g. Gravatar/Wordpress can track usage)
       //-   Known alternatives are: https://www.avatars.io/, https://help.github.com/enterprise/2.0/admin/guides/user-management/enabling-avatars-and-identicons/
@@ -31,6 +39,8 @@ block content
             +avatar-img(candidate.email, 64).img
           .grid__item
             a.btn.btn--default(href="https://gravatar.com/") Edit Gravatar
+    .push-double--bottom
+      button.btn.btn--primary(type="submit") Save changes
   +logout-form().push-double--bottom
   form(method="POST", action="/delete-account", onsubmit="javascript:return confirm('Are you sure you would like to delete the \"#{candidate.email}\" Find Work account?')")
     +csrf-input()

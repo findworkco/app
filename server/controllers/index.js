@@ -1,6 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
+var Sequelize = require('sequelize');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
@@ -12,6 +13,7 @@ var includes = require('../models/utils/includes');
 var ApplicationReminder = require('../models/application-reminder');
 var companyMockData = require('../models/company-mock-data');
 var validTimezoneValues = require('../models/base').validTimezoneValues;
+var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 assert(validTimezoneValues);
 
 // Define common request configuration
@@ -105,6 +107,41 @@ app.get('/settings', [
       isSettings: true
     });
   }
+]);
+app.post('/settings', [
+  ensureLoggedIn,
+  resolveModelsAsLocals({nav: true}),
+  function settingsSave (req, res, next) {
+    // Update our candidate
+    var candidate = req.candidate;
+    candidate.set({
+      timezone: req.body.fetch('timezone')
+    });
+
+    // Save our changes
+    saveModelsViaCandidate({models: [candidate], candidate: req.candidate}, next);
+  },
+  function settingsSaveError (err, req, res, next) {
+    // If we have an error and it's a validation error, re-render with it
+    if (err instanceof Sequelize.ValidationError) {
+      res.status(400).render('settings.jade', {
+        form_data: req.body,
+        validation_errors: err.errors
+      });
+      return;
+    }
+
+    // Otherwise, callback with our error
+    return next(err);
+  },
+  function settingsSaveSuccess (req, res, next) {
+    // Notify user of successful save
+    req.flash(NOTIFICATION_TYPES.SUCCESS, 'Changes saved');
+
+    // Redirect to the same page to render flash messages and prevent double submissions
+    res.redirect('/settings');
+  }
+
 ]);
 
 app.post('/logout', [

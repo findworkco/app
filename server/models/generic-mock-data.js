@@ -70,8 +70,9 @@ exports.DEFAULT_FIXTURES = ['default__candidate'];
 // Static fixtures
 // Candidates
 var DEFAULT_CANDIDATE_ID = 'default0-0000-0000-0000-000000000000';
+exports.CANDIDATE_DEFAULT_KEY = 'default__candidate';
 exports.CANDIDATE_DEFAULT = [
-  addCandidate('default__candidate', {
+  addCandidate(exports.CANDIDATE_DEFAULT_KEY, {
     id: DEFAULT_CANDIDATE_ID,
     email: 'mock-email@mock-domain.test',
     google_access_token: 'mock_access_token_fixtured',
