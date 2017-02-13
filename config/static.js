@@ -13,6 +13,7 @@ var execSync = require('child_process').execSync;
 exports.common = {
   // TODO: Load from source other than `git` as it isn't guaranteed in production
   gitRevision: execSync('git rev-parse HEAD').toString('utf8').trim(),
+  forceLoadMaxmind: false,
   redisUrl: 'redis://127.0.0.1:6400'
 };
 
@@ -25,6 +26,7 @@ exports.development = {
 
 exports.test = {
   allowMocks: true,
+  forceLoadMaxmind: true,
   loadDevelopmentRoutes: true,
   redisUrl: 'redis://127.0.0.1:6401',
   throwGenericErrors: false,

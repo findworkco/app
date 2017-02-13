@@ -13,8 +13,8 @@ var nodemailer = require('nodemailer');
 var nodemailerHtmlToText = require('nodemailer-html-to-text').htmlToText;
 var passport = require('passport');
 var RedisSessionStore = require('connect-redis')(expressSession);
-var raven = require('raven');
 var redis = require('redis');
+var sentryClient = require('./_sentry').sentryClient;
 var sequelize = require('./models/_sequelize');
 var qsMultiDict = require('./utils/querystring-multidict');
 var sentryUtils = require('./utils/sentry');
@@ -41,6 +41,7 @@ var appLocals = {
 
 // Load our config
 var config = require('../config').getConfig();
+var isKue = process.env.KUE === '1';
 
 // Save configuration based locals
 appLocals.ENV = config.ENV; // Only use ENV for Sentry reporting
@@ -83,11 +84,8 @@ function Server(config) {
     }
   };
 
-  // Create a Sentry client
-  app.sentryClient = new raven.Client(config.sentry.serverDSN, {
-    environment: config.ENV,
-    release: config.gitRevision
-  });
+  // Expose our Sentry client
+  app.sentryClient = sentryClient;
 
   // Create a Redis client
   app.redisClient = redis.createClient(config.redisUrl);
@@ -97,7 +95,10 @@ function Server(config) {
 
   // Load our MaxMind database
   // DEV: They say it's slow in the docs but it takes approx 30ms to load for us
-  app.maxmindClient = maxmind.openSync(__dirname + '/../vendor/GeoLite2-City.mmdb');
+  // DEV: We avoid loading our database in Kue as it consumes 50MB of memory otherwise =/
+  if (!isKue || config.forceLoadMaxmind) {
+    app.maxmindClient = maxmind.openSync(__dirname + '/../vendor/GeoLite2-City.mmdb');
+  }
 
   // Create a queue
   // https://github.com/Automattic/kue/tree/v0.11.5#redis-connection-settings

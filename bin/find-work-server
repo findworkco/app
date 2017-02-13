@@ -2,14 +2,16 @@
 // Based on https://gist.github.com/twolfson/c1de950ea28fcbf74be8962257bd75bc
 // Load in our dependencies
 var cluster = require('cluster');
-var url = require('url');
-var expressDomainWrapper = require('../server/utils/express-domain-wrapper');
-// DEV: We lazy load server after Express is monkey patched so our domains catch all the things
-var server;
+// DEV: We access Sentry client directly to not load app which bloats `master` process
+var sentryClient = require('../server/_sentry').sentryClient;
 
 // If we are on the master
 // DEV: Ideally we skip cluster and use multiple servers but this is for demonstration
 if (cluster.isMaster) {
+  // Load master specific dependencies
+  var config = require('../config').getConfig();
+  var url = require('url');
+
   // Create 2 workers (i.e. server instances)
   cluster.fork();
   cluster.fork();
@@ -21,16 +23,15 @@ if (cluster.isMaster) {
   });
 
   // Notify the user that the server is running
-  server = require('../server/index.js');
-  var serverUrl = url.format(server.config.url.external) + '/';
+  var serverUrl = url.format(config.url.external) + '/';
   console.log('Server running at ' + serverUrl);
-
-  // Guarantee reminders are being processed
-  // DEV: We load this in `bin` to prevent accidentally running this multiple times
-  var queue = require('../server/queue');
-  queue.loopGuaranteeProcessReminders();
 // Otherwise (we are on the worker)
 } else {
+  // Load worker specific dependencies
+  // DEV: We lazy load server after Express is monkey patched so our domains catch all the things
+  var expressDomainWrapper = require('../server/utils/express-domain-wrapper');
+  var server;
+
   // Monkey patch Express with domain handle
   expressDomainWrapper.monkeyPatchExpress(function handleControllerDomainError (err, req, res, next) {
     // Make sure we shut this worker down  within 30 seconds
@@ -68,7 +69,9 @@ if (cluster.isMaster) {
 process.on('uncaughtException', function handleUncaughtException (err) {
   // TODO: Move to Winston for logging
   console.error(err);
-  if (server.app.sentryClient) {
-    server.app.sentryClient.captureError(err);
+  if (sentryClient) {
+    sentryClient.captureError(err);
+  } else {
+    throw err;
   }
 });
