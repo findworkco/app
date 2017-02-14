@@ -3,6 +3,8 @@ var expect = require('chai').expect;
 var moment = require('moment-timezone');
 var dbFixtures = require('../../utils/db-fixtures');
 var ApplicationReminder = require('../../../../server/models/application-reminder');
+var reminderUtils = require('../../../../server/models/utils/reminder');
+var sinonUtils = require('../../utils/sinon');
 
 // Start our tests
 function reloadSavedForLaterApplication() {
@@ -15,6 +17,7 @@ scenario.model('An Application model updating an unsent saved for later reminder
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadSavedForLaterApplication();
+  sinonUtils.spy(reminderUtils, 'shouldReplaceReminder');
 
   it('updates the reminder', function () {
     // Verify original state
@@ -33,6 +36,8 @@ scenario.model('An Application model updating an unsent saved for later reminder
     expect(originalReminder.get('is_enabled')).to.equal(false);
     expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2016-05-04T03:02:03.000Z');
     expect(originalReminder.get('date_time_timezone')).to.equal('GB-Europe/London');
+    var shouldReplaceReminderSpy = reminderUtils.shouldReplaceReminder;
+    expect(shouldReplaceReminderSpy.callCount).to.equal(1);
   });
 });
 
@@ -87,6 +92,7 @@ scenario.model('An Application model updating an unsent waiting for response rem
   dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadWaitingForResponseApplication();
+  sinonUtils.spy(reminderUtils, 'shouldReplaceReminder');
 
   it('updates the reminder', function () {
     // Verify original state
@@ -105,6 +111,8 @@ scenario.model('An Application model updating an unsent waiting for response rem
     expect(originalReminder.get('is_enabled')).to.equal(false);
     expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2016-05-04T03:02:03.000Z');
     expect(originalReminder.get('date_time_timezone')).to.equal('GB-Europe/London');
+    var shouldReplaceReminderSpy = reminderUtils.shouldReplaceReminder;
+    expect(shouldReplaceReminderSpy.callCount).to.equal(1);
   });
 });
 
@@ -159,6 +167,7 @@ scenario.model('An Application model updating an unsent received offer reminder'
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadReceivedOfferApplication();
+  sinonUtils.spy(reminderUtils, 'shouldReplaceReminder');
 
   it('updates the reminder', function () {
     // Verify original state
@@ -177,6 +186,8 @@ scenario.model('An Application model updating an unsent received offer reminder'
     expect(originalReminder.get('is_enabled')).to.equal(false);
     expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2016-05-04T03:02:03.000Z');
     expect(originalReminder.get('date_time_timezone')).to.equal('GB-Europe/London');
+    var shouldReplaceReminderSpy = reminderUtils.shouldReplaceReminder;
+    expect(shouldReplaceReminderSpy.callCount).to.equal(1);
   });
 });
 

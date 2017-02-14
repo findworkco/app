@@ -3,6 +3,8 @@ var expect = require('chai').expect;
 var moment = require('moment-timezone');
 var dbFixtures = require('../../utils/db-fixtures');
 var InterviewReminder = require('../../../../server/models/interview-reminder');
+var reminderUtils = require('../../../../server/models/utils/reminder');
+var sinonUtils = require('../../utils/sinon');
 
 // Start our tests
 function reloadUpcomingInterview() {
@@ -20,6 +22,7 @@ scenario.model('An Interview model updating unsent reminders', {
   dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadUpcomingInterview();
+  sinonUtils.spy(reminderUtils, 'shouldReplaceReminder');
 
   it('updates the reminders', function () {
     // Verify original state
@@ -50,6 +53,8 @@ scenario.model('An Interview model updating unsent reminders', {
     expect(originalPostReminder.get('is_enabled')).to.equal(true);
     expect(originalPostReminder.get('date_time_datetime').toISOString()).to.equal('2022-05-04T05:02:03.000Z');
     expect(originalPostReminder.get('date_time_timezone')).to.equal('GB-Europe/London');
+    var shouldReplaceReminderSpy = reminderUtils.shouldReplaceReminder;
+    expect(shouldReplaceReminderSpy.callCount).to.equal(2);
   });
 });
 
