@@ -114,12 +114,11 @@
   },
   "devDependencies": {
     "body-parser-multidict": "~1.1.0",
+    "brfs": "~1.4.3",
     "chai": "~3.5.0",
     "cheerio": "git://github.com/twolfson/cheerio.git#e65ad72",
     "gemini": "~3.0.2",
     "gemini-gui": "~3.0.0",
-    "hyperscript": "~2.0.2",
-    "hyperscript-helpers": "~3.0.2",
     "jscs": "~3.0.7",
     "jshint": "~2.9.3",
     "karma": "~1.4.1",

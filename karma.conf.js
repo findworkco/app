@@ -28,7 +28,7 @@ module.exports = function (config) {
     // https://github.com/nikku/karma-browserify/tree/v5.1.0#browserify-config
     browserify: {
       debug: true,
-      transform: []
+      transform: ['brfs']
     },
 
     // test results reporter to use

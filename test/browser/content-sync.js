@@ -1,31 +1,17 @@
 // Load in our dependencies
-var $ = require('jquery');
 var expect = require('chai').expect;
-var h = require('hyperscript-helpers')(require('hyperscript'));
+var domUtils = require('./utils/dom');
 var $simulant = require('./utils/$simulant');
 var contentSync = require('../../browser/js/content-sync');
 
 // Define common helper
 var testUtils = {
   init: function () {
-    before(function initFn () {
-      // DEV: We use Hyperscript instead of jQuery to prevent XSS prone conventions
-      this.el = h.div([
-        h.input({
-          attrs: {'data-content-sync': '#target'},
-          value: 'foo'
-        }),
-        h.p('#target')
-      ]);
-      // Pulled out of Backbone/Cheerio
-      this.$el = $(this.el);
-      this.$ = function (selector) { return this.$el.find(selector); };
-    });
-    after(function cleanup () {
-      delete this.el;
-      delete this.$el;
-      delete this.$;
-    });
+    // DEV: These are automatically wrapped in a `div` for ease of use
+    domUtils.init(function () {/*
+      input(data-content-sync="#target", value="foo")
+      p#target
+    */});
   }
 };
 
