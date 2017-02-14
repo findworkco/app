@@ -3,12 +3,12 @@ var assert = require('assert');
 var $ = require('jquery');
 
 // When we bind our plugin
-exports.init = function () {
+exports.init = function (containerEl) {
   // Find all content sync inputs and bind them
-  $('input[data-content-sync]').each(function handleAutosizeEl (i, srcEl) {
+  $(containerEl).find('input[data-content-sync]').each(function handleAutosizeEl (i, srcEl) {
     // Find our target element
     var targetElSelector = srcEl.getAttribute('data-content-sync');
-    var targetEl = document.querySelector(targetElSelector);
+    var targetEl = containerEl.querySelector(targetElSelector);
     assert(targetEl, 'Unable to find content sync target from selector "' + targetElSelector + '"');
 
     // Bind to our element's input event (IE >= 9)

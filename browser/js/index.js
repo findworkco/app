@@ -66,7 +66,7 @@ $(function handleReady () {
   $('[data-chosen]').chosen();
 
   // Bind our external plugins
-  contentSync.init();
+  contentSync.init(document.body);
   errorGenerators.init();
   notifications.init();
   menu.init();

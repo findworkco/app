@@ -192,6 +192,7 @@ To run smaller parts, see our `package.json` or type `npm run` to get a listing 
 ```bash
 npm run
 # npm run lint
+# npm run test-browser
 # npm run test-server
 ```
 

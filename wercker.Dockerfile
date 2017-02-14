@@ -21,5 +21,7 @@ RUN sudo apt-get install -y \
   postgresql-9.3=9.3.14-0ubuntu0.14.04 \
   postgresql-server-dev-9.3=9.3.14-0ubuntu0.14.04 \
   build-essential make openssl python-dev \
-  nodejs=4.6.1-1nodesource1~trusty1 \
-  git
+  nodejs=4.7.3-1nodesource1~trusty1 \
+  git \
+  # PhantomJS dependency
+  fontconfig
