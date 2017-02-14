@@ -49,13 +49,13 @@ passport.use(new GoogleStrategy({
     // If there is no account email, then error out
     // DEV: Error will be sent back to corresponding `next` handler eventually
     if (!accountEmail) {
-      return cb(new Error('Unable to resolve email from Google\'s response'));
+      return next(new Error('Unable to resolve email from Google\'s response'));
     }
 
     // Otherwise, if the candidate exists in our database, return them
     Candidate.find({where: {email: accountEmail}}).asCallback(function handleFind (err, _candidate) {
       // If there was an error, callback with it
-      if (err) { return cb(err); }
+      if (err) { return next(err); }
 
       // If we have a candidate
       if (_candidate) {
@@ -68,7 +68,7 @@ passport.use(new GoogleStrategy({
           // TODO: Should we have any flash message (e.g. Welcome back to Find Work!)
 
           // Callback with the candidate
-          return cb(null, _candidate);
+          return next(null, _candidate);
         });
         return;
       }
@@ -81,7 +81,7 @@ passport.use(new GoogleStrategy({
       });
       saveModelsViaServer({models: [candidate]}, function handleSave (err) {
         // If there was an error, callback with it
-        if (err) { return cb(err); }
+        if (err) { return next(err); }
 
         // Send a welcome email to candidate
         // DEV: We perform this async from candidate creation as it's non-critical
@@ -97,9 +97,30 @@ passport.use(new GoogleStrategy({
         // TODO: Should we have any flash message (e.g. Welcome to Find Work!)
 
         // Callback with our candidate
-        cb(null, candidate);
+        next(null, candidate);
       });
     });
+
+    function next(err, candidate) { // jshint ignore:line
+      // If there was an error, call back with it
+      if (err) {
+        return cb(err);
+      }
+
+      // Regenerate our session to prevent session fixation
+      // DEV: Express' session only support fresh regeneration whereas we want data preservation
+      var _oldSessionData = _.extendOwn({}, req.session);
+      req.session.regenerate(function handleRegenerate (err) {
+        // If there was an error, log it
+        if (err) {
+          app.sentryClient.captureError(err);
+        }
+
+        // Call back with our candidate
+        _.extend(req.session, _oldSessionData);
+        cb(null, candidate);
+      });
+    }
   });
 }));
 

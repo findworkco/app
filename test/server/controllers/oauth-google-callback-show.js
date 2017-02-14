@@ -318,4 +318,48 @@ scenario.route('A request to GET /oauth/google/callback', {
       expect(this.lastRedirect.redirectUri).to.match(/\/schedule$/);
     });
   });
+
+  // Edge case: Session fixation prevention
+  scenario.routeTest('with respect to session fixation', {
+    dbFixtures: [dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Access a page, save our cookie, and login
+    httpUtils.session.init().save(serverUtils.getUrl('/schedule'));
+    before(function saveSessionCookie () {
+      // toJSON() = {version: 'tough-cookie@2.2.2', storeType: 'MemoryCookieStore', rejectPublicSuffixes: true,
+      // cookies: [{key: 'sid', value: 's%3A...', ...}]}
+      var cookies = this.jar._jar.toJSON().cookies;
+      expect(cookies).to.have.length(1);
+      expect(cookies[0]).to.have.property('key', 'sid');
+      this.sessionCookieValue = cookies[0].value;
+    });
+    after(function cleanup () {
+      delete this.sessionCookieValue;
+    });
+    httpUtils.session.login();
+
+    it('receives a new cookie after login', function () {
+      var cookies = this.jar._jar.toJSON().cookies;
+      expect(cookies).to.have.length(1);
+      expect(cookies[0]).to.have.property('key', 'sid');
+      expect(cookies[0].value).to.not.equal(this.sessionCookieValue);
+    });
+
+    describe('reusing old cookie', function () {
+      before(function requestSettingsViaCookie (done) {
+        httpUtils._save({
+          headers: {
+            cookie: 'sid=' + this.sessionCookieValue
+          },
+          url: serverUtils.getUrl('/schedule'),
+          followRedirect: false,
+          expectedStatusCode: 200
+        }).call(this, done);
+      });
+
+      it('doesn\'t recognize user', function () {
+        expect(this.body).to.not.contain('mock-email@mock-domain.test');
+      });
+    });
+  });
 });
