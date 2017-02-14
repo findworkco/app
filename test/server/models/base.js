@@ -64,6 +64,7 @@ scenario.model('A Base model being created with a transaction', function () {
       expect(auditLogs[0].get('previous_values')).to.deep.equal({});
       expect(auditLogs[0].get('current_values')).to.have.property('email',
         'mock-email@mock-domain.test');
+      expect(auditLogs[0].get('transaction_id')).to.be.a('String');
       done();
     });
   });
@@ -122,6 +123,7 @@ scenario.model('A Base model being updated with a transaction', {
         'mock-email@mock-domain.test');
       expect(auditLogs[0].get('current_values')).to.have.property('email',
         'mock-email2@mock-domain2.test');
+      expect(auditLogs[0].get('transaction_id')).to.be.a('String');
       done();
     });
   });
@@ -176,6 +178,7 @@ scenario.model('A Base model being deleted with a transaction', {
         'mock-email@mock-domain.test');
       expect(auditLogs[0].get('current_values')).to.have.property('email',
         'mock-email@mock-domain.test');
+      expect(auditLogs[0].get('transaction_id')).to.be.a('String');
       done();
     });
   });

@@ -178,7 +178,8 @@ module.exports = _.extend(function (modelName, attributes, options) {
       // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L86-L87
       // https://github.com/sequelize/sequelize/blob/v3.25.0/lib/instance.js#L417-L433
       previous_values: _.pick(model._previousDataValues, attributeKeys),
-      current_values: _.pick(model.dataValues, attributeKeys)
+      current_values: _.pick(model.dataValues, attributeKeys),
+      transaction_id: options.transaction ? options.transaction.id : null
     });
     return auditLog.save({transaction: options.transaction});
   }
