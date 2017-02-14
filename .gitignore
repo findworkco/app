@@ -9,7 +9,7 @@ config/static-secrets.json
 dist/
 
 # Temporary assets
-public/images/screenshots/*.jpg
+browser/images/screenshots/*.jpg
 
 # Server development/test assets
 test-redis.pid

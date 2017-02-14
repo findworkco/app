@@ -3,8 +3,8 @@
 set -e
 
 # Define our source and target
-src_file="public/images/screenshots/large.svg"
-target_file="public/images/screenshots/large.template.svg"
+src_file="browser/images/screenshots/large.svg"
+target_file="browser/images/screenshots/large.template.svg"
 
 # Define helper for reading file
 # DEV: We use `echo -n + cat` to strip trailing whitespace
@@ -16,17 +16,17 @@ read_file () {
 read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/g" > "$target_file"
 
 # Repeat for medium SVGs
-src_file="public/images/screenshots/medium-1.svg"
-target_file="public/images/screenshots/medium-1.template.svg"
+src_file="browser/images/screenshots/medium-1.svg"
+target_file="browser/images/screenshots/medium-1.template.svg"
 read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/"  > "$target_file"
-src_file="public/images/screenshots/medium-2.svg"
-target_file="public/images/screenshots/medium-2.template.svg"
+src_file="browser/images/screenshots/medium-2.svg"
+target_file="browser/images/screenshots/medium-2.template.svg"
 read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/"  > "$target_file"
 
 # Repeat for small SVGs
-src_file="public/images/screenshots/small-1.svg"
-target_file="public/images/screenshots/small-1.template.svg"
+src_file="browser/images/screenshots/small-1.svg"
+target_file="browser/images/screenshots/small-1.template.svg"
 read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/"  > "$target_file"
-src_file="public/images/screenshots/small-2.svg"
-target_file="public/images/screenshots/small-2.template.svg"
+src_file="browser/images/screenshots/small-2.svg"
+target_file="browser/images/screenshots/small-2.template.svg"
 read_file "$src_file" | sed -E "s/(base64,)[^{\"]+/\1{{base64-image-1}}/" | sed -E "s/(base64,)[^{\"]+/\1{{base64-image-2}}/" > "$target_file"

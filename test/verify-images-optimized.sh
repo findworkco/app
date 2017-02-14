@@ -12,7 +12,7 @@ fi
 gulp build-images
 
 # Verify our git diff is clean
-if test "$(git diff -- public/images)" != ""; then
+if test "$(git diff -- browser/images)" != ""; then
   echo "Images were not optimized before saving. Please run \`npm run build\` to resolve this" 1>&2
   exit 1
 fi

@@ -30,7 +30,7 @@ gulp.task('build-clean', function clean (done) {
 gulp.task('build-css', function buildCss () {
   // Generate a stream that compiles SCSS to CSS
   // DEV: We return the pipe'd stream so gulp knows when we exit
-  var cssStream = gulp.src('public/css/index.scss')
+  var cssStream = gulp.src('browser/css/index.scss')
     .pipe(gulpSass({
       style: 'nested'
     }));
@@ -58,19 +58,19 @@ gulp.task('build-css', function buildCss () {
 
 gulp.task('build-images-svg', function buildImagesSvg () {
   // Optimize SVG files inline
-  return gulp.src('public/images/**/*.svg')
+  return gulp.src('browser/images/**/*.svg')
     .pipe(gulpSvgmin())
     .pipe(gulpSizereport({gzip: true}))
-    .pipe(gulp.dest('public/images'))
+    .pipe(gulp.dest('browser/images'))
     .pipe(gulp.dest('dist/images'))
     .pipe(gulpLivereload());
 });
 gulp.task('build-images-non-svg', function buildImagesNonSvg () {
   // Optimize PNG/JPG files inline
-  return gulp.src(['public/images/**/*', '!public/images/**/*.svg'])
+  return gulp.src(['browser/images/**/*', '!browser/images/**/*.svg'])
     .pipe(gulpImagemin())
     .pipe(gulpSizereport({gzip: true}))
-    .pipe(gulp.dest('public/images'))
+    .pipe(gulp.dest('browser/images'))
     .pipe(gulp.dest('dist/images'))
     .pipe(gulpLivereload());
 });
@@ -90,7 +90,7 @@ gulp.task('build-images', ['build-images-svg', 'build-images-non-svg', 'build-im
 var browserifyObj = browserify({
   cache: {}, packageCache: {},
   debug: true, // Enable source maps
-  entries: __dirname + '/public/js/index.js'
+  entries: __dirname + '/browser/js/index.js'
 });
 gulp.task('build-js', function buildJs () {
   // Bundle browserify content
@@ -151,7 +151,7 @@ gulp.task('develop', ['build'], function develop () {
   browserifyObj.bundle().on('data', function () {});
 
   // When one of our src files changes, re-run its corresponding task
-  gulp.watch('public/css/**/*.scss', ['build-css']);
-  gulp.watch('public/images/**/*', ['build-images']);
+  gulp.watch('browser/css/**/*.scss', ['build-css']);
+  gulp.watch('browser/images/**/*', ['build-images']);
   gulp.watch('server/**/*', ['livereload-update']);
 });
