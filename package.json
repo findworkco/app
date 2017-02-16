@@ -90,8 +90,10 @@
   "optionalDependencies": {
     "bootstrap-datepicker": "~1.6.0",
     "bower": "~1.7.7",
+    "brfs": "~1.4.3",
     "browserify": "~13.0.0",
     "browsernizr": "~2.1.0",
+    "envify": "~4.0.0",
     "gulp": "~3.9.1",
     "gulp-buffer": "0.0.2",
     "gulp-csso": "~1.1.0",
@@ -114,10 +116,8 @@
   },
   "devDependencies": {
     "body-parser-multidict": "~1.1.0",
-    "brfs": "~1.4.3",
     "chai": "~3.5.0",
     "cheerio": "git://github.com/twolfson/cheerio.git#e65ad72",
-    "envify": "~4.0.0",
     "gemini": "~3.0.2",
     "gemini-gui": "~3.0.0",
     "jscs": "~3.0.7",
