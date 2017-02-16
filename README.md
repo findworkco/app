@@ -262,7 +262,7 @@ ifconfig | grep wlan -A 10
 
 # Set up a port redirect to allow any incoming connections
 # DEV: Don't run this too long as it exposes the local service to the world
-redir --laddr=0.0.0.0 --lport=9001 --caddr={{host_address}} --cport 9000
+redir --laddr=0.0.0.0 --lport=9001 --caddr={{vagrant_ip}} --cport 9000
 # Example: redir --laddr=0.0.0.0 --lport=9001 --caddr=10.0.1.4 --cport 9000
 
 # Now open the local IP address on the mobile device

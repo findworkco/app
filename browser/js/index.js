@@ -9,6 +9,7 @@ void require('browsernizr/test/inputtypes');
 window.jQuery = $;
 void require('../../bower_components/chosen/chosen.jquery.js');
 var contentSync = require('./content-sync');
+var datetimepickerSync = require('./datetimepicker-sync');
 var errorGenerators = require('./error-generators');
 var notifications = require('./notifications');
 var menu = require('./menu');
@@ -16,16 +17,17 @@ var wysiwyg = require('./wysiwyg');
 
 // TODO: Construct an autosave mechanism for `data-autosave`
 
-// When the DOM is ready
+// Define our initialization bindings
 // DEV: If our one-off plugins get unwieldy, relocate them to files that export an `init` function
-$(function handleReady () {
+exports.init = function (containerEl) {
   // If we don't have native support for datepicker, then use a fallback
+  // DEV: We support native datepicker for better mobile experience
   if (!Modernizr.inputtypes.date) {
     // http://eternicode.github.io/bootstrap-datepicker/
     // https://bootstrap-datepicker.readthedocs.org/en/latest/index.html
     // TODO: Add component test to verify when we click a new date it changes
     //   and when we return to the original they are the same (verifies moment + component consistency)
-    $('input[type=date]').each(function handleDateInput () {
+    $(containerEl).find('input[type=date]').each(function handleDateInput () {
       var $el = $(this);
       $el.datepicker({
         // 2016-01-08 (same as native)
@@ -42,11 +44,12 @@ $(function handleReady () {
   }
 
   // If we don't have native support for timepicker, then use a fallback
+  // DEV: We support native timepicker for better mobile experience
   if (!Modernizr.inputtypes.time) {
     // https://github.com/jonthornton/jquery-timepicker
     // TODO: Add component test to verify when we click a new time it changes
     //   and when we return to the original they are the same (verifies moment + component consistency)
-    $('input[type=time]').each(function handleTimeInput () {
+    $(containerEl).find('input[type=time]').each(function handleTimeInput () {
       // DEV: Native will send HH:MM (e.g. 23:10, 7:20) but can vary in presentation
       //   We will use HH:MM AM/PM (e.g. 11:10PM, 7:20AM) for user-friednliness
       //   https://www.w3.org/TR/2012/WD-html-markup-20120329/input.time.html#input.time.attrs.value
@@ -63,10 +66,11 @@ $(function handleReady () {
   }
 
   // Find all Chosen inputs and bind them
-  $('[data-chosen]').chosen();
+  $(containerEl).find('[data-chosen]').chosen();
 
   // Bind our external plugins
-  contentSync.init(document.body);
+  contentSync.init(containerEl);
+  datetimepickerSync.init(containerEl);
   errorGenerators.init();
   notifications.init();
   menu.init();
@@ -89,4 +93,12 @@ $(function handleReady () {
     scriptEl.src = 'https://rawgit.com/peol/960gridder/677b61a7/releases/1.3.1/960.gridder.src.js';
     headEl.appendChild(scriptEl);
   }
-});
+};
+
+// If we are not testing, bind our initializations to DOM ready
+// DEV: We would use `require.main === module` but Browserify doesn't want to support that
+if (process.env.ENV !== 'test') {
+  $(function handleReady () {
+    exports.init(document.body);
+  });
+}

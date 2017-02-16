@@ -109,14 +109,6 @@ html
         ga('set', 'page', document.location.pathname.replace(/[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/ig, ':uuid'));
         ga('send', 'pageview');
   body
-    //- Define server level locals
-    //- 2016-01-08 (same as native)
-    //-   http://stackoverflow.com/a/9519493
-    - var datepickerFormat = 'Y-MM-DD';
-    //- 23:10 (same as native)
-    //-   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
-    - var timepickerFormat = 'HH:mm';
-
     //- Define footer for all pages
     mixin footer()
       div.push--top.text--center.muted

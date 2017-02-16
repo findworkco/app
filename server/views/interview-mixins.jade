@@ -11,7 +11,7 @@ mixin interview-fields(values, options)
           = "Date/Time: "
           i.fa.fa-calendar-o(style="font-size: 1.5em")
         //- Keys for inputs will be `date_time_date`, `date_time_time`, and `date_time_timezone`
-        +datetimepicker('date_time', dateTimeMoment, {delimiter: '_'})
+        +datetimepicker('date_time', dateTimeMoment, {delimiter: '_'})(data-datetimepicker-sync="#pre_interview_reminder, #post_interview_reminder")
   .form-group
     label(for="details")
       = "Details: "

@@ -1,4 +1,5 @@
 // Load in our dependencies
+var _ = require('underscore');
 var browserify = require('browserify');
 var gulp = require('gulp');
 var gulpBuffer = require('gulp-buffer');
@@ -87,11 +88,14 @@ gulp.task('build-images', ['build-images-svg', 'build-images-non-svg', 'build-im
 // Create a browserify instance
 // https://github.com/gulpjs/gulp/blob/v3.9.1/docs/recipes/browserify-uglify-sourcemap.md
 // https://github.com/substack/watchify/tree/v3.7.0#watchifyb-opts
-var browserifyObj = browserify({
+exports.browserifyOptions = {
   cache: {}, packageCache: {},
   debug: true, // Enable source maps
+  transform: ['brfs', 'envify']
+};
+var browserifyObj = browserify(_.defaults({
   entries: __dirname + '/browser/js/index.js'
-});
+}, exports.browserifyOptions));
 gulp.task('build-js', function buildJs () {
   // Bundle browserify content
   var jsStream = browserifyObj.bundle();

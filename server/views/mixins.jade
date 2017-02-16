@@ -18,15 +18,17 @@ mixin avatar-img(email, size)
   img(src=url, width=size, height=size, alt="#{email} avatar")&attributes(attributes)
 
 mixin datepicker(moment)
+  //- 2016-01-08 (same as native)
+  //-   http://stackoverflow.com/a/9519493
   //- DEV: We use 2020 as our cap since that's where moment stops
   //- DEV: We use `min/max` to fix slowness bug
   //-   http://stackoverflow.com/a/30325783
-  input(type="date", value=moment.format(datepickerFormat), min="2010-01-01", max="2020-12-31")&attributes(attributes)
+  input(type="date", value=moment.format('Y-MM-DD'), min="2010-01-01", max="2020-12-31")&attributes(attributes)
 
 mixin timepicker(moment)
   //- DEV: Native uses HH:MM (e.g. 23:10) so we must use that
   //-   https://www.w3.org/TR/html-markup/input.time.html#input.time.attrs.value
-  input(type="time", value=moment.format(timepickerFormat))&attributes(attributes)
+  input(type="time", value=moment.format('HH:mm'))&attributes(attributes)
 
 mixin _timezonepicker(selectedTimezone)
   //- DEV: We were initially going to use a modal similar to Google Calendar
@@ -47,12 +49,13 @@ mixin timezonepicker(moment)
 mixin datetimepicker(name, moment, options)
   - options = options || {};
   - var delimiter = options.delimiter !== undefined ? options.delimiter : '_';
-  div
-    +datepicker(moment).form-control(name="#{name}#{delimiter}date")&attributes(attributes)
-    = " "
-    +timepicker(moment).form-control(name="#{name}#{delimiter}time")
-  div
-    +timezonepicker(moment).form-control(name="#{name}#{delimiter}timezone")
+  div&attributes(attributes)
+    div
+      +datepicker(moment).form-control(name="#{name}#{delimiter}date")
+      = " "
+      +timepicker(moment).form-control(name="#{name}#{delimiter}time")
+    div
+      +timezonepicker(moment).form-control(name="#{name}#{delimiter}timezone")
 
 mixin reminderpicker(name, values, defaultMoment)
   //- Determine if the reminder is enabled and its moment (default to `true` if there is none)
@@ -67,7 +70,7 @@ mixin reminderpicker(name, values, defaultMoment)
       | &nbsp;
     div(style="display: table-cell; vertical-align: middle; padding: 3px")
       //- TODO: When any of the date picker elements are clicked/changed, select our radio
-      +datetimepicker(name, moment)(id=name)
+      +datetimepicker(name, moment)(id=name)&attributes(attributes)
   div(style="display: table")
     div(style="display: table-cell; vertical-align: middle")
       input(id="#{name}_enabled_no", name="#{name}_enabled", type="radio", checked=!isEnabled, value="no")

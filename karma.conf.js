@@ -1,5 +1,7 @@
-// Karma configuration
-// Generated on Mon Feb 13 2017 19:34:37 GMT-0800 (PST)
+// Load in our dependencies
+var browserifyOptions = require('./gulpfile.js').browserifyOptions;
+
+// Define and export our Karma configuration
 module.exports = function (config) {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -24,12 +26,9 @@ module.exports = function (config) {
       'test/browser/**/*.js': ['browserify']
     },
 
-    // configure browserify
+    // configure browserify using gulp config
     // https://github.com/nikku/karma-browserify/tree/v5.1.0#browserify-config
-    browserify: {
-      debug: true,
-      transform: ['brfs']
-    },
+    browserify: browserifyOptions,
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
