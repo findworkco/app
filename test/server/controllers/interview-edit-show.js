@@ -11,7 +11,7 @@ scenario.route('A request to GET /interview/:id', function () {
   scenario.routeTest('from the owner user', {
     dbFixtures: [skyNetworksDbFixture, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
-    // Log in (need to do) and make our request
+    // Log in and make our request
     httpUtils.session.init().login().save({
       url: serverUtils.getUrl(skyNetworksInterviewUrl),
       expectedStatusCode: 200
@@ -51,6 +51,36 @@ scenario.route('A request to GET /interview/:id', function () {
     it('links back to job application', function () {
       expect(this.$('#content a[href="/application/abcdef-sky-networks-uuid"]').length)
         .to.be.at.least(1);
+    });
+  });
+
+  scenario.routeTest('for an upcoming interview', {
+    dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().login().save({
+      url: serverUtils.getUrl('/interview/abcdef-umbrella-corp-interview-uuid'),
+      expectedStatusCode: 200
+    });
+
+    it('doesn\'t hide reminder info', function () {
+      expect(this.$('#pre-interview-reminder__container').attr('class')).to.not.contain('hidden');
+      expect(this.$('#post-interview-reminder__container').attr('class')).to.not.contain('hidden');
+    });
+  });
+
+  scenario.routeTest('for a past interview', {
+    dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().login().save({
+      url: serverUtils.getUrl('/interview/abcdef-sky-networks-interview-uuid'),
+      expectedStatusCode: 200
+    });
+
+    it('hides reminder info', function () {
+      expect(this.$('#pre-interview-reminder__container').attr('class')).to.contain('hidden');
+      expect(this.$('#post-interview-reminder__container').attr('class')).to.contain('hidden');
     });
   });
 

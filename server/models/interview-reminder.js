@@ -34,8 +34,9 @@ var InterviewReminder = module.exports = _.extend(baseDefine('interview_reminder
       assert(interview, 'Expected InterviewReminder to have loaded an interview. ' +
         'No updates should occur without being bound to an interview');
 
-      // If our reminder is disabled, stop checking
-      if (this.getDataValue('is_enabled') === false) {
+      // If our reminder is disabled or the reminder is a past interview (i.e. no active reminders), stop checking
+      if (this.getDataValue('is_enabled') === false ||
+          interview.get('type') === Interview.TYPES.PAST_INTERVIEW) {
         return;
       }
 

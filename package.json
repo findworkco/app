@@ -22,7 +22,7 @@
   "scripts": {
     "build": "ENV=production gulp build-clean && ENV=production gulp build",
     "develop": "ENV=development gulp build-clean && ENV=development gulp develop",
-    "lint": "twolfson-style lint server/ test/",
+    "lint": "twolfson-style lint browser/js/ server/ test/",
     "_gemini-gui-comment": "By using `trap`, we kick off visual update script on SIGINT (keyboard interrupt)",
     "gemini-gui": "trap bin/test-visual-update-signature.sh INT; gemini-gui test/visual",
     "_gemini-update-comment": "By using `trap`, we allow additional arguments via `--` with `npm run`",

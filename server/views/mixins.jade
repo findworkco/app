@@ -41,7 +41,11 @@ mixin _timezonepicker(selectedTimezone)
       optgroup(label=timezoneInfo.name)
         each timezoneLocale in timezoneInfo.locales
           //- val=US-America/Chicago, text=CST/CDT
-          option(selected=selectedTimezone == timezoneLocale.val, value=timezoneLocale.val)= timezoneLocale.abbrStr
+          option(
+            selected=selectedTimezone == timezoneLocale.val,
+            value=timezoneLocale.val,
+            data-tz-offset=moment.tz(timezoneLocale.val).utcOffset())
+              = timezoneLocale.abbrStr
 
 mixin timezonepicker(moment)
   +_timezonepicker(moment.tz())&attributes(attributes)

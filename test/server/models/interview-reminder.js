@@ -12,7 +12,7 @@ var InterviewReminder = require('../../../server/models/interview-reminder');
 var validInterview = {
   candidate_id: 'mock-candidate-id',
   application_id: 'mock-application-id',
-  date_time_moment: moment.tz('2017-01-31T12:34', 'US-America/Chicago')
+  date_time_moment: moment.tz('2022-01-31T12:34', 'US-America/Chicago')
 };
 var validBaseInterviewReminder = {
   candidate_id: 'mock-candidate-id',
@@ -24,7 +24,7 @@ var validBaseInterviewReminder = {
 scenario.model('An InterviewReminder model without an interview being validated', function () {
   it('receives an error', function (done) {
     var interviewReminder = InterviewReminder.build(_.defaults({
-      date_time_moment: moment.tz('2017-01-01T12:34', 'US-America/Chicago'),
+      date_time_moment: moment.tz('2022-01-01T12:34', 'US-America/Chicago'),
       type: InterviewReminder.TYPES.PRE_INTERVIEW
     }, validBaseInterviewReminder));
     interviewReminder.validate().asCallback(function handleValidate (err, validationErr) {
@@ -37,13 +37,13 @@ scenario.model('An InterviewReminder model without an interview being validated'
   });
 });
 
-scenario.model('An enabled pre-interview InterviewReminder model running after its interview being validated',
+scenario.model('An enabled pre-interview InterviewReminder model that is after its interview being validated',
     function () {
   it('receives a validation error', function (done) {
     var interview = Interview.build(validInterview);
     var interviewReminder = InterviewReminder.build(_.defaults({
       is_enabled: true,
-      date_time_moment: moment.tz('2017-02-01T12:34', 'US-America/Chicago'),
+      date_time_moment: moment.tz('2022-02-01T12:34', 'US-America/Chicago'),
       type: InterviewReminder.TYPES.PRE_INTERVIEW
     }, validBaseInterviewReminder));
     interviewReminder.setDataValue('interview', interview);
@@ -57,12 +57,33 @@ scenario.model('An enabled pre-interview InterviewReminder model running after i
   });
 });
 
-scenario.model('A disabled pre-interview InterviewReminder model running after its interview being validated',
+scenario.model('A disabled pre-interview InterviewReminder model that is after its interview being validated',
     function () {
   it('receives no validation errors', function (done) {
     var interview = Interview.build(validInterview);
     var interviewReminder = InterviewReminder.build(_.defaults({
       is_enabled: false,
+      date_time_moment: moment.tz('2022-02-01T12:34', 'US-America/Chicago'),
+      type: InterviewReminder.TYPES.PRE_INTERVIEW
+    }, validBaseInterviewReminder));
+    interviewReminder.setDataValue('interview', interview);
+    interviewReminder.validate().asCallback(function handleValidate (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('A pre-interview InterviewReminder model that is after its interview ' +
+    'yet Interview is past interview being validated',
+    function () {
+  it('receives no validation errors', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2017-01-01T12:34', 'US-America/Chicago')
+    }, validInterview));
+    var interviewReminder = InterviewReminder.build(_.defaults({
+      is_enabled: true,
       date_time_moment: moment.tz('2017-02-01T12:34', 'US-America/Chicago'),
       type: InterviewReminder.TYPES.PRE_INTERVIEW
     }, validBaseInterviewReminder));
@@ -75,13 +96,13 @@ scenario.model('A disabled pre-interview InterviewReminder model running after i
   });
 });
 
-scenario.model('An enabled post-interview InterviewReminder model running before its interview being validated',
+scenario.model('An enabled post-interview InterviewReminder model that is before its interview being validated',
     function () {
   it('receives a validation error', function (done) {
     var interview = Interview.build(validInterview);
     var interviewReminder = InterviewReminder.build(_.defaults({
       is_enabled: true,
-      date_time_moment: moment.tz('2017-01-01T12:34', 'US-America/Chicago'),
+      date_time_moment: moment.tz('2022-01-01T12:34', 'US-America/Chicago'),
       type: InterviewReminder.TYPES.POST_INTERVIEW
     }, validBaseInterviewReminder));
     interviewReminder.setDataValue('interview', interview);
@@ -95,13 +116,34 @@ scenario.model('An enabled post-interview InterviewReminder model running before
   });
 });
 
-scenario.model('A disabled post-interview InterviewReminder model running before its interview being validated',
+scenario.model('A disabled post-interview InterviewReminder model that is before its interview being validated',
     function () {
   it('receives no validation errors', function (done) {
     var interview = Interview.build(validInterview);
     var interviewReminder = InterviewReminder.build(_.defaults({
       is_enabled: false,
-      date_time_moment: moment.tz('2017-01-01T12:34', 'US-America/Chicago'),
+      date_time_moment: moment.tz('2022-01-01T12:34', 'US-America/Chicago'),
+      type: InterviewReminder.TYPES.POST_INTERVIEW
+    }, validBaseInterviewReminder));
+    interviewReminder.setDataValue('interview', interview);
+    interviewReminder.validate().asCallback(function handleValidate (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('A post-interview InterviewReminder model that is before its interview ' +
+    'yet Interview is past interview being validated',
+    function () {
+  it('receives no validation errors', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2017-02-01T12:34', 'US-America/Chicago')
+    }, validInterview));
+    var interviewReminder = InterviewReminder.build(_.defaults({
+      is_enabled: true,
+      date_time_moment: moment.tz('2017-03-01T12:34', 'US-America/Chicago'),
       type: InterviewReminder.TYPES.POST_INTERVIEW
     }, validBaseInterviewReminder));
     interviewReminder.setDataValue('interview', interview);

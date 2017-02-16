@@ -4,7 +4,7 @@ var $ = require('jquery');
 var Modernizr = require('browsernizr');
 var forEach = Array.prototype.forEach;
 
-// Define common helpers
+// Define/export common helpers
 // DEV: We don't test native functionality directly -- please do that via manual testing
 //   We can also consider adding Chrome to test suite
 exports.getDateFromDatetimepicker = function (datetimepickerEl) {

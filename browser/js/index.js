@@ -9,6 +9,7 @@ void require('browsernizr/test/inputtypes');
 window.jQuery = $;
 void require('../../bower_components/chosen/chosen.jquery.js');
 var contentSync = require('./content-sync');
+var datetimepickerHide = require('./datetimepicker-hide');
 var datetimepickerSync = require('./datetimepicker-sync');
 var errorGenerators = require('./error-generators');
 var notifications = require('./notifications');
@@ -70,6 +71,7 @@ exports.init = function (containerEl) {
 
   // Bind our external plugins
   contentSync.init(containerEl);
+  datetimepickerHide.init(containerEl);
   datetimepickerSync.init(containerEl);
   errorGenerators.init();
   notifications.init();

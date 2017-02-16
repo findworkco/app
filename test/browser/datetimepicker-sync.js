@@ -15,9 +15,11 @@ var testUtils = {
   init: function (locals) {
     // DEV: These are automatically wrapped in a `div` for ease of use
     domUtils.init([mixinsJade], function () {/*
-      +datetimepicker("source", sourceMoment)#source(data-datetimepicker-sync="#target")
+      +datetimepicker("source", sourceMoment)#source(
+        data-datetimepicker-sync="#target")
       +datetimepicker("target", targetMoment)#target
     */}, _.extend({
+      moment: moment,
       // Filter to US only for simplicity
       tzStable: _.where(tzStable, {countryCode: 'US'})
     }, locals));
