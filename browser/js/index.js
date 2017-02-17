@@ -34,7 +34,10 @@ exports.init = function (containerEl) {
         // 2016-01-08 (same as native)
         //   http://stackoverflow.com/a/9519493
         //   https://www.w3.org/TR/2012/WD-html-markup-20120329/input.date.html#input.date.attrs.value
+        assumeNearbyYear: true,
         format: 'yyyy-mm-dd',
+        startDate: $el.attr('min') || -Infinity,
+        endDate: $el.attr('max') || Infinity,
         todayBtn: 'linked',
         todayHighlight: true
       });

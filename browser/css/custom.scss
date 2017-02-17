@@ -223,11 +223,18 @@ $layout-logo-width: $LOGO_WIDTH * $layout-logo-height / $LOGO_HEIGHT;
 
 // Override styles for Chosen bootstrap
 .chosen-container .chosen-results li em {
-    background: #FAFCAB;
+  background: #FAFCAB;
 }
 
 .chosen-container .chosen-results li.group-result {
-    color: #666;
+  color: #666;
+}
+
+// Override styles for datepicker
+.datepicker table tr td.disabled, /* Dates */
+.datepicker table tr td span.disabled /* Months, years, decades, centuries */ {
+  opacity: $muted-opacity/100!important;
+  filter: alpha(opacity = $muted-opacity)!important;
 }
 
 // Landing page

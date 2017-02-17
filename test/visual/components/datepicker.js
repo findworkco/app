@@ -4,16 +4,30 @@ var geminiUtils = require('../utils/gemini').bind(gemini);
 
 // Define our visual tests
 gemini.suite('components/datepicker', function (suite) {
-  // Navigate to a page with datepicker
-  suite.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT);
+  // Define common variables
+  var inputSelector = '#content input[type=date]';
+  var popoverSelector = 'body > .datepicker';
 
-  gemini.suite('datepicker', function (child) {
-    // Verify we can see the datepicker popover on click
-    var inputSelector = '#content input[type=date]';
-    var popoverSelector = 'body > .datepicker';
-    child
+  // Navigate to a page with datepicker and verify we see its popover
+  gemini.suite('default', function (child) {
+    child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements(popoverSelector)
-      .capture('active', function hoverEl (actions, find) {
+      .capture('active', function focusEl (actions, find) {
+        actions.click(find(inputSelector));
+      });
+  });
+
+  // Verify we have clear disabled styles
+  gemini.suite('disabled-date', function (child) {
+    child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
+      .setCaptureElements(popoverSelector)
+      .before(function moveNextToDisabledDate (actions, find) {
+        actions.executeJS(function handleExecuteJS (window) {
+          // DEV: We need to use a separate string variable due to this being in window context
+          window.jQuery('#content input[type=date]').datepicker('update', '2020-12-31');
+        });
+      })
+      .capture('active', function focusEl (actions, find) {
         actions.click(find(inputSelector));
       });
   });

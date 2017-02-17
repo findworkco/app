@@ -59,8 +59,8 @@ describe('A set of hide-bound datetimepickers (date)', function () {
 describe('A set of hide-bound datetimepickers (time)', function () {
   // DEV: We use GB-Europe/London so timezone is neutral
   testUtils.init({
-    sourceMoment: moment.tz('GB-Europe/London').add({hours: 1}),
-    targetMoment: moment.tz('GB-Europe/London').add({hours: 3})
+    sourceMoment: moment.tz('GB-Europe/London').add({minutes: 1}),
+    targetMoment: moment.tz('GB-Europe/London').add({minutes: 9})
   });
 
   it('updating date hides/shows target datetimepicker', function () {
