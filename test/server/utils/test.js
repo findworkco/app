@@ -160,8 +160,11 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
           // Skip over model-dependent validation
           var skip = [];
           if (model.Model === sequelize.models.application) { skip = ['statusMatchesInterviews']; }
+          if (model.Model === sequelize.models.application_reminder) { skip = ['dateTimeAfterNow']; }
           if (model.Model === sequelize.models.interview) { skip = ['applicationStatusMatchesType']; }
-          if (model.Model === sequelize.models.interview_reminder) { skip = ['dateTimeMatchesInterview']; }
+          if (model.Model === sequelize.models.interview_reminder) {
+            skip = ['dateTimeAfterNow', 'dateTimeMatchesInterview'];
+          }
           var additionalSkip = selectedFixtureSkip[key];
           skip = _.union(skip, additionalSkip);
 

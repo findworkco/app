@@ -135,7 +135,8 @@ exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
       application_id: applications[applications.length - 1].id,
       candidate_id: DEFAULT_CANDIDATE_ID,
       type: ApplicationReminder.TYPES.RECEIVED_OFFER,
-      date_time_moment: moment.tz('2016-01-01T12:00', 'US-America/Chicago'),
+      date_time_moment: moment.tz('2022-01-01T12:00', 'US-America/Chicago'),
+      sent_at_moment: null,
       is_enabled: true
     })
   ],
@@ -155,6 +156,7 @@ exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.PRE_INTERVIEW,
     date_time_moment: moment.tz('2015-12-14T11:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: false
   }),
   addInterviewReminder('received-offer__reminder--post-interview', {
@@ -163,6 +165,7 @@ exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.POST_INTERVIEW,
     date_time_moment: moment.tz('2015-12-14T17:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: false
   })
 ];
@@ -212,6 +215,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
       interview_id: interviews[interviews.length - 1].id,
       type: InterviewReminder.TYPES.PRE_INTERVIEW,
       date_time_moment: moment.tz('2022-01-20T11:00', 'US-America/Chicago'),
+      sent_at_moment: null,
       is_enabled: false
     }),
     addInterviewReminder(exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY, {
@@ -220,6 +224,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW = exports.APPLICATION_UMBRELLA_CORP = [
       interview_id: interviews[interviews.length - 1].id,
       type: InterviewReminder.TYPES.POST_INTERVIEW,
       date_time_moment: moment.tz('2022-01-20T17:00', 'US-America/Chicago'),
+      sent_at_moment: null,
       is_enabled: false
     })
   ]
@@ -258,6 +263,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_MULTIPLE_PAST_INT
       interview_id: interviews[interviews.length - 1].id,
       type: InterviewReminder.TYPES.PRE_INTERVIEW,
       date_time_moment: moment.tz('2022-03-14T11:00', 'US-America/Chicago'),
+      sent_at_moment: null,
       is_enabled: false
     }),
     addInterviewReminder(exports.REMINDER_UPCOMING_INTERVIEW_2_UPCOMING_POST_INTERVIEW_KEY, {
@@ -266,6 +272,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_MULTIPLE_PAST_INT
       interview_id: interviews[interviews.length - 1].id,
       type: InterviewReminder.TYPES.POST_INTERVIEW,
       date_time_moment: moment.tz('2022-03-14T17:00', 'US-America/Chicago'),
+      sent_at_moment: null,
       is_enabled: false
     })
   ],
@@ -285,6 +292,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_MULTIPLE_PAST_INT
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.PRE_INTERVIEW,
     date_time_moment: moment.tz('2016-02-18T06:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: false
   }),
   addInterviewReminder('upcoming-interview-2__reminder--post-interview--past-1', {
@@ -293,6 +301,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_MULTIPLE_PAST_INT
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.POST_INTERVIEW,
     date_time_moment: moment.tz('2016-02-18T12:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: false
   }),
   addInterview('upcoming-interview-2__interview--past-2', {
@@ -311,6 +320,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_MULTIPLE_PAST_INT
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.PRE_INTERVIEW,
     date_time_moment: moment.tz('2016-03-02T15:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: false
   }),
   addInterviewReminder('upcoming-interview-2__reminder--post-interview--past-2', {
@@ -319,6 +329,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_2 = exports.APPLICATION_MULTIPLE_PAST_INT
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.POST_INTERVIEW,
     date_time_moment: moment.tz('2016-03-02T21:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: false
   })
 ];
@@ -352,6 +363,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_3 = exports.APPLICATION_MULTIPLE_UPCOMING
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.PRE_INTERVIEW,
     date_time_moment: moment.tz('2022-03-14T11:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: false
   }),
   addInterviewReminder('upcoming-interview-3__reminder--post-interview--upcoming-1', {
@@ -360,6 +372,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_3 = exports.APPLICATION_MULTIPLE_UPCOMING
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.POST_INTERVIEW,
     date_time_moment: moment.tz('2022-03-14T17:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: false
   }),
   addInterview('upcoming-interview-3__interview--upcoming-2', {
@@ -378,6 +391,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_3 = exports.APPLICATION_MULTIPLE_UPCOMING
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.PRE_INTERVIEW,
     date_time_moment: moment.tz('2022-03-22T09:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: false
   }),
   addInterviewReminder('upcoming-interview-3__reminder--post-interview--upcoming-2', {
@@ -386,6 +400,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_3 = exports.APPLICATION_MULTIPLE_UPCOMING
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.POST_INTERVIEW,
     date_time_moment: moment.tz('2022-03-22T11:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: false
   })
 ];
@@ -418,7 +433,8 @@ exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPO
         candidate_id: DEFAULT_CANDIDATE_ID,
         application_id: applications[applications.length - 1].id,
         type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
-        date_time_moment: moment.tz('2016-01-25T12:00', 'US-America/Chicago'),
+        date_time_moment: moment.tz('2022-01-25T12:00', 'US-America/Chicago'),
+        sent_at_moment: null,
         is_enabled: true
       })
     ]
@@ -439,6 +455,7 @@ exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPO
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.PRE_INTERVIEW,
     date_time_moment: moment.tz('2016-01-15T08:00', 'US-America/Los_Angeles'),
+    sent_at_moment: moment.tz('2016-01-15T08:01', 'US-America/Los_Angeles'),
     is_enabled: true
   }),
   addInterviewReminder('waiting-for-response__reminder--post-interview', {
@@ -447,6 +464,7 @@ exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPO
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.POST_INTERVIEW,
     date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
+    sent_at_moment:  moment.tz('2016-01-15T11:01', 'US-America/Los_Angeles'),
     is_enabled: true
   })
 ];
@@ -474,7 +492,8 @@ exports.APPLICATION_SAVED_FOR_LATER = exports.APPLICATION_INTERTRODE = [
     application_id: applications[applications.length - 1].id,
     candidate_id: DEFAULT_CANDIDATE_ID,
     type: ApplicationReminder.TYPES.SAVED_FOR_LATER,
-    date_time_moment: moment.tz('2016-06-20T12:00', 'US-America/Chicago'),
+    date_time_moment: moment.tz('2022-06-20T12:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: true
   })
 ];
@@ -504,6 +523,7 @@ exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
     candidate_id: DEFAULT_CANDIDATE_ID,
     type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
     date_time_moment: moment.tz('2016-03-20T19:00', 'US-America/Chicago'),
+    sent_at_moment: null,
     is_enabled: true
   }),
   addInterview('archived__interview', {
@@ -522,6 +542,7 @@ exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.PRE_INTERVIEW,
     date_time_moment: moment.tz('2016-01-15T08:00', 'US-America/Los_Angeles'),
+    sent_at_moment: moment.tz('2016-01-15T08:01', 'US-America/Los_Angeles'),
     is_enabled: true
   }),
   addInterviewReminder('archived__reminder--post-interview', {
@@ -530,6 +551,7 @@ exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
     interview_id: interviews[interviews.length - 1].id,
     type: InterviewReminder.TYPES.POST_INTERVIEW,
     date_time_moment:  moment.tz('2016-01-15T11:00', 'US-America/Los_Angeles'),
+    sent_at_moment:  moment.tz('2016-01-15T11:01', 'US-America/Los_Angeles'),
     is_enabled: true
   })
 ];
@@ -688,7 +710,10 @@ exports.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE = overrideFixtures(
   ]),
   exports.REMINDER_SAVED_FOR_LATER_REMINDER_DUE = {
     base: exports.REMINDER_SAVED_FOR_LATER_KEY,
-    overrides: {date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')}
+    overrides: {
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
+      sent_at_moment: null
+    }
   }
 );
 exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE = overrideFixtures(
@@ -697,7 +722,10 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE = overrideFixtures(
   ]),
   exports.REMINDER_WAITING_FOR_RESPONSE_REMINDER_DUE = {
     base: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
-    overrides: {date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago')}
+    overrides: {
+      date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
+      sent_at_moment: null
+    }
   }
 );
 exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE = overrideFixtures(
@@ -717,6 +745,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE = overrideFixtures(
     base: exports.REMINDER_UPCOMING_INTERVIEW_PRE_INTERVIEW_KEY,
     overrides: {
       date_time_moment: moment.tz('2016-01-15T09:00', 'US-America/Chicago'),
+      sent_at_moment: null,
       is_enabled: true
     }
   },
@@ -724,6 +753,7 @@ exports.APPLICATION_UPCOMING_INTERVIEW_REMINDERS_DUE = overrideFixtures(
     base: exports.REMINDER_UPCOMING_INTERVIEW_POST_INTERVIEW_KEY,
     overrides: {
       date_time_moment: moment.tz('2016-01-15T13:00', 'US-America/Chicago'),
+      sent_at_moment: null,
       is_enabled: true
     }
   }
@@ -1020,6 +1050,7 @@ exports.APPLICATION_MULTIPLE_UPCOMING_INTERVIEWS_DUE = overrideFixtures(
     base: exports.REMINDER_UPCOMING_INTERVIEW_2_UPCOMING_PRE_INTERVIEW_KEY,
     overrides: {
       date_time_moment: moment.tz('2016-02-20T09:00', 'US-America/Chicago'),
+      sent_at_moment: null,
       is_enabled: false
     }
   },
@@ -1027,6 +1058,7 @@ exports.APPLICATION_MULTIPLE_UPCOMING_INTERVIEWS_DUE = overrideFixtures(
     base: exports.REMINDER_UPCOMING_INTERVIEW_2_UPCOMING_POST_INTERVIEW_KEY,
     overrides: {
       date_time_moment: moment.tz('2016-02-20T13:00', 'US-America/Chicago'),
+      sent_at_moment: null,
       is_enabled: false
     }
   }
@@ -1048,6 +1080,9 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_RECEIVED_OFFER_REMINDER_NOT_DUE = 
   ]),
   {
     base: exports.REMINDER_RECEIVED_OFFER_REMINDER_DUE,
-    overrides: {date_time_moment: moment.tz('2022-12-09T03:00', 'US-America/Chicago')}
+    overrides: {
+      date_time_moment: moment.tz('2022-12-09T03:00', 'US-America/Chicago'),
+      sent_at_moment: null
+    }
   }
 );

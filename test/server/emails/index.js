@@ -225,7 +225,7 @@ scenario('A post-interview reminder email for a follow-up interview', {
 
   // Application status specific
   it('includes waiting for response reminder info', function () {
-    expect(this.html).to.contain('Mon Jan 25 at 12:00PM CST');
+    expect(this.html).to.contain('Tue Jan 25 at 12:00PM CST');
   });
 });
 
@@ -255,7 +255,7 @@ scenario('A post-interview reminder email for a received offer application', {
   renderPostInterviewEmail(dbFixtures.INTERVIEW_RECEIVED_OFFER_KEY);
 
   it('includes received offer reminder info', function () {
-    expect(this.html).to.contain('Fri Jan 1 at 12:00PM CST');
+    expect(this.html).to.contain('Sat Jan 1 at 12:00PM CST');
   });
 });
 

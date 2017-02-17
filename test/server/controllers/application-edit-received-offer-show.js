@@ -35,7 +35,7 @@ scenario.route('A request to GET /application/:id (received offer)', {
     it('has a offer response reminder', function () {
       expect(this.$('[name=received_offer_reminder_enabled][value=yes]').attr('checked')).to.equal('checked');
       expect(this.$('[name=received_offer_reminder_enabled][value=no]').attr('checked')).to.equal(undefined);
-      expect(this.$('[name=received_offer_reminder_date]').val()).to.equal('2016-01-01');
+      expect(this.$('[name=received_offer_reminder_date]').val()).to.equal('2022-01-01');
       expect(this.$('[name=received_offer_reminder_time]').val()).to.equal('12:00');
       expect(this.$('[name=received_offer_reminder_timezone]').val()).to.equal('US-America/Chicago');
     });

@@ -54,7 +54,7 @@ scenario.model('An existing Application model', {
 
 // ACTION: Applied
 // Saved for later -> Waiting for response
-scenario.model('A saved for later Application model being applied to', {
+scenario.model('A "saved for later Application model" being applied to', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   sinonUtils.spy(Application.Instance.prototype, '_touchActiveReminder');
@@ -78,7 +78,7 @@ scenario.model('A saved for later Application model being applied to', {
 });
 
 // Waiting for response, upcoming interview, received offer, archived -> Reject
-scenario.model('A non-saved for later Application model being applied to', {
+scenario.model('A "non-saved for later Application model" being applied to', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
@@ -94,7 +94,7 @@ scenario.model('A non-saved for later Application model being applied to', {
 
 // ACTION: Added/updated/removed interview
 // Received offer, archived -> Same/ignore
-scenario.model('An interview-insensitive Application model with an interview addition/update/removal', {
+scenario.model('An "interview-insensitive Application model" handling interview addition/update/removal', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
@@ -109,8 +109,8 @@ scenario.model('An interview-insensitive Application model with an interview add
 
 // Saved for later, waiting for response, upcoming interview
 //   + upcoming interview -> Upcoming interview
-scenario.model('An interview-sensitive Application model with an upcoming interview ' +
-    'and interview addition/update/removal', {
+scenario.model('An "interview-sensitive Application model with an upcoming interview" ' +
+    'handling interview addition/update/removal', {
   dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY);
@@ -140,8 +140,8 @@ scenario.model('An interview-sensitive Application model with an upcoming interv
 
 // Saved for later, waiting for response, upcoming interview
 //   + no upcoming interview -> Waiting for response
-scenario.model('An interview-sensitive Application model with no upcoming interviews ' +
-    'and interview addition/update/removal', {
+scenario.model('An "interview-sensitive Application model with no upcoming interviews" ' +
+    'handling interview addition/update/removal', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY);
@@ -162,7 +162,7 @@ scenario.model('An interview-sensitive Application model with no upcoming interv
 
 // ACTION: Received offer
 // Saved for later, waiting for response, upcoming interview -> Received offer
-scenario.model('An offer-tolerant Application model receiving an offer', {
+scenario.model('An "offer-tolerant Application model" receiving an offer', {
   dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY);
@@ -186,7 +186,7 @@ scenario.model('An offer-tolerant Application model receiving an offer', {
 });
 
 // Received offer, archived -> Reject
-scenario.model('An offer-intolerant Application model receiving an offer', {
+scenario.model('An "offer-intolerant Application model" receiving an offer', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
@@ -202,7 +202,7 @@ scenario.model('An offer-intolerant Application model receiving an offer', {
 
 // ACTION: Remove offer
 // Received offer + upcoming interview -> Upcoming interview
-scenario.model('A received offer Application model with an upcoming interview removing an offer', {
+scenario.model('A "received offer Application model with an upcoming interview" removing an offer', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
@@ -231,8 +231,8 @@ scenario.model('A received offer Application model with an upcoming interview re
 });
 
 // Received offer + no upcoming interview + was waiting for response -> Waiting for response
-scenario.model('A received offer Application model ' +
-    'with no upcoming interview and previous "waiting for response" state removing an offer', {
+scenario.model('A "received offer Application model ' +
+    'with no upcoming interview and previous "waiting for response" state" removing an offer', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
@@ -251,8 +251,8 @@ scenario.model('A received offer Application model ' +
 
 // Received offer + no upcoming interview + never waiting for response -> Waiting for response
 // DEV: We could move to "Saved for later" but it causes more complication in code than it's worth =/
-scenario.model('A received offer Application model ' +
-    'with no upcoming interview and no previous "waiting for response" state removing an offer', {
+scenario.model('A "received offer Application model ' +
+    'with no upcoming interview and no previous "waiting for response" state" removing an offer', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
@@ -270,7 +270,7 @@ scenario.model('A received offer Application model ' +
 });
 
 // Saved for later, waiting for response, upcoming interview, archived -> Reject
-scenario.model('A non-received offer Application model removing an offer', {
+scenario.model('A "non-received offer Application model" removing an offer', {
   dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY);
@@ -286,7 +286,7 @@ scenario.model('A non-received offer Application model removing an offer', {
 
 // ACTION: Archive
 // Waiting for response, upcoming interview, received offer -> Archived
-scenario.model('A non-archived non-saved for later Application model being archived', {
+scenario.model('A "non-archived non-saved for later Application model" being archived', {
   dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY);
@@ -310,7 +310,7 @@ scenario.model('A non-archived non-saved for later Application model being archi
 });
 
 // Saved for later -> Reject
-scenario.model('A saved for later Application model being archived', {
+scenario.model('A "saved for later Application model" being archived', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY);
@@ -325,7 +325,7 @@ scenario.model('A saved for later Application model being archived', {
 });
 
 // Archived -> Reject
-scenario.model('An archived Application model being archived', {
+scenario.model('An "archived Application model" being archived', {
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_ARCHIVED_KEY);
@@ -341,7 +341,7 @@ scenario.model('An archived Application model being archived', {
 
 // ACTION: Restore
 // Archived + received offer reminder -> received offer
-scenario.model('An archived Application model that had received an offer being restored', {
+scenario.model('An "archived Application model that had received an offer" being restored', {
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_ARCHIVED_KEY);
@@ -369,7 +369,7 @@ scenario.model('An archived Application model that had received an offer being r
 });
 
 // Archived + upcoming interview -> upcoming interview
-scenario.model('An archived Application model with no offer but with upcoming interview being restored', {
+scenario.model('An "archived Application model with no offer but with upcoming interview" being restored', {
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_ARCHIVED_KEY);
@@ -389,7 +389,7 @@ scenario.model('An archived Application model with no offer but with upcoming in
 });
 
 // Archived + no upcoming interview -> waiting for response
-scenario.model('An archived Application model with no offer and no upcoming interview being restored', {
+scenario.model('An "archived Application model with no offer and no upcoming interview" being restored', {
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_ARCHIVED_KEY);
@@ -408,7 +408,7 @@ scenario.model('An archived Application model with no offer and no upcoming inte
 });
 
 // Saved for later, waiting for response, upcoming interview, received offer -> Reject
-scenario.model('A non-archived Application model being restored', {
+scenario.model('A "non-archived Application model" being restored', {
   dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY);
@@ -423,7 +423,7 @@ scenario.model('A non-archived Application model being restored', {
 });
 
 // METHOD: Touch active reminders
-scenario.model('A saved for later Application model touching its active reminder', {
+scenario.model('A "saved for later Application model" touching its active reminder', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY);
@@ -439,7 +439,7 @@ scenario.model('A saved for later Application model touching its active reminder
   });
 });
 
-scenario.model('An waiting for response Application model touching its active reminder', {
+scenario.model('An "waiting for response Application model" touching its active reminder', {
   dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY);
@@ -454,7 +454,7 @@ scenario.model('An waiting for response Application model touching its active re
     expect(reminder.get('updated_at')).to.greaterThan(originalUpdatedAt);
   });
 });
-scenario.model('An upcoming interview Application model touching its active reminder', {
+scenario.model('An "upcoming interview Application model" touching its active reminder', {
   dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY);
@@ -466,7 +466,7 @@ scenario.model('An upcoming interview Application model touching its active remi
   });
 });
 
-scenario.model('A received offer Application model touching its active reminder', {
+scenario.model('A "received offer Application model" touching its active reminder', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
@@ -482,7 +482,7 @@ scenario.model('A received offer Application model touching its active reminder'
   });
 });
 
-scenario.model('An archived Application model touching its active reminder', {
+scenario.model('An "archived Application model" touching its active reminder', {
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_ARCHIVED_KEY);
@@ -495,7 +495,7 @@ scenario.model('An archived Application model touching its active reminder', {
 });
 
 // METHOD: Default content addition/removal (application date)
-scenario.model('An Application model being backfilled without an application date', {
+scenario.model('An "Application model without an application date" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY);
@@ -512,7 +512,7 @@ scenario.model('An Application model being backfilled without an application dat
   });
 });
 
-scenario.model('An Application model being backfilled with an application date', {
+scenario.model('An "Application model with an application date" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY);
@@ -528,7 +528,7 @@ scenario.model('An Application model being backfilled with an application date',
 });
 
 // METHOD: Default content addition/removal (archived at)
-scenario.model('An archived Application model being backfilled without an archived timestamp', {
+scenario.model('An "archived Application model without an archived timestamp" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
@@ -545,7 +545,7 @@ scenario.model('An archived Application model being backfilled without an archiv
   });
 });
 
-scenario.model('An archived Application model being backfilled with an archived timestamp', {
+scenario.model('An "archived Application model with an archived timestamp" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_ARCHIVED_KEY);
@@ -561,7 +561,7 @@ scenario.model('An archived Application model being backfilled with an archived 
   });
 });
 
-scenario.model('A non-archived Application model being backfilled with an archived timestamp', {
+scenario.model('A "non-archived Application model with an archived timestamp" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_ARCHIVED_KEY);
@@ -577,7 +577,7 @@ scenario.model('A non-archived Application model being backfilled with an archiv
 });
 
 // METHOD: Default content addition/removal (reminders)
-scenario.model('A waiting for response Application model being backfilled without a reminder', {
+scenario.model('A "waiting for response Application model without a reminder" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY);
@@ -597,13 +597,14 @@ scenario.model('A waiting for response Application model being backfilled withou
   });
 });
 
-scenario.model('A waiting for response Application model being backfilled with a non-recent reminder', {
+scenario.model('A "waiting for response Application model with a non-recently updated reminder" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY);
   before(function ageWaitingForResponseReminder () {
     var application = this.models[dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY];
     var reminder = application.get('waiting_for_response_reminder');
+    reminder.set('date_time_moment', moment.tz('2016-01-25T12:00:00', 'US-America/Chicago'));
     reminder.setDataValue('updated_at', new Date('2016-01-05'));
     expect(reminder.get('updated_at').toISOString()).to.equal('2016-01-05T00:00:00.000Z');
   });
@@ -625,8 +626,8 @@ scenario.model('A waiting for response Application model being backfilled with a
   });
 });
 
-scenario.model('A waiting for response Application model being backfilled with a recent past-due reminder', {
-  dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
+scenario.model('A "waiting for response Application model with a recent past-due reminder"  being backfilled', {
+  dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY);
 
@@ -638,17 +639,17 @@ scenario.model('A waiting for response Application model being backfilled with a
 
     // Assert initial conditions
     expect(reminder.get('updated_at')).to.be.at.least(moment().subtract({minutes: 1}));
-    expect(reminder.get('date_time_moment').toISOString()).to.equal('2016-01-25T18:00:00.000Z');
+    expect(reminder.get('date_time_moment').toISOString()).to.equal('2016-01-15T15:00:00.000Z');
 
     // Perform update and assert results
     application.updateToInterviewChanges(candidate);
-    expect(reminder.get('date_time_moment').toISOString()).to.not.equal('2016-01-25T18:00:00.000Z');
+    expect(reminder.get('date_time_moment').toISOString()).to.not.equal('2016-01-15T15:00:00.000Z');
     expect(reminder.get('date_time_moment')).to.be.at.least(moment().add({days: 6, hours: 20}));
     expect(reminder.get('date_time_moment')).to.be.at.most(moment().add({days: 7, hours: 4}));
   });
 });
 
-scenario.model('A waiting for response Application model being backfilled with a recent non-due reminder', {
+scenario.model('A "waiting for response Application model with a recent non-due reminder" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_KEY);
@@ -675,7 +676,7 @@ scenario.model('A waiting for response Application model being backfilled with a
   });
 });
 
-scenario.model('An upcoming interview Application model being backfilled', {
+scenario.model('An "upcoming interview Application model" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_UPCOMING_INTERVIEW_KEY);
@@ -689,7 +690,7 @@ scenario.model('An upcoming interview Application model being backfilled', {
   });
 });
 
-scenario.model('A received offer Application model being backfilled without a reminder', {
+scenario.model('A "received offer Application model without a reminder" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_SAVED_FOR_LATER_KEY);
@@ -709,13 +710,14 @@ scenario.model('A received offer Application model being backfilled without a re
   });
 });
 
-scenario.model('A received offer Application model being backfilled with a non-recent reminder', {
+scenario.model('A "received offer Application model with a non-recently updated reminder" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
   before(function ageReceivedOfferReminder () {
     var application = this.models[dbFixtures.APPLICATION_RECEIVED_OFFER_KEY];
     var reminder = application.get('received_offer_reminder');
+    reminder.set('date_time_moment', moment.tz('2016-01-01T12:00:00', 'US-America/Chicago'));
     reminder.setDataValue('updated_at', new Date('2016-01-05'));
     expect(reminder.get('updated_at').toISOString()).to.equal('2016-01-05T00:00:00.000Z');
   });
@@ -738,8 +740,8 @@ scenario.model('A received offer Application model being backfilled with a non-r
   });
 });
 
-scenario.model('A received offer Application model being backfilled with a recent past-due reminder', {
-  dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
+scenario.model('A "received offer Application model with a recent past-due reminder" being backfilled', {
+  dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER_REMINDER_DUE, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
 
@@ -751,18 +753,18 @@ scenario.model('A received offer Application model being backfilled with a recen
 
     // Assert initial conditions
     expect(reminder.get('updated_at')).to.be.at.least(moment().subtract({minutes: 1}));
-    expect(reminder.get('date_time_moment').toISOString()).to.equal('2016-01-01T18:00:00.000Z');
+    expect(reminder.get('date_time_moment').toISOString()).to.equal('2016-01-15T15:00:00.000Z');
 
     // Perform update and assert results
     // DEV: We would encounter this when restoring from archived but this is simpler to test
     application._createOrRemoveDefaultContent(candidate);
-    expect(reminder.get('date_time_moment').toISOString()).to.not.equal('2016-01-01T18:00:00.000Z');
+    expect(reminder.get('date_time_moment').toISOString()).to.not.equal('2016-01-15T15:00:00.000Z');
     expect(reminder.get('date_time_moment')).to.be.at.least(moment().add({days: 6, hours: 20}));
     expect(reminder.get('date_time_moment')).to.be.at.most(moment().add({days: 7, hours: 4}));
   });
 });
 
-scenario.model('A received offer Application model being backfilled with a recent non-due reminder', {
+scenario.model('A "received offer Application model with a recent non-due reminder" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_RECEIVED_OFFER, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_RECEIVED_OFFER_KEY);
@@ -789,7 +791,7 @@ scenario.model('A received offer Application model being backfilled with a recen
   });
 });
 
-scenario.model('An archived Application model being backfilled', {
+scenario.model('An "archived Application model" being backfilled', {
   dbFixtures: [dbFixtures.APPLICATION_ARCHIVED, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
   reloadApplication(dbFixtures.APPLICATION_ARCHIVED_KEY);

@@ -95,7 +95,7 @@ scenario.route('A request to GET /schedule', function () {
       expect($section.find('a[href="/application/abcdef-black-mesa-uuid"]')).to.have.length(2);
       expect($section.text()).to.contain('Black Mesa');
       expect($section.text()).to.contain('Last contact: Mon Dec 14');
-      expect($section.text()).to.contain('Respond by: Fri Jan 1');
+      expect($section.text()).to.contain('Respond by: Sat Jan 1');
       expect($section.find('.schedule-notes').text()).to.contain('300 employees');
     });
   });
@@ -134,7 +134,7 @@ scenario.route('A request to GET /schedule', function () {
       expect($section.find('a[href="/application/abcdef-sky-networks-uuid/add-interview"]')).to.have.length(1);
       expect($section.text()).to.contain('Sky Networks');
       expect($section.text()).to.contain('Last contact: Fri Jan 15');
-      expect($section.text()).to.contain('Follow-up on: Mon Jan 25');
+      expect($section.text()).to.contain('Follow-up on: Tue Jan 25');
       expect($section.find('.schedule-notes').text()).to.contain('100 employees');
     });
   });

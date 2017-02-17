@@ -67,15 +67,19 @@ scenario.route('A request to POST /interview/:id', function () {
         expect(interviews[0].get('can_send_reminders')).to.equal(true);
         expect(interviews[0].get('date_time_datetime').toISOString()).to.equal('2022-03-05T21:00:00.000Z');
         expect(interviews[0].get('date_time_timezone')).to.equal('US-America/New_York');
-        expect(interviews[0].get('pre_interview_reminder_id')).to.equal('sky-networks-reminder-pre-int-uuid');
-        expect(interviews[0].get('post_interview_reminder_id')).to.equal('sky-networks-reminder-post-int-uuid');
+        expect(interviews[0].get('pre_interview_reminder_id')).to.be.a('string');
+        expect(interviews[0].get('pre_interview_reminder_id')).to.not.equal('sky-networks-reminder-pre-int-uuid');
+        expect(interviews[0].get('post_interview_reminder_id')).to.be.a('string');
+        expect(interviews[0].get('post_interview_reminder_id')).to.not.equal('sky-networks-reminder-post-int-uuid');
         expect(interviews[0].get('details')).to.equal('Test details');
         done();
       });
     });
 
-    it('updates our reminders in the database', function (done) {
-      InterviewReminder.findAll().asCallback(function handleFindAll (err, reminders) {
+    it('creates new reminders in the database', function (done) {
+      InterviewReminder.findAll({
+        where: {id: {$notIn: ['sky-networks-reminder-pre-int-uuid', 'sky-networks-reminder-post-int-uuid']}}
+      }).asCallback(function handleFindAll (err, reminders) {
         // If there was an error, callback with it
         if (err) { return done(err); }
 

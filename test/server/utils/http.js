@@ -183,7 +183,8 @@ exports._save = function (options) {
                 var assertionMsg = 'Expected status code "' + expectedStatusCode + '" ' +
                   'but received "' + res.statusCode + '" and body "' + body + '"';
                 try {
-                  var errorMsg = cheerio.load(body)('#_error').text();
+                  var errorMsg = cheerio.load(body)('#_error').text() ||
+                    cheerio.load(body)('#validation-errors').text();
                   assertionMsg = 'Expected status code "' + expectedStatusCode + '" but ' +
                   'received "' + res.statusCode + '" at URL "' + (options.url || options)  + '", ' +
                   'error "' + errorMsg + '", and body "' + body.slice(0, 300) + '..."';

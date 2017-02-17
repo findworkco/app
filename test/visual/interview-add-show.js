@@ -11,11 +11,11 @@ gemini.suite('interview-add-show', function (suite) {
       .before(function normalizeRelativeValues (actions, find) {
         // Reset date/time inputs to consistent time
         actions.executeJS(function handleExecuteJS (window) {
-          window.document.querySelector('[name=date_time_date]').value = '2016-05-20';
+          window.document.querySelector('[name=date_time_date]').value = '2022-05-20';
           window.document.querySelector('[name=date_time_time]').value = '7:00PM';
-          window.document.querySelector('[name=pre_interview_reminder_date]').value = '2016-05-20';
+          window.document.querySelector('[name=pre_interview_reminder_date]').value = '2022-05-20';
           window.document.querySelector('[name=pre_interview_reminder_time]').value = '5:00PM';
-          window.document.querySelector('[name=post_interview_reminder_date]').value = '2016-05-20';
+          window.document.querySelector('[name=post_interview_reminder_date]').value = '2022-05-20';
           window.document.querySelector('[name=post_interview_reminder_time]').value = '9:00PM';
         });
       })
@@ -30,11 +30,11 @@ gemini.suite('interview-add-show', function (suite) {
       .before(function normalizeRelativeValuesAndInvalidateForm (actions, find) {
         // Reset date/time inputs to consistent time
         actions.executeJS(function handleExecuteJS (window) {
-          window.document.querySelector('[name=date_time_date]').value = '2016-05-20';
+          window.document.querySelector('[name=date_time_date]').value = '2022-05-20';
           window.document.querySelector('[name=date_time_time]').value = '7:00PM';
-          window.document.querySelector('[name=pre_interview_reminder_date]').value = '2016-05-20';
+          window.document.querySelector('[name=pre_interview_reminder_date]').value = '2022-05-20';
           window.document.querySelector('[name=pre_interview_reminder_time]').value = '9:00PM';
-          window.document.querySelector('[name=post_interview_reminder_date]').value = '2016-05-20';
+          window.document.querySelector('[name=post_interview_reminder_date]').value = '2022-05-20';
           window.document.querySelector('[name=post_interview_reminder_time]').value = '5:00PM';
         });
       })

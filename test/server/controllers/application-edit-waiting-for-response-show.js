@@ -33,7 +33,7 @@ scenario.route('A request to GET /application/:id (waiting for response)', {
     it('has a follow up reminder', function () {
       expect(this.$('[name=waiting_for_response_reminder_enabled][value=yes]').attr('checked')).to.equal('checked');
       expect(this.$('[name=waiting_for_response_reminder_enabled][value=no]').attr('checked')).to.equal(undefined);
-      expect(this.$('[name=waiting_for_response_reminder_date]').val()).to.equal('2016-01-25');
+      expect(this.$('[name=waiting_for_response_reminder_date]').val()).to.equal('2022-01-25');
       expect(this.$('[name=waiting_for_response_reminder_time]').val()).to.equal('12:00');
       expect(this.$('[name=waiting_for_response_reminder_timezone]').val()).to.equal('US-America/Chicago');
     });

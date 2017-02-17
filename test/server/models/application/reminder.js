@@ -25,16 +25,16 @@ scenario.model('An Application model updating an unsent saved for later reminder
     var originalReminder = application.get('saved_for_later_reminder');
     expect(originalReminder.get('sent_at_moment')).to.equal(null);
     expect(originalReminder.get('is_enabled')).to.equal(true);
-    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2016-06-20T17:00:00.000Z');
+    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2022-06-20T17:00:00.000Z');
     expect(originalReminder.get('date_time_timezone')).to.equal('US-America/Chicago');
 
     // Update our reminder and assert
     application.updateOrReplaceSavedForLaterReminder({
       is_enabled: false,
-      date_time_moment: moment.tz('2016-05-04T04:02:03', 'GB-Europe/London')
+      date_time_moment: moment.tz('2022-05-04T04:02:03', 'GB-Europe/London')
     });
     expect(originalReminder.get('is_enabled')).to.equal(false);
-    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2016-05-04T03:02:03.000Z');
+    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2022-05-04T03:02:03.000Z');
     expect(originalReminder.get('date_time_timezone')).to.equal('GB-Europe/London');
     var shouldReplaceReminderSpy = reminderUtils.shouldReplaceReminder;
     expect(shouldReplaceReminderSpy.callCount).to.equal(1);
@@ -69,7 +69,7 @@ scenario.model('An Application model updating a sent and changed saved for later
     application.get('saved_for_later_reminder').set('sent_at_moment', moment());
     var newReminder = application.updateOrReplaceSavedForLaterReminder({
       is_enabled: false,
-      date_time_moment: moment.tz('2016-05-04T04:02:03', 'GB-Europe/London')
+      date_time_moment: moment.tz('2022-05-04T04:02:03', 'GB-Europe/London')
     });
 
     expect(application.get('saved_for_later_reminder_id')).to.be.a('string');
@@ -77,7 +77,7 @@ scenario.model('An Application model updating a sent and changed saved for later
     expect(newReminder.get('application_id')).to.equal('abcdef-intertrode-uuid');
     expect(newReminder.get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
     expect(newReminder.get('is_enabled')).to.equal(false);
-    expect(newReminder.get('date_time_datetime').toISOString()).to.equal('2016-05-04T03:02:03.000Z');
+    expect(newReminder.get('date_time_datetime').toISOString()).to.equal('2022-05-04T03:02:03.000Z');
     expect(newReminder.get('date_time_timezone')).to.equal('GB-Europe/London');
   });
 });
@@ -100,16 +100,16 @@ scenario.model('An Application model updating an unsent waiting for response rem
     var originalReminder = application.get('waiting_for_response_reminder');
     expect(originalReminder.get('sent_at_moment')).to.equal(null);
     expect(originalReminder.get('is_enabled')).to.equal(true);
-    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2016-01-25T18:00:00.000Z');
+    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2022-01-25T18:00:00.000Z');
     expect(originalReminder.get('date_time_timezone')).to.equal('US-America/Chicago');
 
     // Update our reminder and assert
     application.updateOrReplaceWaitingForResponseReminder({
       is_enabled: false,
-      date_time_moment: moment.tz('2016-05-04T04:02:03', 'GB-Europe/London')
+      date_time_moment: moment.tz('2022-05-04T04:02:03', 'GB-Europe/London')
     });
     expect(originalReminder.get('is_enabled')).to.equal(false);
-    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2016-05-04T03:02:03.000Z');
+    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2022-05-04T03:02:03.000Z');
     expect(originalReminder.get('date_time_timezone')).to.equal('GB-Europe/London');
     var shouldReplaceReminderSpy = reminderUtils.shouldReplaceReminder;
     expect(shouldReplaceReminderSpy.callCount).to.equal(1);
@@ -144,7 +144,7 @@ scenario.model('An Application model updating a sent and changed waiting for res
     application.get('waiting_for_response_reminder').set('sent_at_moment', moment());
     var newReminder = application.updateOrReplaceWaitingForResponseReminder({
       is_enabled: false,
-      date_time_moment: moment.tz('2016-05-04T04:02:03', 'GB-Europe/London')
+      date_time_moment: moment.tz('2022-05-04T04:02:03', 'GB-Europe/London')
     });
 
     expect(application.get('waiting_for_response_reminder_id')).to.be.a('string');
@@ -152,7 +152,7 @@ scenario.model('An Application model updating a sent and changed waiting for res
     expect(newReminder.get('application_id')).to.equal('abcdef-sky-networks-uuid');
     expect(newReminder.get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
     expect(newReminder.get('is_enabled')).to.equal(false);
-    expect(newReminder.get('date_time_datetime').toISOString()).to.equal('2016-05-04T03:02:03.000Z');
+    expect(newReminder.get('date_time_datetime').toISOString()).to.equal('2022-05-04T03:02:03.000Z');
     expect(newReminder.get('date_time_timezone')).to.equal('GB-Europe/London');
   });
 });
@@ -175,16 +175,16 @@ scenario.model('An Application model updating an unsent received offer reminder'
     var originalReminder = application.get('received_offer_reminder');
     expect(originalReminder.get('sent_at_moment')).to.equal(null);
     expect(originalReminder.get('is_enabled')).to.equal(true);
-    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2016-01-01T18:00:00.000Z');
+    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2022-01-01T18:00:00.000Z');
     expect(originalReminder.get('date_time_timezone')).to.equal('US-America/Chicago');
 
     // Update our reminder and assert
     application.updateOrReplaceReceivedOfferReminder({
       is_enabled: false,
-      date_time_moment: moment.tz('2016-05-04T04:02:03', 'GB-Europe/London')
+      date_time_moment: moment.tz('2022-05-04T04:02:03', 'GB-Europe/London')
     });
     expect(originalReminder.get('is_enabled')).to.equal(false);
-    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2016-05-04T03:02:03.000Z');
+    expect(originalReminder.get('date_time_datetime').toISOString()).to.equal('2022-05-04T03:02:03.000Z');
     expect(originalReminder.get('date_time_timezone')).to.equal('GB-Europe/London');
     var shouldReplaceReminderSpy = reminderUtils.shouldReplaceReminder;
     expect(shouldReplaceReminderSpy.callCount).to.equal(1);
@@ -219,7 +219,7 @@ scenario.model('An Application model updating a sent and changed received offer 
     application.get('received_offer_reminder').set('sent_at_moment', moment());
     var newReminder = application.updateOrReplaceReceivedOfferReminder({
       is_enabled: false,
-      date_time_moment: moment.tz('2016-05-04T04:02:03', 'GB-Europe/London')
+      date_time_moment: moment.tz('2022-05-04T04:02:03', 'GB-Europe/London')
     });
 
     expect(application.get('received_offer_reminder_id')).to.be.a('string');
@@ -227,7 +227,7 @@ scenario.model('An Application model updating a sent and changed received offer 
     expect(newReminder.get('application_id')).to.equal('abcdef-black-mesa-uuid');
     expect(newReminder.get('candidate_id')).to.equal('default0-0000-0000-0000-000000000000');
     expect(newReminder.get('is_enabled')).to.equal(false);
-    expect(newReminder.get('date_time_datetime').toISOString()).to.equal('2016-05-04T03:02:03.000Z');
+    expect(newReminder.get('date_time_datetime').toISOString()).to.equal('2022-05-04T03:02:03.000Z');
     expect(newReminder.get('date_time_timezone')).to.equal('GB-Europe/London');
   });
 });

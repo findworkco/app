@@ -33,7 +33,7 @@ scenario.route('A request to GET /application/:id (saved for later)', {
     it('has an application reminder', function () {
       expect(this.$('[name=saved_for_later_reminder_enabled][value=yes]').attr('checked')).to.equal('checked');
       expect(this.$('[name=saved_for_later_reminder_enabled][value=no]').attr('checked')).to.equal(undefined);
-      expect(this.$('[name=saved_for_later_reminder_date]').val()).to.equal('2016-06-20');
+      expect(this.$('[name=saved_for_later_reminder_date]').val()).to.equal('2022-06-20');
       expect(this.$('[name=saved_for_later_reminder_time]').val()).to.equal('12:00');
       expect(this.$('[name=saved_for_later_reminder_timezone]').val()).to.equal('US-America/Chicago');
     });

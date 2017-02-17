@@ -313,7 +313,7 @@ scenario.route('A request to a page which loads navigation', function () {
       expect($navApplication.text()).to.contain('Black Mesa');
       expect($navApplication.text()).to.contain('Status: Received offer');
       expect($navApplication.text()).to.contain('Last contact: Mon Dec 14');
-      expect($navApplication.text()).to.contain('Respond by: Fri Jan 1');
+      expect($navApplication.text()).to.contain('Respond by: Sat Jan 1');
     });
   });
 
@@ -350,7 +350,7 @@ scenario.route('A request to a page which loads navigation', function () {
       expect($navApplication.text()).to.contain('Sky Networks');
       expect($navApplication.text()).to.contain('Status: Waiting for response');
       expect($navApplication.text()).to.contain('Last contact: Fri Jan 15');
-      expect($navApplication.text()).to.contain('Follow-up on: Mon Jan 25');
+      expect($navApplication.text()).to.contain('Follow-up on: Tue Jan 25');
     });
   });
 
