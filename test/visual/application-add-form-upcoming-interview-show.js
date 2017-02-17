@@ -35,9 +35,9 @@ gemini.suite('application-add-form-upcoming-interview-show', function (suite) {
           window.document.querySelector('[name=application_date]').value = '2016-05-19';
           window.document.querySelector('[name=date_time_date]').value = '2022-05-20';
           window.document.querySelector('[name=date_time_time]').value = '7:00PM';
-          window.document.querySelector('[name=pre_interview_reminder_date]').value = '2022-06-20';
+          window.document.querySelector('[name=pre_interview_reminder_date]').value = '2016-06-20';
           window.document.querySelector('[name=pre_interview_reminder_time]').value = '5:00PM';
-          window.document.querySelector('[name=post_interview_reminder_date]').value = '2022-04-19';
+          window.document.querySelector('[name=post_interview_reminder_date]').value = '2016-04-19';
           window.document.querySelector('[name=post_interview_reminder_time]').value = '9:00PM';
         });
       })

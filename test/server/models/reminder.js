@@ -11,7 +11,7 @@ var Reminder = require('../../../server/models/reminder');
 var _validReminder = {
   candidate_id: 'DEFA6170-0000-4000-8000-000000000000',
   is_enabled: true,
-  date_time_moment: moment().tz('US-America/Chicago')
+  date_time_moment: moment.tz('2022-05-15T14:05:00', 'US-America/Chicago')
 };
 var validApplicationReminder = _.defaults({
   // https://github.com/chriso/validator.js/blob/6.2.0/src/lib/isUUID.js#L5
@@ -25,7 +25,8 @@ var validInterviewReminder = _.defaults({
   interview_id: '15735281-3250-4000-8000-000000000000',
   type: InterviewReminder.TYPES.PRE_INTERVIEW
 }, _validReminder);
-scenario.model('A valid ApplicationReminder', function () {
+// VALIDATION: type
+scenario.model('A valid ApplicationReminder (type)', function () {
   it('receives no validation errors', function (done) {
     var reminder = ApplicationReminder.build(_.clone(validApplicationReminder));
     reminder.validate().asCallback(function handleError (err, validationErr) {
@@ -36,10 +37,12 @@ scenario.model('A valid ApplicationReminder', function () {
   });
 });
 
-scenario.model('A valid InterviewReminder', function () {
+var typeInterviewReminderSkip = ['dateTimeAfterNow', 'dateTimeMatchesInterview'];
+scenario.model('A valid InterviewReminder (type)', function () {
   it('receives no validation errors', function (done) {
     var reminder = InterviewReminder.build(_.clone(validInterviewReminder));
-    reminder.validate({skip: ['dateTimeMatchesInterview']}).asCallback(function handleError (err, validationErr) {
+    reminder.validate({skip: typeInterviewReminderSkip}).asCallback(
+        function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr).to.equal(null);
       done();
@@ -75,11 +78,75 @@ scenario.model('A reminder with a type', function () {
   // DEV: Positive working test is provided outside of this scenario
   it('receives a validation error when it\'s invalid on an InterviewReminder', function (done) {
     var reminder = InterviewReminder.build(_.defaults({type: 'bad-type'}, validInterviewReminder));
-    reminder.validate({skip: ['dateTimeMatchesInterview']}).asCallback(function handleError (err, validationErr) {
+    reminder.validate({skip: typeInterviewReminderSkip}).asCallback(
+        function handleError (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
       expect(validationErr.errors[0]).to.have.property('path', 'type');
       expect(validationErr.errors[0].message).to.contain('Invalid type provided');
+      done();
+    });
+  });
+});
+
+// VALIDATION: dateTimeAfterNow
+scenario.model('An "enabled unsent ApplicationReminder model occuring after now" being validated', function () {
+  it('receives no errors', function (done) {
+    var reminder = ApplicationReminder.build(_.defaults({
+      is_enabled: true,
+      date_time_moment: moment.tz('2022-01-01T12:34', 'US-America/Chicago'),
+      sent_at_moment: null
+    }, validApplicationReminder));
+    reminder.validate().asCallback(function handleValidate (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('An "enabled unsent ApplicationReminder model occuring before now" being validated', function () {
+  it('receives an error', function (done) {
+    var reminder = ApplicationReminder.build(_.defaults({
+      is_enabled: true,
+      date_time_moment: moment.tz('2016-01-01T12:34', 'US-America/Chicago'),
+      sent_at_moment: null
+    }, validApplicationReminder));
+    reminder.validate().asCallback(function handleValidate (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr.errors).to.have.length(1);
+      expect(validationErr.errors[0]).to.have.property('path', 'dateTimeAfterNow');
+      expect(validationErr.errors[0].message).to.contain('Reminder date/time is set in the past');
+      done();
+    });
+  });
+});
+
+scenario.model('An "enabled sent ApplicationReminder model occuring before now" being validated', function () {
+  it('receives no errors', function (done) {
+    var reminder = ApplicationReminder.build(_.defaults({
+      is_enabled: true,
+      date_time_moment: moment.tz('2016-01-01T12:34', 'US-America/Chicago'),
+      sent_at_moment:  moment.tz('2016-01-01T12:35', 'US-America/Chicago')
+    }, validApplicationReminder));
+    reminder.validate().asCallback(function handleValidate (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('A "disabled unsent ApplicationReminder model occuring before now" being validated', function () {
+  it('receives no errors', function (done) {
+    var reminder = ApplicationReminder.build(_.defaults({
+      is_enabled: false,
+      date_time_moment: moment.tz('2016-01-01T12:34', 'US-America/Chicago'),
+      sent_at_moment: null
+    }, validApplicationReminder));
+    reminder.validate().asCallback(function handleValidate (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
       done();
     });
   });

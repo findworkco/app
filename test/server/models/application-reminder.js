@@ -1,11 +1,17 @@
 // Load in our dependencies
+var assert = require('assert');
 var expect = require('chai').expect;
 var dbFixtures = require('../utils/db-fixtures');
 var Application = require('../../../server/models/application');
 var Candidate = require('../../../server/models/candidate');
 var ApplicationReminder = require('../../../server/models/application-reminder');
+var Reminder = require('../../../server/models/reminder');
 
 // Start our tests
+// VALIDATION: dateTimeAfterNow
+// DEV: Sanity check that our ApplicationReminder validation is using Reminder's validation
+assert(ApplicationReminder.options.validate.dateTimeAfterNow, Reminder.options.validate.dateTimeAfterNow);
+
 // DEV: These tests verify our database requires candidate ids align between application/application reminder
 scenario.model('An ApplicationReminder model with a different candidate id from its Application model', {
   dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]

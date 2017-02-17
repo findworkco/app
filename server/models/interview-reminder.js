@@ -25,6 +25,21 @@ var InterviewReminder = module.exports = _.extend(baseDefine('interview_reminder
 }, Reminder._cleanAttributes), {
   VALID_TYPES: _.values(exports.TYPES),
   validate: _.defaults({
+    dateTimeAfterNow: function () {
+      // Verify we have an interview
+      var interview = this.get('interview');
+      assert(interview, 'Expected InterviewReminder to have loaded an interview. ' +
+        'No updates should occur without being bound to an interview');
+
+      // If we are a past interview, then ignore date/time validation
+      if (interview.get('type') === Interview.TYPES.PAST_INTERVIEW) {
+        return;
+      }
+
+      // Call our normal validation
+      return Reminder.options.validate.dateTimeAfterNow.call(this);
+    },
+
     // DEV: We skip this validation by default on fixture create in `utils/test` as models are standalone
     // DEV: We can only have this validation located in interview or reminder.
     //   If we do both, then we get double errors in browser

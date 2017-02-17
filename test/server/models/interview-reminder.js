@@ -3,13 +3,15 @@ var _ = require('underscore');
 var expect = require('chai').expect;
 var moment = require('moment-timezone');
 var dbFixtures = require('../utils/db-fixtures');
+var sinonUtils = require('../utils/sinon');
 var Application = require('../../../server/models/application');
 var Candidate = require('../../../server/models/candidate');
 var Interview = require('../../../server/models/interview');
 var InterviewReminder = require('../../../server/models/interview-reminder');
+var Reminder = require('../../../server/models/reminder');
 
 // Start our tests
-var validInterview = {
+var validUpcomingInterview = {
   candidate_id: 'mock-candidate-id',
   application_id: 'mock-application-id',
   date_time_moment: moment.tz('2022-01-31T12:34', 'US-America/Chicago')
@@ -21,13 +23,78 @@ var validBaseInterviewReminder = {
   date_time_moment: null, // Override in tests
   type: null // Override in tests
 };
-scenario.model('An InterviewReminder model without an interview being validated', function () {
+// VALIDATION: dateTimeAfterNow
+scenario.model('An "InterviewReminder model without an interview" being validated (dateTimeAfterNow)',
+    function () {
+  it('receives an error', function (done) {
+    var interviewReminder = InterviewReminder.build(_.defaults({
+      is_enabled: true,
+      date_time_moment: moment.tz('2022-01-01T12:34', 'US-America/Chicago'),
+      type: InterviewReminder.TYPES.PRE_INTERVIEW
+    }, validBaseInterviewReminder));
+    interviewReminder.validate({skip: ['dateTimeMatchesInterview']}).asCallback(
+        function handleValidate (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr.errors).to.have.length(1);
+      expect(validationErr.errors[0]).to.have.property('path', 'dateTimeAfterNow');
+      expect(validationErr.errors[0].message).to.contain('Expected InterviewReminder to have loaded an interview');
+      done();
+    });
+  });
+});
+
+scenario.model('An "InterviewReminder model occuring before now for a past interview" being validated',
+    function () {
+  it('receives no errors', function (done) {
+    var interview = Interview.build(_.defaults({
+      date_time_moment: moment.tz('2016-01-31T12:34', 'US-America/Chicago')
+    }, validUpcomingInterview));
+    var interviewReminder = InterviewReminder.build(_.defaults({
+      is_enabled: true,
+      date_time_moment: moment.tz('2016-01-01T12:34', 'US-America/Chicago'),
+      type: InterviewReminder.TYPES.PRE_INTERVIEW
+    }, validBaseInterviewReminder));
+    interviewReminder.setDataValue('interview', interview);
+    interviewReminder.validate().asCallback(function handleValidate (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr).to.equal(null);
+      done();
+    });
+  });
+});
+
+scenario.model('An "InterviewReminder model occuring before now for an upcoming interview" being validated',
+    function () {
+  sinonUtils.spy(Reminder.options.validate, 'dateTimeAfterNow');
+  it('receives an error from Reminder validator', function (done) {
+    var interview = Interview.build(validUpcomingInterview);
+    var interviewReminder = InterviewReminder.build(_.defaults({
+      is_enabled: true,
+      date_time_moment: moment.tz('2016-02-01T12:34', 'US-America/Chicago'),
+      type: InterviewReminder.TYPES.PRE_INTERVIEW
+    }, validBaseInterviewReminder));
+    interviewReminder.setDataValue('interview', interview);
+    interviewReminder.validate().asCallback(function handleValidate (err, validationErr) {
+      expect(err).to.equal(null);
+      expect(validationErr.errors).to.have.length(1);
+      expect(validationErr.errors[0]).to.have.property('path', 'dateTimeAfterNow');
+      expect(validationErr.errors[0].message).to.contain('Reminder date/time is set in the past');
+      var dateTimeAfterNowSpy = Reminder.options.validate.dateTimeAfterNow;
+      expect(dateTimeAfterNowSpy.callCount).to.equal(1);
+      done();
+    });
+  });
+});
+
+// VALIDATION: dateTimeMatchesInterview
+scenario.model('An "InterviewReminder model without an interview" being validated (dateTimeMatchesInterview)',
+    function () {
   it('receives an error', function (done) {
     var interviewReminder = InterviewReminder.build(_.defaults({
       date_time_moment: moment.tz('2022-01-01T12:34', 'US-America/Chicago'),
       type: InterviewReminder.TYPES.PRE_INTERVIEW
     }, validBaseInterviewReminder));
-    interviewReminder.validate().asCallback(function handleValidate (err, validationErr) {
+    interviewReminder.validate({skip: ['dateTimeAfterNow']}).asCallback(function handleValidate (err, validationErr) {
       expect(err).to.equal(null);
       expect(validationErr.errors).to.have.length(1);
       expect(validationErr.errors[0]).to.have.property('path', 'dateTimeMatchesInterview');
@@ -37,10 +104,10 @@ scenario.model('An InterviewReminder model without an interview being validated'
   });
 });
 
-scenario.model('An enabled pre-interview InterviewReminder model that is after its interview being validated',
+scenario.model('An "enabled pre-interview InterviewReminder model that is after its interview" being validated',
     function () {
   it('receives a validation error', function (done) {
-    var interview = Interview.build(validInterview);
+    var interview = Interview.build(validUpcomingInterview);
     var interviewReminder = InterviewReminder.build(_.defaults({
       is_enabled: true,
       date_time_moment: moment.tz('2022-02-01T12:34', 'US-America/Chicago'),
@@ -57,10 +124,10 @@ scenario.model('An enabled pre-interview InterviewReminder model that is after i
   });
 });
 
-scenario.model('A disabled pre-interview InterviewReminder model that is after its interview being validated',
+scenario.model('A "disabled pre-interview InterviewReminder model that is after its interview" being validated',
     function () {
   it('receives no validation errors', function (done) {
-    var interview = Interview.build(validInterview);
+    var interview = Interview.build(validUpcomingInterview);
     var interviewReminder = InterviewReminder.build(_.defaults({
       is_enabled: false,
       date_time_moment: moment.tz('2022-02-01T12:34', 'US-America/Chicago'),
@@ -75,13 +142,13 @@ scenario.model('A disabled pre-interview InterviewReminder model that is after i
   });
 });
 
-scenario.model('A pre-interview InterviewReminder model that is after its interview ' +
-    'yet Interview is past interview being validated',
+scenario.model('A "pre-interview InterviewReminder model that is after its interview ' +
+    'yet Interview is past interview" being validated',
     function () {
   it('receives no validation errors', function (done) {
     var interview = Interview.build(_.defaults({
       date_time_moment: moment.tz('2017-01-01T12:34', 'US-America/Chicago')
-    }, validInterview));
+    }, validUpcomingInterview));
     var interviewReminder = InterviewReminder.build(_.defaults({
       is_enabled: true,
       date_time_moment: moment.tz('2017-02-01T12:34', 'US-America/Chicago'),
@@ -96,10 +163,10 @@ scenario.model('A pre-interview InterviewReminder model that is after its interv
   });
 });
 
-scenario.model('An enabled post-interview InterviewReminder model that is before its interview being validated',
+scenario.model('An "enabled post-interview InterviewReminder model that is before its interview" being validated',
     function () {
   it('receives a validation error', function (done) {
-    var interview = Interview.build(validInterview);
+    var interview = Interview.build(validUpcomingInterview);
     var interviewReminder = InterviewReminder.build(_.defaults({
       is_enabled: true,
       date_time_moment: moment.tz('2022-01-01T12:34', 'US-America/Chicago'),
@@ -116,10 +183,10 @@ scenario.model('An enabled post-interview InterviewReminder model that is before
   });
 });
 
-scenario.model('A disabled post-interview InterviewReminder model that is before its interview being validated',
+scenario.model('A "disabled post-interview InterviewReminder model that is before its interview" being validated',
     function () {
   it('receives no validation errors', function (done) {
-    var interview = Interview.build(validInterview);
+    var interview = Interview.build(validUpcomingInterview);
     var interviewReminder = InterviewReminder.build(_.defaults({
       is_enabled: false,
       date_time_moment: moment.tz('2022-01-01T12:34', 'US-America/Chicago'),
@@ -134,13 +201,13 @@ scenario.model('A disabled post-interview InterviewReminder model that is before
   });
 });
 
-scenario.model('A post-interview InterviewReminder model that is before its interview ' +
-    'yet Interview is past interview being validated',
+scenario.model('A "post-interview InterviewReminder model that is before its interview ' +
+    'yet Interview is past interview" being validated',
     function () {
   it('receives no validation errors', function (done) {
     var interview = Interview.build(_.defaults({
       date_time_moment: moment.tz('2017-02-01T12:34', 'US-America/Chicago')
-    }, validInterview));
+    }, validUpcomingInterview));
     var interviewReminder = InterviewReminder.build(_.defaults({
       is_enabled: true,
       date_time_moment: moment.tz('2017-03-01T12:34', 'US-America/Chicago'),

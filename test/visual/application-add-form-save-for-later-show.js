@@ -11,7 +11,7 @@ gemini.suite('application-add-form-save-for-later-show', function (suite) {
       .before(function normalizeRelativeValues (actions, find) {
         // Reset date/time inputs to consistent time
         actions.executeJS(function handleExecuteJS (window) {
-          window.document.querySelector('[name=saved_for_later_reminder_date]').value = '2016-05-20';
+          window.document.querySelector('[name=saved_for_later_reminder_date]').value = '2022-05-20';
           window.document.querySelector('[name=saved_for_later_reminder_time]').value = '7:00PM';
         });
       })

@@ -1,6 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
+var moment = require('moment-timezone');
 var baseDefine = require('./base.js');
 var Candidate = require('./candidate');
 var Sequelize = require('sequelize');
@@ -73,6 +74,19 @@ var options = {
     beforeDelete: function () {
       throw new Error('Direct deletion of Reminder not supported. ' +
         'Please use ApplicationReminder or InterviewReminder instead');
+    }
+  },
+
+  validate: {
+    // DEV: This is not located on field as InterviewReminder requires external `interview` info
+    // DEV: We skip this validation by default on fixture create in `utils/test`
+    dateTimeAfterNow: function () {
+      if (this.get('is_enabled') === true &&
+          !this.get('sent_at_datetime') &&
+          moment().isAfter(this.get('date_time_moment'))) {
+        // DEV: Ideally we won't get to this vague message as we use `min/max` to limit date/time inputs
+        throw new Error('Reminder date/time is set in the past');
+      }
     }
   },
 
