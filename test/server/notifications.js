@@ -22,6 +22,31 @@ scenario('An HTTP request receiving a notification', {
   });
 });
 
+scenario('A partial HTTP request receiving a notification', {
+  dbFixtures: null
+}, function () {
+  // Make our request (will be redirected to /schedule)
+  httpUtils.session.init()
+    .save({
+      url: serverUtils.getUrl({
+        pathname: '/_dev/notification',
+        query: {type: 'success', message: 'Hello World'}
+      }),
+      followRedirect: false,
+      expectedStatusCode: 302
+    })
+    .save({
+      url: serverUtils.getUrl('/schedule'),
+      headers: {'X-Partial': '1'},
+      followRedirect: false,
+      expectedStatusCode: 200
+    });
+
+  it('receives no notifications', function () {
+    expect(this.body).to.not.contain('Hello World');
+  });
+});
+
 scenario('An HTTP request receiving a malicious notification', {
   dbFixtures: null
 }, function () {

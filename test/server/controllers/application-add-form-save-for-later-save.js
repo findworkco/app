@@ -117,6 +117,11 @@ scenario.route('A request to POST /add-application/save-for-later (specific)', {
       expect(this.$('select[name=saved_for_later_reminder_timezone]').val()).to.equal('US-America/Los_Angeles');
     });
 
+    it('renders research company loading text', function () {
+      expect(this.$('#glassdoor-results').text()).to.contain('Results will be loaded shortly...');
+      expect(this.$('#angellist-results').text()).to.contain('Results will be loaded shortly...');
+    });
+
     // DEV: This verifies all content is run in a transaction
     it('has no orphaned models', function (done) {
       async.map([Application, ApplicationReminder, AuditLog], function findAllModel (model, cb) {

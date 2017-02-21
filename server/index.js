@@ -197,9 +197,17 @@ function Server(config) {
     next();
   });
 
+  // Identify partial requests
+  app.use(function identifyPartialRequest (req, res, next) {
+    req.isPartial = req.headers['x-partial'] === '1';
+    next();
+  });
+
   // Load existing flash notifications before routing
   app.use(function loadExistingFlashNotifications (req, res, next) {
-    res.locals.notifications = req.flash();
+    if (!req.isPartial) {
+      res.locals.notifications = req.flash();
+    }
     next();
   });
 

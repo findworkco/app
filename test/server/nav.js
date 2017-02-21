@@ -456,3 +456,32 @@ scenario.route('A request to a page which doesn\'t load navigation', {
     });
   });
 });
+
+scenario.route('A request to a page partial', {
+  // DEV: We can't test `loggedOut` without creating a development route as `nav: false` is for save actions
+  requiredTests: {nonExistent: false, nonOwner: false, loggedOut: false}
+}, function () {
+  scenario.routeTest('from a logged in user with applications', {
+    dbFixtures: [dbFixtures.APPLICATION_SKY_NETWORKS, recentlyViewedApplicationFixtures]
+  }, function () {
+    // Log in our user, add recently viewed applications, load our page
+    // DEV: We login and load page first to avoid counting it hitting nav as we login
+    httpUtils.session.init().login();
+    addRecentlyViewedApplications();
+
+    // Spy on our database connection and make our request
+    // DEV: We use settings page to isolate navigation only requests (i.e. applications)
+    sinonUtils.spy(Application, 'findAll');
+    httpUtils.session.save({
+      url: serverUtils.getUrl('/settings'),
+      headers: {'X-Partial': '1'},
+      followRedirect: false,
+      expectedStatusCode: 200
+    });
+
+    it('doesn\'t load any models', function () {
+      var findAllSpy = Application.findAll;
+      expect(findAllSpy.callCount).to.equal(0);
+    });
+  });
+});

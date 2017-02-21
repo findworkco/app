@@ -10,7 +10,7 @@ var PRODUCTION_KEY = staticSecrets.staticGlassdoor.productionKey;
 assert(PRODUCTION_KEY);
 exports.development = {
   glassdoor: {
-    timeout: 1000, // 1 second
+    timeout: 2000, // 2 seconds
     url: {
       protocol: 'https',
       hostname: 'www.glassdoor.com'
@@ -26,7 +26,7 @@ exports.test = {
     port: TEST_GLASSDOOR_PORT
   },
   glassdoor: {
-    timeout: 10, // 10ms
+    timeout: 50, // 50ms
     url: {
       protocol: 'http',
       hostname: 'localhost',

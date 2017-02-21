@@ -70,30 +70,8 @@ mixin company-notes-and-research(values)
     label(for="notes") Notes:
     //- DEV: We use `data-wysiwyg-input` as `wysiwyg.js` wants to use `data-wysiwyg` for itself
     textarea.form-control.input--block#notes(name="notes", data-wysiwyg-input, rows=3, placeholder="Notes about company (e.g. 40 employees, 10 engineers)")= form_data.get('notes') || values.notes
-  .research-company
-    //- TODO: Make sure that either this mini form works
-    //-   and is accessible
-    //-   or figure out some way to get the HTML to work
-    //-   We could integrate with the bigger form buuuut we need to make sure that "Ctrl+Enter" works =X
-    //-   ... doesn't look like it...
-    //-   We could design away the need for "Ctrl+Enter" by generating a loading image
-    //-      when the user starts typing
-
-    //- For now, prob go with:
-    //-   JS binding for Ctrl+Enter
-    //-   Make button a link to /research-company
-    //-   When JS is bound though, make it a turbolink loader
-
-    //- Worst case scenarios:
-    //- - Absolute position form
-    //- - Embedded iframe (best idea yet, is it accessible?)
-    //-    It works buuut need to autosize content
-    //- - Redesign flow so search is elsewhere (e.g. another page)
-
-    //- Connect to search mechanism on click
-    //- Alter button to link and link to standalone page
-    //-   but allow JS to switch back to button for inline form
-    //-   so we can save `company_name` as part of application
+  .research-company(data-research-company-partial)
+    +csrf-input()
     h4.push-half--bottom
       span.small-hidden Research company:
       span.medium-and-up-hidden
@@ -105,16 +83,27 @@ mixin company-notes-and-research(values)
     .form-group
       label(for="company_name") Company name:
       .flexbox
+        - var companyName = form_data.get('company_name') || values.company_name || locals.query_company_name;
         .flexbox__item.company-name__container
-          input.form-control.input--block#company_name(name="company_name", type="text", value=form_data.get('company_name') || values.company_name || locals.query_company_name, placeholder="Examples: Google, Acme Corp")
+          input.form-control.input--block#company_name(name="company_name", type="text", value=companyName, placeholder="Examples: Google, Acme Corp")
         .flexbox__item
           //- DEV: We could include company name query string but it's unnecessary as live update requires JS
-          a.btn.btn--small.btn--wide.btn--default(href="/research-company", target="_blank") Search
-    h5.text--normal.flush--bottom(style="font-weight: bold") Glassdoor results:
-    p
+          a#search-btn.btn.btn--small.btn--wide.btn--default(href="/research-company", target="_blank") Search
+    #partial-form-errors.section--error.push--bottom.hidden
+    +partial-research-company-content(companyName)
+
+mixin partial-research-company-content(companyName)
+  h5.text--normal.flush--bottom(style="font-weight: bold") Glassdoor results:
+  p#glassdoor-results
+    if companyName && !locals.resultsLoaded
+      | Results will be loaded shortly...
+    else
       +glassdoor-result(locals.glassdoorResult, {expanded: false})
-    h5.text--normal.flush--bottom(style="font-weight: bold") AngelList results:
-    p
+  h5.text--normal.flush--bottom(style="font-weight: bold") AngelList results:
+  p#angellist-results
+    if companyName && !locals.resultsLoaded
+      | Results will be loaded shortly...
+    else
       +angellist-result(locals.angelListResult, {expanded: false})
 
 mixin glassdoor-result(glassdoorResult, options)

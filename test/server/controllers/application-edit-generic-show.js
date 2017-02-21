@@ -49,6 +49,11 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
         expect($form.find('[name=company_name]').val()).to.match(/(Inc|Corp|Corporation|Labs)$/);
       });
 
+      it('displays loading text for research info', function () {
+        expect(this.$('#glassdoor-results').text()).to.contain('Results will be loaded shortly...');
+        expect(this.$('#angellist-results').text()).to.contain('Results will be loaded shortly...');
+      });
+
       it('receives the proper title', function () {
         // DEV: We have title testing as we cannot test it in visual tests
         expect(this.$('title').text()).to.equal('Job application - ' + applicationData.name + ' - Find Work');
@@ -179,7 +184,7 @@ scenario.route('A request to GET /application/:id (generic/non-saved-for-later)'
     });
   });
 
-  scenario.routeTest('from the owner user with  upcoming interviews', {
+  scenario.routeTest('from the owner user with upcoming interviews', {
     dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
     // Log in and make our request

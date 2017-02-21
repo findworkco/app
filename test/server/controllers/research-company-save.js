@@ -204,6 +204,34 @@ scenario.route('A request to POST /research-company to search', {
       expect(this.$('#nav').text()).to.contain('Intertrode');
     });
   });
+
+  scenario.routeTest('for a partial', {
+    glassdoorFixtures: ['/api/api.htm#full']
+  }, function () {
+    httpUtils.session.init()
+      .save({
+        method: 'POST', url: serverUtils.getUrl('/research-company'),
+        headers: {'X-Partial': '1'},
+        csrfForm: {company_name: 'Mock company'},
+        followRedirect: false, expectedStatusCode: 200
+      });
+
+    it('renders partial content', function () {
+      var $glassdoorResults = this.$('#glassdoor-results');
+      expect($glassdoorResults.text()).to.contain('Website: www.ibm.com');
+      var $angellistResults = this.$('#angellist-results');
+      expect($angellistResults.text()).to.contain('AngelList support is under construction');
+    });
+
+    it('doesn\'t render excess content', function () {
+      expect(this.$('#nav')).to.have.length(0);
+    });
+
+    it('doesn\'t render extended content', function () {
+      var $glassdoorResults = this.$('#glassdoor-results');
+      expect($glassdoorResults.text()).to.not.contain('Culture and values rating');
+    });
+  });
 });
 
 // DEV: These tests are simple enough and provide a huge sanity check

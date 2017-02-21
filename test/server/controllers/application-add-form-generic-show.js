@@ -24,6 +24,11 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
         expect(this.$('.content__heading').text()).to.equal('Add job application');
       });
 
+      it('renders empty research company form', function () {
+        expect(this.$('#glassdoor-results').text()).to.contain('No company name entered');
+        expect(this.$('#angellist-results').text()).to.contain('AngelList support is under construction');
+      });
+
       // DEV: We rely on `htmlForm` and `add-form-save` tests to verify field presence
       //   There's no data being loaded from the database to verify
       //   Only the field content on validation and save

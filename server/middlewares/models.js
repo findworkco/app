@@ -31,6 +31,7 @@ exports.resolveModelsAsLocals = function (params, resolver) {
   return function resolveModelsAsLocalsFn (req, res, next) {
     // Define our models base
     var unresolvedModels = {};
+    var loadNav = req.isPartial ? false : params.nav;
 
     // Determine if we want to use mocks/not
     var resolverContext = {useMocks: false};
@@ -46,7 +47,7 @@ exports.resolveModelsAsLocals = function (params, resolver) {
     }
 
     // If we want to load nav content
-    if (params.nav !== false) {
+    if (loadNav !== false) {
       // If the user is logged in, provide mock applications
       unresolvedModels.recentlyViewedApplications = [];
       if (req.candidate) {
@@ -107,7 +108,7 @@ exports.resolveModelsAsLocals = function (params, resolver) {
       }
     }, function handleErr (err, models) {
       // If we are loading from nav and the models loaded successfully
-      if (params.nav !== false && recentlyViewedApplicationIds && models.recentlyViewedApplications) {
+      if (loadNav !== false && recentlyViewedApplicationIds && models.recentlyViewedApplications) {
         // If any of the models have been deleted, update our ids
         var getApplicationIds = function (applications) {
           return applications.map(function getApplicationId (application) {

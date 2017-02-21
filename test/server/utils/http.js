@@ -115,9 +115,12 @@ exports._save = function (options) {
         // Otherwise, scrape our CSRF token and pass it along as a form
         assert.strictEqual(res.statusCode, 200);
         var csrfToken = cheerio.load(body)('input[name=x-csrf-token]').val();
+        var csrfForm = _.defaults({
+          'x-csrf-token': encodeURIComponent(csrfToken)
+        }, options.csrfForm);
         assert(csrfToken);
         options = _.defaults({
-          form: 'x-csrf-token=' + encodeURIComponent(csrfToken)
+          form: csrfForm
         }, options);
 
         // Continue to our request

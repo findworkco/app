@@ -34,7 +34,7 @@ if (cluster.isMaster) {
 
   // Monkey patch Express with domain handle
   expressDomainWrapper.monkeyPatchExpress(function handleControllerDomainError (err, req, res, next) {
-    // Make sure we shut this worker down  within 30 seconds
+    // Make sure we shut this worker down within 30 seconds
     var killTimeout = setTimeout(function handleSetTimeout () {
       process.exit(1);
     }, 30e3);

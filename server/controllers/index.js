@@ -316,14 +316,21 @@ app.post('/research-company', [
     }
 
     // Return query against company databases
+    // DEV: When we add AngelList support, don't load extended content for partial
     return {
       glassdoorResult: Glassdoor.searchAsPromise(companyName, req)
     };
   }),
   function researchCompanySave (req, res, next) {
-    res.render('research-company-show.jade', {
-      company_name: req.body.fetch('company_name')
-    });
+    var renderData = {
+      company_name: req.body.fetch('company_name'),
+      resultsLoaded: true
+    };
+    if (!req.isPartial) {
+      res.render('research-company-show.jade', renderData);
+    } else {
+      res.render('research-company-partial-show.jade', renderData);
+    }
   }
 ]);
 
