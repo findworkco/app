@@ -42,7 +42,8 @@ exports.production = {
 
 // Merge in grouped settings
 var configFiles = [
-  './static-analytics', './static-database', './static-email', './static-google',
+  './static-analytics', './static-angellist', './static-database',
+  './static-email', './static-glassdoor', './static-google',
   './static-session', './static-sentry', './static-url'
 ];
 configFiles.forEach(function mergeConfigFile (configFile) {

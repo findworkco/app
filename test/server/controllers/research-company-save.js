@@ -1,8 +1,11 @@
 // Load in our dependencies
 var expect = require('chai').expect;
 var moment = require('moment-timezone');
+var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
+var sinonUtils = require('../utils/sinon');
 var serverUtils = require('../utils/server');
+var app = require('../utils/server').app;
 var Application = require('../../../server/models/application');
 var ApplicationReminder = require('../../../server/models/application-reminder');
 
@@ -11,7 +14,9 @@ var ApplicationReminder = require('../../../server/models/application-reminder')
 scenario.route('A request to POST /research-company to search', {
   requiredTests: {nonOwner: false, loggedOut: false}
 }, function () {
-  scenario.routeTest('with a matching company name', function () {
+  scenario.routeTest('with a matching company name', {
+    glassdoorFixtures: ['/api/api.htm#full']
+  }, function () {
     httpUtils.session.init()
       .save(serverUtils.getUrl('/research-company'))
       .save({
@@ -68,13 +73,34 @@ scenario.route('A request to POST /research-company to search', {
       expect($applyToCompanyBtn.length).to.equal(1);
       expect($applyToCompanyBtn.attr('disabled')).to.equal(undefined);
     });
+  });
 
-    it.skip('requests from cache for company info', function () {
-      // TODO: Figure out if we want to test caching logic/not
+  scenario.nonExistent('with a matching company name yet blank contents', {
+    glassdoorFixtures: ['/api/api.htm#blank']
+  }, function () {
+    httpUtils.session.init()
+      .save(serverUtils.getUrl('/research-company'))
+      .save({
+        method: 'POST', url: serverUtils.getUrl('/research-company'),
+        htmlForm: {company_name: 'Mock company'},
+        followRedirect: false, expectedStatusCode: 200
+      });
+
+    it('has company name field filled in', function () {
+      var $companyNameInput = this.$('form[action="/research-company"] input[name="company_name"]');
+      expect($companyNameInput.val()).to.equal('Mock company');
+    });
+
+    it('lists blank fields', function () {
+      var $results = this.$('#glassdoor-results');
+      expect($results.text()).to.contain('Industry: Unknown');
+      expect($results.text()).to.contain('CEO review: No reviews');
     });
   });
 
-  scenario.nonExistent('with a non-matching company name', function () {
+  scenario.nonExistent('with a non-matching company name', {
+    glassdoorFixtures: ['/api/api.htm#empty']
+  }, function () {
     httpUtils.session.init()
       .save(serverUtils.getUrl('/research-company'))
       .save({
@@ -91,10 +117,6 @@ scenario.route('A request to POST /research-company to search', {
     it('lists no company found', function () {
       var $results = this.$('#glassdoor-results');
       expect($results.text()).to.contain('No company found');
-    });
-
-    it.skip('requests from cache for company info', function () {
-      // TODO: Figure out if we want to test caching logic/not
     });
   });
 
@@ -120,14 +142,57 @@ scenario.route('A request to POST /research-company to search', {
     it('lists AngelList result as coming soon', function () {
       expect(this.$('#angellist-results').text()).to.contain('AngelList support is under construction');
     });
+  });
 
-    it.skip('doesn\'t request from cache for company info', function () {
-      // TODO: Figure out if we want to test caching logic/not
+  scenario.routeTest('that times out', {
+    glassdoorFixtures: ['/api/api.htm#timeout']
+  }, function () {
+    sinonUtils.stub(app.notWinston, 'error');
+    httpUtils.session.init()
+      .save(serverUtils.getUrl('/research-company'))
+      .save({
+        method: 'POST', url: serverUtils.getUrl('/research-company'),
+        htmlForm: {company_name: 'Mock company'},
+        followRedirect: false, expectedStatusCode: 500
+      });
+
+    it('errors out before receiving a response', function () {
+      // Status code asserted by `expectedStatusCode`
+      // Assert timeout error itself
+      var winstonSpy = app.notWinston.error;
+      expect(winstonSpy.callCount).to.equal(1);
+      expect(winstonSpy.args[0][0].code).to.equal('ETIMEDOUT');
     });
   });
 
-  scenario.routeTest('from a logged in user', function () {
+  scenario.routeTest('that encounters an error', {
+    glassdoorFixtures: ['/api/api.htm#error']
+  }, function () {
+    sinonUtils.stub(app.notWinston, 'error');
+    httpUtils.session.init()
+      .save(serverUtils.getUrl('/research-company'))
+      .save({
+        method: 'POST', url: serverUtils.getUrl('/research-company'),
+        htmlForm: {company_name: 'Mock company'},
+        followRedirect: false, expectedStatusCode: 500
+      });
+
+    it('records an error', function () {
+      // Status code asserted by `expectedStatusCode`
+      // Assert timeout error itself
+      var winstonSpy = app.notWinston.error;
+      expect(winstonSpy.callCount).to.equal(1);
+      expect(winstonSpy.args[0][0].message).to.contain('Received unsuccessful response from Glassdoor');
+      expect(winstonSpy.args[0][0].message).to.contain('Access-Denied');
+    });
+  });
+
+  scenario.routeTest('from a logged in user', {
+    dbFixtures: [dbFixtures.APPLICATION_INTERTRODE, dbFixtures.DEFAULT_FIXTURES],
+    glassdoorFixtures: ['/api/api.htm#full']
+  }, function () {
     httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-intertrode-uuid'))
       .save(serverUtils.getUrl('/research-company'))
       .save({
         method: 'POST', url: serverUtils.getUrl('/research-company'),
@@ -135,8 +200,8 @@ scenario.route('A request to POST /research-company to search', {
         followRedirect: false, expectedStatusCode: 200
       });
 
-    it.skip('has applications listed in sidebar', function () {
-      // Test me once application data in sidebar is stablized
+    it('loads nav content', function () {
+      expect(this.$('#nav').text()).to.contain('Intertrode');
     });
   });
 });
@@ -146,7 +211,9 @@ scenario.route('A request to POST /research-company to search', {
 scenario.route('A request to POST /research-company to "Save for later"', {
   requiredTests: {nonExistent: false, nonOwner: false, loggedOut: false}
 }, function () {
-  scenario.routeTest('from a logged in user', function () {
+  scenario.routeTest('from a logged in user', {
+    glassdoorFixtures: ['/api/api.htm#full']
+  }, function () {
     // Login and make our multiple requests
     httpUtils.session.init().login()
       .save(serverUtils.getUrl('/research-company'))
@@ -194,7 +261,9 @@ scenario.route('A request to POST /research-company to "Save for later"', {
 scenario.route('A request to POST /research-company to "Apply to company"', {
   requiredTests: {nonExistent: false, nonOwner: false, loggedOut: false}
 }, function () {
-  scenario.loggedOut('from a logged out user', function () {
+  scenario.loggedOut('from a logged out user', {
+    glassdoorFixtures: ['/api/api.htm#full']
+  }, function () {
     httpUtils.session.init()
       .save(serverUtils.getUrl('/research-company'))
       .save({

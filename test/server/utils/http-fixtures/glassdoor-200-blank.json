@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "status": "OK",
+  "jsessionid": "0DF8A6DF9DC918DF4876B31D0F2B7E3B",
+  "response": {
+    "attributionURL": "https://www.glassdoor.com/Reviews/angellist-reviews-SRCH_KE0,9.htm",
+    "currentPageNumber": 1,
+    "totalNumberOfPages": 1,
+    "totalRecordCount": 1,
+    "employers": [{
+      "id": 1089094,
+      "name": "AngelList",
+      "website": "www.angel.co",
+      "isEEP": false,
+      "exactMatch": true,
+      "industry": "",
+      "numberOfRatings": 0,
+      "squareLogo": "https://media.glassdoor.com/sqll/1089094/angellist-squarelogo-1468271595527.png",
+      "overallRating": "0",
+      "ratingDescription": "Not Applicable",
+      "cultureAndValuesRating": "0.0",
+      "seniorLeadershipRating": "0.0",
+      "compensationAndBenefitsRating": "0.0",
+      "careerOpportunitiesRating": "0.0",
+      "workLifeBalanceRating": "0.0",
+      "recommendToFriendRating": 0
+    }]
+  }
+}

@@ -134,7 +134,10 @@ mixin glassdoor-result(glassdoorResult, options)
       | Overall rating: #{glassdoorResult.overallRating}/5.0 (#{glassdoorResult.numberOfRatings} ratings)
       br
       = "CEO review: "
-      | #{glassdoorResult.ceo.pctApprove}% approve, #{glassdoorResult.ceo.pctDisapprove}% disapprove (#{glassdoorResult.ceo.numberOfRatings} ratings)
+      if glassdoorResult.ceo
+        | #{glassdoorResult.ceo.pctApprove}% approve, #{glassdoorResult.ceo.pctDisapprove}% disapprove (#{glassdoorResult.ceo.numberOfRatings} ratings)
+      else
+        em No reviews
       br
       if options.extended
         | Culture and values rating: #{glassdoorResult.cultureAndValuesRating}/5.0

@@ -12,6 +12,7 @@ var Application = require('../models/application');
 var includes = require('../models/utils/includes');
 var ApplicationReminder = require('../models/application-reminder');
 var glassdoorMockData = require('../models/glassdoor-mock-data');
+var Glassdoor = require('../models/glassdoor');
 var validTimezoneValues = require('../models/base').validTimezoneValues;
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 assert(validTimezoneValues);
@@ -316,7 +317,7 @@ app.post('/research-company', [
 
     // Return query against company databases
     return {
-      glassdoorResult: glassdoorMockData.getByName(companyName)
+      glassdoorResult: Glassdoor.searchAsPromise(companyName, req)
     };
   }),
   function researchCompanySave (req, res, next) {

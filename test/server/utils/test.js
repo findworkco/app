@@ -5,6 +5,7 @@ var async = require('async');
 var Promise = require('bluebird');
 var Sequelize = require('sequelize');
 var dbFixtures = require('./db-fixtures');
+var fakeGlassdoorFactory = require('./fake-glassdoor');
 var fakeGoogleFactory = require('./fake-google');
 var server = require('../../../server/index.js');
 var sinonUtils = require('./sinon');
@@ -185,6 +186,11 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
     });
   }
 
+  // If we have Glassdoor fixtures, then run a server
+  if (options.glassdoorFixtures && options.glassdoorFixtures.length) {
+    fakeGlassdoorFactory.run(options.glassdoorFixtures);
+  }
+
   // If we have Google fixtures, then run a server
   if (options.googleFixtures && options.googleFixtures.length) {
     fakeGoogleFactory.run(options.googleFixtures);
@@ -207,6 +213,7 @@ var DEFAULT_ROUTE_TEST_OPTIONS = {
   //   We could support that via `{add: [], remove: [], removeAll: true}`
   //   Default behavior would be `[overrides] = {add: [overrides], removeAll: true}`
   googleFixtures: fakeGoogleFactory.DEFAULT_FIXTURES,
+  glassdoorFixtures: null,
   startServer: true
 };
 exports.scenario = getDescribeWrapper(DEFAULT_ROUTE_TEST_OPTIONS,
