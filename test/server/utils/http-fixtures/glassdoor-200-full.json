@@ -1,0 +1,61 @@
+{
+  "success": true,
+  "status": "OK",
+  "jsessionid": "61C3757FA0AAA43A5D2D944E0581AFDB",
+  "response": {
+    "attributionURL": "https://www.glassdoor.com/Reviews/ibm-reviews-SRCH_KE0,3.htm",
+    "currentPageNumber": 1,
+    "totalNumberOfPages": 11,
+    "totalRecordCount": 11,
+    "employers": [
+      {
+        "id": 354,
+        "name": "IBM",
+        "website": "www.ibm.com",
+        "isEEP": true,
+        "exactMatch": true,
+        "industry": "Consulting",
+        "numberOfRatings": 27258,
+        "squareLogo": "https://media.glassdoor.com/sqll/354/ibm-squarelogo-1468349448058.png",
+        "overallRating": "3.4",
+        "ratingDescription": "OK",
+        "cultureAndValuesRating": "3.4",
+        "seniorLeadershipRating": "2.9",
+        "compensationAndBenefitsRating": "3.1",
+        "careerOpportunitiesRating": "3.3",
+        "workLifeBalanceRating": "3.6",
+        "recommendToFriendRating": 63,
+        "sectorId": 10006,
+        "sectorName": "Business Services",
+        "industryId": 200028,
+        "industryName": "Consulting",
+        "featuredReview": {
+          "attributionURL": "https://www.glassdoor.com/Reviews/Employee-Review-IBM-RVW4852131.htm",
+          "id": 4852131,
+          "currentJob": true,
+          "reviewDateTime": "2014-08-26 09:02:30.03",
+          "jobTitle": "Advisory Engineer",
+          "location": "Hopewell Junction, NY",
+          "jobTitleFromDb": "Advisory Engineer",
+          "headline": "Advisory Engineer in STG, IBM",
+          "pros": "Disclaimer: A lot of what I'm writing below of course depends on the work area and management chain.  But I found this to be fairly pervasive policies in IBM in my 9+ years with the company. \r\n1. IBM's policies and management are very flexible when it comes to working remotely or accommodating various life situations (sick days, doctor visits, etc.).  Management is encouraged to measure an employee by their work and impact, and not by hours spent at their office. \r\n2. Great colleagues!  Though unfortunately, many have been leaving due to the instability of IBM's HW development business. \r\n3. At least in my area, there's a high level of flexibility on which projects should I undertake based on my and my management assessment of business impact.",
+          "cons": "1. Unfortunately, IBM still uses the \"normal distribution\" rating system, where at the end of the year each employee is ranked as a top contributor (5%), above average contributor (15%), average contributor (~75%), and bottom contributor (5%).  This curve is difficult to apply in the R&D world, where you may have many members of the team working long and hard hours, and end up being \"average contributors\" at the end of the year, because there just isn't room for all to be top contributors. \r\n\r\n2. The above may not be so disturbing, if only IBM didn't practically cancelled all raises, performance bonuses and incentive for the non top-performers. I've had a consistent \"above average\" rating in the last 4-5 years, and my raise and performance bonus were ridiculous mere 1.5-2% of my salary.  Were I rated \"average contributor\" I would have gotten NOTHING. So you can imagine that people can go year after year without any raise to their salary.\r\n\r\nFrom talking to manager friend, this is IBM's way to eliminate the non-top-performers without having to fire them, as part of its direction of reducing US manpower. \r\n\r\n3. Hiring freeze in many areas - again, as part of IBM's attempt to reduce its workforce across North America and Europe we see many jobs move to the India and Far East markets.  This is of course upsetting to see local teams shrink and disappear, especially when many great local IBM colleagues and experts begin to drop out. From my experience thus far working with India SW teams - they are still very far away from the standards I would have expected from US and Europe based teams. \r\n\r\n4. Poor top down communication about company's and divisions' future.  Employees learn from rumors and news websites what's about to come...",
+          "overall": 4,
+          "overallNumeric": 4
+        },
+        "ceo": {
+          "name": "Virginia Rometty",
+          "title": "CEO",
+          "numberOfRatings": 9547,
+          "pctApprove": 62,
+          "pctDisapprove": 38,
+          "image": {
+            "src": "https://media.glassdoor.com/people/sqll/354/ibm-virginia-rometty.png",
+            "height": 200,
+            "width": 200
+          }
+        }
+      }
+    ]
+  }
+}

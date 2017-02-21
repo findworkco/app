@@ -108,7 +108,8 @@ mixin company-notes-and-research(values)
         .flexbox__item.company-name__container
           input.form-control.input--block#company_name(name="company_name", type="text", value=form_data.get('company_name') || values.company_name || locals.query_company_name, placeholder="Examples: Google, Acme Corp")
         .flexbox__item
-          button.btn.btn--small.btn--wide.btn--default(type="button") Search
+          //- DEV: We could include company name query string but it's unnecessary as live update requires JS
+          a.btn.btn--small.btn--wide.btn--default(href="/research-company", target="_blank") Search
     h5.text--normal.flush--bottom(style="font-weight: bold") Glassdoor results:
     p
       +glassdoor-result(locals.glassdoorResult, {expanded: false})
@@ -117,11 +118,12 @@ mixin company-notes-and-research(values)
       +angellist-result(locals.angelListResult, {expanded: false})
 
 mixin glassdoor-result(glassdoorResult, options)
-    if glassdoorResult
+    if glassdoorResult && glassdoorResult.id
       | Name: #{glassdoorResult.name}
       br
       = "Website: "
-      a(href=glassdoorResult.website)= glassdoorResult.website
+      //- www.google.com -> http://www.google.com/
+      a(href="http://#{glassdoorResult.website}/")= glassdoorResult.website
       br
       = "Industry: "
       if !glassdoorResult.industry
@@ -129,89 +131,37 @@ mixin glassdoor-result(glassdoorResult, options)
       else
         = glassdoorResult.industry
       br
-      | Overall rating: #{glassdoorResult.overall_rating}
+      | Overall rating: #{glassdoorResult.overallRating}/5.0 (#{glassdoorResult.numberOfRatings} ratings)
       br
-      | CEO review: #{glassdoorResult.ceo_review}
+      = "CEO review: "
+      | #{glassdoorResult.ceo.pctApprove}% approve, #{glassdoorResult.ceo.pctDisapprove}% disapprove (#{glassdoorResult.ceo.numberOfRatings} ratings)
       br
       if options.extended
-        | Culture and values rating: #{glassdoorResult.culture_and_values_rating}
+        | Culture and values rating: #{glassdoorResult.cultureAndValuesRating}/5.0
         br
-        | Senior leadership rating: #{glassdoorResult.senior_leadership_rating}
+        | Senior leadership rating: #{glassdoorResult.seniorLeadershipRating}/5.0
         br
-        | Compensation and benefits rating: #{glassdoorResult.compensation_and_benefits_rating}
+        | Compensation and benefits rating: #{glassdoorResult.compensationAndBenefitsRating}/5.0
         br
-        | Career opportunities rating: #{glassdoorResult.career_opportunities_rating}
+        | Career opportunities rating: #{glassdoorResult.careerOpportunitiesRating}/5.0
         br
-        | Work/Life balance rating: #{glassdoorResult.work_life_balance_rating}
+        | Work/Life balance rating: #{glassdoorResult.workLifeBalanceRating}/5.0
         br
-      a(href=glassdoorResult.glassdoor_url) View Glassdoor profile
+      a(href=glassdoorResult.glassdoorUrl) View Glassdoor profile
       br
-      a(href="https://www.glassdoor.com/")
+      a(href=glassdoorResult.attributionURL)
         = "Powered by "
         img(alt="Glassdoor", src="/dist/images/glassdoor-green.svg", style="height: 1.3em; position: relative; top: 4px")
       br
       a(target="_blank", href=glassdoorResult.badMatchUrl) Bad match? Click here to let us know
+    else if glassdoorResult
+      | No company found.
+      br
+      | Please try another search.
     else
       em No company name entered.
       br
       em Please enter one in the field above.
 
 mixin angellist-result(angelListResult, options)
-  if angelListResult
-    | Name: #{angelListResult.name}
-    br
-    = "Website: "
-    a(href=angelListResult.website)= angelListResult.website
-    br
-    | Followers: #{angelListResult.followers}
-    br
-    | Locations: #{angelListResult.locations}
-    br
-    | Markets: #{angelListResult.markets}
-    br
-    if options.extended
-      = "Public fundraising: "
-      if angelListResult.public_fundraising.length
-        for fundraising_result in angelListResult.public_fundraising
-          br
-          span
-            //- DEV: We want to use a `<ul>` but it breaks out of the `<p>` container
-            | &nbsp;-&nbsp;
-            = fundraising_result.name
-            = ": "
-            if fundraising_result.content
-              = fundraising_result.content
-            else
-              i Details unknown
-      else
-        | N/A
-      br
-      = "Blog URL: "
-      if angelListResult.blog_url
-        a(href=angelListResult.blog_url)= angelListResult.blog_url
-      else
-        | N/A
-      br
-      = "Twitter URL: "
-      if angelListResult.twitter_url
-        a(href=angelListResult.twitter_url)= angelListResult.twitter_url
-      else
-        | N/A
-      br
-      = "Video URL: "
-      if angelListResult.video_url
-        a(href=angelListResult.video_url)= angelListResult.video_url
-      else
-        | N/A
-      br
-    a(href=angelListResult.angellist_url) View AngelList profile
-    br
-    a(href="https://angel.co/")
-      = "Powered by AngelList"
-      img(alt="AngelList logo", aria-hidden="true", src="/dist/images/angellist.svg", style="height: 1.3em; position: relative; top: 4px; left: 2px")
-    br
-    a(target="_blank", href=angelListResult.badMatchUrl) Bad match? Click here to let us know
-  else
-    em No company name entered.
-    br
-    em Please enter one in the field above.
+  | AngelList support is under construction.

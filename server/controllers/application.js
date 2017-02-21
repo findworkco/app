@@ -10,7 +10,6 @@ var saveModelsViaCandidate = require('../models/utils/save-models').saveModelsVi
 var Application = require('../models/application');
 var ApplicationReminder = require('../models/application-reminder');
 var applicationMockData = require('../models/application-mock-data');
-var companyMockData = require('../models/company-mock-data');
 var Interview = require('../models/interview');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
@@ -275,11 +274,9 @@ app.get('/application/:id', _.flatten([
     // Record our application as recently viewed
     req.addRecentlyViewedApplication(req.models.selectedApplication);
 
-    // TODO: Determine if we want to load company results in series or on page (no way to do it in parallel)
-    var selectedApplication = req.models.selectedApplication;
-    var companyName = selectedApplication.get('company_name');
-    var renderData = companyName ? companyMockData.getByName(companyName, false) : {};
-    res.render('application-edit-show.jade', renderData);
+    // Render our page
+    // TODO: Load company results via AJAX on page (no way to do it in parallel)
+    res.render('application-edit-show.jade');
   }
 ]));
 app.post('/application/:id', _.flatten([

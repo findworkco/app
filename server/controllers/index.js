@@ -11,7 +11,7 @@ var applicationMockData = require('../models/application-mock-data');
 var Application = require('../models/application');
 var includes = require('../models/utils/includes');
 var ApplicationReminder = require('../models/application-reminder');
-var companyMockData = require('../models/company-mock-data');
+var glassdoorMockData = require('../models/glassdoor-mock-data');
 var validTimezoneValues = require('../models/base').validTimezoneValues;
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 assert(validTimezoneValues);
@@ -309,11 +309,15 @@ app.post('/research-company', [
     // If we loading mock data, return mock data
     var companyName = req.body.fetch('company_name');
     if (this.useMocks) {
-      return companyMockData.getByName(companyName, true);
+      return {
+        glassdoorResult: glassdoorMockData.getByName(companyName)
+      };
     }
 
     // Return query against company databases
-    return companyMockData.getByName(companyName, true);
+    return {
+      glassdoorResult: glassdoorMockData.getByName(companyName)
+    };
   }),
   function researchCompanySave (req, res, next) {
     res.render('research-company-show.jade', {
