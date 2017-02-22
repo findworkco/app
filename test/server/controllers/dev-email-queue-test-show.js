@@ -1,7 +1,7 @@
 // Load in our dependencies
 var expect = require('chai').expect;
 var httpUtils = require('../utils/http');
-var sinonUtils = require('../utils/sinon');
+var sinonUtils = require('../../utils/sinon');
 var serverUtils = require('../utils/server');
 
 // Start our tests

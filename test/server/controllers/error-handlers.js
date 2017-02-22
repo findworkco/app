@@ -4,7 +4,7 @@ var app = require('../utils/server').app;
 var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
-var sinonUtils = require('../utils/sinon');
+var sinonUtils = require('../../utils/sinon');
 var Response = require('express/lib/response');
 
 // Start our tests

@@ -8,7 +8,7 @@ var Candidate = require('../../../../server/models/candidate');
 var Interview = require('../../../../server/models/interview');
 var InterviewReminder = require('../../../../server/models/interview-reminder');
 var Reminder = require('../../../../server/models/reminder');
-var sinonUtils = require('../../utils/sinon');
+var sinonUtils = require('../../../utils/sinon');
 
 // Start our tests
 scenario.model('An Interview model with an upcoming datetime', function () {

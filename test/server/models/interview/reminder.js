@@ -4,7 +4,7 @@ var moment = require('moment-timezone');
 var dbFixtures = require('../../utils/db-fixtures');
 var InterviewReminder = require('../../../../server/models/interview-reminder');
 var reminderUtils = require('../../../../server/models/utils/reminder');
-var sinonUtils = require('../../utils/sinon');
+var sinonUtils = require('../../../utils/sinon');
 
 // Start our tests
 function reloadUpcomingInterview() {

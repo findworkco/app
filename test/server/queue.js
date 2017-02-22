@@ -3,7 +3,7 @@ var expect = require('chai').expect;
 var app = require('./utils/server').app;
 var httpUtils = require('./utils/http');
 var serverUtils = require('./utils/server');
-var sinonUtils = require('./utils/sinon');
+var sinonUtils = require('../utils/sinon');
 
 // Start our tests
 scenario('A successful job', {

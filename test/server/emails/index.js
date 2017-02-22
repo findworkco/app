@@ -8,7 +8,7 @@ var dbFixtures = require('../utils/db-fixtures');
 var emails = require('../../../server/emails');
 var includes = require('../../../server/models/utils/includes');
 var InterviewReminder = require('../../../server/models/interview-reminder');
-var sinonUtils = require('../utils/sinon');
+var sinonUtils = require('../../utils/sinon');
 
 // Define one-off helper utilities
 var emailUtils = {

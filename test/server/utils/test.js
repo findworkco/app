@@ -8,7 +8,7 @@ var dbFixtures = require('./db-fixtures');
 var fakeGlassdoorFactory = require('./fake-glassdoor');
 var fakeGoogleFactory = require('./fake-google');
 var server = require('../../../server/index.js');
-var sinonUtils = require('./sinon');
+var sinonUtils = require('../../utils/sinon');
 var sequelize = server.app.sequelize;
 var validator = require('sequelize/lib/utils/validator-extras').validator;
 

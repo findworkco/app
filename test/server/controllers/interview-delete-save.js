@@ -3,7 +3,7 @@ var expect = require('chai').expect;
 var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
-var sinonUtils = require('../utils/sinon');
+var sinonUtils = require('../../utils/sinon');
 var Application = require('../../../server/models/application');
 var Interview = require('../../../server/models/interview');
 

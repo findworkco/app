@@ -2,7 +2,7 @@
 var url = require('url');
 var _ = require('underscore');
 var server = require('../../../server/index.js');
-var sinonUtils = require('./sinon');
+var sinonUtils = require('../../utils/sinon');
 
 // Define our exports
 var app = exports.app = server.app;

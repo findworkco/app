@@ -4,6 +4,7 @@ var fs = require('fs');
 var qs = require('querystring');
 var _ = require('underscore');
 var sinon = require('sinon');
+var sinonUtils = require('../utils/sinon');
 var expect = require('chai').expect;
 var domUtils = require('./utils/dom');
 var $simulant = require('./utils/$simulant');
@@ -27,34 +28,6 @@ var testUtils = {
       csrfToken: 'mock-csrf-token',
       form_data: {get: function () {}}
     }, locals));
-  },
-  mockXHR: function (responses) {
-    before(function callMockXHR () {
-      // Create our server
-      // http://sinonjs.org/docs/#fakeServer
-      // DEV: `this.sinonServer.respond()` must be called to trigger responses
-      //   This allows us to test loading states
-      assert(!this.sinonServer, 'Expected no Sinon server to be running but one is. ' +
-        'Please only use `testUtils.mockXHR` once per test');
-      this.sinonServer = sinon.fakeServer.create();
-
-      // Bind our responses
-      this.requests = [];
-      var that = this;
-      responses.forEach(function bindResponse (response) {
-        that.sinonServer.respondWith(response.method, response.url, function handleRequest (req) {
-          // Save our request
-          that.requests.push(req);
-
-          // Call our fixture
-          return response.fn.apply(that, arguments);
-        });
-      });
-    });
-    after(function cleanup () {
-      this.sinonServer.restore();
-      delete this.sinonServer;
-    });
   }
 };
 
@@ -95,7 +68,7 @@ describe('A partial research company form loading with a company name', function
   testUtils.init({
     values: {company_name: 'Mock company'}
   });
-  testUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_200_FIXTURE]);
+  sinonUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_200_FIXTURE]);
   before(function handleInit () {
     // Bind our sync and call our server reply
     browserInit(this.el);
@@ -124,7 +97,7 @@ describe('A partial research company form loading without a company name', funct
   testUtils.init({
     values: {company_name: ''}
   });
-  testUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_200_FIXTURE]);
+  sinonUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_200_FIXTURE]);
   before(function handleInit () {
     // Bind our sync and call our server reply
     browserInit(this.el);
@@ -150,7 +123,7 @@ describe('A partial research company form performing a successful search', funct
   testUtils.init({
     values: {company_name: ''}
   });
-  testUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_200_FIXTURE]);
+  sinonUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_200_FIXTURE]);
   before(function handleInit () {
     // Bind our sync and call our server reply
     browserInit(this.el);
@@ -198,7 +171,7 @@ describe('A partial research company form performing an erroring search', functi
   testUtils.init({
     values: {company_name: 'Mock company'}
   });
-  testUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_500_FIXTURE]);
+  sinonUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_500_FIXTURE]);
   before(function handleInit () {
     // Bind our sync and call our server reply
     // DEV: We silence onerror temporarily for our response
@@ -230,7 +203,7 @@ describe('A partial research company form performing multiple searches', functio
   testUtils.init({
     values: {company_name: ''}
   });
-  testUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_200_FIXTURE_INCREMENTING]);
+  sinonUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_200_FIXTURE_INCREMENTING]);
 
   it('replaces content with server response', function (done) {
     // Bind our sync and call our server reply

@@ -7,7 +7,7 @@ var queue = require('../../../server/queue');
 var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
-var sinonUtils = require('../utils/sinon');
+var sinonUtils = require('../../utils/sinon');
 
 // Define our constants
 var OAUTH_GOOGLE_REQUEST_URL_OPTIONS = {
