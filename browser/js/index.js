@@ -14,6 +14,7 @@ var datetimepickerSync = require('./datetimepicker-sync');
 var errorGenerators = require('./error-generators');
 var notifications = require('./notifications');
 var menu = require('./menu');
+var researchCompanyPartial = require('./research-company-partial');
 var wysiwyg = require('./wysiwyg');
 
 // TODO: Construct an autosave mechanism for `data-autosave`
@@ -78,6 +79,7 @@ exports.init = function (containerEl) {
   datetimepickerSync.init(containerEl);
   errorGenerators.init();
   notifications.init();
+  researchCompanyPartial.init(containerEl);
   menu.init();
   wysiwyg.init();
 

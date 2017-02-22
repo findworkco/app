@@ -1,4 +1,6 @@
 // Load in our dependencies
+var fs = require('fs');
+var qs = require('querystring');
 var expect = require('chai').expect;
 var moment = require('moment-timezone');
 var dbFixtures = require('../utils/db-fixtures');
@@ -8,6 +10,12 @@ var serverUtils = require('../utils/server');
 var app = require('../utils/server').app;
 var Application = require('../../../server/models/application');
 var ApplicationReminder = require('../../../server/models/application-reminder');
+
+// Load in our contracts
+var partialFullReqContract = fs.readFileSync(
+  __dirname + '/../../test-files/http-contracts/research-company-partial-save-200-req.raw', 'utf8');
+var partialFullResContract = fs.readFileSync(
+  __dirname + '/../../test-files/http-contracts/research-company-partial-save-200-res.html', 'utf8');
 
 // Start our tests
 // TODO: Add tests for AngelList logged in state/not when searching for companies
@@ -215,6 +223,13 @@ scenario.route('A request to POST /research-company to search', {
         csrfForm: {company_name: 'Mock company'},
         followRedirect: false, expectedStatusCode: 200
       });
+
+    it('replies with contracted content', function () {
+      var actualReqQs = qs.parse(this.req.body);
+      var expectedReqQs = qs.parse(partialFullReqContract);
+      expect(actualReqQs).to.have.same.keys(expectedReqQs);
+      expect(this.body).to.equal(partialFullResContract);
+    });
 
     it('renders partial content', function () {
       var $glassdoorResults = this.$('#glassdoor-results');
