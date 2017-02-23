@@ -48,3 +48,12 @@
 .soft-triple--left     { padding-left:  $triple-spacing-unit!important; }
 .soft-triple--ends     { padding-top:   $triple-spacing-unit!important; padding-bottom:$triple-spacing-unit!important; }
 .soft-triple--sides    { padding-right: $triple-spacing-unit!important; padding-left:  $triple-spacing-unit!important; }
+
+// Overrides for specific components
+// https://github.com/twbs/bootstrap/blob/v3.3.6/less/component-animations.less#L18-L21
+// https://github.com/twbs/bootstrap/blob/v3.3.6/js/collapse.js#L40-L129
+@each $state in $responsive-states {
+  @include media-query(#{$state}) {
+    .#{$state}-ignore-collapse { display: block !important; height: auto !important; }
+  }
+}

@@ -2,6 +2,14 @@
 var gemini = require('gemini');
 var geminiUtils = require('./utils/gemini').bind(gemini);
 
+// Define common action
+function expandResearchCompany(actions, find) {
+  geminiUtils.resizeSmall(actions, find);
+  actions.executeJS(function handleExecuteJS (window) {
+    window.jQuery('.research-company [data-toggle]').click();
+  });
+}
+
 // Define our visual tests
 gemini.suite('application-edit-show', function (suite) {
   var nameSelector = '#content input[name=name]';
@@ -12,7 +20,8 @@ gemini.suite('application-edit-show', function (suite) {
         .setCaptureElements('body')
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
-        .capture('default-small', geminiUtils.resizeSmall);
+        .capture('default-small', geminiUtils.resizeSmall)
+        .capture('default-small-expanded', expandResearchCompany);
     });
     gemini.suite('invalid', function (child) {
       // DEV: These include validation errors for `id/isUUID`, we could ignore these
@@ -35,7 +44,8 @@ gemini.suite('application-edit-show', function (suite) {
         .setCaptureElements('body')
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
-        .capture('default-small', geminiUtils.resizeSmall);
+        .capture('default-small', geminiUtils.resizeSmall)
+        .capture('default-small-expanded', expandResearchCompany);
     });
     gemini.suite('invalid', function (child) {
       child.load('/application/abcdef-umbrella-corp-uuid', geminiUtils.SETUPS.DEFAULT)
@@ -56,7 +66,8 @@ gemini.suite('application-edit-show', function (suite) {
         .setCaptureElements('body')
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
-        .capture('default-small', geminiUtils.resizeSmall);
+        .capture('default-small', geminiUtils.resizeSmall)
+        .capture('default-small-expanded', expandResearchCompany);
     });
     gemini.suite('invalid', function (child) {
       child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
@@ -77,7 +88,8 @@ gemini.suite('application-edit-show', function (suite) {
         .setCaptureElements('body')
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
-        .capture('default-small', geminiUtils.resizeSmall);
+        .capture('default-small', geminiUtils.resizeSmall)
+        .capture('default-small-expanded', expandResearchCompany);
     });
     gemini.suite('invalid', function (child) {
       child.load('/application/abcdef-black-mesa-uuid', geminiUtils.SETUPS.DEFAULT)
@@ -98,7 +110,8 @@ gemini.suite('application-edit-show', function (suite) {
         .setCaptureElements('body')
         .capture('default-large', geminiUtils.resizeLarge)
         .capture('default-medium', geminiUtils.resizeMedium)
-        .capture('default-small', geminiUtils.resizeSmall);
+        .capture('default-small', geminiUtils.resizeSmall)
+        .capture('default-small-expanded', expandResearchCompany);
     });
     gemini.suite('invalid', function (child) {
       child.load('/application/abcdef-monstromart-uuid', geminiUtils.SETUPS.DEFAULT)

@@ -8,6 +8,9 @@ void require('browsernizr/test/inputtypes');
 // DEV: Add in `window.jQuery` for Chosen and wysiwyg.js
 window.jQuery = $;
 void require('../../bower_components/chosen/chosen.jquery.js');
+// DEV: Bootstrap's `transition` must come before its `collapse`
+void require('../../bower_components/bootstrap/js/transition.js');
+void require('../../bower_components/bootstrap/js/collapse.js');
 var contentSync = require('./content-sync');
 var datetimepickerHide = require('./datetimepicker-hide');
 var datetimepickerSync = require('./datetimepicker-sync');
@@ -15,6 +18,7 @@ var errorGenerators = require('./error-generators');
 var notifications = require('./notifications');
 var menu = require('./menu');
 var researchCompanyPartial = require('./research-company-partial');
+var toggleText = require('./toggle-text');
 var wysiwyg = require('./wysiwyg');
 
 // TODO: Construct an autosave mechanism for `data-autosave`
@@ -80,6 +84,7 @@ exports.init = function (containerEl) {
   errorGenerators.init();
   notifications.init();
   researchCompanyPartial.init(containerEl);
+  toggleText.init(containerEl);
   menu.init();
   wysiwyg.init();
 

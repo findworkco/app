@@ -2,7 +2,7 @@
 var expect = require('chai').expect;
 var domUtils = require('./utils/dom');
 var $simulant = require('./utils/$simulant');
-var browserInit = require('../../browser/js/index.js').init;
+var browserInit = require('./utils/browser').init;
 
 // Define common helper
 var testUtils = {

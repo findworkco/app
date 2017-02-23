@@ -6,7 +6,7 @@ var expect = require('chai').expect;
 var moment = require('moment-timezone');
 var domUtils = require('./utils/dom');
 var $simulant = require('./utils/$simulant');
-var browserInit = require('../../browser/js/index.js').init;
+var browserInit = require('./utils/browser').init;
 var tzStable = require('../../server/utils/tz-stable.js');
 
 // Define common helper

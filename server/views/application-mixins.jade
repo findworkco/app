@@ -78,19 +78,20 @@ mixin company-notes-and-research(values)
         = "Research company "
         span.text--normal
           = "("
-          button.text--link expand section
+          button.text--link(type="button", data-toggle="collapse", data-target="#research-company-content", data-collapse-text="collapse section") expand section
           = ")"
-    .form-group
-      label(for="company_name") Company name:
-      .flexbox
-        - var companyName = form_data.get('company_name') || values.company_name || locals.query_company_name;
-        .flexbox__item.company-name__container
-          input.form-control.input--block#company_name(name="company_name", type="text", value=companyName, placeholder="Examples: Google, Acme Corp")
-        .flexbox__item
-          //- DEV: We could include company name query string but it's unnecessary as live update requires JS
-          a#search-btn.btn.btn--small.btn--wide.btn--default(href="/research-company", target="_blank") Search
-    #partial-form-errors.section--error.push--bottom.hidden
-    +partial-research-company-content(companyName)
+    #research-company-content.collapse.medium-and-up-ignore-collapse
+      .form-group
+        label(for="company_name") Company name:
+        .flexbox
+          - var companyName = form_data.get('company_name') || values.company_name || locals.query_company_name;
+          .flexbox__item.company-name__container
+            input.form-control.input--block#company_name(name="company_name", type="text", value=companyName, placeholder="Examples: Google, Acme Corp")
+          .flexbox__item
+            //- DEV: We could include company name query string but it's unnecessary as live update requires JS
+            a#search-btn.btn.btn--small.btn--wide.btn--default(href="/research-company", target="_blank") Search
+      #partial-form-errors.section--error.push--bottom.hidden
+      +partial-research-company-content(companyName)
 
 mixin partial-research-company-content(companyName)
   h5.text--normal.flush--bottom(style="font-weight: bold") Glassdoor results:

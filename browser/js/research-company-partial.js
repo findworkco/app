@@ -6,7 +6,7 @@ var $ = require('jquery');
 exports.init = function (containerEl) {
   // Find all partial research company forms
   // DEV: We couldn't use Turbolinks/PJAX as these are split forms
-  $(containerEl).find('[data-research-company-partial]').each(function handleAutosizeEl (i, formEl) {
+  $(containerEl).find('[data-research-company-partial]').each(function handleResearchCompanyPartial (i, formEl) {
     // Resolve our elements
     // DEV: We could be fancy and dynamically replace elements based on `ids` from response
     //   but this is saner for now as errors will be explicit about not finding matches
