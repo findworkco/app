@@ -9,7 +9,8 @@ var fakeGlassdoorFactory = require('./fake-glassdoor');
 var fakeGoogleFactory = require('./fake-google');
 var server = require('../../../server/index.js');
 var sinonUtils = require('../../utils/sinon');
-var sequelize = server.app.sequelize;
+var app = server.app;
+var sequelize = app.sequelize;
 var validator = require('sequelize/lib/utils/validator-extras').validator;
 
 // DEV: This file is loaded directly by `mocha` first
@@ -186,6 +187,18 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
     });
   }
 
+  // If we are enabling analytics, then temporarily enable it
+  if (options.enableAnalytics) {
+    before(function enableAnalytics () {
+      assert.strictEqual(app.locals.serveAnalytics, false);
+      app.locals.serveAnalytics = true;
+    });
+    after(function disableAnalytics () {
+      app.locals.serveAnalytics = false;
+      assert.strictEqual(app.locals.serveAnalytics, false);
+    });
+  }
+
   // If we have Glassdoor fixtures, then run a server
   if (options.glassdoorFixtures && options.glassdoorFixtures.length) {
     fakeGlassdoorFactory.run(options.glassdoorFixtures);
@@ -207,6 +220,7 @@ function _scenarioRouteTestBaseSetup(describeStr, options, describeFn) {
 // Set up common options
 var DEFAULT_ROUTE_TEST_OPTIONS = {
   dbFixtures: dbFixtures.DEFAULT_FIXTURES,
+  enableAnalytics: false,
   flushRedis: true,
   mockUUIDValidation: true,
   // DEV: Later services might want to add/remove a single fixture

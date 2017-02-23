@@ -68,6 +68,7 @@ describe('A partial research company form loading with a company name', function
   testUtils.init({
     values: {company_name: 'Mock company'}
   });
+  sinonUtils.stubUndefined(window, 'ga');
   sinonUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_200_FIXTURE]);
   before(function handleInit () {
     // Bind our sync and call our server reply
@@ -90,6 +91,11 @@ describe('A partial research company form loading with a company name', function
     expect($glassdoorResults.text()).to.contain('Name: IBM');
     var $angellistResults = this.$('#angellist-results'); assert($angellistResults.length);
     expect($angellistResults.text()).to.contain('AngelList support is under construction');
+  });
+
+  it('doesn\'t record analytics event', function () {
+    var gaSpy = window.ga;
+    expect(gaSpy.callCount).to.equal(0);
   });
 });
 
@@ -123,6 +129,7 @@ describe('A partial research company form performing a successful search', funct
   testUtils.init({
     values: {company_name: ''}
   });
+  sinonUtils.stubUndefined(window, 'ga');
   sinonUtils.mockXHR([RESEARCH_COMPANY_PARTIAL_200_FIXTURE]);
   before(function handleInit () {
     // Bind our sync and call our server reply
@@ -164,6 +171,12 @@ describe('A partial research company form performing a successful search', funct
       expect($angellistResults.text()).to.contain('AngelList support is under construction');
       done();
     });
+  });
+
+  it('records an analytics event', function () {
+    var gaSpy = window.ga;
+    expect(gaSpy.callCount).to.equal(1);
+    expect(gaSpy.args[0]).to.deep.equal(['send', 'event', 'Research company', 'partial-search', 'Mock company']);
   });
 });
 

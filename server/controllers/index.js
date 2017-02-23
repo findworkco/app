@@ -322,12 +322,19 @@ app.post('/research-company', [
     };
   }),
   function researchCompanySave (req, res, next) {
+    var companyName = req.body.fetch('company_name');
     var renderData = {
-      company_name: req.body.fetch('company_name'),
+      company_name: companyName,
       resultsLoaded: true
     };
     if (!req.isPartial) {
-      res.render('research-company-show.jade', renderData);
+      res.render('research-company-show.jade', _.defaults({
+        googleAnalyticsEvents: [{
+          category: 'Research company',
+          action: 'search',
+          label: companyName
+        }]
+      }, renderData));
     } else {
       res.render('research-company-partial-show.jade', renderData);
     }

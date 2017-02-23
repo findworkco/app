@@ -23,7 +23,8 @@ scenario.route('A request to POST /research-company to search', {
   requiredTests: {nonOwner: false, loggedOut: false}
 }, function () {
   scenario.routeTest('with a matching company name', {
-    glassdoorFixtures: ['/api/api.htm#full']
+    glassdoorFixtures: ['/api/api.htm#full'],
+    enableAnalytics: true
   }, function () {
     httpUtils.session.init()
       .save(serverUtils.getUrl('/research-company'))
@@ -81,9 +82,14 @@ scenario.route('A request to POST /research-company to search', {
       expect($applyToCompanyBtn.length).to.equal(1);
       expect($applyToCompanyBtn.attr('disabled')).to.equal(undefined);
     });
+
+    it('records analytics event', function () {
+      expect(this.body).to.contain(
+        'ga(\'send\', \'event\', "Research company", "search", "Mock company");');
+    });
   });
 
-  scenario.nonExistent('with a matching company name yet blank contents', {
+  scenario.routeTest('with a matching company name yet blank contents', {
     glassdoorFixtures: ['/api/api.htm#blank']
   }, function () {
     httpUtils.session.init()
@@ -107,7 +113,8 @@ scenario.route('A request to POST /research-company to search', {
   });
 
   scenario.nonExistent('with a non-matching company name', {
-    glassdoorFixtures: ['/api/api.htm#empty']
+    glassdoorFixtures: ['/api/api.htm#empty'],
+    enableAnalytics: true
   }, function () {
     httpUtils.session.init()
       .save(serverUtils.getUrl('/research-company'))
@@ -125,6 +132,11 @@ scenario.route('A request to POST /research-company to search', {
     it('lists no company found', function () {
       var $results = this.$('#glassdoor-results');
       expect($results.text()).to.contain('No company found');
+    });
+
+    it('records analytics event', function () {
+      expect(this.body).to.contain(
+        'ga(\'send\', \'event\', "Research company", "search", "MissingNo");');
     });
   });
 

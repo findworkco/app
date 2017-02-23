@@ -27,6 +27,7 @@ var appLocals = {
   // DEV: We use multidict in views as we don't know if original data was a string or array
   form_data: new qsMultiDict.MultiDict(), // Default form data
   gravatarUrl: require('gravatar-url'),
+  jsStringify: require('js-stringify'),
   moment: require('moment-timezone'),
   reminderUtils: require('./utils/reminder'),
   sanitizeHtml: require('sanitize-html'),

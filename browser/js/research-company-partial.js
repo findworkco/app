@@ -57,7 +57,7 @@ exports.init = function (containerEl) {
       searchEl.removeAttribute('disabled');
       $(formEl).removeClass('muted');
     }
-    function updateResults() {
+    function updateResults(recordEvent) {
       // Remove any existing errors
       $(partialFormErrorsEl).addClass('hidden');
 
@@ -85,11 +85,17 @@ exports.init = function (containerEl) {
       request.onerror = function (err) {
         handleError(err);
       };
+      var companyName = companyNameEl.value;
       var dataStr = [
         'x-csrf-token=' + encodeURIComponent(csrfTokenEl.value),
-        'company_name=' + encodeURIComponent(companyNameEl.value)
+        'company_name=' + encodeURIComponent(companyName)
       ].join('&');
       request.send(dataStr);
+
+      // If we should record our event, then record it
+      if (recordEvent && window.ga) {
+        window.ga('send', 'event', 'Research company', 'partial-search', companyName);
+      }
     }
 
     // When a key is being pressed in our input box
@@ -102,7 +108,7 @@ exports.init = function (containerEl) {
         evt.stopPropagation();
 
         // Run our custom submission
-        updateResults();
+        updateResults(true);
       }
     });
 
@@ -120,12 +126,12 @@ exports.init = function (containerEl) {
       }
 
       // Perform our search
-      updateResults();
+      updateResults(true);
     });
 
     // If we have a company name, then fetch now
     if (companyNameEl.value) {
-      updateResults();
+      updateResults(false);
     }
   });
 };

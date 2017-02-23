@@ -28,6 +28,18 @@ exports.stub = function (obj, method/*, func*/) {
     stub.restore();
   });
 };
+exports.stubUndefined = function (obj, method/*, func*/) {
+  // Swap noop function into key so Sinon will swap
+  // DEV: We perform `after` after calling stub so we delete afterwards
+  before(function swapBefore () {
+    assert.strictEqual(obj[method], undefined);
+    obj[method] = function () {};
+  });
+  exports.stub.apply(this, arguments);
+  after(function cleanupSwap () {
+    delete obj[method];
+  });
+};
 
 // Bespoke non-Sinon method but whatevs
 exports.swap = function (obj, key, val) {

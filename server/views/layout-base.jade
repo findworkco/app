@@ -108,6 +108,24 @@ html
         ga('create', window._gaqId, 'auto');
         ga('set', 'page', document.location.pathname.replace(/[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/ig, ':uuid'));
         ga('send', 'pageview');
+
+      //- Additionally output any custom events
+      if locals.googleAnalyticsEvents
+        script
+          for googleAnalyticsEvent in googleAnalyticsEvents
+            //- https://developers.google.com/analytics/devguides/collection/analyticsjs/events
+            //- DEV: Example XSS -- company name on `/research-company`
+            //-   `</script><script>alert(1);</script><script>`
+            //- DEV: `jsStringify` escapes HTML entities to their `\u` value and wraps them in double quotes via `JSON.stringify`
+            if !googleAnalyticsEvent.label
+              //- Category, action
+              | ga('send', 'event', !{jsStringify(googleAnalyticsEvent.category)}, !{jsStringify(googleAnalyticsEvent.action)});
+            else if !googleAnalyticsEvent.value
+              //- Category, action, label
+              | ga('send', 'event', !{jsStringify(googleAnalyticsEvent.category)}, !{jsStringify(googleAnalyticsEvent.action)}, !{jsStringify(googleAnalyticsEvent.label)});
+            else
+              //- Category, action, label, value
+              | ga('send', 'event', !{jsStringify(googleAnalyticsEvent.category)}, !{jsStringify(googleAnalyticsEvent.action)}, !{jsStringify(googleAnalyticsEvent.label)}, !{jsStringify(googleAnalyticsEvent.value)});
   body
     //- Define footer for all pages
     mixin footer()
