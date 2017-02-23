@@ -4,3 +4,4 @@ Adding/removing features can be fraught with edge cases. Please make sure we hav
 - [ ] Included screenshots in PR
 - [ ] Limit on queries
 - [ ] Timeouts on requests
+- [ ] Analytics tracking
