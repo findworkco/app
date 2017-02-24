@@ -7,6 +7,7 @@ var Sequelize = require('sequelize');
 var dbFixtures = require('./db-fixtures');
 var fakeGlassdoorFactory = require('./fake-glassdoor');
 var fakeGoogleFactory = require('./fake-google');
+var externalProxyFactory = require('./external-proxy');
 var server = require('../../../server/index.js');
 var sinonUtils = require('../../utils/sinon');
 var app = server.app;
@@ -200,13 +201,26 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
   }
 
   // If we have Glassdoor fixtures, then run a server
+  function exposeFactory(key, val) {
+    before(function exposeFactoryFn () {
+      this[key] = val;
+    });
+    after(function cleanup () {
+      delete this[key];
+    });
+  }
   if (options.glassdoorFixtures && options.glassdoorFixtures.length) {
-    fakeGlassdoorFactory.run(options.glassdoorFixtures);
+    exposeFactory('fakeGlassdoor', fakeGlassdoorFactory.run(options.glassdoorFixtures));
   }
 
   // If we have Google fixtures, then run a server
   if (options.googleFixtures && options.googleFixtures.length) {
-    fakeGoogleFactory.run(options.googleFixtures);
+    exposeFactory('fakeGoogle', fakeGoogleFactory.run(options.googleFixtures));
+  }
+
+  // If we have external proxy fixtures, then run a server
+  if (options.externalProxyFixtures && options.externalProxyFixtures.length) {
+    exposeFactory('externalProxy', externalProxyFactory.run(options.externalProxyFixtures));
   }
 }
 function _scenarioRouteTestBaseSetup(describeStr, options, describeFn) {
@@ -228,6 +242,7 @@ var DEFAULT_ROUTE_TEST_OPTIONS = {
   //   Default behavior would be `[overrides] = {add: [overrides], removeAll: true}`
   googleFixtures: fakeGoogleFactory.DEFAULT_FIXTURES,
   glassdoorFixtures: null,
+  externalProxyFixtures: null,
   startServer: true
 };
 exports.scenario = getDescribeWrapper(DEFAULT_ROUTE_TEST_OPTIONS,

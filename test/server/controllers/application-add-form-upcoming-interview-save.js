@@ -211,7 +211,6 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
       .save({
         method: 'POST', url: serverUtils.getUrl('/add-application/upcoming-interview'),
         htmlForm: _.defaults({
-          name: '',
           pre_interview_reminder_enabled: 'yes',
           pre_interview_reminder_time: '19:00',
           post_interview_reminder_enabled: 'yes',
@@ -227,12 +226,12 @@ scenario.route('A request to POST /add-application/upcoming-interview (specific)
       });
 
     it('outputs validation errors on page', function () {
-      expect(this.$('#validation-errors').text()).to.contain('Name cannot be empty');
       expect(this.$('#validation-errors').text()).to.contain('Pre-interview reminder was set after interview');
       expect(this.$('#validation-errors').text()).to.contain('Post-interview reminder was set before interview');
     });
 
     it('reuses submitted values in inputs/textareas', function () {
+      expect(this.$('input[name=name]').val()).to.equal('Test Corporation');
       expect(this.$('input[name=posting_url]').val()).to.equal('http://google.com/');
       expect(this.$('input[name=company_name]').val()).to.equal('Test Corporation search');
       expect(this.$('textarea[name=notes]').val()).to.equal('Test notes');

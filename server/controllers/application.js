@@ -1,9 +1,14 @@
 // Load in our dependencies
-var _ = require('underscore');
-var express = require('express');
-var Sequelize = require('sequelize');
+var fs = require('fs');
 var url = require('url');
+var _ = require('underscore');
+var cheerio = require('cheerio');
+var express = require('express');
+var isPublicDomain = require('is-public-domain');
+var request = require('request');
+var Sequelize = require('sequelize');
 var app = require('../index.js').app;
+var config = require('../index.js').config;
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
 var saveModelsViaCandidate = require('../models/utils/save-models').saveModelsViaCandidate;
@@ -12,6 +17,9 @@ var ApplicationReminder = require('../models/application-reminder');
 var applicationMockData = require('../models/application-mock-data');
 var Interview = require('../models/interview');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
+
+// Load in static files
+var etcHostsStr = fs.readFileSync('/etc/hosts', 'utf8').replace(/#[^\n]+/g, '');
 
 // Define our controllers
 app.get('/add-application', [
@@ -44,14 +52,13 @@ function setReceivedOfferApplicationStatus(req, res, next) {
 
 var _applicationAddFormSaveFns = new express.Router();
 _applicationAddFormSaveFns.use([
-  function applicationAddFormSave (req, res, next) {
+  function applicationAddFormResolveName (req, res, next) {
     // Create our application to be extended
     var application = req._application = Application.build({
       candidate_id: req.candidate.get('id'),
       application_date_moment: null,
       archived_at_moment: null,
       company_name: req.body.fetch('company_name'),
-      // TODO: Auto-resolve name if empty -- autoresolve name in a secure fashion (i.e. HTTP/HTTPS only, with timeout)
       name: req.body.fetch('name'),
       notes: req.body.fetch('notes'),
       posting_url: req.body.fetch('posting_url'),
@@ -59,7 +66,72 @@ _applicationAddFormSaveFns.use([
     });
     application.setDataValue('interviews', []);
 
+    // If we have no name, then fall it back
+    if (!application.get('name')) {
+      // If we don't have a posting URL, then submit a validation error
+      var postingUrl = application.get('posting_url');
+      if (!postingUrl) {
+        var missingNameAndPostingUrlErrorMsg = 'Missing name and posting URL. Please provide at least one';
+        return next(new Sequelize.ValidationError(
+          missingNameAndPostingUrlErrorMsg, [new Error(missingNameAndPostingUrlErrorMsg)]));
+      }
+
+      // Parse our URL and verify it's HTTP/HTTPS, not an internal IP, nor remapped via `/etc/hosts`
+      // DEV: This is to prevent becoming an attack proxy
+      var genericFailure = 'We were unable to retrieve application name from posting URL';
+      var urlParts;
+      try {
+        urlParts = url.parse(postingUrl);
+      } catch (err) {
+        return next(new Sequelize.ValidationError(genericFailure, [new Error(genericFailure)]));
+      }
+      // DEV: `etcHostsStr` prevents rerouting domains like `findwork.co` which are remapped by Digital Ocean =/
+      if (['http:', 'https:'].indexOf(urlParts.protocol) === -1 ||
+          !isPublicDomain(urlParts.hostname) ||
+          etcHostsStr.indexOf(urlParts.hostname) !== -1) {
+        return next(new Sequelize.ValidationError(genericFailure, [new Error(genericFailure)]));
+      }
+
+      // Request our posting URL
+      request({
+        url: postingUrl,
+        proxy: config.externalProxy.url ? url.format(config.externalProxy.url) : null,
+        timeout: config.externalProxy.timeout
+      }, function handleRequest (err, res, body) {
+        // If there was an error, then submit a validation error
+        if (err) {
+          return next(new Sequelize.ValidationError(genericFailure, [new Error(genericFailure)]));
+        }
+
+        // Attempt to parse the title out of our body
+        var $find;
+        try {
+          $find = cheerio.load(body);
+        } catch (err) {
+          return next(new Sequelize.ValidationError(genericFailure, [new Error(genericFailure)]));
+        }
+        var title = $find('title').text();
+
+        // If there is no title, error out
+        if (!title) {
+          return next(new Sequelize.ValidationError(genericFailure, [new Error(genericFailure)]));
+        }
+
+        // Otherwise, save our title and continue with logic
+        // DEV: We double save for form data for re-render support
+        //   https://github.com/twolfson/querystring-multidict/blob/1.1.0/lib/multidict.js#L66-L70
+        application.set('name', title);
+        req.body.items.name = [title];
+        next();
+      });
+    // Otherwise, continue
+    } else {
+      next();
+    }
+  },
+  function applicationAddFormSave (req, res, next) {
     // If our application is saved for later
+    var application = req._application;
     var reminder, modelsToSave;
     if (req.applicationStatus === Application.STATUSES.SAVED_FOR_LATER) {
       // Create our application's remaining parts (e.g. its reminders)

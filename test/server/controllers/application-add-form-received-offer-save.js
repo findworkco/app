@@ -95,27 +95,32 @@ scenario.route('A request to POST /add-application/received-offer (specific)', {
       .save({
         method: 'POST', url: serverUtils.getUrl('/add-application/received-offer'),
         htmlForm: _.defaults({
-          name: ''
+          received_offer_reminder_date: '2016-01-01',
+          received_offer_reminder_enabled: 'yes'
         }, validFormData),
         followRedirect: false,
         expectedStatusCode: 400, validateHtmlFormDifferent: {exclude: [
+          // DEV: We exclude reminder enabled to force a validation error
+          'received_offer_reminder_enabled',
           // DEV: We exclude time as it changes over the course of a day
           'received_offer_reminder_time']}
       });
 
     it('outputs validation errors on page', function () {
-      expect(this.$('#validation-errors').text()).to.contain('Name cannot be empty');
+      expect(this.$('#validation-errors').text()).to.contain('Reminder date/time is set in the past');
     });
 
     it('reuses submitted values in inputs/textareas', function () {
+      expect(this.$('input[name=name]').val()).to.equal('Test Corporation');
       expect(this.$('input[name=posting_url]').val()).to.equal('http://google.com/');
       expect(this.$('input[name=company_name]').val()).to.equal('Test Corporation search');
       expect(this.$('input[name=application_date]').val()).to.equal('2017-01-06');
       expect(this.$('textarea[name=notes]').val()).to.equal('Test notes');
       expect(this.$('input[name=received_offer_reminder_enabled][value=yes]').attr('checked'))
+        .to.equal('checked');
+      expect(this.$('input[name=received_offer_reminder_enabled][value=no]').attr('checked'))
         .to.equal(undefined);
-      expect(this.$('input[name=received_offer_reminder_enabled][value=no]').attr('checked')).to.equal('checked');
-      expect(this.$('input[name=received_offer_reminder_date]').val()).to.equal('2022-03-05');
+      expect(this.$('input[name=received_offer_reminder_date]').val()).to.equal('2016-01-01');
       expect(this.$('input[name=received_offer_reminder_time]').val()).to.equal('13:00');
       expect(this.$('select[name=received_offer_reminder_timezone]').val()).to.equal('US-America/Los_Angeles');
     });

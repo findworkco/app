@@ -54,6 +54,7 @@
     "async": "~2.1.2",
     "bluebird": "~3.4.7",
     "body-parser": "~1.16.0",
+    "cheerio": "~0.22.0",
     "connect-ensure-login": "~0.1.1",
     "connect-flash": "~0.1.1",
     "connect-redis": "~3.0.2",
@@ -65,6 +66,7 @@
     "gravatar-url": "~1.1.0",
     "http-errors": "~1.5.0",
     "inflection": "~1.10.0",
+    "is-public-domain": "~1.0.0",
     "jade": "~1.11.0",
     "js-stringify": "~1.0.2",
     "json-stringify-safe": "~5.0.1",
@@ -119,7 +121,6 @@
   "devDependencies": {
     "body-parser-multidict": "~1.1.0",
     "chai": "~3.5.0",
-    "cheerio": "git://github.com/twolfson/cheerio.git#e65ad72",
     "gemini": "~3.0.2",
     "gemini-gui": "~3.0.0",
     "jscs": "~3.0.7",
