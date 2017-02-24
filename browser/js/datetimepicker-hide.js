@@ -26,7 +26,7 @@ exports.getTimezoneDateFromDatetimepicker = function (datetimepickerEl) {
 // When we bind our plugin
 exports.init = function (containerEl) {
   // Find all datetimepicker hide sets and bind them
-  $(containerEl).find('[data-datetimepicker-hide]').each(function handleAutosizeEl (i, srcEl) {
+  $(containerEl).find('[data-datetimepicker-hide]').each(function handleDatetimepickerHideEl (i, srcEl) {
     // Find our target element
     var targetSelector = srcEl.getAttribute('data-datetimepicker-hide');
     var targetEls = containerEl.querySelectorAll(targetSelector);

@@ -57,7 +57,7 @@ exports.setDateToDatetimepicker = function (datetimepickerEl, date) {
 // When we bind our plugin
 exports.init = function (containerEl) {
   // Find all datetimepicker sync sets and bind them
-  $(containerEl).find('[data-datetimepicker-sync]').each(function handleAutosizeEl (i, srcEl) {
+  $(containerEl).find('[data-datetimepicker-sync]').each(function handleDatetimepickerSyncEl (i, srcEl) {
     // Find our target element
     var targetSelector = srcEl.getAttribute('data-datetimepicker-sync');
     var targetEls = containerEl.querySelectorAll(targetSelector);

@@ -5,12 +5,11 @@ mixin application-name(text, values)
     input#name.form-control.input--block(name="name", type="text", value=form_data.get('name') || values.name || locals.query_company_name, placeholder="Examples: Google, Acme Corp")&attributes(attributes)
 
 mixin posting-url(values)
-  //- TODO: Link up `follow URL` to automatically update on throttled keydown
   .form-group
     - var postingUrl = form_data.get('posting_url') || values.posting_url;
     label(for="posting_url")
       = "Posting URL: ("
-      a(href=postingUrl) follow URL
+      a(href=postingUrl, data-follow-url="#posting_url", target="_blank") follow URL
       = ")"
     input#posting_url.form-control.input--block(name="posting_url", type="text", value=postingUrl, placeholder="https://job-board.com/url/of/listing")
 

@@ -15,6 +15,7 @@ var contentSync = require('./content-sync');
 var datetimepickerHide = require('./datetimepicker-hide');
 var datetimepickerSync = require('./datetimepicker-sync');
 var errorGenerators = require('./error-generators');
+var followUrl = require('./follow-url');
 var notifications = require('./notifications');
 var menu = require('./menu');
 var researchCompanyPartial = require('./research-company-partial');
@@ -83,6 +84,7 @@ exports.init = function (containerEl) {
   datetimepickerHide.init(containerEl);
   datetimepickerSync.init(containerEl);
   errorGenerators.init();
+  followUrl.init(containerEl);
   notifications.init();
   researchCompanyPartial.init(containerEl);
   toggleText.init(containerEl);
