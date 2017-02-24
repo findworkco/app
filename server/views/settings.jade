@@ -5,7 +5,7 @@ block title
 
 block content
   h1.content__heading.push--bottom Settings
-  form.cf(method="POST", action="/settings")
+  form.cf(method="POST", action="/settings", data-unsaved-changes)
     +csrf-input()
     //- DEV: When not disabled, this will be a link or a button for OAuth
     p

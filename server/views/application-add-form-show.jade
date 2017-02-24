@@ -15,7 +15,7 @@ block content
   h1.content__heading Add job application
   h2.content__subheading
     | Please fill out information about the application
-  form.cf(method="POST", action=page_url)
+  form.cf(method="POST", action=page_url, data-unsaved-changes)
     +csrf-input()
     .action-bar.push--bottom
       .action-bar__info

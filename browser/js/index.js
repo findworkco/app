@@ -18,6 +18,7 @@ var errorGenerators = require('./error-generators');
 var notifications = require('./notifications');
 var menu = require('./menu');
 var researchCompanyPartial = require('./research-company-partial');
+var unsavedChanges = require('./unsaved-changes');
 var toggleText = require('./toggle-text');
 var wysiwyg = require('./wysiwyg');
 
@@ -85,6 +86,7 @@ exports.init = function (containerEl) {
   notifications.init();
   researchCompanyPartial.init(containerEl);
   toggleText.init(containerEl);
+  unsavedChanges.init(containerEl);
   menu.init();
   wysiwyg.init();
 

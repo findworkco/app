@@ -20,7 +20,7 @@ block content
       ul.flush--bottom
         for error in validation_errors
           li= error.message
-  form.cf(method="POST", action=selectedApplication.add_interview_url)
+  form.cf(method="POST", action=selectedApplication.add_interview_url, data-unsaved-changes)
     +csrf-input()
     .grid
       .grid__item.one-whole.medium-one-half.large-four-ninths

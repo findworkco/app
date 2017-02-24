@@ -9,11 +9,7 @@ block title
   title Job application - #{selectedApplication.name} - Find Work
 
 block content
-  div(style="position: relative")
-    h1.content__heading Job application
-    //- DEV: On large screens, display "All changes saved" away from content
-    //- DEV: We keep "All changes saved" separate from h1 for a11y clarity
-    i.text--normal.muted.medium-and-down-hidden(data-autosave, style="position: absolute; top: 0; right: 0") All changes saved
+  h1.content__heading Job application
   h2.content__subheading= form_data.get('name') || selectedApplication.name
   //- DEV: We wanted to use a `p` but we can't nest forms in them
   //-   as browsers break up those block in block formations
@@ -71,9 +67,6 @@ block content
           | Restore application
       else
         - throw new Error('Unexpected application status');
-  p.large-hidden
-    //- DEV: On small screens, display "All changes saved" close to content
-    i.muted(data-autosave) All changes saved
   .cf
     if locals.validation_errors
       //- DEV: Id is for testing only
@@ -82,7 +75,7 @@ block content
         ul.flush--bottom
           for error in validation_errors
             li= error.message
-    form(method="POST", action=selectedApplication.url)
+    form(method="POST", action=selectedApplication.url, data-unsaved-changes)
       +csrf-input()
       .grid
         .grid__item.one-whole.medium-one-half.large-four-ninths
@@ -144,9 +137,6 @@ block content
                 i.fa.fa-calendar-o(style="font-size: 1.5em")
               - var archivedAtMoment = selectedApplication.archived_at_moment.tz(timezone);
               span= archivedAtMoment.format('ddd MMM D [at] h:mmA zz')
-          p.large-hidden(style="margin-top: -18px")
-            //- DEV: On small screens, display "All changes saved" close to content
-            i.muted(data-autosave) All changes saved
           div.landmark
             button.btn.btn--primary(type="submit") Save changes
     form.landmark.float--left(method="POST", action=selectedApplication.delete_url)
