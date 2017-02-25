@@ -287,7 +287,7 @@ scenario.route('A request to a page which loads navigation', function () {
     dbFixtures: recentlyViewedApplicationFixtures
   }, function () {
     // Silence Winston, log in our user, add recently viewed applications, and make our request
-    sinonUtils.stub(app.notWinston, 'error');
+    sinonUtils.stub(app.winston, 'error');
     httpUtils.session.init().login();
     addRecentlyViewedApplications();
     httpUtils.session.save({url: serverUtils.getUrl('/_dev/500'), expectedStatusCode: 500});

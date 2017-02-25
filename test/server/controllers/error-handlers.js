@@ -40,7 +40,7 @@ scenario('A request for a page with a server error', {
 }, function () {
   // Spy on Sentry, silence Winston, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
-  sinonUtils.stub(app.notWinston, 'error');
+  sinonUtils.stub(app.winston, 'error');
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/_dev/500'),
     expectedStatusCode: 500
@@ -71,7 +71,7 @@ scenario('A request for a page with a render error', {
 }, function () {
   // Spy on Sentry, silence Winston, force a render error, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
-  sinonUtils.stub(app.notWinston, 'error');
+  sinonUtils.stub(app.winston, 'error');
   sinonUtils.stub(Response, 'render', function forceRenderError () {
     throw new Error('Stubbed error while rendering');
   });
@@ -151,7 +151,7 @@ scenario('A request for a page with an unexposable yet expected error', {
 scenario('A request for a page with a generic error', function () {
   // Spy on Sentry, silence Winston, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
-  sinonUtils.stub(app.notWinston, 'error');
+  sinonUtils.stub(app.winston, 'error');
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/error/sync-error'),
     expectedStatusCode: 500

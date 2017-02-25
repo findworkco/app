@@ -55,7 +55,7 @@ function registerJob(name, concurrency, fn) {
       jobDomain.on('error', function handleError (err) {
         // Report/log our error
         // DEV: We could throw errors in testing but they won't be caught due to being async
-        app.notWinston.error(err);
+        app.winston.error(err);
         sentryClient.captureError(err, getSentryKwargsForJob(job));
 
         // Callback with our error
@@ -65,7 +65,7 @@ function registerJob(name, concurrency, fn) {
         fn.call(that, job, function handleDone (err) {
           // If there was an error, log it
           if (err) {
-            app.notWinston.error(err);
+            app.winston.error(err);
             sentryClient.captureError(err, getSentryKwargsForJob(job));
           }
 
@@ -97,7 +97,7 @@ exports.create = function () {
     job.remove(function handleRemove (err) {
       // If there was an error, record it
       if (err) {
-        app.notWinston.error(err);
+        app.winston.error(err);
         sentryClient.captureError(err, getSentryKwargsForJob(job));
       }
     });
@@ -198,7 +198,7 @@ exports.loopGuaranteeProcessReminders = function () {
       // If there was an error, log it
       // DEV: We intentionally don't return so we keep on looping
       if (err) {
-        app.notWinston.error(err);
+        app.winston.error(err);
         app.sentryClient.captureError(err);
       // Otherwise
       } else {
@@ -235,7 +235,7 @@ function handleApplicationInterviews(application) {
 }
 function logError(err, job, cb) {
   // Report/log our error
-  app.notWinston.error(err);
+  app.winston.error(err);
   sentryClient.captureError(err, getSentryKwargsForJob(job));
 
   // Callback with nothing as we don't want to halt batch processing

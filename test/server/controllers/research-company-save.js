@@ -167,7 +167,7 @@ scenario.route('A request to POST /research-company to search', {
   scenario.routeTest('that times out', {
     glassdoorFixtures: ['/api/api.htm#timeout']
   }, function () {
-    sinonUtils.stub(app.notWinston, 'error');
+    sinonUtils.stub(app.winston, 'error');
     httpUtils.session.init()
       .save(serverUtils.getUrl('/research-company'))
       .save({
@@ -179,7 +179,7 @@ scenario.route('A request to POST /research-company to search', {
     it('errors out before receiving a response', function () {
       // Status code asserted by `expectedStatusCode`
       // Assert timeout error itself
-      var winstonSpy = app.notWinston.error;
+      var winstonSpy = app.winston.error;
       expect(winstonSpy.callCount).to.equal(1);
       expect(winstonSpy.args[0][0].code).to.equal('ETIMEDOUT');
     });
@@ -188,7 +188,7 @@ scenario.route('A request to POST /research-company to search', {
   scenario.routeTest('that encounters an error', {
     glassdoorFixtures: ['/api/api.htm#error']
   }, function () {
-    sinonUtils.stub(app.notWinston, 'error');
+    sinonUtils.stub(app.winston, 'error');
     httpUtils.session.init()
       .save(serverUtils.getUrl('/research-company'))
       .save({
@@ -200,7 +200,7 @@ scenario.route('A request to POST /research-company to search', {
     it('records an error', function () {
       // Status code asserted by `expectedStatusCode`
       // Assert timeout error itself
-      var winstonSpy = app.notWinston.error;
+      var winstonSpy = app.winston.error;
       expect(winstonSpy.callCount).to.equal(1);
       expect(winstonSpy.args[0][0].message).to.contain('Received unsuccessful response from Glassdoor');
       expect(winstonSpy.args[0][0].message).to.contain('Access-Denied');

@@ -166,7 +166,7 @@ scenario.route('A request to GET /oauth/google/callback', {
   }, function () {
     // Make our request
     sinonUtils.spy(app.sentryClient, 'captureError');
-    sinonUtils.stub(app.notWinston, 'error');
+    sinonUtils.stub(app.winston, 'error');
     httpUtils.session.init().save({
       // Redirects to fake Google OAuth, then to `/oauth/google/callback`
       url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),

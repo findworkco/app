@@ -4,9 +4,12 @@ process.env.KUE = '1';
 
 // Load in our jobs which auto-register/start due to environment flag
 var queue = require('../server/queue');
+// DEV: We access Winston and Sentry client directly to not load app which bloats `master` process
+var sentryClient = require('../server/_sentry').sentryClient;
+var winston = require('../server/_winston');
 
 // Notify the user that the queue is running
-console.log('Queue process is running');
+winston.info('Queue process is running');
 
 // Guarantee reminders are being processed
 // DEV: We load this in `bin` to prevent accidentally running this multiple times
@@ -20,7 +23,6 @@ queue.loopGuaranteeProcessReminders();
 //   then hard fail this server in production so it can reboot fresh
 //   https://github.com/Automattic/kue/tree/v0.11.5#graceful-shutdown
 process.on('uncaughtException', function handleUncaughtException (err) {
-  // TODO: Move to Winston for logging
-  console.error(err);
-  queue.sentryClient.captureError(err);
+  winston.error(err);
+  sentryClient.captureError(err);
 });

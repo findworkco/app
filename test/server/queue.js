@@ -13,7 +13,7 @@ scenario('A successful job', {
   // Spy on Sentry, silence Winston, and make our request
   serverUtils.stubEmails();
   sinonUtils.spy(app.sentryClient, 'captureError');
-  sinonUtils.stub(app.notWinston, 'error');
+  sinonUtils.stub(app.winston, 'error');
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/_dev/email/queue/test'),
     expectedStatusCode: 200
@@ -25,8 +25,8 @@ scenario('A successful job', {
   it('has no errors', function () {
     var captureErrorSpy = app.sentryClient.captureError;
     expect(captureErrorSpy.callCount).to.equal(0);
-    var notWinstonErrorStub = app.notWinston.error;
-    expect(notWinstonErrorStub.callCount).to.equal(0);
+    var winstonErrorStub = app.winston.error;
+    expect(winstonErrorStub.callCount).to.equal(0);
   });
 
   it('cleans up after itself in Redis', function (done) {
@@ -56,7 +56,7 @@ scenario('An error-interrupted job', {
 }, function () {
   // Spy on Sentry, silence Winston, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
-  sinonUtils.stub(app.notWinston, 'error');
+  sinonUtils.stub(app.winston, 'error');
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/error/queue/sync-error'),
     expectedStatusCode: 200
@@ -76,9 +76,9 @@ scenario('An error-interrupted job', {
     expect(captureErrorArgs[1].extra.jobData).to.be.a('Object');
 
     // Assert not Winston info
-    var notWinstonErrorStub = app.notWinston.error;
-    expect(notWinstonErrorStub.callCount).to.equal(1);
-    expect(notWinstonErrorStub.args[0][0].message).to.equal('Synchronous error');
+    var winstonErrorStub = app.winston.error;
+    expect(winstonErrorStub.callCount).to.equal(1);
+    expect(winstonErrorStub.args[0][0].message).to.equal('Synchronous error');
   });
 
   it('cleans up after itself in Redis', function (done) {
@@ -107,7 +107,7 @@ scenario('A failed job', {
 }, function () {
   // Spy on Sentry, silence Winston, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
-  sinonUtils.stub(app.notWinston, 'error');
+  sinonUtils.stub(app.winston, 'error');
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/error/queue/failure'),
     expectedStatusCode: 200
@@ -127,9 +127,9 @@ scenario('A failed job', {
     expect(captureErrorArgs[1].extra.jobData).to.be.a('Object');
 
     // Assert not Winston info
-    var notWinstonErrorStub = app.notWinston.error;
-    expect(notWinstonErrorStub.callCount).to.equal(1);
-    expect(notWinstonErrorStub.args[0][0].message).to.equal('Failure error');
+    var winstonErrorStub = app.winston.error;
+    expect(winstonErrorStub.callCount).to.equal(1);
+    expect(winstonErrorStub.args[0][0].message).to.equal('Failure error');
   });
 
   it('cleans up after itself in Redis', function (done) {

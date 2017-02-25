@@ -9,16 +9,17 @@ var express = require('express');
 var expressSession = require('express-session');
 // DEV: Job queue evaluation -- https://gist.github.com/twolfson/a8e5bca55ad825ff49305e457fbf46ca
 var kue = require('kue');
+var maxmind = require('maxmind');
 var nodemailer = require('nodemailer');
 var nodemailerHtmlToText = require('nodemailer-html-to-text').htmlToText;
 var passport = require('passport');
 var RedisSessionStore = require('connect-redis')(expressSession);
 var redis = require('redis');
+var winston = require('./_winston');
 var sentryClient = require('./_sentry').sentryClient;
 var sequelize = require('./models/_sequelize');
 var qsMultiDict = require('./utils/querystring-multidict');
 var sentryUtils = require('./utils/sentry');
-var maxmind = require('maxmind');
 var appLocals = {
   _: require('underscore'),
   assert: require('assert'),
@@ -77,15 +78,8 @@ function Server(config) {
   // Define our application locals
   app.locals = _.defaults(app.locals, appLocals);
 
-  // Create a fake Winston client
-  // TODO: Setup proper winston client
-  app.notWinston = {
-    error: function (err) {
-      console.error(err.stack);
-    }
-  };
-
-  // Expose our Sentry client
+  // Expose our Winston and Sentry client
+  app.winston = winston;
   app.sentryClient = sentryClient;
 
   // Create a Redis client
@@ -228,8 +222,7 @@ function Server(config) {
   app.use(function addCaptureError (req, res, next) {
     req.captureError = function (err) {
       // Log our error
-      // TODO: Use actual Winston client
-      app.notWinston.error(err);
+      app.winston.error(err);
 
       // Prepare and send our request for Sentry
       var sentryKwargs = sentryUtils.parseRequest(req);

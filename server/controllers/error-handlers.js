@@ -75,8 +75,7 @@ app.use(function handleGenericError (err, req, res, next) {
   }
 
   // Log our error
-  // TODO: Use actual Winston client
-  app.notWinston.error(err);
+  app.winston.error(err);
 
   // Prepare and send our request for Sentry
   var sentryKwargs = sentryUtils.parseRequest(req);
@@ -90,8 +89,7 @@ app.use(function handleGenericError (err, req, res, next) {
     });
   } catch (renderErr) {
     // Log and report our render error
-    // TODO: Use actual Winston client
-    app.notWinston.error(err);
+    app.winston.error(err);
     app.sentryClient.captureError(renderErr, sentryKwargs);
 
     // Send a text only response

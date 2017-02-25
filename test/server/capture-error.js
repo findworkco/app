@@ -11,7 +11,7 @@ scenario('A request for a page with a non-critical error', {
 }, function () {
   // Spy on Sentry, silence Winston, and make our request
   sinonUtils.spy(app.sentryClient, 'captureError');
-  sinonUtils.stub(app.notWinston, 'error');
+  sinonUtils.stub(app.winston, 'error');
   httpUtils.session.init().save({
     url: serverUtils.getUrl('/error/non-critical-error'),
     expectedStatusCode: 200
