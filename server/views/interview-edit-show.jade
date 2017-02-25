@@ -27,12 +27,12 @@ block content
         +interview-fields(selectedInterview)
         .landmark
           button.btn.btn--primary(type="submit") Save changes
-      form(method="POST", action=selectedInterview.delete_url)
+      form(method="POST", action=selectedInterview.delete_url, data-confirm-submit="Are you sure you want to delete this interview for #{selectedApplication.name}?")
         +csrf-input()
         //- DEV: We can resolve nested form issue by moving to a modal
         //-   Currently, we resolved it via floats
         //- DEV: We manually test that verifies form doesn't submit on confirm rejection
-        button.btn.btn--danger(type="submit", onclick="javascript:return confirm('Are you sure you want to delete this interview for #{selectedApplication.name}?')") Delete
+        button.btn.btn--danger(type="submit") Delete
     .grid__item.one-whole.medium-one-half.large-five-ninths
       div.small-hidden
         a.btn.btn--default.one-whole(href=selectedApplication.url) Back to job application

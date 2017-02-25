@@ -5,6 +5,7 @@ var $ = require('jquery');
 // - Visit/leave page with no changes (should not message)
 // - Edit page and leave via browser navigation (should message)
 // - Edit page and perform "Save changes" (should not message)
+// - Page which temporarily disables input on load (application edit, should not message)
 
 // When we bind our plugin
 exports.init = function (containerEl) {

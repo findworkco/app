@@ -52,7 +52,6 @@ exports.init = function (containerEl) {
       throw err;
     }
     function handleCompletion() { // jshint ignore:line
-      companyNameEl.removeAttribute('disabled');
       searchEl.removeAttribute('disabled');
       $(formEl).removeClass('muted');
     }
@@ -61,7 +60,7 @@ exports.init = function (containerEl) {
       $(partialFormErrorsEl).addClass('hidden');
 
       // Disable our search button and make our form "load"
-      companyNameEl.setAttribute('disabled', 'disabled');
+      // DEV: We don't disable our input as it messes with the "Unsaved changes" plugin's serialization otherwise
       searchEl.setAttribute('disabled', 'disabled');
       $(formEl).addClass('muted');
 

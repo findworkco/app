@@ -150,7 +150,6 @@ describe('A partial research company form performing a successful search', funct
 
     // Verify loading state disables fields
     expect(this.$('.research-company').get(0).className).to.contain('muted');
-    expect($companyName.attr('disabled')).to.equal('disabled');
     expect($searchLink.attr('disabled')).to.equal('disabled');
 
     // Complete search and wait for Sinon to raise assertions if any
@@ -159,7 +158,6 @@ describe('A partial research company form performing a successful search', funct
     process.nextTick(function handleNextTick () {
       // Verify fields re-enabled
       expect(that.$('.research-company').get(0).className).to.not.contain('muted');
-      expect($companyName.attr('disabled')).to.equal(undefined);
       expect($searchLink.attr('disabled')).to.equal(undefined);
 
       // Verify content
@@ -201,7 +199,6 @@ describe('A partial research company form performing an erroring search', functi
 
     // Verify fields re-enabled
     expect(this.$('.research-company').get(0).className).to.not.contain('muted');
-    expect(this.$('input[name=company_name]').attr('disabled')).to.equal(undefined);
     expect(this.$('a[href="/research-company"]').attr('disabled')).to.equal(undefined);
 
     // Verify content

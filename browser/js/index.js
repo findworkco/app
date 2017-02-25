@@ -10,6 +10,8 @@ void require('../../bower_components/chosen/chosen.jquery.js');
 // DEV: Bootstrap's `transition` must come before its `collapse`
 void require('../../bower_components/bootstrap/js/transition.js');
 void require('../../bower_components/bootstrap/js/collapse.js');
+var backLink = require('./back-link');
+var confirmSubmit = require('./confirm-submit');
 var contentSync = require('./content-sync');
 var datetimepickerHide = require('./datetimepicker-hide');
 var datetimepickerSync = require('./datetimepicker-sync');
@@ -73,6 +75,8 @@ exports.init = function (containerEl) {
   $(containerEl).find('[data-chosen]').chosen();
 
   // Bind our external plugins
+  backLink.init(containerEl);
+  confirmSubmit.init(containerEl);
   contentSync.init(containerEl);
   datetimepickerHide.init(containerEl);
   datetimepickerSync.init(containerEl);

@@ -19,7 +19,7 @@ scenario.route('A request to GET /settings', {
     it('shows candidate info in fields', function () {
       expect(this.$('input[name=email]').val()).to.equal('mock-email@mock-domain.test');
       expect(this.$('select[name=timezone]').val()).to.equal('US-America/Chicago');
-      expect(this.$('form[action="/delete-account"]').attr('onsubmit'))
+      expect(this.$('form[action="/delete-account"]').attr('data-confirm-submit'))
         .to.contain('mock-email@mock-domain.test');
     });
   });

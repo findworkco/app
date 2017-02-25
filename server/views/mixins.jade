@@ -1,4 +1,10 @@
 //- Declare common mixins
+mixin back-link()
+  //- DEV: We use `javascript:` href despite CSP to make hover preview obvious
+  //- DEV: If we update this `href`, please update our browser plugin
+  a(href="javascript:window.history.go(-1);")&attributes(attributes)
+    block
+
 mixin csrf-input()
   input(type="hidden", name="x-csrf-token", value=csrfToken)
 

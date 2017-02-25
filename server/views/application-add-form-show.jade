@@ -58,4 +58,4 @@ block content
             if application_status === APPLICATION_STATUSES.UPCOMING_INTERVIEW
               = " and interview"
         p
-          a.btn.btn--default(href="javascript:window.history.go(-1);") Go back to previous screen
+          +back-link().btn.btn--default Go back to previous screen

@@ -42,6 +42,6 @@ block content
     .push-double--bottom
       button.btn.btn--primary(type="submit") Save changes
   +logout-form().push-double--bottom
-  form(method="POST", action="/delete-account", onsubmit="javascript:return confirm('Are you sure you would like to delete the \"#{candidate.email}\" Find Work account?')")
+  form(method="POST", action="/delete-account", data-confirm-submit="Are you sure you would like to delete the \"#{candidate.email}\" Find Work account?")
     +csrf-input()
     button.btn.btn--danger(type="submit") Delete
