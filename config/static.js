@@ -9,7 +9,7 @@ var execSync = require('child_process').execSync;
 
 // Define generic settings
 exports.common = {
-  // TODO: Load from source other than `git` as it isn't guaranteed in production
+  // DEV: We should load from source other than `git` as it isn't guaranteed in production
   gitRevision: execSync('git rev-parse HEAD').toString('utf8').trim(),
   forceLoadMaxmind: false,
   redisUrl: 'redis://127.0.0.1:6400'

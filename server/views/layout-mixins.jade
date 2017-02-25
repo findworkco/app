@@ -1,7 +1,6 @@
 mixin application-info(mixin, application)
   //- DEV: Ideally we would have separate `nav-info` and `schedule-info` mixins for flexibility without sacrificing legibility
   //-   However during prototyping it helps that they are shared
-  //- TODO: Screenshot edge case: Overflowing lines stay with centered icon (both nav and schedule)
   - var status = application.status;
   if status == APPLICATION_STATUSES.RECEIVED_OFFER
     +#{mixin}({icon: 'fa-envelope-o'})
@@ -23,7 +22,6 @@ mixin application-info(mixin, application)
       a(href=closestInterview.url)
         = closestInterview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
     +#{mixin}({icon: 'fa-info-circle'})
-      //- TODO: Sanitize and linkify details (e.g. map) https://trello.com/c/UMUrlgw1/258-render-interview-details-as-html-in-nav-schedule
       if closestInterview.details
         = closestInterview.details
       else

@@ -29,7 +29,6 @@ html
   b= "Date/time: "
   = interview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
   br
-  //- TODO: Sanitize and linkify details (e.g. map) https://trello.com/c/UMUrlgw1/258-render-interview-details-as-html-in-nav-schedule
   b= "Details: "
   if interview.details
     = interview.details

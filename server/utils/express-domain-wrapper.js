@@ -14,7 +14,6 @@ var monkeyPatchedExpress = false;
 // Define and export our wrapper function
 exports.monkeyPatchExpress = function (domainErrorCallback) {
   // If Express has already been monkey patched, then error out
-  // TODO: Figure out how to get this limited to an Express instance
   if (monkeyPatchedExpress === true) {
     throw new Error('Express cannot be wrapped with domains twice as we refer to a server singleton. ' +
       'Please either update the code to use a `this.app` reference to remove multiple monkey patches');

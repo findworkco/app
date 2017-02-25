@@ -31,7 +31,7 @@ block content
         +csrf-input()
         //- DEV: We can resolve nested form issue by moving to a modal
         //-   Currently, we resolved it via floats
-        //- TODO: Add test that verifies form doesn't submit on confirm rejection
+        //- DEV: We manually test that verifies form doesn't submit on confirm rejection
         button.btn.btn--danger(type="submit", onclick="javascript:return confirm('Are you sure you want to delete this interview for #{selectedApplication.name}?')") Delete
     .grid__item.one-whole.medium-one-half.large-five-ninths
       div.small-hidden

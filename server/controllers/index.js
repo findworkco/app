@@ -205,7 +205,6 @@ app.get('/schedule', [
     // Populate our options
     // DEV: We fetch active applications separately so we can add limits to each type
     // TODO: Be sure to sort queries by upcoming date
-    // TODO: Warn ourselves if we see a date that was before today for upcoming interviews
     var receivedOfferOptions = getScheduleOptions(req, Application.STATUSES.RECEIVED_OFFER, {
       include: [
         includes.closestPastInterview,

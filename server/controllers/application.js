@@ -310,7 +310,8 @@ app.post('/add-application/received-offer', _.flatten([
 var resolveApplicationById = exports.resolveApplicationById = function (params) {
   return resolveModelsAsLocals(params, function resolveApplicationByIdFn (req) {
     // Define common application options
-    // TODO: Consider split load past/upcoming interviews (as well as closest upcoming/past interview for nav)
+    // DEV: We could split load past/upcoming interviews (as well as closest upcoming/past interview for nav)
+    //   but this works quite well without issues
     var applicationOptions = {
       where: {
         id: req.params.id,
@@ -347,7 +348,6 @@ app.get('/application/:id', _.flatten([
     req.addRecentlyViewedApplication(req.models.selectedApplication);
 
     // Render our page
-    // TODO: Load company results via AJAX on page (no way to do it in parallel)
     res.render('application-edit-show.jade');
   }
 ]));

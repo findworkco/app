@@ -18,7 +18,6 @@ var partialFullResContract = fs.readFileSync(
   __dirname + '/../../test-files/http-contracts/research-company-partial-save-200-res.html', 'utf8');
 
 // Start our tests
-// TODO: Add tests for AngelList logged in state/not when searching for companies
 scenario.route('A request to POST /research-company to search', {
   requiredTests: {nonOwner: false, loggedOut: false}
 }, function () {

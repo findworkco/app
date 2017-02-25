@@ -24,7 +24,6 @@ exports.init = function (containerEl) {
       // Parse our content
       // https://api.jquery.com/jquery.parsehtml/
       // DEV: We use a wrapper `<div>` node for elegant grouping
-      // TODO: Weigh out using jQuery.parseHTML vs innerHTML (security risk vs size)
       var replaceEl = $.parseHTML('<div>' + htmlStr + '</div>')[0];
       assert(replaceEl);
 

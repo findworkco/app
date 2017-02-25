@@ -65,8 +65,6 @@ passport.use(new GoogleStrategy({
           // If there was an error, send it to Sentry (no need to bail)
           if (err) { app.sentryClient.captureError(err); }
 
-          // TODO: Should we have any flash message (e.g. Welcome back to Find Work!)
-
           // Callback with the candidate
           return next(null, _candidate);
         });
@@ -93,8 +91,6 @@ passport.use(new GoogleStrategy({
             app.sentryClient.captureError(err);
           }
         });
-
-        // TODO: Should we have any flash message (e.g. Welcome to Find Work!)
 
         // Callback with our candidate
         next(null, candidate);

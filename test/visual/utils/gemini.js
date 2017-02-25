@@ -80,8 +80,6 @@ exports.bind = function (gemini) {
   return exports;
 };
 
-// TODO: Move resize helpers directly to methods on `suite-builder`
-
 // Define our resize helpers
 // DEV: Despite using a very tall height, we only capture until the body stops
 exports.resizeLarge = function (actions, find) {

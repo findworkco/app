@@ -49,7 +49,6 @@ var Application = module.exports = _.extend(baseDefine('application', {
   // DEV: This is never null, only an empty string (this gives us falsy consistency)
   posting_url: {type: Sequelize.STRING(1024), defaultValue: '', allowNull: false},
 
-  // TODO: Probably add an index based on application status
   status: {
     type: Sequelize.STRING(36), allowNull: false,
     validate: {isIn: {args: [_.values(exports.STATUSES)], msg: 'Invalid status provided'}}
@@ -211,7 +210,7 @@ var Application = module.exports = _.extend(baseDefine('application', {
       }, applicationDateMomemt);
     },
     past_interviews: function () {
-      // TODO: Consider fetching past interviews as a query
+      // DEV: We could load `past_interviews` as its own query but it will likely cause status determination issues
       var interviews = this.get('interviews');
       if (interviews) {
         var Interview = this.sequelize.models.interview;
@@ -237,7 +236,7 @@ var Application = module.exports = _.extend(baseDefine('application', {
       return this.getDataValue('status').toUpperCase();
     },
     upcoming_interviews: function () {
-      // TODO: Consider fetching upcoming interviews as a query
+      // DEV: We could load `upcoming_interviews` as its own query but it will likely cause status determination issues
       var interviews = this.get('interviews');
       if (interviews) {
         var Interview = this.sequelize.models.interview;

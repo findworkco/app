@@ -127,7 +127,6 @@ function Server(config) {
     // If we dropped our Redis connection, then error out this request
     // TODO: When we scale to multiple servers, crash server on Redis loss
     //   as we could have requests in unpredictable state
-    // TODO: Log error to Sentry about no session
     if (!req.session) {
       return next(new Error('Request session could not be found/created'));
     }
