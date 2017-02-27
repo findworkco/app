@@ -5,6 +5,7 @@ var _ = require('underscore');
 var bodyParser = require('body-parser');
 var connectFlash = require('connect-flash');
 var csurf = require('csurf');
+var helmet = require('helmet');
 var express = require('express');
 var expressSession = require('express-session');
 // DEV: Job queue evaluation -- https://gist.github.com/twolfson/a8e5bca55ad825ff49305e457fbf46ca
@@ -15,6 +16,7 @@ var nodemailerHtmlToText = require('nodemailer-html-to-text').htmlToText;
 var passport = require('passport');
 var RedisSessionStore = require('connect-redis')(expressSession);
 var redis = require('redis');
+var uuid = require('node-uuid');
 var winston = require('./_winston');
 var sentryClient = require('./_sentry').sentryClient;
 var sequelize = require('./models/_sequelize');
@@ -77,6 +79,47 @@ function Server(config) {
 
   // Define our application locals
   app.locals = _.defaults(app.locals, appLocals);
+
+  // Configure our Helmet setup
+  // https://github.com/helmetjs/helmet/tree/v3.4.1
+  // https://github.com/helmetjs/helmet/blob/v3.4.1/config.json
+  // https://github.com/helmetjs/helmet/blob/v3.4.1/index.js#L32-L42
+  var cspOptions = {
+    directives: {
+      // https://content-security-policy.com/faq/
+      // https://content-security-policy.com/#source_list
+      // https://helmetjs.github.io/docs/csp/#generating-nonces
+      // DEV: We allow styles as we use inline styles. The worst they can do is leak beacons (e.g. `background-image`)
+      //   as well as images to prevent developer frustration
+      scriptSrc: ['\'self\'', 'cdn.ravenjs.com', 'www.google-analytics.com', function setNonce (req, res) {
+        // `nonce-abcdef-...`
+        res.locals.helmetNonce = uuid.v4();
+        return '\'nonce-' + res.locals.helmetNonce + '\'';
+      }]
+    }
+  };
+  if (config.sentry.cspReportUri) { cspOptions.directives.reportUri = config.sentry.cspReportUri; }
+  app.use(helmet.contentSecurityPolicy(cspOptions));
+  // helmet.dnsPrefetchControl: No -- Allow browsers to prefetch for performance, no more insecure than a beacon
+  app.use(helmet.frameguard({action: 'deny'})); // X-Frame-Options
+  // helmet.hidePoweredBy: No -- Allow `X-Powered-By: Express` to be sent. Give them attribution, they deserve it
+  // helmet.hpkp: No -- Don't use HTTP Public Key Pinning as it can make site unusable on certificate revoke
+  //   https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning#Setting_up_your_webserver_to_include_the_HPKP_header
+  app.use(helmet.hsts({
+    // DEV: `hsts` uses `req.secure` to only set header for HTTPS environments
+    //   https://github.com/helmetjs/hsts/blob/v2.0.0/index.js#L50
+    maxAge: 60 * 24 * 60 * 60, // 60 days in seconds
+    // DEV: We might have an HTTP-only blog platform so don't force HSTS on subdomains for now
+    includeSubDomains: false
+  }));
+  app.use(helmet.ieNoOpen());
+  // helmet.noCache: No -- We want caching
+  app.use(helmet.noSniff());
+  // Allow `findwork.co` to get referrer but not other domains
+  // DEV: Unfortunately, this doesn't share `referrer` with `blog.findwork.co` =/
+  //   https://www.w3.org/TR/referrer-policy/#referrer-policies
+  app.use(helmet.referrerPolicy({policy: 'same-origin'}));
+  app.use(helmet.xssFilter());
 
   // Expose our Winston and Sentry client
   app.winston = winston;

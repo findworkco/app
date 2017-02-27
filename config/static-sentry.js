@@ -3,8 +3,8 @@ var assert = require('assert');
 var staticSecrets = require('./static-secrets');
 
 // Localize our DSN secrets
-var BROWSER_DSN = staticSecrets.staticSentry.browserDSN;
-assert(BROWSER_DSN);
+var BROWSER_DSN = 'https://8fb7e7e068244e31adc0d87738cade76@sentry.io/102002';
+var CSP_REPORT_URI = 'https://sentry.io/api/102002/csp-report/?sentry_key=8fb7e7e068244e31adc0d87738cade76';
 var SERVER_DSN = staticSecrets.staticSentry.serverDSN;
 assert(SERVER_DSN);
 
@@ -13,6 +13,7 @@ exports.common = {
   // By default, send no info to Sentry
   sentry: {
     browserDSN: null,
+    cspReportUri: null,
     serverDSN: null
   }
 };
@@ -28,6 +29,7 @@ exports.test = {
 exports.production = {
   sentry: {
     browserDSN: BROWSER_DSN,
+    cspReportUri: CSP_REPORT_URI,
     serverDSN: SERVER_DSN
   }
 };

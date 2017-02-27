@@ -23,10 +23,25 @@ html
     link(rel="stylesheet", href="/dist/css/index.css")
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
 
+    //- Load Sentry to catch/record errors
+    //- https://docs.sentry.io/hosted/clients/javascript/
+    //- DEV: Sentry is loaded before and separate from other scripts to prevent errors halting one another
+    //- DEV: Sentry additionally catches/reports Content-Security-Policy errors
+    script(src="https://cdn.ravenjs.com/3.7.0/raven.min.js")
+    if locals.sentryBrowserDSN
+      +inline-script()
+        | Raven.config('#{sentryBrowserDSN}', {
+        |   environment: '#{ENV}',
+        |   release: '#{gitRevision}'
+        | }).install();
+        if locals.candidate
+          //- https://docs.sentry.io/learn/context/#capturing-the-user
+          | Raven.setUserContext({id: '#{candidate.id}'});
+
     //- If there's a request for clean CSS
     //- DEV: This is used by Gemini during visual tests
     if locals.clean_css
-      script.
+      +inline-script().
         // When the page loads
         document.addEventListener('DOMContentLoaded', function handleDOMContentLoaded () {
           // Remove :visited link styles
@@ -78,26 +93,12 @@ html
             document.styleSheets[0].cssRules.length);
         });
 
-    //- Load Sentry to catch/record errors
-    //- https://docs.sentry.io/hosted/clients/javascript/
-    //- DEV: Sentry is loaded separate from other scripts to prevent blocking one another
-    script(src="https://cdn.ravenjs.com/3.7.0/raven.min.js")
-    if locals.sentryBrowserDSN
-      script
-        | Raven.config('#{sentryBrowserDSN}', {
-        |   environment: '#{ENV}',
-        |   release: '#{gitRevision}'
-        | }).install();
-        if locals.candidate
-          //- https://docs.sentry.io/learn/context/#capturing-the-user
-          | Raven.setUserContext({id: '#{candidate.id}'});
-
     //- If we are serving analytics, then output it
     //- https://developers.google.com/analytics/devguides/collection/analyticsjs/pages#pageview_fields
     //- DEV: We naively normalize URLs instead of using internal routes to prevent exposing DoS vectors (paranoia)
     if locals.serveAnalytics
-      script window._gaqId = '#{googleAnalyticsId}';
-      script.
+      +inline-script() window._gaqId = '#{googleAnalyticsId}';
+      +inline-script().
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -108,7 +109,7 @@ html
 
       //- Additionally output any custom events
       if locals.googleAnalyticsEvents
-        script
+        +inline-script()
           for googleAnalyticsEvent in googleAnalyticsEvents
             //- https://developers.google.com/analytics/devguides/collection/analyticsjs/events
             //- DEV: Example XSS -- company name on `/research-company`

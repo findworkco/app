@@ -13,6 +13,10 @@ mixin logout-form()
     +csrf-input()
     button.text--link(type="submit") Log out
 
+mixin inline-script()
+  script(nonce=helmetNonce)&attributes(attributes)
+    block
+
 mixin avatar-img(email, size)
   //- http://en.gravatar.com/site/implement/images/
   //- DEV: We use HTTPS so we have external privacy :tada:
