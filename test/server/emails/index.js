@@ -113,6 +113,16 @@ scenario('A waiting for response reminder email without application notes nor po
   });
 });
 
+scenario('A waiting for response reminder email with HTML-based notes', {
+  dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_HTML_NOTES, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  renderWaitingForResponseEmail();
+
+  it('includes renders scrubbed HTML notes', function () {
+    expect(this.html).to.not.contain('script');
+    expect(this.html).to.contain('<b>Mock HTML notes</b>');
+  });
+});
 // EMAIL: Pre-interview reminder
 function renderPreInterviewEmail() {
   before(function reloadInterview (done) {
@@ -186,6 +196,17 @@ scenario('A pre-interview reminder email with no notes, no details, and no post-
 
   it('includes no reminder text', function () {
     expect(this.html).to.contain('<i>No reminder scheduled</i>');
+  });
+});
+
+scenario('A pre-interview reminder email with HTML-based notes', {
+  dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW_HTML_NOTES, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  renderPreInterviewEmail();
+
+  it('includes renders scrubbed HTML notes', function () {
+    expect(this.html).to.not.contain('script');
+    expect(this.html).to.contain('<b>Mock HTML notes</b>');
   });
 });
 

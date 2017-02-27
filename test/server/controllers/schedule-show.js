@@ -199,6 +199,20 @@ scenario.route('A request to GET /schedule', function () {
     });
   });
 
+  // Edge case for HTML scrubbing
+  scenario.routeTest('from a logged in user with applications with HTML notes', {
+    dbFixtures: [dbFixtures.APPLICATION_UPCOMING_INTERVIEW_HTML_NOTES, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
+
+    it('renders scrubbed HTML notes', function () {
+      expect(this.$('#content').html()).to.not.contain('script');
+      expect(this.$('#content').html()).to.contain('<b>Mock HTML notes</b>');
+    });
+  });
+
   // Edge case for alternative text
   scenario.routeTest('from a logged in user with applications with no details, no notes, and disabled reminders', {
     dbFixtures: [

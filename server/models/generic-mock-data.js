@@ -661,6 +661,16 @@ exports.APPLICATION_UPCOMING_INTERVIEW_EMPTY = overrideFixtures(
   }
 );
 
+exports.APPLICATION_UPCOMING_INTERVIEW_HTML_NOTES = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_UPCOMING_INTERVIEW
+  ]),
+  {
+    base: exports.APPLICATION_UPCOMING_INTERVIEW_KEY,
+    overrides: {notes: '<script>alert(1);</script><b>Mock HTML notes</b>'}
+  }
+);
+
 exports.APPLICATION_WAITING_FOR_RESPONSE_EMPTY = overrideFixtures(
   _.flatten([
     exports.APPLICATION_WAITING_FOR_RESPONSE
@@ -672,6 +682,16 @@ exports.APPLICATION_WAITING_FOR_RESPONSE_EMPTY = overrideFixtures(
   {
     base: exports.REMINDER_WAITING_FOR_RESPONSE_KEY,
     overrides: {is_enabled: false}
+  }
+);
+
+exports.APPLICATION_WAITING_FOR_RESPONSE_HTML_NOTES = overrideFixtures(
+  _.flatten([
+    exports.APPLICATION_WAITING_FOR_RESPONSE
+  ]),
+  {
+    base: exports.APPLICATION_WAITING_FOR_RESPONSE_KEY,
+    overrides: {notes: '<script>alert(1);</script><b>Mock HTML notes</b>'}
   }
 );
 
