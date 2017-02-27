@@ -10,6 +10,7 @@ var app = require('../index.js').app;
 var config = require('../index.js').config;
 var queue = require('../queue');
 var saveModelsViaServer = require('../models/utils/save-models').saveModelsViaServer;
+var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // DEV: Google set up instructions
 //   https://developers.google.com/identity/protocols/OAuth2WebServer
@@ -65,6 +66,9 @@ passport.use(new GoogleStrategy({
           // If there was an error, send it to Sentry (no need to bail)
           if (err) { app.sentryClient.captureError(err); }
 
+          // Welcome our candidate back via a flash message
+          req.flash(NOTIFICATION_TYPES.SUCCESS, 'Welcome back to Find Work!');
+
           // Callback with the candidate
           return next(null, _candidate);
         });
@@ -80,6 +84,9 @@ passport.use(new GoogleStrategy({
       saveModelsViaServer({models: [candidate]}, function handleSave (err) {
         // If there was an error, callback with it
         if (err) { return next(err); }
+
+        // Welcome our candidate via a flash message
+        req.flash(NOTIFICATION_TYPES.SUCCESS, 'Welcome to Find Work!');
 
         // Send a welcome email to candidate
         // DEV: We perform this async from candidate creation as it's non-critical

@@ -204,7 +204,12 @@ scenario.route('A request to GET /oauth/google/callback', {
     });
 
     it('is redirected to /schedule', function () {
-      expect(this.$('title').text()).to.equal('Schedule - Find Work');
+      expect(this.lastRedirect.redirectUri).to.match(/\/schedule$/);
+    });
+
+    it('welcomes user', function () {
+      expect(this.$('#notification-content > [data-notification=success]').text())
+        .to.equal('Welcome to Find Work!');
     });
 
     it('creates a new user', function (done) {
@@ -258,6 +263,11 @@ scenario.route('A request to GET /oauth/google/callback', {
 
     it('is redirected to /schedule', function () {
       expect(this.lastRedirect.redirectUri).to.match(/\/schedule$/);
+    });
+
+    it('welcomes user back', function () {
+      expect(this.$('#notification-content > [data-notification=success]').text())
+        .to.equal('Welcome back to Find Work!');
     });
 
     it('doesn\'t create a new user', function (done) {
