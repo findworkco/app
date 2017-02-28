@@ -64,6 +64,12 @@ app.get('/', [
     }
   }
 ]);
+// Untested convenience page for `/landing` while logged in
+app.get('/landing', [
+  function landingShow (req, res, next) {
+    res.render('landing.jade');
+  }
+]);
 
 function handleAuthError(req, res, next) {
   // If we have a login error, then update our status and send it to the render

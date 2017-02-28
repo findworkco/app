@@ -16,6 +16,7 @@ exports.common = {
 };
 
 exports.development = {
+  allowLiveReload: true,
   allowMocks: true,
   loadDevelopmentRoutes: true,
   throwGenericErrors: true,
@@ -23,6 +24,7 @@ exports.development = {
 };
 
 exports.test = {
+  allowLiveReload: false,
   allowMocks: true,
   forceLoadMaxmind: true,
   loadDevelopmentRoutes: true,
@@ -32,6 +34,7 @@ exports.test = {
 };
 
 exports.production = {
+  allowLiveReload: false,
   allowMocks: false,
   loadDevelopmentRoutes: false,
   throwGenericErrors: false,

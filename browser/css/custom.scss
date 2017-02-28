@@ -387,13 +387,13 @@ $large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__un
   }
 }
 
-.screenshot-highlight--interviews__container,
+.screenshot-highlight--recent__container,
 .screenshot-highlight--reminders__container,
 .screenshot-highlight--notes__container,
 .screenshot-highlight--research__container {
   position: absolute;
 }
-.screenshot-highlight--interviews,
+.screenshot-highlight--recent,
 .screenshot-highlight--reminders,
 .screenshot-highlight--notes,
 .screenshot-highlight--research {
@@ -438,45 +438,48 @@ $large-logos__underdogio-right: $large-logos__underdogio-left + $large-logos__un
   right: 0;
 }
 @include media-query(large) {
-  .screenshot-highlight--interviews {
-    @include left-screenshot-highlight((top: 135px, right: 289px, position: 'top'));
+  // DEV: Be aware that `center`/`bottom` arrow height changes based on window size
+  .screenshot-highlight--recent {
+    @include left-screenshot-highlight((top: 155px, right: 274px, position: 'bottom'));
   }
   .screenshot-highlight--reminders {
-    @include left-screenshot-highlight((top: 255px, right: 140px, position: 'top'));
+    @include left-screenshot-highlight((top: 265px, right: 140px, position: 'top'));
   }
   .screenshot-highlight--notes {
-    @include right-screenshot-highlight((top: 135px, left: 282px, position: 'top'));
+    @include right-screenshot-highlight((top: 118px, left: 259px, position: 'bottom'));
   }
   .screenshot-highlight--research {
-    @include right-screenshot-highlight((top: 260px, left: 259px, position: 'top'));
+    @include right-screenshot-highlight((top: 252px, left: 259px, position: 'top'));
   }
 }
 @include media-query(medium) {
-  .screenshot-highlight--interviews {
-    @include left-screenshot-highlight((top: 50px, right: 160px, position: 'top'));
+  // DEV: Be aware that `center`/`bottom` arrow height changes based on window size
+  .screenshot-highlight--recent {
+    display: none;
   }
   .screenshot-highlight--reminders {
-    @include left-screenshot-highlight((top: 355px, right: 160px, position: 'top'));
+    @include left-screenshot-highlight((top: 135px, right: 160px, position: 'top'));
   }
   .screenshot-highlight--notes {
-    @include right-screenshot-highlight((top: 260px, left: 157px, position: 'top'));
+    @include right-screenshot-highlight((top: 12px, left: 157px, position: 'bottom'));
   }
   .screenshot-highlight--research {
-    @include right-screenshot-highlight((top: 360px, left: 157px, position: 'top'));
+    @include right-screenshot-highlight((top: 116px, left: 157px, position: 'top'));
   }
 }
 @include media-query(small) {
-  .screenshot-highlight--interviews {
-    @include left-screenshot-highlight((top: 50px, right: 195px, position: 'center', full-width: true));
+  // DEV: Be aware that `center`/`bottom` arrow height changes based on window size
+  .screenshot-highlight--recent {
+    display: none;
   }
   .screenshot-highlight--notes {
-    @include left-screenshot-highlight((top: 252px, right: 195px, position: 'center', full-width: true));
+    @include left-screenshot-highlight((top: 62px, right: 195px, position: 'bottom', full-width: true));
   }
   .screenshot-highlight--research {
-    @include left-screenshot-highlight((top: 353px, right: 195px, position: 'center', full-width: true));
+    @include left-screenshot-highlight((top: 174px, right: 195px, position: 'top', full-width: true));
   }
   .screenshot-highlight--reminders {
-    @include left-screenshot-highlight((top: 474px, right: 195px, position: 'top', full-width: true));
+    @include left-screenshot-highlight((top: 277px, right: 195px, position: 'top', full-width: true));
   }
 }
 

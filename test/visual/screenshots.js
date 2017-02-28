@@ -14,24 +14,14 @@ gemini.suite('screenshots', function (suite) {
 
   // Capture medium screenshots
   // DEV: We must use multiple suites since `setUrl` applies to all captures
-  gemini.suite('medium-1', function (child) {
-    child.load('/schedule', geminiUtils.SETUPS.SCREENSHOT)
-      .setCaptureElements('body')
-      .capture('medium-1', geminiUtils.resizeMedium);
-  });
-  gemini.suite('medium-2', function (child) {
+  gemini.suite('medium', function (child) {
     child.load('/application/abcdef-google-screenshot-uuid', geminiUtils.SETUPS.SCREENSHOT)
       .setCaptureElements('body')
-      .capture('medium-2', geminiUtils.resizeMedium);
+      .capture('medium', geminiUtils.resizeMedium);
   });
 
   // Capture small screenshots with minor alterations
-  gemini.suite('small-1', function (child) {
-    child.load('/schedule', geminiUtils.SETUPS.SCREENSHOT)
-      .setCaptureElements('body')
-      .capture('small-1', geminiUtils.resizeSmall);
-  });
-  gemini.suite('small-2', function (child) {
+  gemini.suite('small', function (child) {
     child.load('/application/abcdef-google-screenshot-uuid', geminiUtils.SETUPS.SCREENSHOT)
       .setCaptureElements('body')
       .before(function tweakScreenshot (actions, find) {
@@ -46,8 +36,14 @@ gemini.suite('screenshots', function (suite) {
 
           // Expand our research company section
           window.jQuery('.research-company [data-toggle]').click();
+
+          // Remove our reminder info box
+          var $reminderInfo = window.jQuery('#waiting_for_response_reminder')
+            .closest('.form-group').find('.section--info');
+          if (!$reminderInfo.length) { throw new Error('Unable to find reminder info box'); }
+          $reminderInfo.remove();
         });
       })
-      .capture('small-2', geminiUtils.resizeSmall);
+      .capture('small', geminiUtils.resizeSmall);
   });
 });

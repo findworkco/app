@@ -16,17 +16,11 @@ read_file () {
 read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/g" > "$target_file"
 
 # Repeat for medium SVGs
-src_file="browser/images/screenshots/medium-1.svg"
-target_file="browser/images/screenshots/medium-1.template.svg"
-read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/"  > "$target_file"
-src_file="browser/images/screenshots/medium-2.svg"
-target_file="browser/images/screenshots/medium-2.template.svg"
+src_file="browser/images/screenshots/medium.svg"
+target_file="browser/images/screenshots/medium.template.svg"
 read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/"  > "$target_file"
 
 # Repeat for small SVGs
-src_file="browser/images/screenshots/small-1.svg"
-target_file="browser/images/screenshots/small-1.template.svg"
-read_file "$src_file" | sed -E "s/(base64,)[^\"]+/\1{{base64-image}}/"  > "$target_file"
-src_file="browser/images/screenshots/small-2.svg"
-target_file="browser/images/screenshots/small-2.template.svg"
+src_file="browser/images/screenshots/small.svg"
+target_file="browser/images/screenshots/small.template.svg"
 read_file "$src_file" | sed -E "s/(base64,)[^{\"]+/\1{{base64-image-1}}/" | sed -E "s/(base64,)[^{\"]+/\1{{base64-image-2}}/" > "$target_file"

@@ -12,7 +12,7 @@ scenario.route('A request to GET /', {
     httpUtils.session.init().save({url: serverUtils.getUrl('/'), expectedStatusCode: 200});
 
     it('recieves the landing page', function () {
-      expect(this.$('title').text()).to.equal('Find Work - Manage job leads and applications');
+      expect(this.$('title').text()).to.equal('Find Work - Be the best candidate for the job');
       expect(this.body).to.contain('Annotated application screenshot');
     });
   });

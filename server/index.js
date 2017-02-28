@@ -98,6 +98,7 @@ function Server(config) {
       }]
     }
   };
+  if (config.allowLiveReload) { cspOptions.directives.scriptSrc.push('127.0.0.1:35729'); }
   if (config.sentry.cspReportUri) { cspOptions.directives.reportUri = config.sentry.cspReportUri; }
   app.use(helmet.contentSecurityPolicy(cspOptions));
   // helmet.dnsPrefetchControl: No -- Allow browsers to prefetch for performance, no more insecure than a beacon

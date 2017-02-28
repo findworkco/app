@@ -1,7 +1,7 @@
 extends layout-base
 
 block title
-  title Find Work - Manage job leads and applications
+  title Find Work - Be the best candidate for the job
 
 block base-content
   header.section--brand-dark.text--center.cf
@@ -13,7 +13,7 @@ block base-content
           a.link--unstyled(href="/")
             h1.soft-half--ends.flush--bottom
               img.landing__logo(alt="Find Work", src="/dist/images/white-logo.svg")
-          h2 Manage job leads and applications
+          h2 Be the best candidate for the job
           p
             a.btn.btn--hero.btn--brand-dark(href="/schedule")= callToActionStr
         .grid__item.one-quarter.small-hidden
@@ -26,6 +26,12 @@ block base-content
             p
               a(href="/login", style="color: white") Already have an account? Log in here
   section.soft--ends
+    .grid__item.one-quarter.medium-one-quarter.small-hidden
+      &nbsp;
+    .grid__item.one-half.medium-one-half.small-one-whole
+      .text--center
+        h2 How it works
+        p We'll help you be the best candidate by helping you take care of the little things.
     .grid
       .grid__item.one-whole
         .screenshots
@@ -36,25 +42,21 @@ block base-content
           .large-hidden.small-hidden
             .text--center
               p
-                img(alt="Annotated schedule screenshot", src="/dist/images/screenshots/medium-1.svg")
-              p
-                img(alt="Annotated application screenshot", src="/dist/images/screenshots/medium-2.svg")
+                img(alt="Annotated application screenshot", src="/dist/images/screenshots/medium.svg")
           .medium-and-up-hidden
             .text--right
               p
-                img(alt="Annotated schedule screenshot", src="/dist/images/screenshots/small-1.svg")
-              p
-                img(alt="Annotated application screenshot", src="/dist/images/screenshots/small-2.svg")
-          .screenshot-highlight--interviews__container
-            .screenshot-highlight--interviews Upcoming interviews and reminders at a glance
+                img(alt="Annotated application screenshot", src="/dist/images/screenshots/small.svg")
+          .screenshot-highlight--recent__container
+            .screenshot-highlight--recent Recently viewed applications at a glance
           .screenshot-highlight--reminders__container
-            .screenshot-highlight--reminders Reminders at every stage (application, follow-up, pre-interview, post-interview)
+            .screenshot-highlight--reminders Reminders for every stage (e.g. follow-up, pre-interview)
           .screenshot-highlight--notes__container
-            .screenshot-highlight--notes Record notes about the company and their interviews
+            .screenshot-highlight--notes Record and review company and interview notes
           .screenshot-highlight--research__container
             .screenshot-highlight--research
-              = "Research companies before you apply via "
-              a(href="https://.screenshot-highlight--research", target="_blank") Glassdoor
+              = "Research companies via "
+              a(href="https://www.glassdoor.com/", target="_blank") Glassdoor
               = " and "
               a(href="https://angel.co/", target="_blank") AngelList
         p.text--center.flush--bottom
@@ -67,7 +69,7 @@ block base-content
       .grid
         .grid__item.one-quarter.medium-one-sixth.small-hidden &nbsp;
         .grid__item.one-half.medium-two-thirds.small-one-whole
-          p Find Work is a tool to track and manage your job applications. We are profession and role agnostic (e.g. good for full-time and contractors). We consider there to be 4 stages of finding work.
+          p We believe there are 4 stages of a job application:
       .grid
         .grid__item.one-quarter.medium-one-sixth.small-hidden.text--right
           img(alt="Find a job listing illustration", src="/dist/images/magnifying-glass-white.svg", style="height: 3em")
@@ -91,7 +93,7 @@ block base-content
           p
             strong 3. Interview scheduled
             br
-            | You have gotten your foot in the door. We'll help you ace that interview with company research tools (demonstrating interesting) and pre/post interview reminders to help take diligent notes.
+            | You have gotten your foot in the door. We'll help you ace that interview with company research tools (demonstrating interest) and pre/post interview reminders to help take/review diligent notes.
             br
             em We repeat steps 2 and 3 until we get to step 4.
       .grid
@@ -120,7 +122,7 @@ block base-content
                 img(alt="Uber", src="/dist/images/uber-white.svg")
             .logos__underdogio
               a(href="https://underdog.io/", target="_blank")
-                img(alt="Underdog.io", src="/dist/images/underdogio-purple.png")
+                img(alt="Underdog.io", src="/dist/images/underdogio-green.svg")
   .container
     .grid
       .grid__item.one-whole
