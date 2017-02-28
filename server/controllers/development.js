@@ -164,6 +164,11 @@ app.get('/_dev/setup', function devSetupShow (req, res, next) {
       'abcdef-sky-networks-uuid',
       'abcdef-monstromart-uuid'
     ];
+  } else if (req.query.get('recently_viewed_applications') === 'screenshot') {
+    req.session.recentlyViewedApplicationIds = [
+      'abcdef-google-screenshot-uuid',
+      'abcdef-apple-screenshot-uuid'
+    ];
   }
 
   // If there's a redirect URI, use it

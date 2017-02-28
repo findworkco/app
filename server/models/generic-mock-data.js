@@ -468,6 +468,60 @@ exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPO
     is_enabled: true
   })
 ];
+exports.APPLICATION_WAITING_FOR_RESPONSE_GOOGLE_SCREENSHOT = [
+  addApplication('waiting-for-response-screenshot__interview', {
+    id: 'abcdef-google-screenshot-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    application_date_moment: moment('2017-01-08'),
+    archived_at_moment: null,
+    company_name: 'Google',
+    waiting_for_response_reminder_id: 'abcdef-google-screenshot-reminder-uuid',
+    posting_url: 'https://jobs.github.com/positions/abcdef-1234-5678-9000-abcdef',
+    name: 'Google',
+    notes: 'Phone screen (John):<br/>' +
+      'Huge company (10k employees)<br/>' +
+      'Teams range from 10 to 100<br/>' +
+      '20% free time<br/>',
+    status: Application.STATUSES.WAITING_FOR_RESPONSE
+  }),
+  addApplicationReminder('waiting-for-response-google-screenshot__reminder', {
+    id: applications[applications.length - 1].waiting_for_response_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    application_id: applications[applications.length - 1].id,
+    type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
+    date_time_moment: moment.tz('2017-01-23T12:00', 'US-America/Los_Angeles'),
+    sent_at_moment: null,
+    is_enabled: true
+  }),
+  addInterview('waiting-for-response-google-screenshot__interview', {
+    id: 'abcdef-google-screenshot-interview-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    application_id: applications[applications.length - 1].id,
+    // Fri Jan 15 at 9:00AM PST
+    date_time_moment: moment.tz('2017-01-16T09:00', 'US-America/Los_Angeles'),
+    details: 'Call 555-123-4567',
+    pre_interview_reminder_id: 'google-screenshot-reminder-pre-int-uuid',
+    post_interview_reminder_id: 'google-screenshot-reminder-post-int-uuid'
+  }),
+  addInterviewReminder('waiting-for-response-google-screenshot__reminder--pre-interview', {
+    id: interviews[interviews.length - 1].pre_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.PRE_INTERVIEW,
+    date_time_moment: moment.tz('2017-01-16T08:00', 'US-America/Los_Angeles'),
+    sent_at_moment: moment.tz('2017-01-16T08:01', 'US-America/Los_Angeles'),
+    is_enabled: true
+  }),
+  addInterviewReminder('waiting-for-response-google-screenshot__reminder--post-interview', {
+    id: interviews[interviews.length - 1].post_interview_reminder_id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    interview_id: interviews[interviews.length - 1].id,
+    type: InterviewReminder.TYPES.POST_INTERVIEW,
+    date_time_moment:  moment.tz('2017-01-16T11:00', 'US-America/Los_Angeles'),
+    sent_at_moment:  moment.tz('2017-01-16T11:01', 'US-America/Los_Angeles'),
+    is_enabled: true
+  })
+];
 
 // Saved for later applications
 exports.APPLICATION_SAVED_FOR_LATER_KEY = 'saved-for-later__application';
@@ -493,6 +547,31 @@ exports.APPLICATION_SAVED_FOR_LATER = exports.APPLICATION_INTERTRODE = [
     candidate_id: DEFAULT_CANDIDATE_ID,
     type: ApplicationReminder.TYPES.SAVED_FOR_LATER,
     date_time_moment: moment.tz('2022-06-20T12:00', 'US-America/Chicago'),
+    sent_at_moment: null,
+    is_enabled: true
+  })
+];
+exports.APPLICATION_SAVED_FOR_LATER_APPLE_SCREENSHOT = [
+  addApplication('saved-for-later-apple-screenshot__application', {
+    id: 'abcdef-apple-screenshot-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    application_date_moment: null,
+    archived_at_moment: null,
+    created_at: moment.tz('2017-01-15T12:00', 'US-America/Los_Angeles').toDate(),
+    company_name: 'Apple',
+    name: 'Apple',
+    // Mon Jan 25
+    saved_for_later_reminder_id: 'abcdef-apple-screenshot-reminder-uuid',
+    notes: 'Website: http://www.apple.com/',
+    posting_url: 'https://www.linkedin.com/jobs/view/1234567890',
+    status: Application.STATUSES.SAVED_FOR_LATER
+  }),
+  addApplicationReminder('saved-for-later-apple-screenshot__reminder', {
+    id: applications[applications.length - 1].saved_for_later_reminder_id,
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    type: ApplicationReminder.TYPES.SAVED_FOR_LATER,
+    date_time_moment: moment.tz('2017-01-24T14:00', 'US-America/Los_Angeles'),
     sent_at_moment: null,
     is_enabled: true
   })

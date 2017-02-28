@@ -156,4 +156,82 @@ mixin glassdoor-result(glassdoorResult, options)
       em Please enter one in the field above.
 
 mixin angellist-result(angelListResult, options)
-  | AngelList support is under construction.
+  if angelListResult && angelListResult.id
+    | Name: #{angelListResult.name}
+    br
+    = "Website: "
+    a(href=angelListResult.company_url)= angelListResult.company_url
+    br
+    | Followers: #{angelListResult.follower_count}
+    br
+    = "Locations: "
+    if angelListResult.locations.length
+      for angelListLocation, i in angelListResult.locations
+        //- location = {id: 1701, tag_type: 'LocationTag', name: 'mountain view', display_name: 'Mountain View', angellist_url: 'https://angel.co/mountain-view-1'}
+        a(href=angelListResult.angellist_url, target="_blank")
+          = angelListLocation.display_name
+        if i != angelListResult.locations.length - 1
+          = ", "
+    else
+      i Unknown
+    br
+    = "Markets: "
+    if angelListResult.markets.length
+      for angelListMarket, i in angelListResult.markets
+        //- market = {id: 841, tag_type: 'MarketTag', name: 'software', display_name: 'Software', angellist_url: 'https://angel.co/software'}
+        a(href=angelListResult.angellist_url, target="_blank")
+          = angelListMarket.display_name
+        if i != angelListResult.markets.length - 1
+          = ", "
+    else
+      i Unknown
+    br
+    if options.extended
+      if false
+        = "Public fundraising: "
+        if angelListResult.public_fundraising.length
+          for fundraising_result in angelListResult.public_fundraising
+            br
+            span
+              //- DEV: We want to use a `<ul>` but it breaks out of the `<p>` container
+              | &nbsp;-&nbsp;
+              = fundraising_result.name
+              = ": "
+              if fundraising_result.content
+                = fundraising_result.content
+              else
+                i Details unknown
+        else
+          | N/A
+        br
+      = "Blog URL: "
+      if angelListResult.blog_url
+        a(href=angelListResult.blog_url)= angelListResult.blog_url
+      else
+        | N/A
+      br
+      = "Twitter URL: "
+      if angelListResult.twitter_url
+        a(href=angelListResult.twitter_url)= angelListResult.twitter_url
+      else
+        | N/A
+      br
+      = "Video URL: "
+      if angelListResult.video_url
+        a(href=angelListResult.video_url)= angelListResult.video_url
+      else
+        | N/A
+      br
+    a(href=angelListResult.angellist_url) View AngelList profile
+    br
+    a(href="https://angel.co/")
+      = "Powered by AngelList"
+      img(alt="AngelList logo", aria-hidden="true", src="/dist/images/angellist.svg", style="height: 1.3em; position: relative; top: 4px; left: 2px")
+    br
+    a(target="_blank", href=angelListResult.badMatchUrl) Bad match? Click here to let us know
+  else if glassdoorResult
+    | AngelList support is under construction.
+  else
+    em No company name entered.
+    br
+    em Please enter one in the field above.

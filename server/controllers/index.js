@@ -11,6 +11,8 @@ var applicationMockData = require('../models/application-mock-data');
 var Application = require('../models/application');
 var includes = require('../models/utils/includes');
 var ApplicationReminder = require('../models/application-reminder');
+var angellistMockData = require('../models/angellist-mock-data');
+var AngelList = require('../models/angellist');
 var glassdoorMockData = require('../models/glassdoor-mock-data');
 var Glassdoor = require('../models/glassdoor');
 var validTimezoneValues = require('../models/base').validTimezoneValues;
@@ -310,6 +312,7 @@ app.post('/research-company', [
     var companyName = req.body.fetch('company_name');
     if (this.useMocks) {
       return {
+        angelListResult: angellistMockData.getByName(companyName),
         glassdoorResult: glassdoorMockData.getByName(companyName)
       };
     }
@@ -317,6 +320,7 @@ app.post('/research-company', [
     // Return query against company databases
     // DEV: When we add AngelList support, don't load extended content for partial
     return {
+      angelListResult: AngelList.searchAsPromise(companyName, req),
       glassdoorResult: Glassdoor.searchAsPromise(companyName, req)
     };
   }),

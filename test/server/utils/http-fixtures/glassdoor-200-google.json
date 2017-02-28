@@ -1,0 +1,59 @@
+{
+  "success": true,
+  "status": "OK",
+  "jsessionid": "6CC9A30B96A4AEDE3A08CB454D404DE6",
+  "response": {
+    "attributionURL": "https://www.glassdoor.com/Reviews/google-reviews-SRCH_KE0,6.htm",
+    "currentPageNumber": 1,
+    "totalNumberOfPages": 11,
+    "totalRecordCount": 11,
+    "employers": [{
+      "id": 9079,
+      "name": "Google",
+      "website": "www.google.com",
+      "isEEP": false,
+      "exactMatch": true,
+      "industry": "Internet",
+      "numberOfRatings": 6454,
+      "squareLogo": "https://media.glassdoor.com/sqll/9079/google-squarelogo-1441130773284.png",
+      "overallRating": "4.4",
+      "ratingDescription": "Very Satisfied",
+      "cultureAndValuesRating": "4.4",
+      "seniorLeadershipRating": "3.9",
+      "compensationAndBenefitsRating": "4.4",
+      "careerOpportunitiesRating": "4.0",
+      "workLifeBalanceRating": "4.1",
+      "recommendToFriendRating": 92,
+      "sectorId": 10013,
+      "sectorName": "Information Technology",
+      "industryId": 200063,
+      "industryName": "Internet",
+      "featuredReview": {
+        "attributionURL": "https://www.glassdoor.com/Reviews/Employee-Review-Google-RVW4204034.htm",
+        "id": 4204034,
+        "currentJob": true,
+        "reviewDateTime": "2014-05-10 14:46:38.187",
+        "jobTitle": "Software Engineer III",
+        "location": "New York, NY",
+        "jobTitleFromDb": "Software Engineer III",
+        "headline": "Great balance between big-company security and fun, fast-moving projects",
+        "pros": "* If you're a software engineer, you're among the kings of the hill at Google. It's an engineer-driven company without a doubt (that *is* changing, but it's still very engineer-focused).\r\n* The perks are amazing. Yes, free breakfast, lunch, an dinner every weekday. Aaaaaamazing holiday parties (at Waldorf Astoria, NY Public Library, MoMA, etc.); overnight ski trips to Vermont; overnight nature trips to the Poconos in the summer; summer picnics at Chelsea piers; and on and on and on. I don't see this going away unless the company starts hurting financially.\r\n* Speaking of which, the company is doing quite well, which reflects in bonuses and equity grants.\r\n* There a huge diversity of work ranging from defending independent journalism worldwide (Google Project Shield) to crisis response during disasters (see Maps during Hurricane Sandy or Tsunamis), to the best machine learning experts and projects in the world, to more mundane revenue-driving projects in advertising, there's really something for everybody.\r\n* It's easy to move around within the company as long as you're in good standing (the vast majority of engineers are).\r\n* The company is amazingly open: every week Larry Page and Sergey Brin host what's called TGIF where food, beer, wine, etc. is served, a new project is presented, and afterward there's an open forum to ask the executives anything you want. It's truly fair game to ask anything, no matter how controversial, and frequently the executives will be responsive.\r\n* No, nobody cares if you use an iPhone, Facebook, shop with Amazon, stream using Spotify, or refuse to use Google+. The company is amazingly open and flexible.\r\n\r\nNeither pro nor con, but general information on work-life balance, promotions, and advancement.\r\n* Work life balance can be what you want it to be on most teams. (Some teams are in more competitive sectors and require more crazy hours all the time - but very few of them). If you do what's expected, you'll be fine at least for a handful of years. Working a roughly 40 hour work week is possible, and many people do it. There are also people who are hyper-motived and work like crazy just because they love it, or because they're competitive, or they want to get a promotion. If you work 40 hour weeks without putting in anything extra, you'll fall behind them as they advance and you stand still - and maybe that doesn't matter, so it works out for everybody. But at least know where you would realistically stand.\r\n* If you excel and work your butt off, you'll be compensated and promoted. If you let yourself be a code monkey, and just sit coding with your head down all day, you'll be fine but won't advance. A big complaint from some Googlers is about not being able to advance \"even at Google\" with pure coding. Sure, if you're the uber genius who created MapReduce and Bigtable, you're going to advance like a rocket without having to do anything but coding; but if you're like most engineers at Google -- smarter than average, but just average compared to other Googlers -- you're just a good coder and not revolutionary. Code monkeys are important to actually get stuff done, and to be sure you absolutely need to be a good coder as a software engineer (it's the minimum requirement), but code monkeys won't advance because they're not leaders and they're easy to replace. To get promoted you need to lead and do more than just code. There are plenty of ways to lead other than being an official tech lead, so this isn't actually _that_ hard, so the real point is just that you can't just sit there coding what other people tell you to code all day and expect to advance.",
+        "cons": "* It *is* becoming larger, and with it comes growing pains: bureaucracy, slow to respond to market threats, bloated teams, cross-divisional tension (though nothing remotely approaching that of Microsoft's internal tension).\r\n* The quality of the engineers is possibly dropping, but possibly not. It's hard to get real metrics, because as the absolute number of people grows, naturally the number of bad apples grows; as a percentage it's supposedly the same as it ever was, but with larger numbers of poorer quality engineers it just _feels_ like things might be changing for the worse.\r\n* Also with growth means more internal-confidential data leaks (again, because of the raw numbers of people) -- product announcements being ruined, etc. That means the company has to be tighter-lipped internally to avoid leaks, which makes things less open. It's still an amazingly open place, but less so than it was even a couple years ago. The good thing is they recognize it and actively look to improve things because they know how important it is to keep the good culture.",
+        "overall": 5,
+        "overallNumeric": 5
+      },
+      "ceo": {
+        "name": "Sundar Pichai",
+        "title": "CEO",
+        "numberOfRatings": 1110,
+        "pctApprove": 97,
+        "pctDisapprove": 3,
+        "image": {
+          "src": "https://media.glassdoor.com/people/sqll/9079/google-sundar-pichai.png",
+          "height": 200,
+          "width": 200
+        }
+      }
+    }]
+  }
+}

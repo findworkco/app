@@ -121,7 +121,7 @@ describe('A partial research company form loading without a company name', funct
     var $glassdoorResults = this.$('#glassdoor-results'); assert($glassdoorResults.length);
     expect($glassdoorResults.text()).to.contain('No company name entered');
     var $angellistResults = this.$('#angellist-results'); assert($angellistResults.length);
-    expect($angellistResults.text()).to.contain('AngelList support is under construction');
+    expect($angellistResults.text()).to.contain('No company name entered');
   });
 });
 

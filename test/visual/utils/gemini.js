@@ -12,7 +12,7 @@ exports.SETUPS = {
   // DEV: LOGGED_OUT setup isn't necessary but nice for being explicit
   LOGGED_OUT: {},
   SCREENSHOT: {
-    recently_viewed_applications: 'true',
+    recently_viewed_applications: 'screenshot',
     screenshot: 'true',
     use_mocks: 'true'
   }
