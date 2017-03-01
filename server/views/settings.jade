@@ -19,7 +19,7 @@ block content
           for error in validation_errors
             li= error.message
     .form-group
-      //- DESIGN: When we add back email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
+      //- DESIGN: When we add email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
       label(for="email") Email (from Google):
       input#email.form-control.input--block(name="email", disabled, value=candidate.email, style="max-width: 220px")
     .form-group

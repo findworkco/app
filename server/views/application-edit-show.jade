@@ -31,10 +31,6 @@ block content
           span.small-hidden(aria-hidden="true")= "+ "
           | Add interview
       mixin action--received-offer()
-        //- DESIGN: On load of next page, add a confetti animation
-        //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
-        //- DESIGN: On load of next page, have indication that we preselected 7 day response reminder
-        //-   https://app.moqups.com/todd@findwork.co/noWM1oiRBn/edit/page/a83fa0086
         +action--form(selectedApplication.received_offer_url)&attributes(attributes)
           span.small-hidden I've received an offer
           span.medium-and-up-hidden Received offer
