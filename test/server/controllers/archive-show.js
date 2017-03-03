@@ -3,6 +3,7 @@ var expect = require('chai').expect;
 var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
+var sinonUtils = require('../../utils/sinon');
 
 // Start our tests
 scenario.route('A request to GET /archive', function () {
@@ -74,6 +75,38 @@ scenario.route('A request to GET /archive', function () {
     it('does not list the application', function () {
       expect(this.$('#content').text()).to.contain('click the "Archive" button on its page');
       expect(this.$('#content').text()).to.not.contain('Monstromart');
+    });
+  });
+
+  // Edge case for sorting
+  scenario.routeTest('from a logged in user with multiple archived applications', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_ARCHIVED,
+      dbFixtures.APPLICATION_ARCHIVED_2,
+      dbFixtures.DEFAULT_FIXTURES
+    ]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login();
+    sinonUtils.spy(Array.prototype, 'sort');
+    httpUtils.session.save({url: serverUtils.getUrl('/archive'), expectedStatusCode: 200});
+
+    it('lists the applications, ordered by time (closest first)', function () {
+      // Assert our text
+      var $applications = this.$('#content .schedule-row--application');
+      expect($applications).to.have.length(2);
+      expect($applications.eq(0).text()).to.contain('Aperature Science');
+      expect($applications.eq(0).text()).to.contain('Archived on: Tue Mar 22');
+      expect($applications.eq(1).text()).to.contain('Monstromart');
+      expect($applications.eq(1).text()).to.contain('Archived on: Mon Jan 18');
+
+      // DEV: This acts as a sanity check for using `sort`, we can't do much better (e.g. force random order)
+      var sortSpy = Array.prototype.sort;
+      var sortApplicationsByTimeArgs = sortSpy.args.filter(function (fnArgs) {
+        var comparator = fnArgs[0];
+        return comparator && comparator.name === 'sortApplicationsByTime';
+      });
+      expect(sortApplicationsByTimeArgs.length).to.equal(1);
     });
   });
 

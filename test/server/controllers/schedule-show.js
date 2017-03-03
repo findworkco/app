@@ -3,6 +3,7 @@ var expect = require('chai').expect;
 var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
+var sinonUtils = require('../../utils/sinon');
 
 // Start our tests
 scenario.route('A request to GET /schedule', function () {
@@ -39,8 +40,9 @@ scenario.route('A request to GET /schedule', function () {
     dbFixtures: [dbFixtures.APPLICATION_SAVED_FOR_LATER, dbFixtures.DEFAULT_FIXTURES]
   }, function () {
     // Log in our user and make our request
-    httpUtils.session.init().login()
-      .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
+    httpUtils.session.init().login();
+    sinonUtils.spy(Array.prototype, 'sort');
+    httpUtils.session.save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
     it('has no calls to action', function () {
       expect(this.$('#content').text()).to.not.contain('+ Add a job application');
@@ -51,6 +53,17 @@ scenario.route('A request to GET /schedule', function () {
       expect(this.$('#content .schedule-row--application').text()).to.contain('Intertrode');
       expect(this.$('#content .schedule-row--application a').attr('href'))
         .to.equal('/application/abcdef-intertrode-uuid');
+    });
+
+    it('sorts applications based on time', function () {
+      // DEV: We don't deeply test sorting due to this JS based sort being temporary
+      // DEV: This acts as a sanity check for using `sort`, we can't do much better (e.g. force random order)
+      var sortSpy = Array.prototype.sort;
+      var sortApplicationsByTimeArgs = sortSpy.args.filter(function (fnArgs) {
+        var comparator = fnArgs[0];
+        return comparator && comparator.name === 'sortApplicationsByTime';
+      });
+      expect(sortApplicationsByTimeArgs.length).to.equal(4);
     });
   });
 

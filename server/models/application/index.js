@@ -1,6 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
 var _ = require('underscore');
+var moment = require('moment-timezone');
 var Sequelize = require('sequelize');
 var baseDefine = require('../base');
 var Candidate = require('../candidate');
@@ -140,7 +141,47 @@ var Application = module.exports = _.extend(baseDefine('application', {
   },
 
   instanceMethods: _.extend({
-    // Instance methods go here
+    getClosestUpcomingActionMoment: function () {
+      var status = this.getDataValue('status');
+      var reminder;
+      if (status === exports.STATUSES.SAVED_FOR_LATER) {
+        reminder = this.get('saved_for_later_reminder');
+        assert(reminder);
+        return reminder.isActive() ? reminder.get('date_time_moment') : null;
+      } else if (status === exports.STATUSES.WAITING_FOR_RESPONSE) {
+        reminder = this.get('waiting_for_response_reminder');
+        assert(reminder);
+        return reminder.isActive() ? reminder.get('date_time_moment') : null;
+      } else if (status === exports.STATUSES.UPCOMING_INTERVIEW) {
+        var interview = this.get('closest_upcoming_interview');
+        return interview.get('date_time_moment');
+      } else if (status === exports.STATUSES.RECEIVED_OFFER) {
+        reminder = this.get('received_offer_reminder');
+        assert(reminder);
+        return reminder.isActive() ? reminder.get('date_time_moment') : null;
+      } else if (status === exports.STATUSES.ARCHIVED) {
+        return null;
+      } else {
+        throw new Error('Unexpected status received');
+      }
+    },
+    getClosestPastActionMoment: function () {
+      var status = this.getDataValue('status');
+      if (status === exports.STATUSES.SAVED_FOR_LATER) {
+        return moment(this.get('created_at'));
+      } else if ([exports.STATUSES.WAITING_FOR_RESPONSE,
+                  exports.STATUSES.UPCOMING_INTERVIEW,
+                  exports.STATUSES.RECEIVED_OFFER].indexOf(status) !== -1) {
+        assert(_.findWhere(this.$options.include, {model: this.sequelize.models.interview}),
+          '`closest_past_action_moment` requires interviews are loaded');
+        var interview = this.get('closest_past_interview');
+        return interview ? interview.get('date_time_moment') : this.get('application_date_moment');
+      } else if (status === exports.STATUSES.ARCHIVED) {
+        return this.get('archived_at_moment');
+      } else {
+        throw new Error('Unexpected status received');
+      }
+    }
   }, reminderInstanceMethods, statusInstanceMethods),
 
   setterMethods: {

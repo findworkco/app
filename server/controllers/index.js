@@ -198,6 +198,40 @@ function getScheduleOptions(req, status, options) {
     limit: 20
   }, options);
 }
+function sortApplicationsByTime(applicationA, applicationB) {
+  // Attempt to sort by upcoming actions
+  // DEV: We want closer upcoming so earlier dates first
+  var closestUpcomingMomentA = applicationA.getClosestUpcomingActionMoment();
+  var closestUpcomingMomentB = applicationB.getClosestUpcomingActionMoment();
+  if (closestUpcomingMomentA && !closestUpcomingMomentB) {
+    return -1;
+  }
+  if (closestUpcomingMomentB && !closestUpcomingMomentA) {
+    return 1;
+  }
+  var diff = (closestUpcomingMomentA || 0) - (closestUpcomingMomentB || 0);
+  if (diff !== 0) {
+    return diff;
+  }
+
+  // Attempt to sort by past actions
+  // DEV: We want closer past so later dates first
+  var closestPastMomentA = applicationA.getClosestPastActionMoment();
+  var closestPastMomentB = applicationB.getClosestPastActionMoment();
+  if (closestPastMomentA && !closestPastMomentB) {
+    return 1;
+  }
+  if (closestPastMomentB && !closestPastMomentA) {
+    return -1;
+  }
+  diff = (closestPastMomentB || 0) - (closestPastMomentA || 0);
+  if (diff !== 0) {
+    return diff;
+  }
+
+  // Sort by names
+  return applicationA.get('name').localeCompare(applicationB.get('name'));
+}
 app.get('/schedule', [
   resolveModelsAsLocals({nav: true}, function scheduleShowResolve (req) {
     // If there's no candidate, return nothing
@@ -267,6 +301,13 @@ app.get('/schedule', [
         'we should add limits and build "View more" functionality'));
     }
 
+    // Sort our models by time
+    // DEV: We should sort models via query but this is easier for now https://trello.com/c/h1K3HEg0/225-sort-schedule-items-by-date
+    req.models.receivedOfferApplications.sort(sortApplicationsByTime);
+    req.models.upcomingInterviewApplications.sort(sortApplicationsByTime);
+    req.models.waitingForResponseApplications.sort(sortApplicationsByTime);
+    req.models.savedForLaterApplications.sort(sortApplicationsByTime);
+
     // Render our page
     res.render('schedule.jade');
   }
@@ -299,6 +340,10 @@ app.get('/archive', [
       req.captureError(new Error('Candidate has at least 10 archived applications, ' +
         'we should add limits and build "View more" functionality'));
     }
+
+    // Sort our models by time
+    // DEV: We should sort models via query but this is easier for now https://trello.com/c/h1K3HEg0/225-sort-schedule-items-by-date
+    req.models.archivedApplications.sort(sortApplicationsByTime);
 
     // Render our page
     res.render('archive.jade');

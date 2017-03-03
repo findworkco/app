@@ -81,8 +81,7 @@ var options = {
     // DEV: This is not located on field as InterviewReminder requires external `interview` info
     // DEV: We skip this validation by default on fixture create in `utils/test`
     dateTimeAfterNow: function () {
-      if (this.get('is_enabled') === true &&
-          !this.get('sent_at_datetime') &&
+      if (this.isActive() &&
           moment().isAfter(this.get('date_time_moment'))) {
         // DEV: Ideally we won't get to this vague message as we use `min/max` to limit date/time inputs
         throw new Error('Reminder date/time is set in the past');
@@ -91,8 +90,8 @@ var options = {
   },
 
   instanceMethods: {
-    isExpired: function () {
-      return this.get('date_time_moment') < new Date();
+    isActive: function () {
+      return this.get('is_enabled') === true && !this.get('sent_at_datetime');
     }
   }
 };

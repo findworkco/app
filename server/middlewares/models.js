@@ -124,6 +124,7 @@ exports.resolveModelsAsLocals = function (params, resolver) {
           return application;
         });
         // DEV: We sort applications by index as PostgreSQL doesn't guarantee order
+        // DEV: We reuse function name in tests to verify we call sort (contract) as PostgreSQL doesn't have id sorting
         models.recentlyViewedApplications.sort(function sortByRequestedIndex (a, b) {
           return recentlyViewedApplicationIds.indexOf(a.get('id')) - recentlyViewedApplicationIds.indexOf(b.get('id'));
         });

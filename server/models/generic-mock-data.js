@@ -638,6 +638,32 @@ exports.APPLICATION_ARCHIVED = exports.APPLICATION_MONSTROMART = [
     is_enabled: true
   })
 ];
+exports.APPLICATION_ARCHIVED_2 = exports.APPLICATION_APERATURE = [
+  addApplication('archived-2__applicaition', {
+    id: 'abcdef-aperature-uuid',
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    // Fri Jan 8
+    application_date_moment: moment('2016-03-16'),
+    // Mon Jan 18 at 3:00PM CST
+    // DEV: Technically this is stored as timezone-less but we re-render with user's timezone
+    archived_at_moment: moment.tz('2016-03-22T15:00', 'US-America/Chicago'),
+    waiting_for_response_reminder_id: 'abcdef-aperature-reminder-uuid',
+    company_name: 'Aperature Science Labs',
+    status: Application.STATUSES.ARCHIVED,
+    posting_url: 'https://monster.com/about/jobs',
+    name: 'Aperature Science',
+    notes: 'Huge facility, lots of levels'
+  }),
+  addApplicationReminder('archived-2__reminder', {
+    id: applications[applications.length - 1].waiting_for_response_reminder_id,
+    application_id: applications[applications.length - 1].id,
+    candidate_id: DEFAULT_CANDIDATE_ID,
+    type: ApplicationReminder.TYPES.WAITING_FOR_RESPONSE,
+    date_time_moment: moment.tz('2016-03-17T19:00', 'US-America/Chicago'),
+    sent_at_moment: null,
+    is_enabled: true
+  })
+];
 
 // Overridden fixtures
 function overrideFixtures(baseArr/*, overrideFixtures...*/) {

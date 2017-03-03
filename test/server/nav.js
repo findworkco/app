@@ -79,6 +79,7 @@ scenario.route('A request to a page which loads navigation', function () {
     httpUtils.session.init().login();
     addRecentlyViewedApplications();
     sinonUtils.spy(Application, 'findAll');
+    sinonUtils.spy(Array.prototype, 'sort');
     // DEV: We use 404 to isolate navigation only requests
     httpUtils.session.save({url: serverUtils.getUrl('/404'), expectedStatusCode: 404});
 
@@ -92,6 +93,16 @@ scenario.route('A request to a page which loads navigation', function () {
       expect(this.$('.nav-row--application').eq(0).text()).to.contain('Monstromart');
       expect(this.$('.nav-row--application').eq(1).text()).to.contain('Globo Gym');
       expect(this.$('.nav-row--application').eq(2).text()).to.contain('Umbrella Corporation');
+    });
+
+    it('sorts array from PostgreSQL', function () {
+      // DEV: This acts as a sanity check for using `sort`, we can't do much better (e.g. force random order)
+      var sortSpy = Array.prototype.sort;
+      var recentlyViewedApplicationsSortArgs = sortSpy.args.filter(function (fnArgs) {
+        var comparator = fnArgs[0];
+        return comparator && comparator.name === 'sortByRequestedIndex';
+      });
+      expect(recentlyViewedApplicationsSortArgs.length).to.equal(1);
     });
   });
 
