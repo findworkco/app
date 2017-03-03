@@ -181,6 +181,24 @@ var Application = module.exports = _.extend(baseDefine('application', {
       } else {
         throw new Error('Unexpected status received');
       }
+    },
+    getSortedUpcomingInterviews: function () {
+      var upcomingInterviews = this.get('upcoming_interviews');
+      assert(upcomingInterviews);
+      // Example: Assuming today is 2017-01-01 and interviews are 2017-02-01 and 2017-03-01
+      //   we want `2017-02-01` as it's closest so we use ascending order
+      return upcomingInterviews.sort(function sortUpcomingInterviews (interviewA, interviewB) {
+        return interviewA.get('date_time_moment') - interviewB.get('date_time_moment');
+      });
+    },
+    getSortedPastInterviews: function () {
+      var pastInterviews = this.get('past_interviews');
+      assert(pastInterviews);
+      // Example: Assuming today is 2017-03-01 and interviews are 2017-01-01 and 2017-02-01
+      //   we want `2017-02-01` as it's closest so we use descending order
+      return pastInterviews.sort(function sortPastInterviews (interviewA, interviewB) {
+        return interviewB.get('date_time_moment') - interviewA.get('date_time_moment');
+      });
     }
   }, reminderInstanceMethods, statusInstanceMethods),
 

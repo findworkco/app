@@ -348,7 +348,11 @@ app.get('/application/:id', _.flatten([
     req.addRecentlyViewedApplication(req.models.selectedApplication);
 
     // Render our page
-    res.render('application-edit-show.jade');
+    var application = req.models.selectedApplication;
+    res.render('application-edit-show.jade', {
+      sorted_upcoming_interviews: application.getSortedUpcomingInterviews(),
+      sorted_past_interviews: application.getSortedPastInterviews()
+    });
   }
 ]));
 app.post('/application/:id', _.flatten([
@@ -412,9 +416,12 @@ app.post('/application/:id', _.flatten([
   function applicationEditSaveError (err, req, res, next) {
     // If we have an error and it's a validation error, re-render with it
     if (err instanceof Sequelize.ValidationError) {
+      var application = req.models.selectedApplication;
       res.status(400).render('application-edit-show.jade', {
         form_data: req.body,
-        validation_errors: err.errors
+        validation_errors: err.errors,
+        sorted_upcoming_interviews: application.getSortedUpcomingInterviews(),
+        sorted_past_interviews: application.getSortedPastInterviews()
       });
       return;
     }

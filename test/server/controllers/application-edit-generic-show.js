@@ -1,9 +1,11 @@
 // Load in our dependencies
 var assert = require('assert');
 var expect = require('chai').expect;
+var Application = require('../../../server/models/application');
 var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
+var sinonUtils = require('../../utils/sinon');
 
 // Start our tests
 var scenarioInfoArr = [
@@ -196,6 +198,60 @@ scenario.route('A request to GET /application/:id (generic/non-saved-for-later)'
       expect($upcomingInterviewLinks).to.have.length(1);
       expect($upcomingInterviewLinks.eq(0).attr('href')).to.equal('/interview/abcdef-umbrella-corp-interview-uuid');
       expect($upcomingInterviewLinks.eq(0).text()).to.contain('Thu Jan 20 at 2:00PM CST');
+    });
+  });
+
+  scenario.routeTest('from the owner user with multiple upcoming interviews', {
+    dbFixtures: [dbFixtures.APPLICATION_MULTIPLE_UPCOMING_INTERVIEWS, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in and make our request
+    sinonUtils.spy(Application.Instance.prototype, 'getSortedUpcomingInterviews');
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/abcdef-stark-indy-uuid'), expectedStatusCode: 200});
+
+    it('lists upcoming interviews sorted by datetime', function () {
+      var $upcomingInterviewLinks = this.$('.upcoming-interviews a[href^="/interview"]');
+      expect($upcomingInterviewLinks).to.have.length(2);
+      expect($upcomingInterviewLinks.eq(0).text()).to.contain('Mon Mar 14 at 2:00PM CDT');
+      expect($upcomingInterviewLinks.eq(1).text()).to.contain('Tue Mar 22 at 7:00AM CDT');
+
+      // DEV: This acts as a sanity check for using `sort`, we can't do much better (e.g. force random order)
+      var getSortedUpcomingInterviewsSpy = Application.Instance.prototype.getSortedUpcomingInterviews;
+      expect(getSortedUpcomingInterviewsSpy.callCount).to.equal(1);
+    });
+  });
+
+  scenario.routeTest('from the owner user with multiple past interviews', {
+    dbFixtures: [dbFixtures.APPLICATION_MULTIPLE_PAST_INTERVIEWS, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in and make our request
+    sinonUtils.spy(Application.Instance.prototype, 'getSortedPastInterviews');
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/abcdef-globo-gym-uuid'), expectedStatusCode: 200});
+
+    it('lists past interviews sorted by datetime', function () {
+      var $pastInterviewLinks = this.$('.past-interviews a[href^="/interview"]');
+      expect($pastInterviewLinks).to.have.length(2);
+      expect($pastInterviewLinks.eq(0).text()).to.contain('Wed Mar 2 at 6:00PM CST');
+      expect($pastInterviewLinks.eq(1).text()).to.contain('Thu Feb 18 at 9:00AM CST');
+
+      // DEV: This acts as a sanity check for using `sort`, we can't do much better (e.g. force random order)
+      var getSortedPastInterviewsSpy = Application.Instance.prototype.getSortedPastInterviews;
+      expect(getSortedPastInterviewsSpy.callCount).to.equal(1);
+    });
+  });
+
+  scenario.routeTest('from the owner user with no upcoming interviews', {
+    // DEV: By definition, a waiting for response application isn't an upcoming interview
+    //   Technically we could have an archived + upcoming interview scenario but that's neither here nor there
+    dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE, dbFixtures.DEFAULT_FIXTURES]
+  }, function () {
+    // Log in and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/application/abcdef-sky-networks-uuid'), expectedStatusCode: 200});
+
+    it('doesn\'t show an upcoming interview section', function () {
+      expect(this.$('.upcoming-interviews')).to.have.length(0);
     });
   });
 });

@@ -104,7 +104,7 @@ block content
               a(href=interview.url)= interview.date_time_moment.format('ddd MMM D [at] h:mmA zz')
               if i != interviews.length - 1
                 br
-          if selectedApplication.upcoming_interviews.length > 0
+          if sorted_upcoming_interviews.length > 0
             div.upcoming-interviews
               h4.push-half--bottom
                 = "Upcoming interviews: "
@@ -112,7 +112,7 @@ block content
                   span(aria-hidden="true")= "+ "
                   | Add interview
               p(style="line-height: 1.5em")
-                +interviews-list(selectedApplication.upcoming_interviews)
+                +interviews-list(sorted_upcoming_interviews)
           if selectedApplication.status !== APPLICATION_STATUSES.SAVED_FOR_LATER
             div.past-interviews
               h4.push-half--bottom
@@ -121,8 +121,8 @@ block content
                   span(aria-hidden="true")= "+ "
                   | Add interview
               p.landmark(style="line-height: 1.5em")
-                if selectedApplication.past_interviews.length > 0
-                  +interviews-list(selectedApplication.past_interviews)
+                if sorted_past_interviews.length > 0
+                  +interviews-list(sorted_past_interviews)
                 else
                   i There are no past interviews for this job application.
           if selectedApplication.status == APPLICATION_STATUSES.ARCHIVED
