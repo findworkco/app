@@ -312,7 +312,7 @@ scenario.route('A request to a page which loads navigation', function () {
       expect($navApplication.find('a[href="/application/abcdef-black-mesa-uuid"]')).to.have.length(1);
       expect($navApplication.text()).to.contain('Black Mesa');
       expect($navApplication.text()).to.contain('Status: Received offer');
-      expect($navApplication.text()).to.contain('Last contact: Mon Dec 14');
+      expect($navApplication.text()).to.contain('Last interview: Mon Dec 14');
       expect($navApplication.text()).to.contain('Respond by: Sat Jan 1');
     });
   });
@@ -349,7 +349,7 @@ scenario.route('A request to a page which loads navigation', function () {
       expect($navApplication.find('a[href="/application/abcdef-sky-networks-uuid"]')).to.have.length(1);
       expect($navApplication.text()).to.contain('Sky Networks');
       expect($navApplication.text()).to.contain('Status: Waiting for response');
-      expect($navApplication.text()).to.contain('Last contact: Fri Jan 15');
+      expect($navApplication.text()).to.contain('Last interview: Fri Jan 15');
       expect($navApplication.text()).to.contain('Follow-up on: Tue Jan 25');
     });
   });
@@ -406,9 +406,72 @@ scenario.route('A request to a page which loads navigation', function () {
     it('lists applications with reminder disabled text', function () {
       var $navApplications = this.$('.nav-row--application');
       expect($navApplications).to.have.length(3);
-      expect($navApplications.eq(0).html()).to.contain('<i>No reminder set</i>');
-      expect($navApplications.eq(1).html()).to.contain('<i>No reminder set</i>');
-      expect($navApplications.eq(2).html()).to.contain('<i>No reminder set</i>');
+      expect($navApplications.eq(0).html()).to.contain('Apply by: <i>Reminder disabled</i>');
+      expect($navApplications.eq(1).html()).to.contain('Follow-up on: <i>Reminder disabled</i>');
+      expect($navApplications.eq(2).html()).to.contain('Respond by: <i>Reminder disabled</i>');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with applications with sent reminders', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_SENT,
+      dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_SENT,
+      dbFixtures.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_SENT,
+      dbFixtures.DEFAULT_FIXTURES
+    ]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-black-mesa-uuid'))
+      .save(serverUtils.getUrl('/application/abcdef-sky-networks-uuid'))
+      .save(serverUtils.getUrl('/application/abcdef-intertrode-uuid'));
+
+    it('lists applications with reminder sent text', function () {
+      var $navApplications = this.$('.nav-row--application');
+      expect($navApplications).to.have.length(3);
+      expect($navApplications.eq(0).html()).to.contain('Apply by: <i>Reminder sent</i>');
+      expect($navApplications.eq(1).html()).to.contain('Follow-up on: <i>Reminder sent</i>');
+      expect($navApplications.eq(2).html()).to.contain('Respond by: <i>Reminder sent</i>');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with applications with past interviews', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_RECEIVED_OFFER_WITH_PAST_INTERVIEWS,
+      dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_WITH_PAST_INTERVIEWS,
+      dbFixtures.DEFAULT_FIXTURES
+    ]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-black-mesa-uuid'))
+      .save(serverUtils.getUrl('/application/abcdef-sky-networks-uuid'));
+
+    it('lists applications with last interview text', function () {
+      var $navApplications = this.$('.nav-row--application');
+      expect($navApplications).to.have.length(2);
+      expect($navApplications.eq(0).html()).to.contain('Last interview: Fri Jan 15');
+      expect($navApplications.eq(1).html()).to.contain('Last interview: Mon Dec 14');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with applications with no past interviews', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_RECEIVED_OFFER_NO_PAST_INTERVIEWS,
+      dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_NO_PAST_INTERVIEWS,
+      dbFixtures.DEFAULT_FIXTURES
+    ]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save(serverUtils.getUrl('/application/abcdef-black-mesa-uuid'))
+      .save(serverUtils.getUrl('/application/abcdef-sky-networks-uuid'));
+
+    it('lists applications with last interview text', function () {
+      var $navApplications = this.$('.nav-row--application');
+      expect($navApplications).to.have.length(2);
+      expect($navApplications.eq(0).html()).to.contain('Applied on: Thu Jan 7');
+      expect($navApplications.eq(1).html()).to.contain('Applied on: Mon Nov 30');
     });
   });
 

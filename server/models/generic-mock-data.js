@@ -114,31 +114,34 @@ addCandidate('todd__candidate', {
 exports.APPLICATION_RECEIVED_OFFER_KEY = 'received-offer__application';
 exports.INTERVIEW_RECEIVED_OFFER_KEY = 'received-offer__interview';
 exports.REMINDER_RECEIVED_OFFER_KEY = 'received-offer__reminder--application';
-exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA = [
-  addApplication(exports.APPLICATION_RECEIVED_OFFER_KEY, {
-    id: 'abcdef-black-mesa-uuid',
-    candidate_id: DEFAULT_CANDIDATE_ID,
-    // Fri Jan 8
-    application_date_moment: moment('2015-12-01'),
-    archived_at_moment: null,
-    company_name: 'Black Mesa Labs',
-    name: 'Black Mesa',
-    // Mon Jan 25
-    received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid',
-    notes: '300 employees, all engineers/scientists',
-    posting_url: 'https://www.nature.com/naturejobs/science/jobs/123456-researcher',
-    status: Application.STATUSES.RECEIVED_OFFER
-  }),
-  exports.REMINDER_RECEIVED_OFFER = [
-    addApplicationReminder(exports.REMINDER_RECEIVED_OFFER_KEY, {
-      id: applications[applications.length - 1].received_offer_reminder_id,
-      application_id: applications[applications.length - 1].id,
+exports.APPLICATION_RECEIVED_OFFER = exports.APPLICATION_BLACK_MESA =
+    exports.APPLICATION_RECEIVED_OFFER_WITH_PAST_INTERVIEWS = [
+  exports.APPLICATION_RECEIVED_OFFER_NO_PAST_INTERVIEWS = [
+    addApplication(exports.APPLICATION_RECEIVED_OFFER_KEY, {
+      id: 'abcdef-black-mesa-uuid',
       candidate_id: DEFAULT_CANDIDATE_ID,
-      type: ApplicationReminder.TYPES.RECEIVED_OFFER,
-      date_time_moment: moment.tz('2022-01-01T12:00', 'US-America/Chicago'),
-      sent_at_moment: null,
-      is_enabled: true
-    })
+      // Fri Jan 8
+      application_date_moment: moment('2015-12-01'),
+      archived_at_moment: null,
+      company_name: 'Black Mesa Labs',
+      name: 'Black Mesa',
+      // Mon Jan 25
+      received_offer_reminder_id: 'abcdef-black-mesa-reminder-uuid',
+      notes: '300 employees, all engineers/scientists',
+      posting_url: 'https://www.nature.com/naturejobs/science/jobs/123456-researcher',
+      status: Application.STATUSES.RECEIVED_OFFER
+    }),
+    exports.REMINDER_RECEIVED_OFFER = [
+      addApplicationReminder(exports.REMINDER_RECEIVED_OFFER_KEY, {
+        id: applications[applications.length - 1].received_offer_reminder_id,
+        application_id: applications[applications.length - 1].id,
+        candidate_id: DEFAULT_CANDIDATE_ID,
+        type: ApplicationReminder.TYPES.RECEIVED_OFFER,
+        date_time_moment: moment.tz('2022-01-01T12:00', 'US-America/Chicago'),
+        sent_at_moment: null,
+        is_enabled: true
+      })
+    ]
   ],
   addInterview(exports.INTERVIEW_RECEIVED_OFFER_KEY, {
     id: 'abcdef-black-mesa-interview-uuid',
@@ -411,7 +414,8 @@ exports.INTERVIEW_WAITING_FOR_RESPONSE_KEY = 'waiting-for-response__interview';
 exports.REMINDER_WAITING_FOR_RESPONSE_KEY = 'waiting-for-response__reminder--application';
 exports.APPLICATION_WAITING_FOR_RESPONSE = exports.APPLICATION_WAITING_FOR_RESPONSE_WITH_PAST_INTERVIEWS =
     exports.APPLICATION_SKY_NETWORKS = [
-  exports.APPLICATION_WAITING_FOR_RESPONSE_NO_PAST_INTERVIEWS = [
+  exports.APPLICATION_WAITING_FOR_RESPONSE_NO_PAST_INTERVIEWS =
+      exports.APPLICATION_WAITING_FOR_RESPONSE_NO_UPCOMING_INTERVIEWS = [
     addApplication(exports.APPLICATION_WAITING_FOR_RESPONSE_KEY, {
       id: 'abcdef-sky-networks-uuid',
       candidate_id: DEFAULT_CANDIDATE_ID,

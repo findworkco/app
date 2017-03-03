@@ -270,6 +270,30 @@ scenario.model('An archived Application model with an archived date', function (
 });
 
 // Closest upcoming interview
+scenario.model('An Application model with no upcoming interviews', {
+  dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_NO_UPCOMING_INTERVIEWS, dbFixtures.DEFAULT_FIXTURES]
+}, function () {
+  it('has no closest upcoming interview', function (done) {
+    Application.find({
+      where: {id: 'abcdef-sky-networks-uuid'},
+      include: [{model: Interview}]
+    }).asCallback(function handleFind (err, application) {
+      // If there was an error, callback with it
+      if (err) {
+        return done(err);
+      }
+
+      // Sanity check data hasn't been altered
+      expect(application.get('upcoming_interviews')).to.have.length(0);
+
+      // Perform our assertions
+      var closestUpcomingInterview = application.get('closest_upcoming_interview');
+      expect(closestUpcomingInterview).to.equal(null);
+      done();
+    });
+  });
+});
+
 scenario.model('An Application model with multiple upcoming interviews', {
   dbFixtures: [dbFixtures.APPLICATION_MULTIPLE_UPCOMING_INTERVIEWS, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
@@ -301,11 +325,11 @@ scenario.model('An Application model with multiple upcoming interviews', {
   });
 });
 
-// Last contact moment
-scenario.model('An Application model that applied yet has no past interviews', {
+// Closest past interview
+scenario.model('An Application model with no past interviews', {
   dbFixtures: [dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_NO_PAST_INTERVIEWS, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
-  it('uses application date as last contact moment', function (done) {
+  it('has no closest past interview', function (done) {
     Application.find({
       where: {id: 'abcdef-sky-networks-uuid'},
       include: [{model: Interview}]
@@ -316,13 +340,11 @@ scenario.model('An Application model that applied yet has no past interviews', {
       }
 
       // Sanity check data hasn't been altered
-      expect(application.get('application_date_moment').toISOString()).to.equal(
-        '2016-01-08T00:00:00.000Z');
+      expect(application.get('past_interviews')).to.have.length(0);
 
       // Perform our assertions
-      expect(application.get('past_interviews')).to.have.length(0);
-      expect(application.get('last_contact_moment').toISOString()).to.equal(
-        '2016-01-08T00:00:00.000Z');
+      var closestPastInterview = application.get('closest_past_interview');
+      expect(closestPastInterview).to.equal(null);
       done();
     });
   });
@@ -331,7 +353,7 @@ scenario.model('An Application model that applied yet has no past interviews', {
 scenario.model('An Application model with multiple past interviews', {
   dbFixtures: [dbFixtures.APPLICATION_MULTIPLE_PAST_INTERVIEWS, dbFixtures.DEFAULT_FIXTURES]
 }, function () {
-  it('uses most recent past interview as last contact moment', function (done) {
+  it('properly resolves closest past interview', function (done) {
     Application.find({
       where: {id: 'abcdef-globo-gym-uuid'},
       include: [{model: Interview}]
@@ -342,8 +364,6 @@ scenario.model('An Application model with multiple past interviews', {
       }
 
       // Sanity check data hasn't been altered
-      expect(application.get('application_date_moment').toISOString()).to.equal(
-        '2016-02-01T00:00:00.000Z');
       expect(application.get('past_interviews')).to.have.length(2);
       var interviewDateStrs = application.get('past_interviews').map(function getInterviewDateStr (interview) {
         return interview.get('date_time_moment').toISOString();
@@ -353,8 +373,9 @@ scenario.model('An Application model with multiple past interviews', {
         ['2016-02-18T15:00:00.000Z', '2016-03-03T00:00:00.000Z']);
 
       // Perform our assertions
-      expect(application.get('last_contact_moment').toISOString()).to.equal(
-        '2016-03-03T00:00:00.000Z');
+      var closestPastInterview = application.get('closest_past_interview');
+      expect(closestPastInterview.get('date_time_moment').toISOString())
+        .to.equal('2016-03-03T00:00:00.000Z');
       done();
     });
   });

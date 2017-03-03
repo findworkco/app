@@ -181,6 +181,17 @@ var Application = module.exports = _.extend(baseDefine('application', {
       }
       return null;
     },
+    closest_past_interview: function () {
+      var pastInterviews = this.get('past_interviews');
+      if (pastInterviews && pastInterviews.length) {
+        // Example: Assuming today is 2017-03-01 and interviews are 2017-01-01 and 2017-02-01
+        //   we want `2017-02-01` as it's closest so we use `isAfter`
+        return pastInterviews.reduce(function findClosestInterview (a, b) {
+          return a.get('date_time_moment').isAfter(b.get('date_time_moment')) ? a : b;
+        }, pastInterviews[0]);
+      }
+      return null;
+    },
     delete_url: function () {
       // Example: /application/abcdef-sky-networks-uuid/delete
       return '/application/' + encodeURIComponent(this.getDataValue('id')) + '/delete';
@@ -190,24 +201,6 @@ var Application = module.exports = _.extend(baseDefine('application', {
     },
     human_status: function () {
       return exports.EDIT_HUMAN_STATUSES[this.get('status_key')];
-    },
-    last_contact_moment: function () {
-      // Verify we have both past interviews and application date resolved
-      var pastInterviews = this.get('past_interviews');
-      var applicationDateMomemt = this.get('application_date_moment');
-      if (!pastInterviews || !applicationDateMomemt) {
-        return null;
-      }
-
-      // Resolve our past interview moments
-      var pastInterviewMoments = pastInterviews.map(function getDateTimeMoment (pastInterview) {
-        return pastInterview.get('date_time_moment');
-      });
-
-      // Find the most recent moment
-      return pastInterviewMoments.reduce(function findLatestInterview (momentA, momentB) {
-        return momentA.isAfter(momentB) ? momentA : momentB;
-      }, applicationDateMomemt);
     },
     past_interviews: function () {
       // DEV: We could load `past_interviews` as its own query but it will likely cause status determination issues

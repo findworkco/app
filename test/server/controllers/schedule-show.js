@@ -94,7 +94,7 @@ scenario.route('A request to GET /schedule', function () {
       // Links = [Heading, button]
       expect($section.find('a[href="/application/abcdef-black-mesa-uuid"]')).to.have.length(2);
       expect($section.text()).to.contain('Black Mesa');
-      expect($section.text()).to.contain('Last contact: Mon Dec 14');
+      expect($section.text()).to.contain('Last interview: Mon Dec 14');
       expect($section.text()).to.contain('Respond by: Sat Jan 1');
       expect($section.find('.schedule-notes').text()).to.contain('300 employees');
     });
@@ -133,7 +133,7 @@ scenario.route('A request to GET /schedule', function () {
       expect($section.find('a[href="/application/abcdef-sky-networks-uuid"]')).to.have.length(2);
       expect($section.find('a[href="/application/abcdef-sky-networks-uuid/add-interview"]')).to.have.length(1);
       expect($section.text()).to.contain('Sky Networks');
-      expect($section.text()).to.contain('Last contact: Fri Jan 15');
+      expect($section.text()).to.contain('Last interview: Fri Jan 15');
       expect($section.text()).to.contain('Follow-up on: Tue Jan 25');
       expect($section.find('.schedule-notes').text()).to.contain('100 employees');
     });
@@ -213,7 +213,7 @@ scenario.route('A request to GET /schedule', function () {
     });
   });
 
-  // Edge case for alternative text
+  // Edge cases for alternative text
   scenario.routeTest('from a logged in user with applications with no details, no notes, and disabled reminders', {
     dbFixtures: [
       dbFixtures.APPLICATION_RECEIVED_OFFER_EMPTY,
@@ -228,9 +228,9 @@ scenario.route('A request to GET /schedule', function () {
       .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
 
     it('renders non-upcoming interview applications with reminder disabled text', function () {
-      expect(this.$('#schedule__received-offer').html()).to.contain('<i>No reminder set</i>');
-      expect(this.$('#schedule__waiting-for-response').html()).to.contain('<i>No reminder set</i>');
-      expect(this.$('#schedule__saved-for-later').html()).to.contain('<i>No reminder set</i>');
+      expect(this.$('#schedule__received-offer').html()).to.contain('Respond by: <i>Reminder disabled</i>');
+      expect(this.$('#schedule__waiting-for-response').html()).to.contain('Follow-up on: <i>Reminder disabled</i>');
+      expect(this.$('#schedule__saved-for-later').html()).to.contain('Apply by: <i>Reminder disabled</i>');
     });
 
     it('renders upcoming interview applications with no details text', function () {
@@ -242,6 +242,59 @@ scenario.route('A request to GET /schedule', function () {
       expect(this.$('#schedule__upcoming-interviews').html()).to.contain('<i>No notes recorded</i>');
       expect(this.$('#schedule__waiting-for-response').html()).to.contain('<i>No notes recorded</i>');
       expect(this.$('#schedule__saved-for-later').html()).to.contain('<i>No notes recorded</i>');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with applications with sent reminders', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_RECEIVED_OFFER_REMINDER_DUE_YET_SENT,
+      dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_REMINDER_DUE_YET_SENT,
+      dbFixtures.APPLICATION_SAVED_FOR_LATER_REMINDER_DUE_YET_SENT,
+      dbFixtures.DEFAULT_FIXTURES
+    ]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
+
+    it('renders non-upcoming interview applications with reminder sent text', function () {
+      expect(this.$('#schedule__received-offer').html()).to.contain('Respond by: <i>Reminder sent</i>');
+      expect(this.$('#schedule__waiting-for-response').html()).to.contain('Follow-up on: <i>Reminder sent</i>');
+      expect(this.$('#schedule__saved-for-later').html()).to.contain('Apply by: <i>Reminder sent</i>');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with applications with past interviews', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_RECEIVED_OFFER_WITH_PAST_INTERVIEWS,
+      dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_WITH_PAST_INTERVIEWS,
+      dbFixtures.DEFAULT_FIXTURES
+    ]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
+
+    it('renders non-upcoming interview applications with last interview text', function () {
+      expect(this.$('#schedule__received-offer').html()).to.contain('Last interview: Mon Dec 14');
+      expect(this.$('#schedule__waiting-for-response').html()).to.contain('Last interview: Fri Jan 15');
+    });
+  });
+
+  scenario.routeTest('from a logged in user with applications with no past interviews', {
+    dbFixtures: [
+      dbFixtures.APPLICATION_RECEIVED_OFFER_NO_PAST_INTERVIEWS,
+      dbFixtures.APPLICATION_WAITING_FOR_RESPONSE_NO_PAST_INTERVIEWS,
+      dbFixtures.DEFAULT_FIXTURES
+    ]
+  }, function () {
+    // Log in our user and make our request
+    httpUtils.session.init().login()
+      .save({url: serverUtils.getUrl('/schedule'), expectedStatusCode: 200});
+
+    it('renders non-upcoming interview applications with application date text', function () {
+      expect(this.$('#schedule__received-offer').html()).to.contain('Applied on: Mon Nov 30');
+      expect(this.$('#schedule__waiting-for-response').html()).to.contain('Applied on: Thu Jan 7');
     });
   });
 });

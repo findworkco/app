@@ -1,20 +1,29 @@
+mixin application-info-last-contact-text(application)
+  //- Tue Feb 16
+  if application.closest_past_interview
+    = "Last interview: " + application.closest_past_interview.date_time_moment.format('ddd MMM D')
+  else
+    = "Applied on: " + application.application_date_moment.tz(timezone).format('ddd MMM D')
+
+mixin application-info-reminder-text(reminder)
+  if reminder.sent_at_datetime
+    i Reminder sent
+  else if reminder.is_enabled
+    //- Tue Feb 23
+    = reminder.date_time_moment.format('ddd MMM D')
+  else
+    i Reminder disabled
+
 mixin application-info(mixin, application)
   //- DEV: Ideally we would have separate `nav-info` and `schedule-info` mixins for flexibility without sacrificing legibility
   //-   However during prototyping it helps that they are shared
   - var status = application.status;
   if status == APPLICATION_STATUSES.RECEIVED_OFFER
     +#{mixin}({icon: 'fa-envelope-o'})
-      //- Tue Feb 16
-      //- Fallback `last_contact_moment's timezone` for application date which has no timezone
-      - var lastContactMoment = application.last_contact_moment.clone();
-      - if (lastContactMoment.tz() === undefined) { lastContactMoment.tz(timezone); }
-      = "Last contact: " + lastContactMoment.format('ddd MMM D')
+      +application-info-last-contact-text(application)
     +#{mixin}({icon: 'fa-reply'})
-      if application.received_offer_reminder.is_enabled
-        //- Tue Feb 23
-        = "Respond by: " + application.received_offer_reminder.date_time_moment.format('ddd MMM D')
-      else
-        i No reminder set
+      = "Respond by: "
+      +application-info-reminder-text(application.received_offer_reminder)
   else if status == APPLICATION_STATUSES.UPCOMING_INTERVIEW
     - var closestInterview = application.closest_upcoming_interview;
     +#{mixin}({icon: 'fa-calendar-o', iconContent: closestInterview.date_time_moment.format('D')})
@@ -28,28 +37,18 @@ mixin application-info(mixin, application)
         i No details provided
   else if status == APPLICATION_STATUSES.WAITING_FOR_RESPONSE
     +#{mixin}({icon: 'fa-envelope-o'})
-      //- Tue Feb 16
-      //- Fallback `last_contact_moment's timezone` for application date which has no timezone
-      - var lastContactMoment = application.last_contact_moment.clone();
-      - if (lastContactMoment.tz() === undefined) { lastContactMoment.tz(timezone); }
-      = "Last contact: " + lastContactMoment.format('ddd MMM D')
+      +application-info-last-contact-text(application)
     +#{mixin}({icon: 'fa-reply'})
-      if application.waiting_for_response_reminder.is_enabled
-        //- Tue Feb 23
-        = "Follow-up on: " + application.waiting_for_response_reminder.date_time_moment.format('ddd MMM D')
-      else
-        i No reminder set
+      = "Follow-up on: "
+      +application-info-reminder-text(application.waiting_for_response_reminder)
   else if status == APPLICATION_STATUSES.SAVED_FOR_LATER
     - var createdAtMoment = moment(application.created_at).tz(timezone);
     +#{mixin}({icon: 'fa-calendar-o', iconContent: createdAtMoment.format('D')})
       //- Tue Feb 16
       = "Saved on: " + createdAtMoment.format('ddd MMM D')
     +#{mixin}({icon: 'fa-reply'})
-      if application.saved_for_later_reminder.is_enabled
-        //- Tue Feb 23
-        = "Apply by: " + application.saved_for_later_reminder.date_time_moment.format('ddd MMM D')
-      else
-        i No reminder set
+      = "Apply by: "
+      +application-info-reminder-text(application.saved_for_later_reminder)
   else if status == APPLICATION_STATUSES.ARCHIVED
     - var archivedAtMoment = application.archived_at_moment.tz(timezone);
     +#{mixin}({icon: 'fa-calendar-o', iconContent: archivedAtMoment.format('D')})
