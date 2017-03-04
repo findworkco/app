@@ -17,7 +17,7 @@ var testUtils = {
     domUtils.init([mixinsJade], function () {/*
       +datetimepicker("source", sourceMoment)#source(
         data-datetimepicker-sync="#target")
-      +datetimepicker("target", targetMoment)#target
+      +datetimepicker("target", targetMoment, locals.targetOptions)#target
     */}, _.extend({
       moment: moment,
       // Filter to US only for simplicity
@@ -146,5 +146,30 @@ describe('A pair of synced datetimepickers on a date-edge updating the source in
     $simulant.fire($sourceTime, 'change');
     expect($target.find('input[type=date]').val()).to.equal('2017-01-01');
     expect($target.find('input[type=time]').val()).to.equal('1:30AM');
+  });
+});
+
+// Edge case: Setting behind minimum (required for hiding/restoring past interview reminders)
+describe('A pair of synced datetimepickers with a minimum date for target updating source info', function () {
+  testUtils.init({
+    sourceMoment: moment.tz('2016-02-03T04:05:06', 'US-America/Chicago'),
+    targetMoment: moment.tz('2016-02-03T06:05:06', 'US-America/Chicago'),
+    targetOptions: {minDate: '2016-02-01'}
+  });
+
+  it('can set target date behind minimum', function () {
+    // Bind our sync and assert initial conditions
+    browserInit(this.el);
+    var $source = this.$('#source'); assert($source.length);
+    var $target = this.$('#target'); assert($target.length);
+    expect($source.find('input[type=date]').val()).to.equal('2016-02-03');
+    expect($target.find('input[type=date]').val()).to.equal('2016-02-03');
+    expect($target.find('input[type=date]').attr('min')).to.equal('2016-02-01');
+
+    // Perform our update and assert result
+    var $sourceDate = $source.find('input[type=date]');
+    $sourceDate.val('2016-01-15');
+    $simulant.fire($sourceDate, 'change');
+    expect($target.find('input[type=date]').val()).to.equal('2016-01-15');
   });
 });

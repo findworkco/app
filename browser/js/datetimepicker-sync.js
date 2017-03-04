@@ -7,6 +7,7 @@ var forEach = Array.prototype.forEach;
 // Define/export common helpers
 // DEV: We don't test native functionality directly -- please do that via manual testing
 //   We can also consider adding Chrome to test suite
+function trueFn() { return true; }
 exports.getDateFromDatetimepicker = function (datetimepickerEl) {
   // Resolve our elements
   // dateEl.value = 'YYYY-MM-DD' (native, datepicker)
@@ -39,6 +40,9 @@ exports.setDateToDatetimepicker = function (datetimepickerEl, date) {
     dateEl.value = date.toISOString().replace(/T.+/, '');
   } else {
     // https://bootstrap-datepicker.readthedocs.io/en/latest/methods.html#setdate
+    // DEV: We disable/ignore date range checks as HTML5 inputs ignore `min`/`max` on JS based set
+    var datepickerObj = $(dateEl).data('datepicker'); assert(datepickerObj);
+    datepickerObj.dateWithinRange = trueFn;
     $(dateEl).datepicker('setUTCDate', date);
   }
   if (Modernizr.inputtypes.time) {

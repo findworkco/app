@@ -1,4 +1,5 @@
 // Load in our dependencies
+var HttpError = require('http-errors');
 var moment = require('moment-timezone');
 var qsMultiDict = require('querystring-multidict');
 var MultiDict = require('querystring-multidict/lib/multidict');
@@ -37,20 +38,30 @@ function createMomentTimezone(dateStr, timeStr, timezoneStr) {
 MultiDict.prototype.getMomentDateOnly = function (key, defaultVal) {
   var dateStr = this.get(key);
   if (dateStr !== undefined) {
-    return createMomentDateOnly(dateStr);
+    var retMoment = createMomentDateOnly(dateStr);
+    if (retMoment.isValid()) {
+      return retMoment;
+    }
   }
   return defaultVal;
 };
 MultiDict.prototype.fetchMomentDateOnly = function (key) {
   var dateStr = this.fetch(key);
-  return createMomentDateOnly(dateStr);
+  var retMoment = createMomentDateOnly(dateStr);
+  if (!retMoment.isValid()) {
+    throw new HttpError.BadRequest('Invalid date passed to "' + key + '"');
+  }
+  return retMoment;
 };
 MultiDict.prototype.getMomentTimezone = function (key, defaultVal) {
   var dateStr = this.get(key + '_date');
   var timeStr = this.get(key + '_time');
   var timezoneStr = this.get(key + '_timezone');
   if (dateStr !== undefined && timeStr !== undefined && timezoneStr !== undefined) {
-    return createMomentTimezone(dateStr, timeStr, timezoneStr);
+    var retMoment = createMomentTimezone(dateStr, timeStr, timezoneStr);
+    if (retMoment.isValid()) {
+      return retMoment;
+    }
   }
   return defaultVal;
 };
@@ -58,7 +69,11 @@ MultiDict.prototype.fetchMomentTimezone = function (key) {
   var dateStr = this.fetch(key + '_date');
   var timeStr = this.fetch(key + '_time');
   var timezoneStr = this.fetch(key + '_timezone');
-  return createMomentTimezone(dateStr, timeStr, timezoneStr);
+  var retMoment = createMomentTimezone(dateStr, timeStr, timezoneStr);
+  if (!retMoment.isValid()) {
+    throw new HttpError.BadRequest('Invalid date/time/timezone passed to "' + key + '"');
+  }
+  return retMoment;
 };
 
 // Export our normal parser and re-expose MultiDict for convenience
