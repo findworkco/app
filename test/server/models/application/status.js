@@ -1,8 +1,10 @@
 // Load in our dependencies
 var _ = require('underscore');
 var expect = require('chai').expect;
+var extractValues = require('extract-values');
 var moment = require('moment-timezone');
 var HttpError = require('http-errors');
+var dateUtils = require('../../utils/date');
 var dbFixtures = require('../../utils/db-fixtures');
 var sinonUtils = require('../../../utils/sinon');
 var Application = require('../../../../server/models/application');
@@ -507,8 +509,11 @@ scenario.model('An "Application model without an application date" being backfil
     var updatedModels = application.updateToApplied(candidate);
     expect(updatedModels).to.contain(application);
     expect(application.get('application_date_moment')).to.not.equal(null);
-    expect(application.get('application_date_moment')).to.be.at.least(moment().subtract({hours: 1}));
-    expect(application.get('application_date_moment')).to.be.at.most(moment().add({hours: 1}));
+    // DEV: Application date should be set to today in candidate's timezone
+    var expectedDateStr = new Date(dateUtils.nowInSF()).toISOString();
+    var expectedInfo = extractValues(expectedDateStr, '{date}T{full_time}');
+    var actualMoment = application.get('application_date_moment').tz('UTC');
+    expect(actualMoment.format('Y-MM-DD')).to.equal(expectedInfo.date);
   });
 });
 

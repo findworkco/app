@@ -1,8 +1,10 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var extractValues = require('extract-values');
 var moment = require('moment-timezone');
 var Application = require('../../../server/models/application');
 var ApplicationReminder = require('../../../server/models/application-reminder');
+var dateUtils = require('../utils/date');
 var dbFixtures = require('../utils/db-fixtures');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
@@ -50,8 +52,11 @@ scenario.route('A request to a POST /application/:id/applied', function () {
         expect(applications).to.have.length(1);
         expect(applications[0].get('status')).to.equal('waiting_for_response');
         expect(applications[0].get('waiting_for_response_reminder_id')).to.be.a('string');
-        expect(applications[0].get('application_date_moment')).to.be.at.least(moment().subtract({hours: 1}));
-        expect(applications[0].get('application_date_moment')).to.be.at.most(moment().add({hours: 1}));
+        // DEV: Application date should be set to today in candidate's timezone
+        var expectedDateStr = new Date(dateUtils.nowInSF()).toISOString();
+        var expectedInfo = extractValues(expectedDateStr, '{date}T{full_time}');
+        var actualMoment = applications[0].get('application_date_moment').tz('UTC');
+        expect(actualMoment.format('Y-MM-DD')).to.equal(expectedInfo.date);
         done();
       });
     });

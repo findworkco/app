@@ -97,9 +97,12 @@ exports.instanceMethods = {
     }
 
     // Backfill application date
+    // DEV: We get date in candidate's timezone but re-serialize it in UTC
     var retVal = [this];
     if (!this.get('application_date_moment')) {
-      this.set('application_date_moment', moment());
+      var dateFormat = 'Y-MM-DD';
+      var momentStr = moment.tz(candidate.get('timezone')).format(dateFormat);
+      this.set('application_date_moment', moment.tz(momentStr, [dateFormat], 'UTC'));
     }
 
     // If we are an archived application, then fallback its archived at timestamp

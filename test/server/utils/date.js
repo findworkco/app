@@ -2,10 +2,6 @@
 var moment = require('moment-timezone');
 
 // Define our exports
-exports.nowInUTC = function () {
-  var now = +new Date();
-  return now;
-};
 exports.nowInChicago = function () {
   // DEV: Due to DST, we must use `moment.tz` initially
   // http://momentjs.com/timezone/docs/#/zone-object/offset/

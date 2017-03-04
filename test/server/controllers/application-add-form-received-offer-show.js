@@ -22,11 +22,11 @@ scenario.route('A request to GET /add-application/received-offer (specific)', {
       expect(this.$('#application-status').text()).to.equal('Status: Received offer');
     });
 
-    it('sets application date to today', function () {
+    it('sets application date to today in candidate\'s timezone', function () {
       // DEV: Our visual tests override this value for consistency in screenshots
       // DEV: We construct values without moment to verify our logic is correct
       // Example date string: 2016-05-23T21:00:00.000Z
-      var expectedDateStr = new Date(dateUtils.nowInUTC()).toISOString();
+      var expectedDateStr = new Date(dateUtils.nowInSF()).toISOString();
       var expectedInfo = extractValues(expectedDateStr, '{date}T{full_time}');
       expect(this.$('input[name=application_date]').val()).to.equal(expectedInfo.date);
     });
