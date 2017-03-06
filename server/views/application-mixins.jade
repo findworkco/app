@@ -2,7 +2,7 @@ mixin application-name(text, values)
   .form-group
     label(for="name")
       = text
-    input#name.form-control.input--block(name="name", type="text", value=form_data.get('name') || values.name || locals.query_company_name, placeholder="Examples: Google, Acme Corp")&attributes(attributes)
+    input#name.form-control.input--block(name="name", type="text", value=form_data.get('name') || values.name || locals.query_company_name, placeholder="Examples: Google, Apple")&attributes(attributes)
 
 mixin posting-url(values)
   .form-group
@@ -85,7 +85,7 @@ mixin company-notes-and-research(values)
         .flexbox
           - var companyName = form_data.get('company_name') || values.company_name || locals.query_company_name;
           .flexbox__item.company-name__container
-            input.form-control.input--block#company_name(name="company_name", type="text", value=companyName, placeholder="Examples: Google, Acme Corp")
+            input.form-control.input--block#company_name(name="company_name", type="text", value=companyName, placeholder="Examples: Google, Apple")
           .flexbox__item
             //- DEV: We could include company name query string but it's unnecessary as live update requires JS
             a#search-btn.btn.btn--small.btn--wide.btn--default(href="/research-company", target="_blank") Search
