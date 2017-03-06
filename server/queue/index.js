@@ -173,6 +173,17 @@ registerJob(JOBS.SEND_WELCOME_EMAIL, 5, function sendWelcomeEmail (job, done) {
   });
 });
 
+JOBS.SEND_ACCOUNT_DELETION_EMAIL = 'sendAccountDeletionEmail';
+registerJob(JOBS.SEND_ACCOUNT_DELETION_EMAIL, 5, function sendAccountDeletionEmail (job, done) {
+  // Resolve our email directly (no guarantee of account existing)
+  var email = job.data.email; assert(email);
+  emails.accountDeletion({
+    to: email
+  }, {
+    email: email
+  }, done);
+});
+
 // DEV: We only process 1 set of reminders at a time to prevent double sending
 // DEV: We could use a main job which counts/queues other jobs with offsets (e.g. by id)
 //   However that has its own complexities (e.g. can't use numeric offsets due to potentially double send of tail/head)

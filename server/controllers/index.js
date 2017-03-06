@@ -4,6 +4,7 @@ var _ = require('underscore');
 var Sequelize = require('sequelize');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
+var queue = require('../queue');
 var ensureLoggedIn = require('../middlewares/session').ensureLoggedIn;
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
 var saveModelsViaCandidate = require('../models/utils/save-models').saveModelsViaCandidate;
@@ -172,10 +173,25 @@ app.post('/delete-account', [
   ensureLoggedIn,
   // No models need to be loaded
   function deleteAccountSave (req, res, next) {
+    // Save our email to request for reuse on success
+    req._email = req.candidate.get('email');
+
     // Delete our candidate, we will cascade delete its items
     saveModelsViaCandidate({destroyModels: [req.candidate], candidate: req.candidate}, next);
   },
   function deleteAccountSaveSuccess (req, res, next) {
+    // Send an account deletion email to candidate
+    // DEV: We perform this async as it's non-critical
+    assert(req._email);
+    queue.create(queue.JOBS.SEND_ACCOUNT_DELETION_EMAIL, {
+      email: req._email
+    }).save(function handleSendAccountDeletionEmail (err) {
+      // If there was an error, send it to Sentry
+      if (err) {
+        app.sentryClient.captureError(err);
+      }
+    });
+
     // Destroy our session
     req.session.destroy(function handleDestroy (err) {
       // If there wasn an error, capture it in a non-failing manner

@@ -57,6 +57,9 @@ exports.test = jadeSender(__dirname + '/test.jade', {
 exports.welcome = jadeSender(__dirname + '/welcome.jade', {
   from: DEFAULT_FROM_EMAIL
 });
+exports.accountDeletion = jadeSender(__dirname + '/account-deletion.jade', {
+  from: DEFAULT_FROM_EMAIL
+});
 
 exports.savedForLaterReminder = jadeSender(__dirname + '/saved-for-later-reminder.jade', {
   from: DEFAULT_FROM_EMAIL

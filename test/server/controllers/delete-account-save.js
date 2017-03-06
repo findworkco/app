@@ -4,7 +4,9 @@ var dbFixtures = require('../utils/db-fixtures');
 var fakeGoogleFactory = require('../utils/fake-google');
 var httpUtils = require('../utils/http');
 var serverUtils = require('../utils/server');
+var sinonUtils = require('../../utils/sinon');
 var Candidate = require('../../../server/models/candidate');
+var queue = require('../../../server/queue');
 
 // Start our tests
 scenario.route('A request to POST /delete-account', {
@@ -12,6 +14,8 @@ scenario.route('A request to POST /delete-account', {
 }, function () {
   scenario.routeTest('from a logged in user', function () {
     // Login and save our session cokie
+    sinonUtils.spy(queue, 'create');
+    serverUtils.stubEmails();
     httpUtils.session.init().login().save(serverUtils.getUrl('/settings'));
     before(function saveSessionCookie () {
       // toJSON() = {version: 'tough-cookie@2.2.2', storeType: 'MemoryCookieStore', rejectPublicSuffixes: true,
@@ -51,6 +55,16 @@ scenario.route('A request to POST /delete-account', {
 
     it('is redirected to the landing page', function () {
       expect(this.res.headers).to.have.property('location', '/');
+    });
+
+    it('sends user an account deletion email', function () {
+      var queueCreateSpy = queue.create;
+      expect(queueCreateSpy.callCount).to.equal(1);
+      var emailSendStub = this.emailSendStub;
+      expect(emailSendStub.callCount).to.equal(1);
+      expect(emailSendStub.args[0][0].data.to).to.equal('mock-email@mock-domain.test');
+      expect(emailSendStub.args[0][0].data.subject).to.equal('We\'re sorry to see you go');
+      expect(emailSendStub.args[0][0].data.html).to.contain('Hi mock-email@mock-domain.test,');
     });
 
     describe('on subsequent requests', function () {
