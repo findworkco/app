@@ -44,6 +44,7 @@ passport.use(new GoogleStrategy({
     // profile = {id: '1234', ..., emails: [{value: 'todd@findwork.co', type: 'account'}, ...]}
     // DEV: For full profile info, see `nine-track` recordings
     // DEV: There is only 1 account (main) email per account
+    var profileId = profile.id;
     var profileEmails = profile.emails || [];
     var accountEmail = (_.findWhere(profileEmails, {type: 'account'}) || {}).value;
 
@@ -51,6 +52,9 @@ passport.use(new GoogleStrategy({
     // DEV: Error will be sent back to corresponding `next` handler eventually
     if (!accountEmail) {
       return next(new Error('Unable to resolve email from Google\'s response'));
+    }
+    if (!profileId) {
+      return next(new Error('Unable to resolve id from Google\'s response'));
     }
 
     // Otherwise, if the candidate exists in our database, return them
@@ -60,8 +64,11 @@ passport.use(new GoogleStrategy({
 
       // If we have a candidate
       if (_candidate) {
-        // Update their access token (refresh token isn't defined for us)
-        _candidate.set('google_access_token', accessToken);
+        // Update their access token and Google id (refresh token isn't defined for us)
+        _candidate.set({
+          google_id: profileId,
+          google_access_token: accessToken
+        });
         saveModelsViaServer({models: [_candidate]}, function handleUpdate (err) {
           // If there was an error, send it to Sentry (no need to bail)
           if (err) { app.sentryClient.captureError(err); }
@@ -78,6 +85,7 @@ passport.use(new GoogleStrategy({
       // Otherwise, create our candidate
       var candidate = Candidate.build({
         email: accountEmail,
+        google_id: profileId,
         google_access_token: accessToken,
         timezone: req.timezone
       });

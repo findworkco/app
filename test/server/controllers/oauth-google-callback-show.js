@@ -218,6 +218,7 @@ scenario.route('A request to GET /oauth/google/callback', {
         expect(candidates).to.have.length(1);
         expect(candidates[0].get('id')).to.be.a('String');
         expect(candidates[0].get('email')).to.equal('mock-email@mock-domain.test');
+        expect(candidates[0].get('google_id')).to.equal('1234567890');
         expect(candidates[0].get('google_access_token')).to.equal('mock_access_token|default__candidate');
         // DEV: Verify we use IP address for timezone for user generation
         expect(candidates[0].get('timezone')).to.equal('JP-Asia/Tokyo');
@@ -326,6 +327,40 @@ scenario.route('A request to GET /oauth/google/callback', {
 
     it('is redirected to `/schedule`', function () {
       expect(this.lastRedirect.redirectUri).to.match(/\/schedule$/);
+    });
+  });
+
+  scenario.routeTest('with an existent user with no Google token', {
+    dbFixtures: [dbFixtures.CANDIDATE_EMAIL],
+    googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
+  }, function () {
+    // Verify we have no Google info
+    before(function assertGoogleInfo (done) {
+      Candidate.findAll().asCallback(function handleCandidates (err, candidates) {
+        if (err) { return done(err); }
+        expect(candidates).to.have.length(1);
+        expect(candidates[0].get('google_id')).to.equal(null);
+        expect(candidates[0].get('google_access_token')).to.equal(null);
+        done();
+      });
+    });
+
+    // Make our request
+    httpUtils.session.init().save({
+      // Redirects to fake Google OAuth, then to `/oauth/google/callback`
+      url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
+      followRedirect: true,
+      expectedStatusCode: 200
+    });
+
+    it('fills in Google id and access token', function (done) {
+      Candidate.findAll().asCallback(function handleCandidates (err, candidates) {
+        if (err) { return done(err); }
+        expect(candidates).to.have.length(1);
+        expect(candidates[0].get('google_id')).to.equal('1234567890');
+        expect(candidates[0].get('google_access_token')).to.equal('mock_access_token|default__candidate');
+        done();
+      });
     });
   });
 

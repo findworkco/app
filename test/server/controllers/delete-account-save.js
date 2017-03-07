@@ -50,7 +50,7 @@ scenario.route('A request to POST /delete-account', {
     httpUtils.session.save({
       method: 'POST', url: serverUtils.getUrl('/delete-account'),
       htmlForm: true, followRedirect: false,
-      expectedStatusCode: 302
+      expectedStatusCode: 302, waitForJobs: 1
     });
 
     it('is redirected to the landing page', function () {

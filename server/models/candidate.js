@@ -1,4 +1,5 @@
 // Load in our dependencies
+var assert = require('assert');
 var _ = require('underscore');
 var Sequelize = require('sequelize');
 var baseDefine = require('./base.js');
@@ -16,6 +17,9 @@ module.exports = _.extend(baseDefine('candidate', {
     type: Sequelize.STRING(255), unique: true, allowNull: false,
     validate: {isEmail: {msg: 'Invalid email provided'}}
   },
+  // DEV: we are using 64 to future proof in case this moves to another table
+  // Example: 105517022105765304949 for https://plus.google.com/105517022105765304949
+  google_id: {type: Sequelize.STRING(64), allowNull: true},
   // Google is: xxxx.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
   //   but we are using 1024 to future proof in case this moves to another table
   google_access_token: {type: Sequelize.STRING(1024), allowNull: true},
@@ -27,6 +31,20 @@ module.exports = _.extend(baseDefine('candidate', {
   },
   welcome_email_sent: {type: Sequelize.BOOLEAN, defaultValue: false, allowNull: false}
 }, {
+  validate: {
+    bothGoogleValuesOrNone: function () {
+      var googleIdVal = this.get('google_id');
+      var googleAccessTokenVal = this.get('google_access_token');
+      if ((googleIdVal === null || googleIdVal === undefined) &&
+          (googleAccessTokenVal === null || googleAccessTokenVal === undefined)) {
+        return;
+      }
+      assert.notEqual(googleIdVal, null, 'Expected "google_id" to not be null when ' +
+        '"google_access_token" wasn\'t null but it was');
+      assert.notEqual(googleAccessTokenVal, null, 'Expected "google_access_token" to not be null when ' +
+        '"google_id" wasn\'t null but it was');
+    }
+  },
   getterMethods: {
     add_application_url: function () {
       return '/add-application';

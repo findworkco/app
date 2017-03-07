@@ -75,6 +75,7 @@ exports.CANDIDATE_DEFAULT = [
   addCandidate(exports.CANDIDATE_DEFAULT_KEY, {
     id: DEFAULT_CANDIDATE_ID,
     email: 'mock-email@mock-domain.test',
+    google_id: 'mock_default_candidate_google_id',
     google_access_token: 'mock_access_token_fixtured',
     timezone: 'US-America/Chicago',
     welcome_email_sent: true
@@ -84,6 +85,7 @@ exports.CANDIDATE_ALT = [
   addCandidate('alt__candidate', {
     id: 'alt00000-0000-0000-0000-000000000000',
     email: 'alt-email@mock-domain.test',
+    google_id: 'mock_alt_candidate_google_id',
     google_access_token: 'mock_access_token_fixtured_alt',
     timezone: 'US-America/Chicago',
     welcome_email_sent: true
@@ -93,9 +95,18 @@ exports.CANDIDATE_NEW = [
   addCandidate('new__candidate', {
     id: 'newbie00-0000-0000-0000-000000000000',
     email: 'mock-email@mock-domain.test',
+    google_id: 'mock_new_candidate_google_id',
     google_access_token: 'mock_access_token_fixtured',
     timezone: 'US-America/Chicago',
     welcome_email_sent: false
+  })
+];
+exports.CANDIDATE_EMAIL = [
+  addCandidate('email__candidate', {
+    id: 'email000-0000-0000-0000-000000000000',
+    email: 'mock-email@mock-domain.test',
+    timezone: 'US-America/Chicago',
+    welcome_email_sent: true
   })
 ];
 // Gemini-only mocks
