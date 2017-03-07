@@ -98,13 +98,10 @@ mixin partial-research-company-content(companyName)
     if companyName && !locals.resultsLoaded
       | Results will be loaded shortly...
     else
-      +glassdoor-result(locals.glassdoorResult, {expanded: false})
-  h5.text--normal.flush--bottom(style="font-weight: bold") AngelList results:
-  p#angellist-results
-    if companyName && !locals.resultsLoaded
-      | Results will be loaded shortly...
-    else
-      +angellist-result(locals.angelListResult, {expanded: false})
+      +glassdoor-result(locals.glassdoorResult, {extended: false})
+  h5.text--normal.flush--bottom(style="font-weight: bold") External links:
+  p#external-links-results
+    +external-links-result(companyName, {extended: false})
 
 mixin glassdoor-result(glassdoorResult, options)
     if glassdoorResult && glassdoorResult.id
@@ -112,7 +109,7 @@ mixin glassdoor-result(glassdoorResult, options)
       br
       = "Website: "
       //- www.google.com -> http://www.google.com/
-      a(href="http://#{glassdoorResult.website}/")= glassdoorResult.website
+      a(target="_blank", href="http://#{glassdoorResult.website}/")= glassdoorResult.website
       br
       = "Industry: "
       if !glassdoorResult.industry
@@ -139,9 +136,9 @@ mixin glassdoor-result(glassdoorResult, options)
         br
         | Work/Life balance rating: #{glassdoorResult.workLifeBalanceRating}/5.0
         br
-      a(href=glassdoorResult.glassdoorUrl) View Glassdoor profile
+      a(target="_blank", href=glassdoorResult.glassdoorUrl) View Glassdoor profile
       br
-      a(href=glassdoorResult.attributionURL)
+      a(target="_blank", href=glassdoorResult.attributionURL)
         = "Powered by "
         img(alt="Glassdoor", src="/dist/images/glassdoor-green.svg", style="height: 1.3em; position: relative; top: 4px")
       br
@@ -155,82 +152,38 @@ mixin glassdoor-result(glassdoorResult, options)
       br
       em Please enter one in the field above.
 
-mixin angellist-result(angelListResult, options)
-  if angelListResult && angelListResult.id
-    | Name: #{angelListResult.name}
+mixin external-links-result(companyName, options)
+  if companyName
+    if options.extended
+      span(style="text-decoration: underline") General
+      br
+    = "LinkedIn: "
+    a(target="_blank", href="https://www.linkedin.com/search/results/companies/?keywords=#{encodeURIComponent(companyName)}")
+      | Search
     br
-    = "Website: "
-    a(href=angelListResult.company_url)= angelListResult.company_url
+    = "Crunchbase: "
+    a(target="_blank", href="https://www.crunchbase.com/app/search?q=#{encodeURIComponent(companyName)}")
+      | Search
     br
-    | Followers: #{angelListResult.follower_count}
-    br
-    = "Locations: "
-    if angelListResult.locations.length
-      for angelListLocation, i in angelListResult.locations
-        //- location = {id: 1701, tag_type: 'LocationTag', name: 'mountain view', display_name: 'Mountain View', angellist_url: 'https://angel.co/mountain-view-1'}
-        a(href=angelListResult.angellist_url, target="_blank")
-          = angelListLocation.display_name
-        if i != angelListResult.locations.length - 1
-          = ", "
-    else
-      i Unknown
-    br
-    = "Markets: "
-    if angelListResult.markets.length
-      for angelListMarket, i in angelListResult.markets
-        //- market = {id: 841, tag_type: 'MarketTag', name: 'software', display_name: 'Software', angellist_url: 'https://angel.co/software'}
-        a(href=angelListResult.angellist_url, target="_blank")
-          = angelListMarket.display_name
-        if i != angelListResult.markets.length - 1
-          = ", "
-    else
-      i Unknown
+    = "AngelList: "
+    a(target="_blank", href="https://angel.co/search?type=companies&q=#{encodeURIComponent(companyName)}")
+      | Search
     br
     if options.extended
-      if false
-        = "Public fundraising: "
-        if angelListResult.public_fundraising.length
-          for fundraising_result in angelListResult.public_fundraising
-            br
-            span
-              //- DEV: We want to use a `<ul>` but it breaks out of the `<p>` container
-              | &nbsp;-&nbsp;
-              = fundraising_result.name
-              = ": "
-              if fundraising_result.content
-                = fundraising_result.content
-              else
-                i Details unknown
-        else
-          | N/A
-        br
-      = "Blog URL: "
-      if angelListResult.blog_url
-        a(href=angelListResult.blog_url)= angelListResult.blog_url
-      else
-        | N/A
       br
-      = "Twitter URL: "
-      if angelListResult.twitter_url
-        a(href=angelListResult.twitter_url)= angelListResult.twitter_url
-      else
-        | N/A
+      span(style="text-decoration: underline") Programming
       br
-      = "Video URL: "
-      if angelListResult.video_url
-        a(href=angelListResult.video_url)= angelListResult.video_url
-      else
-        | N/A
+    = "StackShare: "
+    a(target="_blank", href="https://stackshare.io/search/q=#{encodeURIComponent(companyName)}")
+      | Search
+    if options.extended
       br
-    a(href=angelListResult.angellist_url) View AngelList profile
+      = "GitHub: "
+      a(target="_blank", href="https://github.com/search?type=Users&utf8=%E2%9C%93&q=#{encodeURIComponent(companyName)}")
+        | Search
+      br
     br
-    a(href="https://angel.co/")
-      = "Powered by AngelList"
-      img(alt="AngelList logo", aria-hidden="true", src="/dist/images/angellist.svg", style="height: 1.3em; position: relative; top: 4px; left: 2px")
-    br
-    a(target="_blank", href=angelListResult.badMatchUrl) Bad match? Click here to let us know
-  else if glassdoorResult
-    | AngelList support is under construction.
+    a(href="mailto:todd@findwork.co?subject=" + encodeURIComponent('Find Work link idea')) Want more links? Click here to send us an email
   else
     em No company name entered.
     br

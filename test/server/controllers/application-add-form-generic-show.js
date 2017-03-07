@@ -26,7 +26,7 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
 
       it('renders empty research company form', function () {
         expect(this.$('#glassdoor-results').text()).to.contain('No company name entered');
-        expect(this.$('#angellist-results').text()).to.contain('No company name entered');
+        expect(this.$('#external-links-results').text()).to.contain('No company name entered');
       });
 
       // DEV: We rely on `htmlForm` and `add-form-save` tests to verify field presence

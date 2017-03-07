@@ -16,7 +16,7 @@ exports.init = function (containerEl) {
     var searchEl = formEl.querySelector('#search-btn'); assert(searchEl);
     var partialFormErrorsEl = formEl.querySelector('#partial-form-errors'); assert(partialFormErrorsEl);
     var glassdoorResultsEl = formEl.querySelector('#glassdoor-results'); assert(glassdoorResultsEl);
-    var angellistResultsEl = formEl.querySelector('#angellist-results'); assert(angellistResultsEl);
+    var externalLinksResultsEl = formEl.querySelector('#external-links-results'); assert(externalLinksResultsEl);
 
     // Define our search logic
     // DEV: We could have throttling logic but disabling our button works good enough
@@ -30,12 +30,12 @@ exports.init = function (containerEl) {
       // Replace our results
       var replacementGlassdoorResultsEl = replaceEl.querySelector('#glassdoor-results');
       assert(replacementGlassdoorResultsEl);
-      var replacementAngellistResultsEl = replaceEl.querySelector('#angellist-results');
-      assert(replacementAngellistResultsEl);
+      var replacementExternalLinksResultsEl = replaceEl.querySelector('#external-links-results');
+      assert(replacementExternalLinksResultsEl);
       glassdoorResultsEl.parentNode.replaceChild(replacementGlassdoorResultsEl, glassdoorResultsEl);
       glassdoorResultsEl = replacementGlassdoorResultsEl;
-      angellistResultsEl.parentNode.replaceChild(replacementAngellistResultsEl, angellistResultsEl);
-      angellistResultsEl = replacementAngellistResultsEl;
+      externalLinksResultsEl.parentNode.replaceChild(replacementExternalLinksResultsEl, externalLinksResultsEl);
+      externalLinksResultsEl = replacementExternalLinksResultsEl;
 
       // Complete our request
       handleCompletion();

@@ -89,8 +89,8 @@ describe('A partial research company form loading with a company name', function
     expect($partialFormErrors.get(0).className).to.contain('hidden');
     var $glassdoorResults = this.$('#glassdoor-results'); assert($glassdoorResults.length);
     expect($glassdoorResults.text()).to.contain('Name: IBM');
-    var $angellistResults = this.$('#angellist-results'); assert($angellistResults.length);
-    expect($angellistResults.text()).to.contain('AngelList support is under construction');
+    var $externalLinksResults = this.$('#external-links-results'); assert($externalLinksResults.length);
+    expect($externalLinksResults.text()).to.contain('LinkedIn: Search');
   });
 
   it('doesn\'t record analytics event', function () {
@@ -120,8 +120,8 @@ describe('A partial research company form loading without a company name', funct
     expect($partialFormErrors.get(0).className).to.contain('hidden');
     var $glassdoorResults = this.$('#glassdoor-results'); assert($glassdoorResults.length);
     expect($glassdoorResults.text()).to.contain('No company name entered');
-    var $angellistResults = this.$('#angellist-results'); assert($angellistResults.length);
-    expect($angellistResults.text()).to.contain('No company name entered');
+    var $externalLinksResults = this.$('#external-links-results'); assert($externalLinksResults.length);
+    expect($externalLinksResults.text()).to.contain('No company name entered');
   });
 });
 
@@ -165,8 +165,8 @@ describe('A partial research company form performing a successful search', funct
       expect($partialFormErrors.get(0).className).to.contain('hidden');
       var $glassdoorResults = that.$('#glassdoor-results'); assert($glassdoorResults.length);
       expect($glassdoorResults.text()).to.contain('Name: IBM');
-      var $angellistResults = that.$('#angellist-results'); assert($angellistResults.length);
-      expect($angellistResults.text()).to.contain('AngelList support is under construction');
+      var $externalLinksResults = that.$('#external-links-results'); assert($externalLinksResults.length);
+      expect($externalLinksResults.text()).to.contain('LinkedIn: Search');
       done();
     });
   });
@@ -236,8 +236,8 @@ describe('A partial research company form performing multiple searches', functio
       // Verify content
       var $glassdoorResults = that.$('#glassdoor-results'); assert($glassdoorResults.length);
       expect($glassdoorResults.text()).to.contain('Name: IBM2');
-      var $angellistResults = that.$('#angellist-results'); assert($angellistResults.length);
-      expect($angellistResults.text()).to.contain('AngelList support is under construction');
+      var $externalLinksResults = that.$('#external-links-results'); assert($externalLinksResults.length);
+      expect($externalLinksResults.text()).to.contain('LinkedIn: Search');
       done();
     });
   });

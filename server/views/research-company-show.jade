@@ -48,7 +48,7 @@ block content
       p
         +glassdoor-result(locals.glassdoorResult, {extended: true})
     //- DEV: Id is for testing only
-    #angellist-results.grid__item.one-whole.large-five-ninths
-      h5.text--normal.flush--bottom(style="font-weight: bold") AngelList results:
+    #external-links-results.grid__item.one-whole.large-five-ninths
+      h5.text--normal.flush--bottom(style="font-weight: bold") External links:
       p
-        +angellist-result(locals.angelListResult, {extended: true})
+        +external-links-result(company_name, {extended: true})

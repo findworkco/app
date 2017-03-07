@@ -13,9 +13,9 @@ var ApplicationReminder = require('../../../server/models/application-reminder')
 
 // Load in our contracts
 var partialFullReqContract = fs.readFileSync(
-  __dirname + '/../../test-files/http-contracts/research-company-partial-save-200-req.raw', 'utf8');
+  __dirname + '/../../test-files/http-contracts/research-company-partial-save-200-req.raw', 'utf8').trim();
 var partialFullResContract = fs.readFileSync(
-  __dirname + '/../../test-files/http-contracts/research-company-partial-save-200-res.html', 'utf8');
+  __dirname + '/../../test-files/http-contracts/research-company-partial-save-200-res.html', 'utf8').trim();
 
 // Start our tests
 scenario.route('A request to POST /research-company to search', {
@@ -69,8 +69,19 @@ scenario.route('A request to POST /research-company to search', {
       expect($results.text()).to.contain('Work/Life balance rating: 3.6/5.0');
     });
 
-    it('lists AngelList result as coming soon', function () {
-      expect(this.$('#angellist-results').text()).to.contain('AngelList support is under construction');
+    it('lists extended external links', function () {
+      var $results = this.$('#external-links-results');
+      expect($results.text()).to.contain('LinkedIn: Search');
+      expect($results.html()).to.contain('https://www.linkedin.com/search/results/companies/?keywords=Mock%20company');
+      expect($results.text()).to.contain('Crunchbase: Search');
+      expect($results.html()).to.contain('https://www.crunchbase.com/app/search?q=Mock%20company');
+      expect($results.text()).to.contain('AngelList: Search');
+      expect($results.html()).to.contain('https://angel.co/search?type=companies&amp;q=Mock%20company');
+      expect($results.text()).to.contain('StackShare: Search');
+      expect($results.html()).to.contain('https://stackshare.io/search/q=Mock%20company');
+      expect($results.text()).to.contain('GitHub: Search');
+      expect($results.html()).to.contain(
+        'https://github.com/search?type=Users&amp;utf8=%E2%9C%93&amp;q=Mock%20company');
     });
 
     it('has enabled forms for creating applications', function () {
@@ -158,8 +169,8 @@ scenario.route('A request to POST /research-company to search', {
       expect(this.$('#glassdoor-results').text()).to.contain('No company found');
     });
 
-    it('lists AngelList result as coming soon', function () {
-      expect(this.$('#angellist-results').text()).to.contain('AngelList support is under construction');
+    it('lists external links', function () {
+      expect(this.$('#external-links-results').text()).to.contain('No company name entered');
     });
   });
 
@@ -245,8 +256,9 @@ scenario.route('A request to POST /research-company to search', {
     it('renders partial content', function () {
       var $glassdoorResults = this.$('#glassdoor-results');
       expect($glassdoorResults.text()).to.contain('Website: www.ibm.com');
-      var $angellistResults = this.$('#angellist-results');
-      expect($angellistResults.text()).to.contain('AngelList support is under construction');
+      var $externalLinksResults = this.$('#external-links-results');
+      expect($externalLinksResults.text()).to.contain('LinkedIn: Search');
+      expect($externalLinksResults.text()).to.not.contain('GitHub');
     });
 
     it('doesn\'t render excess content', function () {

@@ -19,9 +19,7 @@ scenario.route('A request to GET /research-company', {
     });
     it('has no company information', function () {
       expect(this.$('#glassdoor-results').text()).to.contain('No company name entered');
-    });
-    it('lists AngelList result as coming soon', function () {
-      expect(this.$('#angellist-results').text()).to.contain('No company name entered');
+      expect(this.$('#external-links-results').text()).to.contain('No company name entered');
     });
     it('has disabled forms for creating applications', function () {
       var $saveForLaterBtn = this.$('form[action="/add-application/save-for-later"] button[type=submit]');

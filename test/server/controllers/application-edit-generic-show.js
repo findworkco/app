@@ -53,7 +53,7 @@ scenarioInfoArr.forEach(function generateScenarioTests (scenarioInfo) {
 
       it('displays loading text for research info', function () {
         expect(this.$('#glassdoor-results').text()).to.contain('Results will be loaded shortly...');
-        expect(this.$('#angellist-results').text()).to.contain('Results will be loaded shortly...');
+        expect(this.$('#external-links-results').text()).to.contain('LinkedIn: Search');
       });
 
       it('receives the proper title', function () {

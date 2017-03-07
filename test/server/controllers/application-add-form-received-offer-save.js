@@ -127,7 +127,7 @@ scenario.route('A request to POST /add-application/received-offer (specific)', {
 
     it('renders research company loading text', function () {
       expect(this.$('#glassdoor-results').text()).to.contain('Results will be loaded shortly...');
-      expect(this.$('#angellist-results').text()).to.contain('Results will be loaded shortly...');
+      expect(this.$('#external-links-results').text()).to.contain('LinkedIn: Search');
     });
 
     // DEV: This verifies all content is run in a transaction
