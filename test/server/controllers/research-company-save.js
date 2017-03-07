@@ -302,8 +302,9 @@ scenario.route('A request to POST /research-company to "Save for later"', {
         expect(applications[0].get('company_name')).to.equal('Mock company');
         var reminder = applications[0].get('saved_for_later_reminder');
         // DEV: This is close to a tautological test but it verifies a range more than specifics
-        var oneWeekMoment = moment().add({weeks: 1});
-        var oneWeekAndTwoDaysMoment = moment().add({weeks: 1, days: 2});
+        // DEV: We subtract/add 2 hours as padding for daylight savings changes
+        var oneWeekMoment = moment().add({weeks: 1}).subtract({hours: 2});
+        var oneWeekAndTwoDaysMoment = moment().add({weeks: 1, days: 2}).add({hours: 2});
         expect(reminder.get('date_time_moment').isAfter(oneWeekMoment)).to.equal(true);
         expect(reminder.get('date_time_moment').isBefore(oneWeekAndTwoDaysMoment)).to.equal(true);
         done();
