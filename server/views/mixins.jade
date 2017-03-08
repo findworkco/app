@@ -17,6 +17,9 @@ mixin inline-script()
   script(nonce=helmetNonce)&attributes(attributes)
     block
 
+mixin retina-img(src1x, src2x)
+  img(src=src1x, data-src-2x=src2x)&attributes(attributes)
+
 mixin avatar-img(email, size)
   //- http://en.gravatar.com/site/implement/images/
   //- DEV: We use HTTPS so we have external privacy :tada:
@@ -24,8 +27,9 @@ mixin avatar-img(email, size)
   //- DEV: We use `identicon` to be visually friendly and not `retro` to avoid phallic shapes
   //- DEV: We use width/height to placehold image location as it loads (thanks Trello!)
   - assert(size);
-  - var url = gravatarUrl(email, {d: 'identicon', s: size});
-  img(src=url, width=size, height=size, alt="#{email} avatar")&attributes(attributes)
+  - var url1x = gravatarUrl(email, {d: 'identicon', s: size});
+  - var url2x = gravatarUrl(email, {d: 'identicon', s: size * 2});
+  +retina-img(url1x, url2x)(width=size, height=size, alt="#{email} avatar")&attributes(attributes)
 
 mixin datepicker(valueMoment, options)
   //- 2016-01-08 (same as native)

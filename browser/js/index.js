@@ -20,6 +20,7 @@ var followUrl = require('./follow-url');
 var notifications = require('./notifications');
 var menu = require('./menu');
 var researchCompanyPartial = require('./research-company-partial');
+var retinaImage = require('./retina-image');
 var unsavedChanges = require('./unsaved-changes');
 var toggleText = require('./toggle-text');
 var wysiwyg = require('./wysiwyg');
@@ -84,6 +85,7 @@ exports.init = function (containerEl) {
   followUrl.init(containerEl);
   notifications.init();
   researchCompanyPartial.init(containerEl);
+  retinaImage.init(containerEl);
   toggleText.init(containerEl);
   unsavedChanges.init(containerEl);
   menu.init();

@@ -156,6 +156,7 @@ gulp.task('develop', ['build'], function develop () {
 
   // When one of our src files changes, re-run its corresponding task
   gulp.watch('browser/css/**/*.scss', ['build-css']);
-  gulp.watch('browser/images/**/*', ['build-images']);
+  gulp.watch(['browser/images/**/*', '!browser/images/screenshots/**/*'],
+    ['build-images']);
   gulp.watch('server/**/*', ['livereload-update']);
 });

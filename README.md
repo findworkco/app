@@ -227,13 +227,17 @@ npm run gemini-gui
 ```
 
 ### Landing page screenshots
-We automate generation of our screenshots for the landing page. To update the screenshots, run:
+Due to using retina screenshots, we must use a separate process from Gemini. To update the screenshots, run:
 
 ```bash
-# Capture latest images
-npm run gemini-update
+# Start up an Xserver with 2x DPI
+Xvfb :99 -screen 0 4800x3200x24 -dpi 200
 
-# Compile our screenshots
+# In another tab, start up a Selenium server on our Xserver
+DISPLAY=:99 ./node_modules/.bin/webdriver-manager start
+
+# In another tab, grab and compile our screenshots
+node bin/_build-screenshot.js
 bin/build-screenshot.sh
 ```
 

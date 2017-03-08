@@ -11,7 +11,7 @@ if ! test -f "$mmdb_file"; then
   echo "Downloading MaxMind database..." 1>&2
   curl http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz \
     | gunzip > "$mmdb_file"
-  echo "1eacc9e92a218fc5491e021da372acb1 $mmdb_file" | md5sum --check -
+  echo "cc1f9a6f7def282bc33cb477f3379d9f $mmdb_file" | md5sum --check -
 else
   echo "MaxMind database found. Skipping download" 1>&2
 fi

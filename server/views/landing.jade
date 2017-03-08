@@ -37,15 +37,21 @@ block base-content
           //- DESIGN: When our UI is fully built, explore doing magnified screenshots https://trello.com/c/dZ9ddi6l/39-add-magnification-in-screenshots-like-a-circle-zoom-for-each-bullet-on-landing-page
           .medium-and-down-hidden
             p
-              img(alt="Annotated application screenshot", src="/dist/images/screenshots/large.svg", style="margin: 0 auto; display: block;")
+              +retina-img("/dist/images/screenshots/large@1x.svg",
+                "/dist/images/screenshots/large@2x.svg")(
+                alt="Annotated application screenshot", style="margin: 0 auto; display: block;")
           .large-hidden.small-hidden
             .text--center
               p
-                img(alt="Annotated application screenshot", src="/dist/images/screenshots/medium.svg")
+                +retina-img("/dist/images/screenshots/medium@1x.svg",
+                  "/dist/images/screenshots/medium@2x.svg")(
+                  alt="Annotated application screenshot")
           .medium-and-up-hidden
             .text--right
               p
-                img(alt="Annotated application screenshot", src="/dist/images/screenshots/small.svg")
+                +retina-img("/dist/images/screenshots/small@1x.svg",
+                  "/dist/images/screenshots/small@2x.svg")(
+                  alt="Annotated application screenshot")
           .screenshot-highlight--recent__container
             .screenshot-highlight--recent Recently viewed applications at a glance
           .screenshot-highlight--reminders__container
