@@ -19,6 +19,34 @@ html
     //- Define our favicon
     link(rel="shortcut icon", href="/favicon.ico")
 
+    //- Define SEO and social media configuration
+    //- DEV: We use the same configuration for all pages as there's nothing public on a per-item basis
+    //-   Twitter
+    //-   https://dev.twitter.com/cards/getting-started
+    //-   https://dev.twitter.com/cards/types/summary-large-image
+    //-   https://cards-dev.twitter.com/validator
+    meta(name="twitter:card", content="summary_large_image")
+    meta(name="twitter:site", content="@findworkco")
+    meta(name="twitter:title", content="Find Work - Be the best candidate for the job")
+    meta(name="twitter:description", content="Manage job applications and research companies")
+    //-  Minimum: 280x150, max file size: 1MB
+    //-  In testing: Cropped to center at 600x314
+    //-    https://pbs.twimg.com/card_img/839670360098250752/PLnqTGXo?format=jpg&name=600x314
+    meta(name="twitter:image", content="https://findwork.co/dist/images/screenshots/social.png")
+    meta(name="twitter:image:alt", content="Screenshot of Find Work")
+    //-   Facebook
+    //-   https://developers.facebook.com/docs/sharing/webmasters#markup
+    //-   https://developers.facebook.com/tools/debug/
+    meta(property="og:url", content="https://findwork.co/")
+    meta(property="og:type", content="website")
+    meta(property="og:title", content="Find Work - Be the best candidate for the job")
+    meta(property="og:description", content="Manage job applications and research companies")
+    meta(property="og:image", content="https://findwork.co/dist/images/screenshots/social.png")
+    meta(property="fb:app_id", content="615524378656855")
+    //-   SEO
+    meta(name="description", content="Manage job applications and research companies")
+    meta(name="keywords", content="find work, job search, research companies")
+
     //- Add our CSS
     link(rel="stylesheet", href="/dist/css/index.css")
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")

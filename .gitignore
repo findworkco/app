@@ -10,7 +10,7 @@ dist/
 
 # Temporary assets
 browser/images/screenshots/*.jpg
-browser/images/screenshots/*.png
+browser/images/screenshots/*.base.png
 
 # Server development/test assets
 test-redis.pid

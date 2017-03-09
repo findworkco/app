@@ -20,9 +20,21 @@ if ! test -f "browser/images/screenshots/large.base.png"; then
   exit 1
 fi
 
+# Create screenshot for Twitter and Facebook
+# DEV: We need to cache-bust Facebook via URL change
+# DEV: We use `png` so Twitter and Facebook can resize losslessly
+title_bar_height_2x="142"
+social_height="1040" # 992 is target, unsure of why need to overshoot
+src_social_file="browser/images/screenshots/large.base.png"
+screenshot_social_file="browser/images/screenshots/social.png"
+convert "$src_social_file" \
+  -gravity NorthWest -crop +0+"$title_bar_height_2x" \
+  -resize 50%x50% \
+  -crop x"$(($social_height*1))"+0+0 \
+  png:- | imagemin > "$screenshot_social_file"
+
 # Crop/downsize our images
 # DEV: We don't preserve the file in-memory to make debugging interim images easier
-title_bar_height_2x="142"
 large_width="555" # Resizes to 555
 large_height="511" # Resizes to 473
 src_large_file="browser/images/screenshots/large.base.png"
