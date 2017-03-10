@@ -2,7 +2,8 @@
 exports.TYPES = {
   LOG: 'log',
   ERROR: 'error',
-  SUCCESS: 'success'
+  SUCCESS: 'success',
+  GOOGLE_ANALYTICS: 'google_analytics'
 };
 exports.ACCEPTABLE_TYPES = [
   exports.TYPES.LOG,

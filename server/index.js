@@ -20,12 +20,14 @@ var uuid = require('node-uuid');
 var winston = require('./_winston');
 var sentryClient = require('./_sentry').sentryClient;
 var sequelize = require('./models/_sequelize');
+var GOOGLE_ANALYTICS = require('./utils/google-analytics');
+var NOTIFICATIONS = require('./utils/notifications');
 var qsMultiDict = require('./utils/querystring-multidict');
 var sentryUtils = require('./utils/sentry');
 var appLocals = {
   _: require('underscore'),
   assert: require('assert'),
-  ACCEPTABLE_NOTIFICATION_TYPES: require('./utils/notifications').ACCEPTABLE_TYPES,
+  ACCEPTABLE_NOTIFICATION_TYPES: NOTIFICATIONS.ACCEPTABLE_TYPES,
   countryData: require('country-data'),
   // DEV: We use multidict in views as we don't know if original data was a string or array
   form_data: new qsMultiDict.MultiDict(), // Default form data
@@ -218,6 +220,11 @@ function Server(config) {
 
   // Integrate flash notifications (depends on session middleware)
   app.use(connectFlash());
+  app.use(function defineAnalytics (req, res, next) {
+    // DEV: We piggy-back off of flash message for analytics as it's same architecture
+    req.googleAnalytics = req.flash.bind(req, NOTIFICATIONS.TYPES.GOOGLE_ANALYTICS);
+    next();
+  });
 
   // Initialize Passport for authentication
   // https://github.com/jaredhanson/passport/tree/v0.3.2#middleware
@@ -244,6 +251,15 @@ function Server(config) {
   // Load existing flash notifications before routing
   app.use(function loadExistingFlashNotifications (req, res, next) {
     if (!req.isPartial) {
+      res.locals.googleAnalyticsEvents = [];
+      req.flash(NOTIFICATIONS.TYPES.GOOGLE_ANALYTICS).forEach(function expandAnalytics (key) {
+        var analyticsObj = GOOGLE_ANALYTICS[key];
+        if (!analyticsObj) {
+          req.captureError(new Error('Received bad analytics key "' + key + '"'));
+        } else {
+          res.locals.googleAnalyticsEvents.push(analyticsObj);
+        }
+      });
       res.locals.notifications = req.flash();
     }
     next();

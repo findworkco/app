@@ -10,6 +10,7 @@ var app = require('../index.js').app;
 var config = require('../index.js').config;
 var queue = require('../queue');
 var saveModelsViaServer = require('../models/utils/save-models').saveModelsViaServer;
+var GOOGLE_ANALYTICS = require('../utils/google-analytics');
 var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // DEV: Google set up instructions
@@ -75,6 +76,7 @@ passport.use(new GoogleStrategy({
 
           // Welcome our candidate back via a flash message
           req.flash(NOTIFICATION_TYPES.SUCCESS, 'Welcome back to Find Work!');
+          req.googleAnalytics(GOOGLE_ANALYTICS.LOG_IN_GOOGLE_KEY);
 
           // Callback with the candidate
           return next(null, _candidate);
@@ -95,6 +97,7 @@ passport.use(new GoogleStrategy({
 
         // Welcome our candidate via a flash message
         req.flash(NOTIFICATION_TYPES.SUCCESS, 'Welcome to Find Work!');
+        req.googleAnalytics(GOOGLE_ANALYTICS.SIGN_UP_GOOGLE_KEY);
 
         // Send a welcome email to candidate
         // DEV: We perform this async from candidate creation as it's non-critical

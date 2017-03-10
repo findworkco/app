@@ -186,7 +186,8 @@ scenario.route('A request to GET /oauth/google/callback', {
 
   scenario.nonExistent('with a non-existent user', {
     dbFixtures: [],
-    googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
+    googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token'],
+    serveAnalytics: true
   }, function () {
     // Mock our IP address and make our request
     // https://www.proxynova.com/proxy-server-list/country-jp/
@@ -210,6 +211,11 @@ scenario.route('A request to GET /oauth/google/callback', {
     it('welcomes user', function () {
       expect(this.$('#notification-content > [data-notification=success]').text())
         .to.equal('Welcome to Find Work!');
+    });
+
+    it('tracks sign up event', function () {
+      expect(this.body).to.contain(
+        'ga(\'send\', \'event\', "Sign up", "google");');
     });
 
     it('creates a new user', function (done) {
@@ -240,7 +246,8 @@ scenario.route('A request to GET /oauth/google/callback', {
 
   scenario.loggedOut('with an existent user with no previous page', {
     dbFixtures: [dbFixtures.CANDIDATE_DEFAULT],
-    googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token']
+    googleFixtures: ['/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code', '/plus/v1/people/me#valid-access-token'],
+    serveAnalytics: true
   }, function () {
     // Verify we have a different access token
     before(function assertAccessToken (done) {
@@ -269,6 +276,11 @@ scenario.route('A request to GET /oauth/google/callback', {
     it('welcomes user back', function () {
       expect(this.$('#notification-content > [data-notification=success]').text())
         .to.equal('Welcome back to Find Work!');
+    });
+
+    it('tracks log in event', function () {
+      expect(this.body).to.contain(
+        'ga(\'send\', \'event\', "Log in", "google");');
     });
 
     it('doesn\'t create a new user', function (done) {

@@ -1,12 +1,13 @@
 // Load in our dependencies
 var expect = require('chai').expect;
+var dbFixtures = require('./utils/db-fixtures');
 var httpUtils = require('./utils/http');
 var serverUtils = require('./utils/server');
 
 // Start our tests
 scenario('An HTTP request to an analytics serving server', {
   dbFixtures: null,
-  enableAnalytics: true
+  serveAnalytics: true
 }, function () {
   // Make our request
   httpUtils.save({url: serverUtils.getUrl('/'), expectedStatusCode: 200});
@@ -16,9 +17,9 @@ scenario('An HTTP request to an analytics serving server', {
   });
 });
 
-scenario('An analytics evented request', {
+scenario('An analytics direct evented request', {
   dbFixtures: null,
-  enableAnalytics: true,
+  serveAnalytics: true,
   glassdoorFixtures: ['/api/api.htm#full']
 }, function () {
   // Make our request
@@ -36,9 +37,25 @@ scenario('An analytics evented request', {
   });
 });
 
+scenario('An analytics indirect evented request', {
+  dbFixtures: [dbFixtures.DEFAULT_FIXTURES],
+  serveAnalytics: true
+}, function () {
+  // Make our request
+  httpUtils.session.init().login();
+
+  it('receives an analytics event', function () {
+    expect(this.body).to.contain(
+      'ga(\'send\', \'event\', "Log in", "google");');
+    // Sanity check we don't leak to notifications
+    expect(this.$('#notification-content').html())
+      .to.equal('<div data-notification="success">Welcome back to Find Work!</div>');
+  });
+});
+
 scenario('A malicious analytics evented request', {
   dbFixtures: null,
-  enableAnalytics: true,
+  serveAnalytics: true,
   glassdoorFixtures: ['/api/api.htm#full']
 }, function () {
   // Make our request

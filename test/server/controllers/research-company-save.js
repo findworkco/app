@@ -23,7 +23,7 @@ scenario.route('A request to POST /research-company to search', {
 }, function () {
   scenario.routeTest('with a matching company name', {
     glassdoorFixtures: ['/api/api.htm#full'],
-    enableAnalytics: true
+    serveAnalytics: true
   }, function () {
     httpUtils.session.init()
       .save(serverUtils.getUrl('/research-company'))
@@ -124,7 +124,7 @@ scenario.route('A request to POST /research-company to search', {
 
   scenario.nonExistent('with a non-matching company name', {
     glassdoorFixtures: ['/api/api.htm#empty'],
-    enableAnalytics: true
+    serveAnalytics: true
   }, function () {
     httpUtils.session.init()
       .save(serverUtils.getUrl('/research-company'))

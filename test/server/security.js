@@ -9,7 +9,7 @@ var sinonUtils = require('../utils/sinon');
 scenario('An HTTP request to our server (security)', {
   dbFixtures: null,
   // DEV: We require analytics for inline scripts
-  enableAnalytics: true
+  serveAnalytics: true
 }, function () {
   // Mock our request as secure and make our request
   sinonUtils.stub(expressRequest, 'secure', {

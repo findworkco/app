@@ -189,7 +189,7 @@ function _scenarioBaseSetup(describeStr, options, describeFn) {
   }
 
   // If we are enabling analytics, then temporarily enable it
-  if (options.enableAnalytics) {
+  if (options.serveAnalytics) {
     before(function enableAnalytics () {
       assert.strictEqual(app.locals.serveAnalytics, false);
       app.locals.serveAnalytics = true;
@@ -234,7 +234,7 @@ function _scenarioRouteTestBaseSetup(describeStr, options, describeFn) {
 // Set up common options
 var DEFAULT_ROUTE_TEST_OPTIONS = {
   dbFixtures: dbFixtures.DEFAULT_FIXTURES,
-  enableAnalytics: false,
+  serveAnalytics: false,
   flushRedis: true,
   mockUUIDValidation: true,
   // DEV: Later services might want to add/remove a single fixture

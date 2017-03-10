@@ -399,11 +399,11 @@ app.post('/research-company', [
     };
     if (!req.isPartial) {
       res.render('research-company-show.jade', _.defaults({
-        googleAnalyticsEvents: [{
+        googleAnalyticsEvents: (res.locals.googleAnalyticsEvents || []).concat([{
           category: 'Research company',
           action: 'search',
           label: companyName
-        }]
+        }])
       }, renderData));
     } else {
       res.render('research-company-partial-show.jade', renderData);
