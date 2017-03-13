@@ -72,42 +72,45 @@ app.get('/landing', [
   }
 ]);
 
-function handleAuthError(req, res, next) {
-  // If we have a login error, then update our status and send it to the render
-  // DEV: We use `req.session` for login errors to prevent errors persisting on page refresh
-  var authError = req.session.authError;
-  delete req.session.authError;
-  if (authError) {
-    res.locals.auth_error = authError;
-    res.status(400);
-  }
+var authShowFns = [
+  function handleAuthError (req, res, next) {
+    // If we have a login error, then update our status and send it to the render
+    // DEV: We use `req.session` for login errors to prevent errors persisting on page refresh
+    var authError = req.session.authError;
+    delete req.session.authError;
+    if (authError) {
+      res.locals.auth_error = authError;
+      res.status(400);
+    }
 
-  // Continue to next controller
-  next();
-}
-function detectAutosubmit(req, res, next) {
-  if ((req.session.returnTo && req.session.returnTo.indexOf('autosubmit') !== -1) &&
-      req.session.returnRawBody) {
-    res.locals.has_return_raw_body = true;
-  }
-  next();
-}
-app.get('/login', [
-  handleAuthError,
-  detectAutosubmit,
-  resolveModelsAsLocals({nav: true}),
+    // Continue to next controller
+    next();
+  },
+  function detectAutosubmit (req, res, next) {
+    if ((req.session.returnTo && req.session.returnTo.indexOf('autosubmit') !== -1) &&
+        req.session.returnRawBody) {
+      res.locals.has_return_raw_body = true;
+    }
+    next();
+  },
+  resolveModelsAsLocals({nav: true})
+];
+app.get('/login', _.flatten([
+  authShowFns,
   function loginShow (req, res, next) {
-    res.render('login.jade');
+    res.render('auth.jade', {
+      action: 'login'
+    });
   }
-]);
-app.get('/sign-up', [
-  handleAuthError,
-  detectAutosubmit,
-  resolveModelsAsLocals({nav: true}),
+]));
+app.get('/sign-up', _.flatten([
+  authShowFns,
   function signUpShow (req, res, next) {
-    res.render('sign-up.jade');
+    res.render('auth.jade', {
+      action: 'sign_up'
+    });
   }
-]);
+]));
 
 app.get('/settings', [
   ensureLoggedIn,
