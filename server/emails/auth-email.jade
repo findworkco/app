@@ -1,0 +1,34 @@
+- var Log_in = action === 'sign_up' ? 'Sign up' : 'Log in';
+- var log_in = action === 'sign_up' ? 'sign up' : 'log in';
+- var baseRoute = action === 'sign_up' ? '/sign-up' : '/login';
+subject Email #{log_in}
+html
+  | Hi #{email},
+  br
+  | We received a #{log_in} request for #{email} on Find Work.
+  h3(style="margin-bottom: 0") Automatic #{log_in}
+  | To automatically #{log_in}, click the link below:
+  br
+  br
+  //- https://findwork.co/login/email/callback?token=ABCDEF
+  - var automaticUrl = getExternalUrl(baseRoute) + '/email/callback?token=' + encodeURIComponent(token);
+  a(href=automaticUrl)= automaticUrl
+  br
+  br
+  h3(style="margin-bottom: 0") Manual #{log_in}
+  | To manually #{log_in} (accomodates separate devices), enter the token at the URL below:
+  br
+  br
+  //- https://findwork.co/login/email
+  - var manualUrl = getExternalUrl(baseRoute) + '/email';
+  a(href=manualUrl)= manualUrl
+  br
+  //- DEV: We provide email field for consistency with UI
+  | Email: #{email}
+  br
+  | Token: #{token}
+  br
+  br
+  | Sincerely,
+  br
+  | The Find Work team

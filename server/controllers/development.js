@@ -3,6 +3,7 @@ var HttpError = require('http-errors');
 var app = require('../index.js').app;
 var emails = require('../emails');
 var queue = require('../queue');
+var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
 var Application = require('../models/application');
 var applicationMockData = require('../models/application-mock-data');
 var includes = require('../models/utils/includes');
@@ -110,6 +111,23 @@ app.get('/_dev/email/received-offer-reminder', [
   }
 ]);
 
+app.get('/_dev/email/auth-email', [
+  function devEmailAuthEmail (req, res, next) {
+    // Send a test email
+    emails.authEmail({
+      to: 'todd@findwork.co'
+    }, {
+      email: 'todd@findwork.co',
+      automaticUrl: 'https://findwork.co/login/email/callback?token=ABCDEF',
+      manualUrl: 'https://findwork.co/login/email',
+      token: 'ABCDEF'
+    }, next);
+  },
+  function handleSend (req, res, next) {
+    res.send('OK');
+  }
+]);
+
 app.get('/_dev/email/queue/test', [
   function devEmailQueueTest (req, res, next) {
     // Register our new task
@@ -186,6 +204,15 @@ app.get('/_dev/setup', function devSetupShow (req, res, next) {
 });
 
 // Specific pages and their errors:
+app.get('/_dev/login/email', [
+  resolveModelsAsLocals({nav: true}),
+  function devLoginEmailShow (req, res, next) {
+    res.render('auth-email.jade', {
+      action: 'login',
+      authEmail: 'todd@findwork.co'
+    });
+  }
+]);
 app.get('/_dev/login/error', function devLoginErrorShow (req, res, next) {
   // Set an authentication error and redirect to the login page
   req.session.authError = 'Access was denied from Google. Please try again.';
@@ -197,6 +224,15 @@ app.get('/_dev/login/info', function devLoginErrorinfo (req, res, next) {
   req.session.returnRawBody = 'foo=bar';
   res.redirect('/login');
 });
+app.get('/_dev/sign-up/email', [
+  resolveModelsAsLocals({nav: true}),
+  function devSignUpEmailShow (req, res, next) {
+    res.render('auth-email.jade', {
+      action: 'sign_up',
+      authEmail: 'todd@findwork.co'
+    });
+  }
+]);
 app.get('/_dev/sign-up/error', function devSignUpErrorShow (req, res, next) {
   req.session.authError = 'Access was denied from Google. Please try again.';
   res.redirect('/sign-up');

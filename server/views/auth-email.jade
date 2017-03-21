@@ -1,0 +1,30 @@
+extends layout
+
+block title
+  //- Define common strings for reuse
+  - assert(action);
+  - var Log_in = action === 'sign_up' ? 'Sign up' : 'Log in';
+  - var log_in = action === 'sign_up' ? 'sign up' : 'log in';
+  title #{Log_in} with email
+
+block content
+  h1.content__heading.push--bottom #{Log_in} with email
+  p We have sent a #{log_in} email to #{authEmail}. Please check your email and follow the provided instructions.
+  //- DEV: We have 2 sections so there's consistency between email and this page
+  h3.flush--bottom Automatic #{log_in}
+  p To automatically #{log_in}, you can click the "Automatic #{log_in}" link in the email.
+  h3.flush--bottom Manual #{log_in}
+  p To manually #{log_in}, you can enter the "Manual #{log_in}" token from the email into the field below.
+  if locals.tokenInvalid
+    .section--error.push--ends Token was not entered correctly. Please try again.
+  form.push--bottom(action=page_url, method="POST")
+    +csrf-input()
+    .form-group
+      label(for="email") Email:
+      input.form-control.input--block(name="email", type="text", style="max-width: 220px", value=authEmail, disabled="disabled")
+    .form-group
+      label(for="email") Token:
+      input.form-control.input--block(name="token", type="text", style="max-width: 220px")
+    button.btn.btn--primary(type="submit") Complete #{log_in}
+  p
+    +back-link() Was there a typo in the email address? Click here to return to the #{log_in} page

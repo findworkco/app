@@ -1,6 +1,17 @@
 extends layout
 
+mixin sign-up-consent()
+  div
+    em
+      small
+        = "By signing up for Find Work, you hereby consent to our "
+        a(href="/privacy") Privacy policy
+        = " and "
+        a(href="/terms") Terms of use
+        = "."
+
 block title
+  - assert(action);
   - var Log_in = action === 'login' ? 'Log in' : 'Sign up';
   - var log_in = action === 'login' ? 'log in' : 'sign up';
   - var logging_in = action === 'login' ? 'logging in' : 'signing up';
@@ -16,18 +27,23 @@ block content
     //- DEV: We intentionally use same order for sign up/log in
     p.section--info Sorry, you need to sign up/log in before we can save the job application. Don't worry, we'll save it when you're done.
   p
+    //- DEV: We use same as current URL for validation errors
+    - var authEmailRequestUrl = action === 'login' ? '/login/email/request' : '/sign-up/email/request';
+    form.push--bottom(action=authEmailRequestUrl, method="POST")
+      +csrf-input()
+      .form-group.push-half--bottom
+        label(for="email") Email:
+        input.form-control.input--block(name="email", type="text", style="max-width: 220px")
+      div
+        +email-button().push-half--bottom(type="submit")
+          | #{Log_in} with email
+      +sign-up-consent()
+    .push--bottom OR
+
     //- DEV: `id` is for testing purposes only
     +google-button()#auth_with_google.push-half--bottom(href="/oauth/google/request?action=" + encodeURIComponent(action))
       | #{Log_in} with Google
-    br
-    em
-      small
-        //- DEV: We intentionally use "signing up" for both sign up and log in
-        = "By signing up for Find Work, you hereby consent to our "
-        a(href="/privacy") Privacy policy
-        = " and "
-        a(href="/terms") Terms of use
-        = "."
+    +sign-up-consent()
   p.landmark
     if action === 'login'
       = "Don't have an account yet? "

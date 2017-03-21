@@ -111,6 +111,7 @@ app.get('/sign-up', _.flatten([
     });
   }
 ]));
+// /login/email and /sign-up/email can be found in `auth-email.js`
 
 app.get('/settings', [
   ensureLoggedIn,
@@ -418,7 +419,8 @@ app.post('/research-company', [
 void require('./application.js');
 void require('./interview.js');
 
-// Load our OAuth controllers
+// Load our auth and OAuth controllers
+void require('./auth-email.js');
 void require('./oauth-google.js');
 
 // Bind our legal controllers

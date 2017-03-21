@@ -54,6 +54,9 @@ exports.test = jadeSender(__dirname + '/test.jade', {
   from: DEFAULT_FROM_EMAIL
 });
 
+exports.authEmail = jadeSender(__dirname + '/auth-email.jade', {
+  from: DEFAULT_FROM_EMAIL
+});
 exports.welcome = jadeSender(__dirname + '/welcome.jade', {
   from: DEFAULT_FROM_EMAIL
 });

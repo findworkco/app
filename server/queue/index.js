@@ -16,6 +16,7 @@ var InterviewReminder = require('../models/interview-reminder');
 var emails = require('../emails');
 var sentryClient = exports.sentryClient = app.sentryClient;
 var saveModelsViaQueue = require('../models/utils/save-models').saveModelsViaQueue;
+var getExternalUrl = require('../utils/url').getExternalUrl;
 
 // If we are in a Kue environment, enable cleanup
 // https://github.com/Automattic/kue/tree/v0.11.5#unstable-redis-connections
@@ -181,6 +182,22 @@ registerJob(JOBS.SEND_ACCOUNT_DELETION_EMAIL, 5, function sendAccountDeletionEma
     to: email
   }, {
     email: email
+  }, done);
+});
+
+JOBS.SEND_AUTH_EMAIL = 'sendAuthEmail';
+registerJob(JOBS.SEND_AUTH_EMAIL, 5, function sendAuthEmail (job, done) {
+  // Resolve our variables
+  var action = job.data.action; assert(action);
+  var email = job.data.email; assert(email);
+  var token = job.data.token; assert(token);
+  emails.authEmail({
+    to: email
+  }, {
+    action: action,
+    email: email,
+    getExternalUrl: getExternalUrl,
+    token: token
   }, done);
 });
 
