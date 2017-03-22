@@ -63,7 +63,7 @@ scenario.route('A request to GET /login/email (specific)', {
   }, function () {
     // Make our request
     serverUtils.stubEmails();
-    sinonUtils.swap(serverUtils.config, 'authEmailTimeout', -100); // -100ms
+    sinonUtils.swap(serverUtils.config.authEmail, 'timeout', -100); // -100ms
     httpUtils.session.init()
       .save(serverUtils.getUrl('/login'))
       .save({
