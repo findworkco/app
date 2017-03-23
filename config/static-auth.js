@@ -21,7 +21,7 @@ exports.development = {
 
 exports.test = {
   authEmail: _.defaults({
-    timeout: 100, // 100ms
+    timeout: 2000, // 2 seconds (long time for multiple tries)
     generationSalt: 'mock-generation-salt'
   }, exports.common.authEmail)
 };

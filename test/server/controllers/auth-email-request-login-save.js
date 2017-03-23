@@ -57,6 +57,17 @@ scenario.route('A request to POST /login/email/request (specific)', {
         'https://findwork.test/login/email');
       expect(emailSendStub.args[0][0].data.html).to.contain('Token: DA55QZ');
     });
+
+    it('adds token to session', function (done) {
+      serverUtils.getSession(function handleGetSession (err, session) {
+        if (err) { return done(err); }
+        expect(session).to.have.property('authEmail');
+        expect(session).to.have.property('authEmailAttempts');
+        expect(session).to.have.property('authEmailTokenHash');
+        expect(session).to.have.property('authEmailExpiresAt');
+        done();
+      });
+    });
   });
 
   scenario.routeTest('without a valid email', {
@@ -82,6 +93,17 @@ scenario.route('A request to POST /login/email/request (specific)', {
 
     it('displays auth error', function () {
       expect(this.$('.section--error').text()).to.contain('No email was provided');
+    });
+
+    it('doesn\'t add token to session', function (done) {
+      serverUtils.getSession(function handleGetSession (err, session) {
+        if (err) { return done(err); }
+        expect(session).to.not.have.property('authEmail');
+        expect(session).to.not.have.property('authEmailAttempts');
+        expect(session).to.not.have.property('authEmailTokenHash');
+        expect(session).to.not.have.property('authEmailExpiresAt');
+        done();
+      });
     });
   });
 });

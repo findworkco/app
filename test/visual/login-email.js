@@ -12,4 +12,12 @@ gemini.suite('login-email', function (suite) {
       .capture('default-medium', geminiUtils.resizeMedium)
       .capture('default-small', geminiUtils.resizeSmall);
   });
+
+  gemini.suite('error', function (child) {
+    child.load('/_dev/login/email/error')
+      .setCaptureElements('body')
+      .capture('default-large', geminiUtils.resizeLarge)
+      .capture('default-medium', geminiUtils.resizeMedium)
+      .capture('default-small', geminiUtils.resizeSmall);
+  });
 });

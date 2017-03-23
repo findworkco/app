@@ -1,4 +1,5 @@
 // Load in our dependencies
+var assert = require('assert');
 var url = require('url');
 var _ = require('underscore');
 var server = require('../../../server/index.js');
@@ -38,5 +39,29 @@ exports.stubEmails = function () {
   });
   after(function cleanup () {
     delete this.emailSendStub;
+  });
+};
+
+// Allow fetching session info
+exports.getSession = function (cb) {
+  // Resolve our sessions by their key
+  app.redisClient.keys('sess:*', function handleKeys (err, keys) {
+    // If there was an error, callback with it
+    if (err) { return cb(err); }
+
+    // Retrieve our session
+    assert.strictEqual(keys.length, 1,
+      '`serverUtils.getSession` expected Redis to have 1 session but received ' + keys.length);
+    app.redisClient.get(keys[0], function handleGet (err, sessionStr) {
+      // If there was an error, callback with it
+      if (err) { return cb(err); }
+
+      // Parse and callback with our result
+      try {
+        cb(null, JSON.parse(sessionStr));
+      } catch (err) {
+        cb(err);
+      }
+    });
   });
 };

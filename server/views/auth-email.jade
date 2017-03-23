@@ -15,8 +15,8 @@ block content
   p To automatically #{log_in}, you can click the "Automatic #{log_in}" link in the email.
   h3.flush--bottom Manual #{log_in}
   p To manually #{log_in}, you can enter the "Manual #{log_in}" token from the email into the field below.
-  if locals.tokenInvalid
-    .section--error.push--ends Token was not entered correctly. Please try again.
+  if locals.token_invalid
+    .section--error.push--ends= locals.token_invalid
   form.push--bottom(action=page_url, method="POST")
     +csrf-input()
     .form-group

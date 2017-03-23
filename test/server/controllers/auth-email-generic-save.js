@@ -34,15 +34,15 @@ function loginViaEmail(scenarioInfo) {
     .save({
       method: 'POST', url: serverUtils.getUrl(scenarioInfo.requestUrl),
       htmlForm: {email: 'mock-email@mock-domain.test'},
-      followRedirect: false, waitForJobs: 1,
-      expectedStatusCode: 302
+      // DEV: We use `followAllRedirects` to follow POST based redirects
+      followRedirect: true, followAllRedirects: true, waitForJobs: 1,
+      expectedStatusCode: 200
     })
     .save({
-      url: serverUtils.getUrl({
-        pathname: scenarioInfo.callbackUrl,
-        query: {token: VALID_TOKEN}
-      }),
-      followRedirect: true,
+      method: 'POST', url: serverUtils.getUrl(scenarioInfo.submitUrl),
+      htmlForm: {token: VALID_TOKEN},
+      // DEV: We use `followAllRedirects` to follow POST based redirects
+      followRedirect: true, followAllRedirects: true,
       expectedStatusCode: 200
     });
 }
@@ -52,18 +52,18 @@ var scenarioInfoArr = [
   {
     sourceUrl: '/sign-up',
     requestUrl: '/sign-up/email/request',
-    callbackUrl: '/sign-up/email/callback'
+    submitUrl: '/sign-up/email'
   },
   {
     sourceUrl: '/login',
     requestUrl: '/login/email/request',
-    callbackUrl: '/login/email/callback'
+    submitUrl: '/login/email'
   }
 ];
 
 // Start our tests
 scenarioInfoArr.forEach(function handleScenarioInfo (scenarioInfo) {
-  scenario.route('A request to GET ' + scenarioInfo.callbackUrl + ' (generic)', {
+  scenario.route('A request to POST ' + scenarioInfo.submitUrl + ' (generic)', {
     requiredTests: {nonOwner: false}
   }, function () {
     scenario.routeTest('with no initialized request', {
@@ -72,8 +72,9 @@ scenarioInfoArr.forEach(function handleScenarioInfo (scenarioInfo) {
     }, function () {
       // Make our request
       httpUtils.session.init().save({
-        url: serverUtils.getUrl(scenarioInfo.callbackUrl),
-        followRedirect: true,
+        method: 'POST', url: serverUtils.getUrl(scenarioInfo.submitUrl),
+        // DEV: We use `followAllRedirects` to follow POST based redirects
+        csrfForm: true, followRedirect: true, followAllRedirects: true,
         expectedStatusCode: 400
       });
 
@@ -90,7 +91,7 @@ scenarioInfoArr.forEach(function handleScenarioInfo (scenarioInfo) {
       });
     });
 
-    scenario.routeTest('with no token', {
+    scenario.routeTest('with an invalid token on its first try', {
       dbFixtures: null,
       googleFixtures: []
     }, function () {
@@ -101,21 +102,34 @@ scenarioInfoArr.forEach(function handleScenarioInfo (scenarioInfo) {
         .save({
           method: 'POST', url: serverUtils.getUrl(scenarioInfo.requestUrl),
           htmlForm: {email: 'mock-email@mock-domain.test'},
-          followRedirect: false, waitForJobs: 1,
-          expectedStatusCode: 302
+          // DEV: We use `followAllRedirects` to follow POST based redirects
+          followRedirect: true, followAllRedirects: true, waitForJobs: 1,
+          expectedStatusCode: 200
         })
         .save({
-          url: serverUtils.getUrl(scenarioInfo.callbackUrl),
+          method: 'POST', url: serverUtils.getUrl(scenarioInfo.submitUrl),
+          htmlForm: {token: 'invalid-token'},
           followRedirect: false,
           expectedStatusCode: 400
         });
 
-      it('receives an error message about no token', function () {
-        expect(this.body).to.contain('Missing query string/body parameter: &quot;token&quot;');
+      it('displays an token mismatch message', function () {
+        expect(this.$('.section--error').text()).to.contain('Token was not valid');
+      });
+
+      it('doesn\'t remove token from session', function (done) {
+        serverUtils.getSession(function handleGetSession (err, session) {
+          if (err) { return done(err); }
+          expect(session).to.have.property('authEmail');
+          expect(session).to.have.property('authEmailAttempts', 1);
+          expect(session).to.have.property('authEmailTokenHash');
+          expect(session).to.have.property('authEmailExpiresAt');
+          done();
+        });
       });
     });
 
-    scenario.routeTest('with an invalid token', {
+    scenario.routeTest('with an invalid token on multiple tries', {
       dbFixtures: null,
       googleFixtures: []
     }, function () {
@@ -126,28 +140,40 @@ scenarioInfoArr.forEach(function handleScenarioInfo (scenarioInfo) {
         .save({
           method: 'POST', url: serverUtils.getUrl(scenarioInfo.requestUrl),
           htmlForm: {email: 'mock-email@mock-domain.test'},
-          followRedirect: false, waitForJobs: 1,
-          expectedStatusCode: 302
+          // DEV: We use `followAllRedirects` to follow POST based redirects
+          followRedirect: true, followAllRedirects: true, waitForJobs: 1,
+          expectedStatusCode: 200
         })
         .save({
-          url: serverUtils.getUrl({
-            pathname: scenarioInfo.callbackUrl,
-            query: {token: 'invalid-token'}
-          }),
-          followRedirect: true,
+          method: 'POST', url: serverUtils.getUrl(scenarioInfo.submitUrl),
+          htmlForm: {token: 'invalid-token'},
+          followRedirect: false,
+          expectedStatusCode: 400
+        })
+        .save({
+          method: 'POST', url: serverUtils.getUrl(scenarioInfo.submitUrl),
+          htmlForm: {token: 'invalid-token'},
+          followRedirect: false,
+          expectedStatusCode: 400
+        })
+        .save({
+          method: 'POST', url: serverUtils.getUrl(scenarioInfo.submitUrl),
+          htmlForm: {token: 'invalid-token'},
+          // DEV: We use `followAllRedirects` to follow POST based redirects
+          followRedirect: true, followAllRedirects: true,
           expectedStatusCode: 400
         });
 
-      it('redirects to auth page', function () {
+      it('redirects to initial auth page', function () {
         expect(this.lastRedirect.redirectUri).to.have.match(/(\/sign-up|\/login)$/);
         expect(this.lastRedirect.redirectUri.replace('http://localhost:9001', ''))
           .to.have.equal(scenarioInfo.sourceUrl);
         expect(this.lastRedirect).to.have.property('statusCode', 302);
       });
 
-      it('displays an invalidation message', function () {
+      it('receives an error message about token expiration', function () {
         expect(this.$('.section--error').text()).to.contain(
-          'Email authentication request is either invalid or has expired');
+          'Token was not valid');
       });
 
       it('removes token from session', function (done) {
@@ -181,15 +207,15 @@ scenarioInfoArr.forEach(function handleScenarioInfo (scenarioInfo) {
         .save({
           method: 'POST', url: serverUtils.getUrl(scenarioInfo.requestUrl),
           htmlForm: {email: 'mock-email@mock-domain.test'},
-          followRedirect: false, waitForJobs: 1,
-          expectedStatusCode: 302
+          // DEV: We use `followAllRedirects` to follow POST based redirects
+          followRedirect: true, followAllRedirects: true, waitForJobs: 1,
+          expectedStatusCode: 200
         })
         .save({
-          url: serverUtils.getUrl({
-            pathname: scenarioInfo.callbackUrl,
-            query: {token: VALID_TOKEN}
-          }),
-          followRedirect: true, waitForJobs: 1,
+          method: 'POST', url: serverUtils.getUrl(scenarioInfo.submitUrl),
+          htmlForm: {token: VALID_TOKEN},
+          // DEV: We use `followAllRedirects` to follow POST based redirects
+          followRedirect: true, followAllRedirects: true, waitForJobs: 1,
           expectedStatusCode: 200
         });
 
@@ -260,15 +286,15 @@ scenarioInfoArr.forEach(function handleScenarioInfo (scenarioInfo) {
         .save({
           method: 'POST', url: serverUtils.getUrl(scenarioInfo.requestUrl),
           htmlForm: {email: 'mock-email@mock-domain.test'},
-          followRedirect: false, waitForJobs: 1,
-          expectedStatusCode: 302
+          // DEV: We use `followAllRedirects` to follow POST based redirects
+          followRedirect: true, followAllRedirects: true, waitForJobs: 1,
+          expectedStatusCode: 200
         })
         .save({
-          url: serverUtils.getUrl({
-            pathname: scenarioInfo.callbackUrl,
-            query: {token: VALID_TOKEN}
-          }),
-          followRedirect: true,
+          method: 'POST', url: serverUtils.getUrl(scenarioInfo.submitUrl),
+          htmlForm: {token: VALID_TOKEN},
+          // DEV: We use `followAllRedirects` to follow POST based redirects
+          followRedirect: true, followAllRedirects: true,
           expectedStatusCode: 200
         });
 
@@ -331,15 +357,15 @@ scenarioInfoArr.forEach(function handleScenarioInfo (scenarioInfo) {
           expectedStatusCode: 302
         })
         .save({
-          url: serverUtils.getUrl({
-            pathname: scenarioInfo.callbackUrl,
-            query: {token: VALID_TOKEN}
-          }),
-          followRedirect: true,
+          method: 'POST', url: serverUtils.getUrl(scenarioInfo.submitUrl),
+          csrfForm: {token: VALID_TOKEN},
+          // DEV: We use `followAllRedirects` to follow POST based redirects
+          followRedirect: true, followAllRedirects: true,
           expectedStatusCode: 400
         });
 
       it('redirects to auth page', function () {
+        expect(this.lastRedirect.redirectUri).to.have.match(/(\/sign-up|\/login)$/);
         expect(this.lastRedirect.redirectUri.replace('http://localhost:9001', ''))
           .to.have.equal(scenarioInfo.sourceUrl);
         expect(this.lastRedirect).to.have.property('statusCode', 302);

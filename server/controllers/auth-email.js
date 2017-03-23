@@ -150,6 +150,7 @@ var authEmailRequestSaveFns = [
       // Otherwise, save our token to the session
       var expiresAt = Date.now() + config.authEmail.timeout;
       req.session.authEmail = email;
+      req.session.authEmailAttempts = 0;
       req.session.authEmailTokenHash = tokenHash;
       req.session.authEmailExpiresAt = expiresAt;
 
@@ -191,12 +192,14 @@ function validateAuthEmailValid(req, res, next) {
   // Define revocation methods
   req.deleteAuthEmailInfo = function () {
     delete req.session.authEmail;
+    delete req.session.authEmailAttempts;
     delete req.session.authEmailTokenHash;
     delete req.session.authEmailExpiresAt;
   };
 
   // If our auth request is invalid or expired
-  if (!req.session.authEmail || !req.session.authEmailTokenHash || !req.session.authEmailExpiresAt ||
+  if (!req.session.authEmail || req.session.authEmailAttempts === undefined ||
+      !req.session.authEmailTokenHash || !req.session.authEmailExpiresAt ||
       req.session.authEmailExpiresAt < Date.now()) {
     // Revoke our auth email info
     req.deleteAuthEmailInfo();
@@ -227,6 +230,71 @@ app.get('/login/email', _.flatten([
 app.get('/sign-up/email', _.flatten([
   setAuthActionSignUp,
   authEmailShowFns
+]));
+
+var MANUAL_ATTEMPTS_LIMIT = 3;
+var authEmailSaveFns = [
+  validateAuthEmailValid,
+  resolveModelsAsLocals({nav: true}),
+  function authEmailSave (req, res, next) {
+    // Resolve our action
+    var action = res.locals.action;
+    assert(action);
+
+    // Increment our attempt count
+    req.session.authEmailAttempts += 1;
+
+    // Load our info and wipe info to prevent brute force retries
+    var token = req.body.fetch('token');
+    var email = req.session.authEmail;
+    var attempts = req.session.authEmailAttempts;
+    var expectedTokenHash = req.session.authEmailTokenHash;
+
+    // If this is our last attempt, then wipe out our data to prevent future tries
+    // DEV: This means this attempt will work but future ones won't
+    if (attempts >= MANUAL_ATTEMPTS_LIMIT) {
+      req.deleteAuthEmailInfo();
+    }
+
+    // Compare our token
+    // DEV: If we use something simpler than bcrypt, be sure it's time constant
+    bcrypt.compare(token, expectedTokenHash, function handleCompare (err, hashMatched) {
+      // If there was an error, callback with it
+      if (err) {
+        return next(err);
+      }
+
+      // If we had a match, wipe our data and send ourself to Passport
+      // DEV: We are using Passport incorrectly (should do token gen and comparison in it but this is saner)
+      if (hashMatched) {
+        req.deleteAuthEmailInfo();
+        req._authEmailSuccess = email;
+        passwordlessController(req, res, next);
+      // Otherwise, reject our request
+      } else {
+        // If we have tried too many times, then redirect to original page
+        // DEV: Auth info will be wiped earlier before compare occurs
+        if (attempts >= MANUAL_ATTEMPTS_LIMIT) {
+          req.session.authError = 'Token was not valid';
+          return res.redirect(action === 'sign_up' ? '/sign-up' : '/login');
+        // Otherwise, render our manual entry page
+        } else {
+          res.status(400).render('auth-email.jade', {
+            page_url: req.url,
+            token_invalid: 'Token was not valid. Please try again'
+          });
+        }
+      }
+    });
+  }
+];
+app.post('/login/email', _.flatten([
+  setAuthActionLogin,
+  authEmailSaveFns
+]));
+app.post('/sign-up/email', _.flatten([
+  setAuthActionSignUp,
+  authEmailSaveFns
 ]));
 
 // Controllers: /:auth/email/callback (automatic entry)

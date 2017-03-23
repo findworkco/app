@@ -7,10 +7,11 @@ block content
   h1.content__heading.push--bottom Settings
   form.cf(method="POST", action="/settings", data-unsaved-changes)
     +csrf-input()
-    //- DEV: When not disabled, this will be a link or a button for OAuth
-    p
-      +google-button({el: 'button', disabled: true})
-        = "Connected with Google"
+    if candidate.google_id
+      //- DEV: When not disabled, this will be a link or a button for OAuth
+      p
+        +google-button({el: 'button', disabled: true})
+          = "Connected with Google"
     if locals.validation_errors
       //- DEV: Id is for testing only
       #validation-errors.section--error.push--bottom
@@ -19,8 +20,10 @@ block content
           for error in validation_errors
             li= error.message
     .form-group
-      //- DESIGN: When we add email support, we should make it possible to connect/disconnect a Google account and update email (with password confirmation and email verification)
-      label(for="email") Email (from Google):
+      label(for="email")
+        = "Email ("
+        a(href="mailto:support@findwork.co?subject=" + encodeURIComponent('Find Work edit email')) contact support to edit
+        = "):"
       input#email.form-control.input--block(name="email", disabled, value=candidate.email, style="max-width: 220px")
     .form-group
       label(for="timezone") Timezone:

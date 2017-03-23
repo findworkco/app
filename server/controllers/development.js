@@ -213,6 +213,16 @@ app.get('/_dev/login/email', [
     });
   }
 ]);
+app.get('/_dev/login/email/error', [
+  resolveModelsAsLocals({nav: true}),
+  function devLoginEmailErrorShow (req, res, next) {
+    res.render('auth-email.jade', {
+      action: 'login',
+      authEmail: 'todd@findwork.co',
+      token_invalid: 'Token was not valid. Please try again'
+    });
+  }
+]);
 app.get('/_dev/login/error', function devLoginErrorShow (req, res, next) {
   // Set an authentication error and redirect to the login page
   req.session.authError = 'Access was denied from Google. Please try again.';
@@ -230,6 +240,16 @@ app.get('/_dev/sign-up/email', [
     res.render('auth-email.jade', {
       action: 'sign_up',
       authEmail: 'todd@findwork.co'
+    });
+  }
+]);
+app.get('/_dev/sign-up/email/error', [
+  resolveModelsAsLocals({nav: true}),
+  function devSignUpEmailErrorShow (req, res, next) {
+    res.render('auth-email.jade', {
+      action: 'sign_up',
+      authEmail: 'todd@findwork.co',
+      token_invalid: 'Token was not valid. Please try again'
     });
   }
 ]);
