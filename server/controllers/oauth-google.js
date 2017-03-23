@@ -5,13 +5,10 @@ var _ = require('underscore');
 var HttpError = require('http-errors');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var passport = require('passport');
-var Candidate = require('../models/candidate');
 var app = require('../index.js').app;
 var config = require('../index.js').config;
-var queue = require('../queue');
-var saveModelsViaServer = require('../models/utils/save-models').saveModelsViaServer;
+var authUtils = require('./utils/auth');
 var GOOGLE_ANALYTICS = require('../utils/google-analytics');
-var NOTIFICATION_TYPES = require('../utils/notifications').TYPES;
 
 // DEV: Google set up instructions
 //   https://developers.google.com/identity/protocols/OAuth2WebServer
@@ -50,91 +47,33 @@ passport.use(new GoogleStrategy({
     var accountEmail = (_.findWhere(profileEmails, {type: 'account'}) || {}).value;
 
     // If there is no account email, then error out
-    // DEV: Error will be sent back to corresponding `next` handler eventually
     if (!accountEmail) {
-      return next(new Error('Unable to resolve email from Google\'s response'));
+      return cb(new Error('Unable to resolve email from Google\'s response'));
     }
     if (!profileId) {
-      return next(new Error('Unable to resolve id from Google\'s response'));
+      return cb(new Error('Unable to resolve id from Google\'s response'));
     }
 
-    // Otherwise, if the candidate exists in our database, return them
-    Candidate.find({where: {email: accountEmail}}).asCallback(function handleFind (err, _candidate) {
-      // If there was an error, callback with it
-      if (err) { return next(err); }
-
-      // If we have a candidate
-      if (_candidate) {
-        // Update their access token and Google id (refresh token isn't defined for us)
-        _candidate.set({
+    // Call our auth utility
+    authUtils.findOrCreateCandidate({
+      req: req,
+      whereQuery: {email: accountEmail},
+      loginInfo: {
+        updateAttrs: {
           google_id: profileId,
           google_access_token: accessToken
-        });
-        saveModelsViaServer({models: [_candidate]}, function handleUpdate (err) {
-          // If there was an error, send it to Sentry (no need to bail)
-          if (err) { app.sentryClient.captureError(err); }
-
-          // Welcome our candidate back via a flash message
-          req.flash(NOTIFICATION_TYPES.SUCCESS, 'Welcome back to Find Work!');
-          req.googleAnalytics(GOOGLE_ANALYTICS.LOG_IN_GOOGLE_KEY);
-
-          // Callback with the candidate
-          return next(null, _candidate);
-        });
-        return;
+        },
+        analyticsKey: GOOGLE_ANALYTICS.LOG_IN_GOOGLE_KEY
+      },
+      signUpInfo: {
+        createAttrs: {
+          email: accountEmail,
+          google_id: profileId,
+          google_access_token: accessToken
+        },
+        analyticsKey: GOOGLE_ANALYTICS.SIGN_UP_GOOGLE_KEY
       }
-
-      // Otherwise, create our candidate
-      var candidate = Candidate.build({
-        email: accountEmail,
-        google_id: profileId,
-        google_access_token: accessToken,
-        timezone: req.timezone
-      });
-      saveModelsViaServer({models: [candidate]}, function handleSave (err) {
-        // If there was an error, callback with it
-        if (err) { return next(err); }
-
-        // Welcome our candidate via a flash message
-        req.flash(NOTIFICATION_TYPES.SUCCESS, 'Welcome to Find Work!');
-        req.googleAnalytics(GOOGLE_ANALYTICS.SIGN_UP_GOOGLE_KEY);
-
-        // Send a welcome email to candidate
-        // DEV: We perform this async from candidate creation as it's non-critical
-        queue.create(queue.JOBS.SEND_WELCOME_EMAIL, {
-          candidateId: candidate.get('id')
-        }).save(function handleSendWelcomeEmail (err) {
-          // If there was an error, send it to Sentry
-          if (err) {
-            app.sentryClient.captureError(err);
-          }
-        });
-
-        // Callback with our candidate
-        next(null, candidate);
-      });
-    });
-
-    function next(err, candidate) { // jshint ignore:line
-      // If there was an error, call back with it
-      if (err) {
-        return cb(err);
-      }
-
-      // Regenerate our session to prevent session fixation
-      // DEV: Express' session only support fresh regeneration whereas we want data preservation
-      var _oldSessionData = _.extendOwn({}, req.session);
-      req.session.regenerate(function handleRegenerate (err) {
-        // If there was an error, log it
-        if (err) {
-          app.sentryClient.captureError(err);
-        }
-
-        // Call back with our candidate
-        _.extend(req.session, _oldSessionData);
-        cb(null, candidate);
-      });
-    }
+    }, cb);
   });
 }));
 

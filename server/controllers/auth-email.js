@@ -1,12 +1,71 @@
 // Load in our dependencies
 var assert = require('assert');
+var domain = require('domain');
+var util = require('util');
 var _ = require('underscore');
 var crypto = require('crypto');
 var bcrypt = require('bcrypt');
+var passport = require('passport');
+var Strategy = require('passport-strategy');
 var app = require('../index.js').app;
+var authUtils = require('./utils/auth');
 var config = require('../index.js').config;
 var queue = require('../queue');
 var resolveModelsAsLocals = require('../middlewares/models').resolveModelsAsLocals;
+var GOOGLE_ANALYTICS = require('../utils/google-analytics');
+
+// Define and load our strategy
+// https://github.com/jaredhanson/passport-strategy/tree/v1.0.0
+// DEV: We only have Passport for `successReturnToOrRedirect` support
+function PasswordlessStrategy() {
+  // Inherit from base Strategy (despite it being empty)
+  Strategy.call(this);
+}
+util.inherits(PasswordlessStrategy, Strategy);
+_.extend(PasswordlessStrategy.prototype, {
+  name: 'passwordless',
+  authenticate: function (req, options) {
+    // Define our callback logic
+    // Based on https://github.com/jaredhanson/passport-oauth2/blob/v1.4.0/lib/strategy.js#L171-L178
+    var that = this;
+    function cb(err, candidate) {
+      if (err) {
+        return that.error(err);
+      } else {
+        return that.success(candidate);
+      }
+    }
+
+    // DEV: Domains are overkill as this is executed in a controller but we use it for clarity
+    // DEV: Sync errors are caught and sent back to `next` handler
+    var passportDomain = domain.create();
+    passportDomain.on('error', cb);
+    passportDomain.run(function handleRun () {
+      // Resolve our email
+      // DEV: We are using Passport incorrectly as we don't want to deal with fragmenting logic
+      var email = req._authEmailSuccess;
+      assert(email);
+
+      // Call our auth utility
+      authUtils.findOrCreateCandidate({
+        req: req,
+        whereQuery: {email: email},
+        loginInfo: {
+          updateAttrs: {}, // No need to update email
+          analyticsKey: GOOGLE_ANALYTICS.LOG_IN_EMAIL_KEY
+        },
+        signUpInfo: {
+          createAttrs: {email: email},
+          analyticsKey: GOOGLE_ANALYTICS.SIGN_UP_EMAIL_KEY
+        }
+      }, cb);
+    });
+  }
+});
+passport.use(new PasswordlessStrategy());
+var passwordlessController = passport.authenticate('passwordless', {
+  successReturnToOrRedirect: '/schedule'
+});
 
 // Define our token helpers
 // DEV: We use `crypto.randomBytes` as it's the same library that Express uses (via `uid-safe`) for session ids
@@ -129,13 +188,18 @@ function validateAuthEmailValid(req, res, next) {
   var action = res.locals.action;
   assert(action);
 
-  // If our auth request is invalid or expired
-  if (!req.session.authEmail || !req.session.authEmailTokenHash || !req.session.authEmailExpiresAt ||
-      req.session.authEmailExpiresAt < Date.now()) {
-    // Wipe its contents
+  // Define revocation methods
+  req.deleteAuthEmailInfo = function () {
     delete req.session.authEmail;
     delete req.session.authEmailTokenHash;
     delete req.session.authEmailExpiresAt;
+  };
+
+  // If our auth request is invalid or expired
+  if (!req.session.authEmail || !req.session.authEmailTokenHash || !req.session.authEmailExpiresAt ||
+      req.session.authEmailExpiresAt < Date.now()) {
+    // Revoke our auth email info
+    req.deleteAuthEmailInfo();
 
     // Redirect our user back to their original auth page
     var loggingInStr = action === 'sign_up' ? 'signing up' : 'logging in';
@@ -163,4 +227,49 @@ app.get('/login/email', _.flatten([
 app.get('/sign-up/email', _.flatten([
   setAuthActionSignUp,
   authEmailShowFns
+]));
+
+// Controllers: /:auth/email/callback (automatic entry)
+var authEmailCallbackShowFns = [
+  validateAuthEmailValid,
+  resolveModelsAsLocals({nav: true}),
+  function authEmailCallbackShow (req, res, next) {
+    // Resolve our action
+    var action = res.locals.action;
+    assert(action);
+
+    // Load our info and wipe info to prevent brute force retries
+    var token = req.query.fetch('token');
+    var email = req.session.authEmail;
+    var expectedTokenHash = req.session.authEmailTokenHash;
+    req.deleteAuthEmailInfo();
+
+    // Compare our token
+    // DEV: If we use something simpler than bcrypt, be sure it's time constant
+    bcrypt.compare(token, expectedTokenHash, function handleCompare (err, hashMatched) {
+      // If there was an error, callback with it
+      if (err) {
+        return next(err);
+      }
+
+      // If we had a match, send ourself to Passport
+      // DEV: We are using Passport incorrectly (should do token gen and comparison in it but this is saner)
+      if (hashMatched) {
+        req._authEmailSuccess = email;
+        passwordlessController(req, res, next);
+      // Otherwise, reject our request
+      } else {
+        req.session.authError = 'Email authentication request is either invalid or has expired';
+        return res.redirect(action === 'sign_up' ? '/sign-up' : '/login');
+      }
+    });
+  }
+];
+app.get('/login/email/callback', _.flatten([
+  setAuthActionLogin,
+  authEmailCallbackShowFns
+]));
+app.get('/sign-up/email/callback', _.flatten([
+  setAuthActionSignUp,
+  authEmailCallbackShowFns
 ]));

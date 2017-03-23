@@ -36,7 +36,8 @@ scenario.route('A request to POST /login/email/request (specific)', {
       .save({
         method: 'POST', url: serverUtils.getUrl('/login/email/request'),
         htmlForm: validFormData, followRedirect: false,
-        expectedStatusCode: 302, validateHtmlFormDifferent: true
+        expectedStatusCode: 302, waitForJobs: 1,
+        validateHtmlFormDifferent: true
       });
 
     it('is redirected to /login/email', function () {
