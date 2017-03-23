@@ -396,6 +396,42 @@ scenarioInfoArr.forEach(function handleScenarioInfo (scenarioInfo) {
       });
     });
 
+    // Edge case: Email casing
+    scenario.routeTest('with a non-existent user with non-lowercased email', {
+      dbFixtures: [],
+      googleFixtures: [],
+      serveAnalytics: true
+    }, function () {
+      // Make our request
+      stubCryptoRandomBytes();
+      serverUtils.stubEmails();
+      httpUtils.session.init()
+        .save(serverUtils.getUrl(scenarioInfo.sourceUrl))
+        .save({
+          method: 'POST', url: serverUtils.getUrl(scenarioInfo.requestUrl),
+          htmlForm: {email: 'Mock-Email-Cased@mock-domain.test'},
+          followRedirect: false, waitForJobs: 1,
+          expectedStatusCode: 302
+        })
+        .save({
+          url: serverUtils.getUrl({
+            pathname: scenarioInfo.callbackUrl,
+            query: {token: VALID_TOKEN}
+          }),
+          followRedirect: true, waitForJobs: 1,
+          expectedStatusCode: 200
+        });
+
+      it('creates user with lowercased email', function (done) {
+        Candidate.findAll().asCallback(function handleCandidates (err, candidates) {
+          if (err) { return done(err); }
+          expect(candidates).to.have.length(1);
+          expect(candidates[0].get('email')).to.equal('mock-email-cased@mock-domain.test');
+          done();
+        });
+      });
+    });
+
     // Edge case: Session fixation prevention
     scenario.routeTest('with respect to session fixation', {
       dbFixtures: [dbFixtures.DEFAULT_FIXTURES]

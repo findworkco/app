@@ -19,7 +19,7 @@ module.exports = _.extend(baseDefine('candidate', {
   },
   // DEV: we are using 64 to future proof in case this moves to another table
   // Example: 105517022105765304949 for https://plus.google.com/105517022105765304949
-  google_id: {type: Sequelize.STRING(64), allowNull: true},
+  google_id: {type: Sequelize.STRING(64), unique: true, allowNull: true},
   // Google is: xxxx.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
   //   but we are using 1024 to future proof in case this moves to another table
   google_access_token: {type: Sequelize.STRING(1024), allowNull: true},
@@ -51,6 +51,15 @@ module.exports = _.extend(baseDefine('candidate', {
     },
     external_add_application_url: function () {
       return getExternalUrl(this.get('add_application_url'));
+    }
+  },
+  setterMethods: {
+    email: function (value) {
+      if (typeof value === 'string') {
+        return this.setDataValue('email', value.toLowerCase());
+      } else {
+        return this.setDataValue('email', value);
+      }
     }
   }
 }), exports);

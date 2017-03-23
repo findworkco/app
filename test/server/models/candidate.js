@@ -1,4 +1,5 @@
 // Load in our dependencies
+var assert = require('assert');
 var _ = require('underscore');
 var expect = require('chai').expect;
 var dbFixtures = require('../utils/db-fixtures');
@@ -16,6 +17,48 @@ scenario.model('A Candidate model', function () {
       expect(validationErr.errors).to.have.length(1);
       expect(validationErr.errors[0]).to.have.property('path', 'email');
       expect(validationErr.errors[0]).to.have.property('message', 'Invalid email provided');
+      done();
+    });
+  });
+});
+
+// DEV: These verify our database constraints
+scenario.model('Multiple Candidate models with the same email yet different cases', {
+  dbFixtures: [dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+}, function () {
+  it('prevents saving the same email to different candidates', function (done) {
+    // Resolve our candidate
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT_KEY];
+    assert(candidate);
+
+    // Update to a colliding email
+    // DEV: We circumvent `.set` to ensure we are testing the db
+    candidate.setDataValue('email', 'Alt-Email@Mock-Domain.Test');
+    expect(candidate.get('email')).to.equal('Alt-Email@Mock-Domain.Test');
+    candidate.save({_allowNoTransaction: true, _sourceType: 'server'}).asCallback(function handleSave (err) {
+      expect(err).to.not.equal(null);
+      expect(err.original.message).to.contain(
+        'duplicate key value violates unique constraint "candidates_email_unique_lower_idx"');
+      done();
+    });
+  });
+});
+
+scenario.model('Multiple Candidate models with the same Google id', {
+  dbFixtures: [dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_ALT]
+}, function () {
+  it('prevents saving the same Google id to different candidates', function (done) {
+    // Resolve our candidate
+    var candidate = this.models[dbFixtures.CANDIDATE_DEFAULT_KEY];
+    assert(candidate);
+
+    // Update to a colliding email
+    candidate.set('google_id', 'mock_alt_candidate_google_id');
+    expect(candidate.get('google_id')).to.equal('mock_alt_candidate_google_id');
+    candidate.save({_allowNoTransaction: true, _sourceType: 'server'}).asCallback(function handleSave (err) {
+      expect(err).to.not.equal(null);
+      expect(err.original.message).to.contain(
+        'duplicate key value violates unique constraint "candidates_google_id_key"');
       done();
     });
   });
@@ -102,6 +145,10 @@ scenario.model('candidates table', function () {
       var emailIndex = _.findWhere(indexes, {name: 'candidates_email_key'});
       expect(emailIndex.unique).to.equal(true);
       expect(_.pluck(emailIndex.fields, 'attribute')).to.deep.equal(['email']);
+
+      var googleIdIndex = _.findWhere(indexes, {name: 'candidates_google_id_key'});
+      expect(googleIdIndex.unique).to.equal(true);
+      expect(_.pluck(googleIdIndex.fields, 'attribute')).to.deep.equal(['google_id']);
       done();
     });
   });
