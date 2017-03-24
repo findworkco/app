@@ -57,7 +57,8 @@ passport.use(new GoogleStrategy({
     // Call our auth utility
     authUtils.findOrCreateCandidate({
       req: req,
-      whereQuery: {email: accountEmail},
+      whereQuery: {$or: [{email: accountEmail}, {google_id: profileId}]},
+      findWhereTiebreaker: {google_id: profileId},
       loginInfo: {
         updateAttrs: {
           google_id: profileId,

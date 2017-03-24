@@ -376,6 +376,77 @@ scenario.route('A request to GET /oauth/google/callback', {
     });
   });
 
+  scenario.routeTest('with an existent user with matching Google id but no matching email', {
+    dbFixtures: [dbFixtures.CANDIDATE_GOOGLE],
+    googleFixtures: [
+      '/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code',
+      '/plus/v1/people/me#only-matching-id']
+  }, function () {
+    // Verify our email mismatches
+    before(function assertEmailInfo (done) {
+      Candidate.findAll().asCallback(function handleCandidates (err, candidates) {
+        if (err) { return done(err); }
+        expect(candidates).to.have.length(1);
+        expect(candidates[0].get('email')).to.equal('google-email@mock-domain.test');
+        done();
+      });
+    });
+
+    // Make our request
+    httpUtils.session.init().save({
+      // Redirects to fake Google OAuth, then to `/oauth/google/callback`
+      url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
+      followRedirect: true,
+      expectedStatusCode: 200
+    });
+
+    it('identifies user by Google id', function () {
+      expect(this.$('body').text()).to.contain('Signed in: google-email@mock-domain.test');
+    });
+
+    it('doesn\'t create a new user', function (done) {
+      Candidate.findAll().asCallback(function handleCandidates (err, candidates) {
+        if (err) { return done(err); }
+        expect(candidates).to.have.length(1);
+        expect(candidates[0].get('email')).to.equal('google-email@mock-domain.test');
+        expect(candidates[0].get('google_id')).to.equal('1234567890');
+        done();
+      });
+    });
+  });
+
+  scenario.routeTest('with multiple existent users that exclusively match either email or Google id', {
+    dbFixtures: [dbFixtures.CANDIDATE_DEFAULT, dbFixtures.CANDIDATE_GOOGLE],
+    googleFixtures: [
+      '/o/oauth2/v2/auth#valid', '/oauth2/v4/token#valid-code',
+      '/plus/v1/people/me#valid-access-token']
+  }, function () {
+    // Verify our exclusive properties
+    before(function assertCandidatesExclusive (done) {
+      Candidate.findAll({order: [['email']]}).asCallback(function handleCandidates (err, candidates) {
+        if (err) { return done(err); }
+        expect(candidates).to.have.length(2);
+        expect(candidates[0].get('email')).to.equal('google-email@mock-domain.test');
+        expect(candidates[0].get('google_id')).to.equal('1234567890');
+        expect(candidates[1].get('email')).to.equal('mock-email@mock-domain.test');
+        expect(candidates[1].get('google_id')).to.equal('mock_default_candidate_google_id');
+        done();
+      });
+    });
+
+    // Make our request
+    httpUtils.session.init().save({
+      // Redirects to fake Google OAuth, then to `/oauth/google/callback`
+      url: serverUtils.getUrl(OAUTH_GOOGLE_REQUEST_URL_OPTIONS),
+      followRedirect: true,
+      expectedStatusCode: 200
+    });
+
+    it('identifies user by Google id', function () {
+      expect(this.$('body').text()).to.contain('Signed in: google-email@mock-domain.test');
+    });
+  });
+
   // Edge case: Session fixation prevention
   scenario.routeTest('with respect to session fixation', {
     dbFixtures: [dbFixtures.DEFAULT_FIXTURES]

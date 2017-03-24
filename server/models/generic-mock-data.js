@@ -109,6 +109,16 @@ exports.CANDIDATE_EMAIL = [
     welcome_email_sent: true
   })
 ];
+exports.CANDIDATE_GOOGLE = [
+  addCandidate('google__candidate', {
+    id: 'google00-0000-0000-0000-000000000000',
+    email: 'google-email@mock-domain.test',
+    google_id: '1234567890',
+    google_access_token: 'mock_access_token_fixtured_google',
+    timezone: 'US-America/Chicago',
+    welcome_email_sent: true
+  })
+];
 // Gemini-only mocks
 addCandidate('dev-user__candidate', {
   id: 'devuser0-0000-0000-0000-000000000000',

@@ -13,16 +13,26 @@ exports.findOrCreateCandidate = function (params, cb) {
   // Expand our parameters
   var req = params.req; assert(req);
   var whereQuery = params.whereQuery; assert(whereQuery);
+  var findWhereTiebreaker = params.findWhereTiebreaker; assert(findWhereTiebreaker);
   var loginInfo = params.loginInfo; assert(loginInfo);
   var signUpInfo = params.signUpInfo; assert(signUpInfo);
 
   // Attempt to find the candidate in our database
-  Candidate.find({where: whereQuery}).asCallback(function handleFind (err, _candidate) {
+  Candidate.findAll({where: whereQuery, limit: 2}).asCallback(function handleFind (err, _candidates) {
     // If there was an error, callback with it
     if (err) { return next(err); }
 
-    // If we have a candidate
-    if (_candidate) {
+    // If we have candidates
+    if (_candidates.length) {
+      // Find which one to match
+      // DEV: This covers case where we have an OR in our where and need to take priority
+      // DEV: This could be done via PostgreSQL via `CASE WHEN 1/0` and `ORDER BY` but Sequelize makes it a pain
+      var _candidate = _candidates[0];
+      if (_candidates.length > 1) {
+        _candidate = _.findWhere(_candidates, findWhereTiebreaker);
+        assert(_candidate);
+      }
+
       // Update their access token and Google id (refresh token isn't defined for us)
       var loginUpdateAttrs = loginInfo.updateAttrs; assert(loginUpdateAttrs);
       var loginAnalyticsKey = loginInfo.analyticsKey; assert(loginAnalyticsKey);

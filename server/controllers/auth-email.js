@@ -50,6 +50,7 @@ _.extend(PasswordlessStrategy.prototype, {
       authUtils.findOrCreateCandidate({
         req: req,
         whereQuery: {email: email},
+        findWhereTiebreaker: {email: email},
         loginInfo: {
           updateAttrs: {}, // No need to update email
           analyticsKey: GOOGLE_ANALYTICS.LOG_IN_EMAIL_KEY

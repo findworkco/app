@@ -158,6 +158,13 @@ fakeGoogleFactory.addFixture('/plus/v1/people/me#valid-access-token', {
     res.status(200).json(getValidMeInfo(candidate.data.email));
   }
 });
+fakeGoogleFactory.addFixture('/plus/v1/people/me#only-matching-id', {
+  method: 'get',
+  route: '/plus/v1/people/me',
+  response: function (req, res) {
+    res.status(200).json(getValidMeInfo('only-matching-id@mock-domain.test'));
+  }
+});
 
 fakeGoogleFactory.addFixture('/plus/v1/people/me#no-account-email', {
   method: 'get',
