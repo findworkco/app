@@ -4,10 +4,10 @@ var assert = require('assert');
 var fs = require('fs');
 var AWS = require('aws-sdk');
 var spawn = require('child_process').spawn;
+var config = require('../config').getConfig();
 var staticSecrets = require('../config/static-secrets');
 
 // Define our constants upfront
-var dbName = 'find_work';
 var S3_BUCKET = 'db-backups-findworkco';
 
 // Determine our filename (same as git tags)
@@ -38,8 +38,27 @@ var s3 = new AWS.S3();
 // DEV: We output `stderr` to `process.stderr`
 // DEV: We write to disk so S3 client can calculate `Content-Length` of final result before uploading
 console.log('Dumping `pg_dump` into `gzip`');
-var pgDumpChild = spawn('pg_dump', [dbName], {stdio: ['ignore', 'pipe', 'inherit']});
+var psqlConfig = config.postgresql;
+var pgDumpChild = spawn('pg_dump', [
+  '--host', psqlConfig.host,
+  '--port', psqlConfig.port,
+  '--dbname', psqlConfig.database,
+  '--username', psqlConfig.username
+], {
+  env: {PGPASSWORD: psqlConfig.password},
+  stdio: ['ignore', 'pipe', 'inherit']
+});
+pgDumpChild.on('exit', function (code) {
+  if (code !== 0) {
+    throw new Error('pg_dump: Bad exit code (' + code + ')');
+  }
+});
 var gzipChild = spawn('gzip', {stdio: ['pipe', 'pipe', 'inherit']});
+gzipChild.on('exit', function (code) {
+  if (code !== 0) {
+    throw new Error('gzip: Bad exit code (' + code + ')');
+  }
+});
 var writeStream = fs.createWriteStream(filepath);
 pgDumpChild.stdout.pipe(gzipChild.stdin);
 gzipChild.stdout.pipe(writeStream);
