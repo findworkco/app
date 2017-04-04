@@ -40,7 +40,7 @@ block content
       form.form--inline(method="GET", action="/add-application/waiting-for-response")
         //- DEV: No CSRF token necessary as this is a GET form
         input(type="hidden", name="company_name", value=company_name)
-        button.btn.btn--default(type="submit", disabled=!company_name) Apply to company
+        button.btn.btn--default(type="submit", disabled=!company_name) Applied to company
   .grid
     //- DEV: Id is for testing only
     #glassdoor-results.grid__item.one-whole.large-four-ninths

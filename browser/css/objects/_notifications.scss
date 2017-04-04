@@ -21,6 +21,10 @@
   position: fixed;
   width: 100%;
   z-index: 100;
+
+  //- DEV: We truncate element height to prevent blocking menu on small screens
+  height: 0;
+  overflow: visible;
 }
 
 .alertify-logs.custom {

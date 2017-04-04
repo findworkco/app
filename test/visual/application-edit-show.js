@@ -131,7 +131,7 @@ gemini.suite('application-edit-show', function (suite) {
   gemini.suite('title-sync', function (child) {
     child.load('/application/abcdef-sky-networks-uuid', geminiUtils.SETUPS.DEFAULT)
       .setCaptureElements('body')
-      .before(function setShortTitle (actions, find) {
+      .before(function updateTitle (actions, find) {
         // Update our title
         // DEV: `sendKeys` doesn't clear original text so we use `clear` first
         // https://github.com/admc/wd/blob/v0.4.0/lib/element-commands.js#L279-L286
@@ -142,6 +142,11 @@ gemini.suite('application-edit-show', function (suite) {
 
         // Reset focus to the body
         actions.focus(find('body'));
+      })
+      .after(function resetForm (actions, find) {
+        // DEV: We reset our form to prevent our beforeunload popup
+        geminiUtils.clear(actions, nameSelector);
+        actions.sendKeys(nameSelector, 'Sky Networks');
       })
       .capture('default-large', geminiUtils.resizeLarge)
       .capture('default-medium', geminiUtils.resizeMedium)

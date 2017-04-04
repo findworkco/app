@@ -49,7 +49,8 @@ block base-content
     .container(style="position: relative")
       //- DEV: We use `width: auto` to prevent blocking clicks to logo due to overexpansion
       - var logoPadding = '5px';
-      .large-hidden(style="position: absolute; left: 0; width: auto")
+      //- DEV: Id is for testing only
+      #menu-link__container.large-hidden(style="position: absolute; left: 0; width: auto")
         //- DEV: Half width padding doubles as alignment with grid as well as increasing hit area for button
         button.text--link.link--inherit-color.soft-half(aria-label="Open menu", data-toggle="menu", style="line-height: 25px") Menu
       .layout-top-btn__container__container
@@ -110,19 +111,19 @@ block base-content
         //- DEV: Push "Recent applications" by 1.5 base units as 1x feels too little and 2x feels too much
         div(style="margin-bottom:27px")
           p
-            +nav-row--link({selected: locals.pageUrl === '/schedule'})(href="/schedule") Schedule
+            +nav-row--link({selected: locals.pagePathname === '/schedule'})(href="/schedule") Schedule
           .push--left
             p
-              +nav-row--link({selected: /^\/add-application/.test(locals.pageUrl)})(href="/add-application")
+              +nav-row--link({selected: /^\/add-application/.test(locals.pagePathname)})(href="/add-application")
                 span(aria-hidden="true")= "+ "
                 | Add job application
             p
-              +nav-row--link({selected: locals.pageUrl === '/research-company'})(href="/research-company")
+              +nav-row--link({selected: locals.pagePathname === '/research-company'})(href="/research-company")
                 | Research company
           p
-            +nav-row--link({selected: locals.pageUrl === '/archive'})(href="/archive") Archived applications
+            +nav-row--link({selected: locals.pagePathname === '/archive'})(href="/archive") Archived applications
           p
-            +nav-row--link({selected: locals.pageUrl === '/settings'})(href="/settings") Settings
+            +nav-row--link({selected: locals.pagePathname === '/settings'})(href="/settings") Settings
 
         //- Recent applications
         //- DEV: We check `locals.recentlyViewedApplications` as we could have a 500 with no data

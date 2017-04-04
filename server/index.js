@@ -1,6 +1,7 @@
 // Load in our dependencies
 var assert = require('assert');
 var domain = require('domain');
+var url = require('url');
 var _ = require('underscore');
 var bodyParser = require('body-parser');
 var connectFlash = require('connect-flash');
@@ -272,8 +273,9 @@ function Server(config) {
   });
 
   // Expose pathname for navigation
-  app.use(function exposePageUrl (req, res, next) {
-    res.locals.pageUrl = req.url;
+  app.use(function exposePagePathname (req, res, next) {
+    // DEV: We use `pathname` instead of `req.url` to cover query strings
+    res.locals.pagePathname = url.parse(req.url).pathname;
     next();
   });
 

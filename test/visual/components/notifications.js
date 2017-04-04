@@ -45,4 +45,33 @@ gemini.suite('components/notifications', function (suite) {
       .capture('default-medium', geminiUtils.resizeMediumScrollMiddle)
       .capture('default-small', geminiUtils.resizeSmallScrollMiddle);
   });
+
+  // Handle edge case overlay issues
+  gemini.suite('menu-collapsed', function (child) {
+    child.load('/_dev/notification?type=log&message=Hello%20World')
+      .setCaptureElements('body')
+      .before(function addOverlayHighlights (actions, find) {
+        actions.executeJS(function handleExecuteJS (window) {
+          var document = window.document;
+          document.styleSheets[0].insertRule(
+            '#notification-container { border: 5px solid rgba(0, 255, 0, 0.3); }',
+            document.styleSheets[0].cssRules.length);
+        });
+      })
+      .capture('default-large', geminiUtils.resizeLarge)
+      .capture('default-medium', geminiUtils.resizeMedium)
+      .capture('default-small', geminiUtils.resizeSmall);
+  });
+
+  gemini.suite('menu-expanded', function (child) {
+    child.load('/_dev/notification?type=log&message=Hello%20World')
+      .setCaptureElements('body')
+      .before(function expandNav (actions, find) {
+        actions.executeJS(function triggerJQueryNavClick (window) {
+          window.jQuery('header button[aria-label="Open menu"]').click();
+        });
+      })
+      .capture('default-medium', geminiUtils.resizeMedium)
+      .capture('default-small', geminiUtils.resizeSmall);
+  });
 });

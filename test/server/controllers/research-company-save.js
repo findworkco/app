@@ -325,7 +325,7 @@ scenario.route('A request to POST /research-company to "Save for later"', {
   });
 });
 
-scenario.route('A request to POST /research-company to "Apply to company"', {
+scenario.route('A request to POST /research-company to "Applied to company"', {
   requiredTests: {nonExistent: false, nonOwner: false, loggedOut: false}
 }, function () {
   scenario.loggedOut('from a logged out user', {
