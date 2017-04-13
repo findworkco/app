@@ -173,3 +173,29 @@ describe('A pair of synced datetimepickers with a minimum date for target updati
     expect($target.find('input[type=date]').val()).to.equal('2016-01-15');
   });
 });
+
+// Edge case: Date in a daylight savings time timezone
+// DEV: This passes with a UTC timezone but fails on a non-UTC one
+//   We use `Europe/Berlin` inside of `package.json` to ensure this
+//   We were unable to find a JS library to properly test it and mocking date is super complex
+describe('A pair of synced datetimepickers in a daylight savings time timezone', function () {
+  testUtils.init({
+    sourceMoment: moment.tz('2016-05-03T04:05:06', 'US-America/Chicago'),
+    targetMoment: moment.tz('2016-05-03T06:05:06', 'US-America/Chicago')
+  });
+
+  it('updates target date, time, and timezone', function () {
+    // Bind our sync
+    browserInit(this.el);
+    var $source = this.$('#source'); assert($source.length);
+    var $target = this.$('#target'); assert($target.length);
+
+    // Update time and assert isolated changes
+    expect($source.find('input[type=time]').val()).to.equal('4:05AM');
+    expect($target.find('input[type=time]').val()).to.equal('6:05AM');
+    var $sourceTime = $source.find('input[type=time]');
+    $sourceTime.val('9:20PM');
+    $simulant.fire($sourceTime, 'change');
+    expect($target.find('input[type=time]').val()).to.equal('11:20PM');
+  });
+});

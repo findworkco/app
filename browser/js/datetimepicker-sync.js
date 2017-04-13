@@ -54,7 +54,11 @@ exports.setDateToDatetimepicker = function (datetimepickerEl, date) {
     // https://github.com/jonthornton/jquery-timepicker/tree/1.11.9#methods
     // DEV: We use seconds instead of Date as timepicker doesn't handle timezone-ful browsers nicely
     //   (e.g. 2PM + 2:00 -> 1AM instead of 4PM)
-    return $(timeEl).timepicker('setTime', ((+date) / 1000));
+    // DEV: We strip away date rollover to remove daylight savings time error
+    //   In the library, they use Jan 1 1970 as base date so we want to stay on that day
+    var secondsFromEpoch = (+date) / 1000;
+    var secondsFromMidnight = secondsFromEpoch % (24 * 60 * 60);
+    return $(timeEl).timepicker('setTime', secondsFromMidnight);
   }
 };
 
