@@ -215,7 +215,7 @@ function getScheduleOptions(req, status, options) {
       candidate_id: req.candidate.id,
       status: status
     },
-    limit: 20
+    limit: 100
   }, options);
 }
 function sortApplicationsByTime(applicationA, applicationB) {
@@ -313,11 +313,11 @@ app.get('/schedule', [
   }),
   function scheduleShow (req, res, next) {
     // If we have more applications than expected, notify ourselves
-    if (req.models.receivedOfferApplications.length > 10 ||
-        req.models.upcomingInterviewApplications.length > 10 ||
-        req.models.waitingForResponseApplications.length > 10 ||
-        req.models.savedForLaterApplications.length > 10) {
-      req.captureError(new Error('Candidate has at least 10 applications of a single type, ' +
+    if (req.models.receivedOfferApplications.length > 90 ||
+        req.models.upcomingInterviewApplications.length > 90 ||
+        req.models.waitingForResponseApplications.length > 90 ||
+        req.models.savedForLaterApplications.length > 90) {
+      req.captureError(new Error('Candidate has at least 90 applications of a single type, ' +
         'we should add limits and build "View more" functionality'));
     }
 
@@ -356,8 +356,8 @@ app.get('/archive', [
   }),
   function archiveShow (req, res, next) {
     // If we have more applications than expected, notify ourselves
-    if (req.models.archivedApplications.length > 10) {
-      req.captureError(new Error('Candidate has at least 10 archived applications, ' +
+    if (req.models.archivedApplications.length > 90) {
+      req.captureError(new Error('Candidate has at least 90 archived applications, ' +
         'we should add limits and build "View more" functionality'));
     }
 
