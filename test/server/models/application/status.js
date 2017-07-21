@@ -510,7 +510,7 @@ scenario.model('An "Application model without an application date" being backfil
     expect(updatedModels).to.contain(application);
     expect(application.get('application_date_moment')).to.not.equal(null);
     // DEV: Application date should be set to today in candidate's timezone
-    var expectedDateStr = new Date(dateUtils.nowInSF()).toISOString();
+    var expectedDateStr = new Date(dateUtils.nowInChicago()).toISOString();
     var expectedInfo = extractValues(expectedDateStr, '{date}T{full_time}');
     var actualMoment = application.get('application_date_moment').tz('UTC');
     expect(actualMoment.format('Y-MM-DD')).to.equal(expectedInfo.date);

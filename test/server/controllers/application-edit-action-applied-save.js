@@ -53,7 +53,7 @@ scenario.route('A request to a POST /application/:id/applied', function () {
         expect(applications[0].get('status')).to.equal('waiting_for_response');
         expect(applications[0].get('waiting_for_response_reminder_id')).to.be.a('string');
         // DEV: Application date should be set to today in candidate's timezone
-        var expectedDateStr = new Date(dateUtils.nowInSF()).toISOString();
+        var expectedDateStr = new Date(dateUtils.nowInChicago()).toISOString();
         var expectedInfo = extractValues(expectedDateStr, '{date}T{full_time}');
         var actualMoment = applications[0].get('application_date_moment').tz('UTC');
         expect(actualMoment.format('Y-MM-DD')).to.equal(expectedInfo.date);
