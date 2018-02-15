@@ -90,8 +90,10 @@ mixin reminderpicker(name, values, defaultMoment)
     div(style="display: table-cell; vertical-align: middle; padding: 3px")
       //- TODO: When any of the date picker elements are clicked/changed, select our radio https://trello.com/c/xUpa28S1/145-fix-ux-for-updating-radio-selection-in-reminder-picker-currently-doesn-t-select-first-radio-on-click-of-its-inputs
       //- DEV: Format is same as native and datepicker plugin
+      //- DEV: We've disabled `minDate` for the time being due to selecting "No reminder" still receives HTML5 validation errors
+      //-   We could bulk-disable/enable but didn't have time for a full build-out
       - var earliestTzMoment = moment.tz('UTC').subtract({hours: 12});
-      +datetimepicker(name, valueMoment, {minDate: earliestTzMoment.format('Y-MM-DD')})(
+      +datetimepicker(name, valueMoment)(
         id=name)&attributes(attributes)
   div(style="display: table")
     div(style="display: table-cell; vertical-align: middle")
