@@ -29,7 +29,7 @@ npm run start-develop
 
 Our development server will be running at <http://localhost:9000/>
 
-[scripts]: https://github.com/twolfson/find-work-scripts
+[scripts]: https://github.com/findworkco/scripts
 
 ## Documentation
 ### Dependencies
@@ -153,7 +153,7 @@ https://github.com/mozilla/sops/tree/1.14/examples/all_in_one
 
 To edit this repo's secrets, get SOPS installed as instructed by:
 
-https://github.com/twolfson/find-work-scripts#editing-secrets
+https://github.com/findworkco/scripts#editing-secrets
 
 Once SOPS is setup, we use the following steps to edit our secrets:
 

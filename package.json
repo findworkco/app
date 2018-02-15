@@ -2,7 +2,7 @@
   "name": "app",
   "description": "Web application for https://findwork.co/",
   "version": "1.0.0",
-  "homepage": "https://github.com/twolfson/find-work-app",
+  "homepage": "https://github.com/findworkco/app",
   "author": {
     "name": "Todd Wolfson",
     "email": "todd@twolfson.com",
@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/twolfson/find-work-app.git"
+    "url": "git://github.com/findworkco/app.git"
   },
   "bugs": {
-    "url": "https://github.com/twolfson/find-work-app/issues"
+    "url": "https://github.com/findworkco/app/issues"
   },
   "engines": {
     "node": "4.4.1"

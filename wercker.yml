@@ -17,12 +17,12 @@ build:
         name: configure postgresql
         code: |
           # Move to port 5500 and restart our server
-          # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L207-L229
+          # https://github.com/findworkco/scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L207-L229
           echo "port = 5500" >> /etc/postgresql/9.3/main/postgresql.conf
           sudo /etc/init.d/postgresql restart 9.3
 
           # Add our PostgreSQL user
-          # https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/findwork.co/recipes/postgresql-add-user-find-work.sh
+          # https://github.com/findworkco/scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/findwork.co/recipes/postgresql-add-user-find-work.sh
           user="find_work"
           password="find_work"
           create_user_command="psql --command \"CREATE ROLE $user WITH LOGIN;\""

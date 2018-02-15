@@ -11,11 +11,11 @@ RUN sudo apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
 
 # Install our apt-based dependencies
-# https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L178-L181
-# https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L189-L195
-# https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L302-L308
-# https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/findwork.co/recipes/default.rb#L4-L16
-# https://github.com/twolfson/find-work-scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/findwork.co/recipes/default.rb#L18-L19
+# https://github.com/findworkco/scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L178-L181
+# https://github.com/findworkco/scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L189-L195
+# https://github.com/findworkco/scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/common/recipes/default.rb#L302-L308
+# https://github.com/findworkco/scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/findwork.co/recipes/default.rb#L4-L16
+# https://github.com/findworkco/scripts/blob/37226968805c9390ca948594d04eb8974b72bbb6/src/cookbooks/findwork.co/recipes/default.rb#L18-L19
 RUN sudo apt-get install -y \
   redis-server=2:2.8.4-2 \
   postgresql-9.3=9.3.14-0ubuntu0.14.04 \
