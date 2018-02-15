@@ -13,9 +13,11 @@
     "bower_components"
   ],
   "dependencies": {
-    "inuit.css": "5.0.1",
+    "bootstrap": "3.3.7",
     "chosen": "1.5.1",
-    "chosen-bootstrap": "~1.1.0"
+    "chosen-bootstrap": "~1.1.0",
+    "inuit.css": "5.0.1",
+    "jquery": "2.2.3"
   },
   "resolutions": {
     "chosen": "1.5.1"
