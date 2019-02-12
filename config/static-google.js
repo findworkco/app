@@ -14,7 +14,8 @@ exports.common = {
     // https://github.com/jaredhanson/passport-google-oauth2/blob/v1.0.0/lib/strategy.js#L49-L54
     authorizationURL: undefined, // By default, use value set by `passport-google-oauth2`
     tokenURL: undefined, // By default, use value set by `passport-google-oauth2`
-    userProfileURL: undefined // By default, use value set by `passport-google-oauth2`
+    // https://github.com/jaredhanson/passport-google-oauth2/pull/51/files#diff-04c6e90faac2675aa89e2176d2eec7d8R102
+    userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo'
   }
 };
 

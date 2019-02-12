@@ -85,7 +85,7 @@
     "nodemailer": "~2.6.4",
     "nodemailer-html-to-text": "~2.1.0",
     "passport": "~0.3.2",
-    "passport-google-oauth20": "~1.0.0",
+    "passport-google-oauth20": "marshallofsound/passport-google-oauth2#bf7b5762ff0f20d20eea74956bf77e12d16d64cc",
     "passport-strategy": "~1.0.0",
     "pg": "~6.1.0",
     "querystring-multidict": "~1.1.0",

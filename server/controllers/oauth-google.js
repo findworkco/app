@@ -44,7 +44,7 @@ passport.use(new GoogleStrategy({
     // DEV: There is only 1 account (main) email per account
     var profileId = profile.id;
     var profileEmails = profile.emails || [];
-    var accountEmail = (_.findWhere(profileEmails, {type: 'account'}) || {}).value;
+    var accountEmail = (_.findWhere(profileEmails, {type: 'account'}) || profileEmails[0] || {}).value;
 
     // If there is no account email, then error out
     if (!accountEmail) {
